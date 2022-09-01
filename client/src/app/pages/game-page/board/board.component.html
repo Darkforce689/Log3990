@@ -1,0 +1,17 @@
+<div #ScrabbleBoard class="boardContainer" appClickAndClickout [inputComponent]="self">
+    <canvas id="canvas" #gridCanvas (click)="canvasClick($event)"></canvas>
+</div>
+<div class="zoomPolice">
+    <span class="fontSizeValue disable-select">Taille police</span>
+    <mat-slider
+        color="primary"
+        #fontSizeSlider
+        (input)="updateSetting($event)"
+        step="1"
+        [min]="minFontSize"
+        [max]="maxFontSize"
+        [value]="fontSize"
+        (ngModel)="(fontSize)"
+    ></mat-slider>
+    <span>{{ fontSizeSlider.value }}</span>
+</div>

@@ -1,0 +1,9 @@
+<mat-card class="game-info">
+    <div class="timer-container">
+        <mat-progress-spinner class="background" [value]="100"></mat-progress-spinner>
+        <mat-progress-spinner class="timer-spinner" [value]="timeLeftPercent$ | async"></mat-progress-spinner>
+
+        <p id="timer">{{ timeLeft$ | async | date: 'm:ss' }}</p>
+    </div>
+    <p id="letters-in-bag">Il reste {{ numberOfLettersRemaining }} lettres dans le sac</p>
+</mat-card>
