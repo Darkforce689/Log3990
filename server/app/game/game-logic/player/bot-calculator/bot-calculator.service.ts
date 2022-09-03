@@ -1,13 +1,11 @@
-import { Injectable } from '@angular/core';
-import { Tile } from '@app/game-logic/game/board/tile';
-import { PlaceLetterPointsEstimation, WordPointsEstimation } from '@app/game-logic/player/bot-calculator/calculation-estimation';
+import { Tile } from '@app/game/game-logic/board/tile';
+import { PlaceLetterPointsEstimation, WordPointsEstimation } from '@app/game/game-logic/point-calculator/calculation-estimation';
+import { Service } from 'typedi';
 
 const BONUS = 50;
 const MAX_LETTER_IN_RACK = 7;
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class BotCalculatorService {
     testPlaceLetterCalculation(numberOfLettersToPlace: number, wordList: Tile[][]): PlaceLetterPointsEstimation {
         const wordsPoints = this.calculatePointsForEachWord(wordList);

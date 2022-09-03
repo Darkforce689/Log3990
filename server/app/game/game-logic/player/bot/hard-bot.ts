@@ -1,31 +1,23 @@
-import { Action } from '@app/game-logic/actions/action';
-import { RACK_LETTER_COUNT, TIME_BUFFER_BEFORE_ACTION } from '@app/game-logic/constants';
-import { Direction } from '@app/game-logic/direction.enum';
-import { Letter } from '@app/game-logic/game/board/letter.interface';
-import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
-import { ValidWord } from '@app/game-logic/player/bot/valid-word';
-import { timer } from 'rxjs';
-import { Bot } from './bot';
+import { Action } from '@app/game/game-logic/actions/action';
+import { Direction } from '@app/game/game-logic/actions/direction.enum';
+import { Letter } from '@app/game/game-logic/board/letter.interface';
+import { RACK_LETTER_COUNT } from '@app/game/game-logic/constants';
+import { ServerGame } from '@app/game/game-logic/game/server-game';
+import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
+import { BotBrain } from '@app/game/game-logic/player/bot/bot';
+import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { Player } from '@app/game/game-logic/player/player';
 
-export class HardBot extends Bot {
+export class HardBotBrain extends BotBrain {
     bestWordList: ValidWord[] = [];
 
-    setActive() {
-        this.startTimerAction();
-        this.timesUp = false;
-        timer(TIME_BUFFER_BEFORE_ACTION).subscribe(() => {
-            const action = this.actionPicker();
-            this.chooseAction(action);
-        });
-    }
-
-    private actionPicker(): Action {
-        const validWordsList = this.bruteForceStart();
+    protected actionPicker(player: Player, game: ServerGame): Action {
+        const validWordsList = this.bruteForceStart(game.board.grid, player);
         if (validWordsList.length === 0) {
-            return this.exchangeAction();
+            return this.exchangeAction(player, game);
         } else {
             const pickedWord = this.bestWordPicker(validWordsList);
-            return this.playAction(pickedWord[0]);
+            return this.playAction(player, pickedWord[0]);
         }
     }
 
@@ -51,31 +43,31 @@ export class HardBot extends Bot {
         return this.bestWordList;
     }
 
-    private playAction(pickedWord: ValidWord): Action {
+    private playAction(player: Player, pickedWord: ValidWord): Action {
         const placeSetting: PlacementSetting = {
             x: pickedWord.startingTileX,
             y: pickedWord.startingTileY,
             direction: pickedWord.isVertical ? Direction.Vertical : Direction.Horizontal,
         };
-        return this.actionCreator.createPlaceLetter(this, pickedWord.word, placeSetting);
+        return this.actionCreator.createPlaceLetter(player, pickedWord.word, placeSetting);
     }
 
-    private exchangeAction(): Action {
-        if (this.gameInfo.numberOfLettersRemaining >= RACK_LETTER_COUNT) {
-            return this.actionCreator.createExchange(this, this.letterRack);
+    private exchangeAction(player: Player, game: ServerGame): Action {
+        if (game.letterBag.lettersLeft >= RACK_LETTER_COUNT) {
+            return this.actionCreator.createExchange(player, player.letterRack);
         }
-        if (this.gameInfo.numberOfLettersRemaining > 0) {
+        if (game.letterBag.lettersLeft > 0) {
             const lettersToExchange: Letter[] = [];
-            const indexStart = this.getRandomInt(this.letterRack.length - 1);
-            for (let i = 0; i < this.gameInfo.numberOfLettersRemaining; i++) {
-                lettersToExchange.push(this.letterRack[(indexStart + i) % this.letterRack.length]);
+            const indexStart = this.getRandomInt(player.letterRack.length - 1);
+            for (let i = 0; i < game.letterBag.lettersLeft; i++) {
+                lettersToExchange.push(player.letterRack[(indexStart + i) % player.letterRack.length]);
             }
-            return this.actionCreator.createExchange(this, lettersToExchange);
+            return this.actionCreator.createExchange(player, lettersToExchange);
         }
-        return this.passAction();
+        return this.passAction(player);
     }
 
-    private passAction(): Action {
-        return this.actionCreator.createPassTurn(this);
+    private passAction(player: Player): Action {
+        return this.actionCreator.createPassTurn(player);
     }
 }

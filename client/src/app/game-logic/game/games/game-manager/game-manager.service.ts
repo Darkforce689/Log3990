@@ -1,31 +1,23 @@
 import { Injectable } from '@angular/core';
 import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
-import { BOARD_DIMENSION } from '@app/game-logic/constants';
-import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Game } from '@app/game-logic/game/games/game';
-import { OfflineGameCreationParams, OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
+import { OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
 import { GameCreatorService } from '@app/game-logic/game/games/game-creator/game-creator.service';
-import { GameSettings } from '@app/game-logic/game/games/game-settings.interface';
 import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
 import { ForfeitedGameState } from '@app/game-logic/game/games/online-game/game-state';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { SpecialOfflineGame } from '@app/game-logic/game/games/special-games/special-offline-game';
-import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
-import { ObjectiveLoader } from '@app/game-logic/game/objectives/objective-loader/objective-loader';
-import { PlayerNames } from '@app/game-logic/game/objectives/objective-loader/players-names.interface';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { OnlineChatHandlerService } from '@app/game-logic/messages/online-chat-handler/online-chat-handler.service';
-import { BotCreatorService } from '@app/game-logic/player/bot/bot-creator.service';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
 import { LeaderboardService } from '@app/leaderboard/leaderboard.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
 @Injectable({
     providedIn: 'root',
@@ -48,90 +40,85 @@ export class GameManagerService {
     }
 
     constructor(
-        private botService: BotCreatorService,
         private messageService: MessagesService,
         private info: GameInfoService,
         private commandExecuter: CommandExecuterService,
         private gameSocketHandler: GameSocketHandlerService,
         private onlineChat: OnlineChatHandlerService,
         private leaderboardService: LeaderboardService,
-        private dictionaryService: DictionaryService,
-        private gameCreator: GameCreatorService,
-        private boardService: BoardService,
-        private objectiveLoader: ObjectiveLoader,
+        // private dictionaryService: DictionaryService,
+        private gameCreator: GameCreatorService, // private boardService: BoardService, // private objectiveLoader: ObjectiveLoader,
     ) {
         this.gameSocketHandler.disconnectedFromServer$.subscribe(() => {
             this.disconnectedFromServerSubject.next();
         });
     }
 
-    createGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
-        if (this.game && this.game instanceof OfflineGame) {
-            this.stopGame();
-        }
+    // createGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
+    //     if (this.game && this.game instanceof OfflineGame) {
+    //         this.stopGame();
+    //     }
 
-        const dictReady$ = this.dictionaryService.fetchDictionary(gameSettings.dictTitle);
+    //     const dictReady$ = this.dictionaryService.fetchDictionary(gameSettings.dictTitle);
 
-        const newGame = this.gameCreator.createOfflineGame(gameSettings);
-        this.game = newGame;
+    //     // const newGame = this.gameCreator.createOfflineGame(gameSettings);
+    //     this.game = newGame;
 
-        this.setupOfflineGame(gameSettings);
-        this.info.receiveGame(newGame);
-        this.updateLeaboardWhenGameEnds(newGame, GameMode.Classic);
-        return dictReady$;
-    }
+    //     // this.setupOfflineGame(gameSettings);
+    //     this.info.receiveGame(newGame);
+    //     this.updateLeaboardWhenGameEnds(newGame, GameMode.Classic);
+    //     return dictReady$;
+    // }
 
-    createSpecialGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
-        const newGame = this.gameCreator.createSpecialOfflineGame(gameSettings);
-        this.game = newGame;
+    // createSpecialGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
+    //     const newGame = this.gameCreator.createSpecialOfflineGame(gameSettings);
+    //     this.game = newGame;
 
-        const dictReady$ = this.dictionaryService.fetchDictionary(gameSettings.dictTitle);
+    //     const dictReady$ = this.dictionaryService.fetchDictionary(gameSettings.dictTitle);
 
-        this.setupOfflineGame(gameSettings);
-        this.info.receiveGame(this.game);
-        newGame.allocateObjectives();
+    //     this.setupOfflineGame(gameSettings);
+    //     this.info.receiveGame(this.game);
+    //     newGame.allocateObjectives();
 
-        this.updateLeaboardWhenGameEnds(this.game, GameMode.Special);
+    //     this.updateLeaboardWhenGameEnds(this.game, GameMode.Special);
 
-        return dictReady$;
-    }
+    //     return dictReady$;
+    // }
 
+    /* TODO GL3A22107-5 : Instead of migrating from OnlineGame -> OfflineGame,
+     * Game should stay online, opponent should be replaced with "Server Bot"
+     * Also, find more appropriate method name
+     */
     instanciateGameFromForfeitedState(forfeitedGameState: ForfeitedGameState) {
-        if (!this.game) {
-            return;
-        }
-        const userName = (this.game as OnlineGame).userName;
-        const wasSpecial = this.game instanceof SpecialOnlineGame;
-
-        this.createConvertedGame(forfeitedGameState, wasSpecial);
-        const players = this.createOfflinePlayers(userName, 'easy');
-        this.allocatePlayers(players);
-
-        if (!(this.game instanceof OfflineGame)) {
-            throw Error('The type of game is not offlineGame after converting the online game to offline');
-        }
-        this.loadBoard(forfeitedGameState);
-        this.game.letterBag.gameLetters = forfeitedGameState.letterBag;
-        this.game.consecutivePass = forfeitedGameState.consecutivePass;
-        const playerInfo = forfeitedGameState.players;
-
-        const userIndex = playerInfo.findIndex((player) => {
-            return player.name === userName;
-        });
-
-        const botIndex = (userIndex + 1) % 2;
-        const botName = this.game.players[botIndex].name;
-        this.loadPlayerInfo(userIndex, botIndex, forfeitedGameState);
-
-        this.info.receiveGame(this.game);
-
-        if (this.game instanceof SpecialOfflineGame && forfeitedGameState.objectives) {
-            const playerNames: PlayerNames = {
-                userName,
-                botName,
-            };
-            this.objectiveLoader.loadObjectivesIntoGame(this.game, forfeitedGameState.objectives, playerNames);
-        }
+        // if (!this.game) {
+        //     return;
+        // }
+        // const userName = (this.game as OnlineGame).userName;
+        // const wasSpecial = this.game instanceof SpecialOnlineGame;
+        // this.createConvertedGame(forfeitedGameState, wasSpecial);
+        // // const players = this.createOfflinePlayers(userName, 'easy');
+        // this.allocatePlayers(players);
+        // if (!(this.game instanceof OfflineGame)) {
+        //     throw Error('The type of game is not offlineGame after converting the online game to offline');
+        // }
+        // this.loadBoard(forfeitedGameState);
+        // this.game.letterBag.gameLetters = forfeitedGameState.letterBag;
+        // this.game.consecutivePass = forfeitedGameState.consecutivePass;
+        // const playerInfo = forfeitedGameState.players;
+        // const userIndex = playerInfo.findIndex((player) => {
+        //     return player.name === userName;
+        // });
+        // const botIndex = (userIndex + 1) % 2;
+        // const botName = this.game.players[botIndex].name;
+        // this.loadPlayerInfo(userIndex, botIndex, forfeitedGameState);
+        // this.info.receiveGame(this.game);
+        // if (this.game instanceof SpecialOfflineGame && forfeitedGameState.objectives) {
+        //     const playerNames: PlayerNames = {
+        //         userName,
+        //         botName,
+        //     };
+        //     this.objectiveLoader.loadObjectivesIntoGame(this.game, forfeitedGameState.objectives, playerNames);
+        // }
     }
 
     joinOnlineGame(userAuth: UserAuth, gameSettings: OnlineGameSettings) {
@@ -194,39 +181,39 @@ export class GameManagerService {
         (this.game as OfflineGame).resume(activePlayerIndex);
     }
 
-    private createConvertedGame(forfeitedGameState: ForfeitedGameState, isSpecial: boolean) {
-        const timePerTurn = (this.game as OnlineGame).timePerTurn;
-        this.stopGame();
-        const gameCreationParams: OfflineGameCreationParams = { timePerTurn, randomBonus: forfeitedGameState.randomBonus };
-        this.game = this.createLoadedGame(gameCreationParams, isSpecial);
-    }
+    // private createConvertedGame(forfeitedGameState: ForfeitedGameState, isSpecial: boolean) {
+    //     const timePerTurn = (this.game as OnlineGame).timePerTurn;
+    //     this.stopGame();
+    //     const gameCreationParams: OfflineGameCreationParams = { timePerTurn, randomBonus: forfeitedGameState.randomBonus };
+    //     this.game = this.createLoadedGame(gameCreationParams, isSpecial);
+    // }
 
-    private loadBoard(forfeitedGameState: ForfeitedGameState) {
-        (this.game as OfflineGame).board = this.boardService.board;
-        const nRows = BOARD_DIMENSION;
-        const nCols = BOARD_DIMENSION;
-        const newGrid = forfeitedGameState.grid;
+    // private loadBoard(forfeitedGameState: ForfeitedGameState) {
+    //     (this.game as OfflineGame).board = this.boardService.board;
+    //     const nRows = BOARD_DIMENSION;
+    //     const nCols = BOARD_DIMENSION;
+    //     const newGrid = forfeitedGameState.grid;
 
-        for (let i = 0; i < nRows; i++) {
-            for (let j = 0; j < nCols; j++) {
-                this.boardService.board.grid[i][j] = newGrid[i][j];
-            }
-        }
-    }
+    //     for (let i = 0; i < nRows; i++) {
+    //         for (let j = 0; j < nCols; j++) {
+    //             this.boardService.board.grid[i][j] = newGrid[i][j];
+    //         }
+    //     }
+    // }
 
-    private loadPlayerInfo(userIndex: number, botIndex: number, forfeitedGameState: ForfeitedGameState) {
-        if (this.game instanceof SpecialOfflineGame || this.game instanceof OfflineGame) {
-            const playerInfo = forfeitedGameState.players;
+    // private loadPlayerInfo(userIndex: number, botIndex: number, forfeitedGameState: ForfeitedGameState) {
+    //     if (this.game instanceof SpecialOfflineGame || this.game instanceof OfflineGame) {
+    //         const playerInfo = forfeitedGameState.players;
 
-            for (let i = 0; i < playerInfo.length; i++) {
-                for (let j = 0; j < playerInfo[i].letterRack.length; j++) {
-                    this.game.players[i].letterRack[j] = playerInfo[i].letterRack[j];
-                }
-            }
-            this.game.players[0].points = playerInfo[userIndex].points;
-            this.game.players[1].points = playerInfo[botIndex].points;
-        }
-    }
+    //         for (let i = 0; i < playerInfo.length; i++) {
+    //             for (let j = 0; j < playerInfo[i].letterRack.length; j++) {
+    //                 this.game.players[i].letterRack[j] = playerInfo[i].letterRack[j];
+    //             }
+    //         }
+    //         this.game.players[0].points = playerInfo[userIndex].points;
+    //         this.game.players[1].points = playerInfo[botIndex].points;
+    //     }
+    // }
 
     private updateLeaboardWhenGameEnds(game: Game, gameMode: GameMode) {
         game.isEndOfGame$.pipe(first()).subscribe(() => {
@@ -237,12 +224,12 @@ export class GameManagerService {
         });
     }
 
-    private setupOfflineGame(gameSettings: GameSettings) {
-        const playerName = gameSettings.playerName;
-        const botDifficulty = gameSettings.botDifficulty;
-        const players = this.createOfflinePlayers(playerName, botDifficulty);
-        this.allocatePlayers(players);
-    }
+    // private setupOfflineGame(gameSettings: GameSettings) {
+    //     const playerName = gameSettings.playerName;
+    //     const botDifficulty = gameSettings.botDifficulty;
+    //     const players = this.createOfflinePlayers(playerName, botDifficulty);
+    //     this.allocatePlayers(players);
+    // }
 
     private resetServices() {
         this.messageService.clearLog();
@@ -261,12 +248,12 @@ export class GameManagerService {
         });
     }
 
-    private createOfflinePlayers(playerName: string, botDifficulty: string): Player[] {
-        const user = new User(playerName);
-        const bot = this.botService.createBot(playerName, botDifficulty);
-        this.info.receiveUser(user);
-        return [user, bot];
-    }
+    // private createOfflinePlayers(playerName: string, botDifficulty: string): Player[] {
+    //     const user = new User(playerName);
+    //     const bot = this.botService.createBot(playerName, botDifficulty);
+    //     this.info.receiveUser(user);
+    //     return [user, bot];
+    // }
 
     private createOnlinePlayers(userName: string, opponentName: string): Player[] {
         const user = new User(userName);
@@ -289,11 +276,11 @@ export class GameManagerService {
         return this.gameCreator.createSpecialOnlineGame(gameCreationParams);
     }
 
-    private createLoadedGame(gameCreationParams: OfflineGameCreationParams, isSpecial: boolean) {
-        const isLoaded = true;
-        if (isSpecial) {
-            return this.gameCreator.createSpecialOfflineGame(gameCreationParams, isLoaded);
-        }
-        return this.gameCreator.createOfflineGame(gameCreationParams, isLoaded);
-    }
+    // private createLoadedGame(gameCreationParams: OfflineGameCreationParams, isSpecial: boolean) {
+    //     const isLoaded = true;
+    //     if (isSpecial) {
+    //         return this.gameCreator.createSpecialOfflineGame(gameCreationParams, isLoaded);
+    //     }
+    //     return this.gameCreator.createOfflineGame(gameCreationParams, isLoaded);
+    // }
 }

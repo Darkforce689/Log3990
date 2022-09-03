@@ -1,29 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { Action } from '@app/game-logic/actions/action';
-import { ActionCreatorService } from '@app/game-logic/actions/action-creator/action-creator.service';
-import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
-import { PassTurn } from '@app/game-logic/actions/pass-turn';
-import { PlaceLetter } from '@app/game-logic/actions/place-letter';
-import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
-import { DEFAULT_TIME_PER_TURN, TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION } from '@app/game-logic/constants';
-import { BoardService } from '@app/game-logic/game/board/board.service';
-import { Letter } from '@app/game-logic/game/board/letter.interface';
-import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
-import { TimerService } from '@app/game-logic/game/timer/timer.service';
-import { MessagesService } from '@app/game-logic/messages/messages.service';
-import { BotCalculatorService } from '@app/game-logic/player/bot-calculator/bot-calculator.service';
-import { BotMessagesService } from '@app/game-logic/player/bot-message/bot-messages.service';
-import { ValidWord } from '@app/game-logic/player/bot/valid-word';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
-import { BotHttpService, BotType } from '@app/services/bot-http.service';
+
+import { BotType } from '@app/database/bot-info/bot-info';
+import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
+import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
+import { PlaceLetter } from '@app/game/game-logic/actions/place-letter';
+import { Letter } from '@app/game/game-logic/board/letter.interface';
+import { DEFAULT_TIME_PER_TURN, TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION } from '@app/game/game-logic/constants';
+import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
+import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
+import { EasyBot } from '@app/game/game-logic/player/bot/easy-bot';
+import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
+import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
+import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
+import { expect } from 'chai';
 import { of } from 'rxjs';
-import { EasyBot } from './easy-bot';
+import { Action } from 'rxjs/internal/scheduler/Action';
 
 describe('EasyBot', () => {
     let easyBot: EasyBot;

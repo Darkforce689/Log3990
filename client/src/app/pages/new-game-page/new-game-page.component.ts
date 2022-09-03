@@ -47,6 +47,7 @@ export class NewGamePageComponent {
         this.ripple.launch(rippleConfig);
     }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     openSoloGameForm() {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.autoFocus = true;
@@ -168,6 +169,7 @@ export class NewGamePageComponent {
         this.router.navigate(['/game']);
     }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     private startSoloGame() {
         this.gameReady$$?.unsubscribe();
         const gameReady$ = this.createGame(this.gameSettings);
@@ -185,11 +187,13 @@ export class NewGamePageComponent {
         }
     }
 
+    // TODO GL3A22107-5 : Create a new server game + remove old implementation
     private createGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
-        if (this.isSpecialGame) {
-            return this.gameManager.createSpecialGame(gameSettings);
-        }
-        return this.gameManager.createGame(gameSettings);
+        // if (this.isSpecialGame) {
+        //     return this.gameManager.createSpecialGame(gameSettings);
+        // }
+        // return this.gameManager.createGame(gameSettings);
+        return new BehaviorSubject<boolean>(false);
     }
 
     get isSpecialGame() {

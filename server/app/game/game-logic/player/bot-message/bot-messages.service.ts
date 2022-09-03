@@ -1,22 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Action } from '@app/game-logic/actions/action';
-import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
-import { PassTurn } from '@app/game-logic/actions/pass-turn';
-import { PlaceLetter } from '@app/game-logic/actions/place-letter';
-import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
-import { CommandType } from '@app/game-logic/commands/command.interface';
-import { BINGO_MESSAGE, DEBUG_ALTERNATIVE_WORDS_COUNT, END_LINE } from '@app/game-logic/constants';
-import { Letter } from '@app/game-logic/game/board/letter.interface';
-import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
-import { MessagesService } from '@app/game-logic/messages/messages.service';
-import { Bot } from '@app/game-logic/player/bot/bot';
-import { HardBot } from '@app/game-logic/player/bot/hard-bot';
-import { ValidWord } from '@app/game-logic/player/bot/valid-word';
-import { placementSettingsToString } from '@app/game-logic/utils';
+import { Action } from '@app/game/game-logic/actions/action';
+import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
+import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
+import { PlaceLetter } from '@app/game/game-logic/actions/place-letter';
+import { Letter } from '@app/game/game-logic/board/letter.interface';
+import { BINGO_MESSAGE, DEBUG_ALTERNATIVE_WORDS_COUNT, END_LINE } from '@app/game/game-logic/constants';
+import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
+import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { placementSettingsToString } from '@app/game/game-logic/utils';
+import { Service } from 'typedi';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Service()
 export class BotMessagesService {
     constructor(private messagesService: MessagesService, private commandExecuter: CommandExecuterService) {}
 

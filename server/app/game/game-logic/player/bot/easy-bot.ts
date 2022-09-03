@@ -1,13 +1,14 @@
-import { Action } from '@app/game-logic/actions/action';
-import { RACK_LETTER_COUNT, TIME_BUFFER_BEFORE_ACTION } from '@app/game-logic/constants';
-import { Direction } from '@app/game-logic/direction.enum';
-import { LetterBag } from '@app/game-logic/game/board/letter-bag';
-import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
-import { ValidWord } from '@app/game-logic/player/bot/valid-word';
-import { timer } from 'rxjs';
-import { Bot } from './bot';
+import { Action } from '@app/game/game-logic/actions/action';
+import { Direction } from '@app/game/game-logic/actions/direction.enum';
+import { LetterBag } from '@app/game/game-logic/board/letter-bag';
+import { RACK_LETTER_COUNT } from '@app/game/game-logic/constants';
+import { ServerGame } from '@app/game/game-logic/game/server-game';
+import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
+import { BotBrain } from '@app/game/game-logic/player/bot/bot';
+import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { Player } from '@app/game/game-logic/player/player';
 
-export class EasyBot extends Bot {
+export class EasyBotBrain extends BotBrain {
     static actionProbability = { play: 0.8, exchange: 0.1, pass: 0.1 };
     static placementProbability = { sixOrLess: 0.4, sevenToTwelve: 0.3, other: 0.3 };
     static botPointSetting = {
@@ -25,30 +26,21 @@ export class EasyBot extends Bot {
         },
     };
 
-    setActive() {
-        this.startTimerAction();
-        this.timesUp = false;
-        timer(TIME_BUFFER_BEFORE_ACTION).subscribe(() => {
-            const action = this.randomActionPicker();
-            this.chooseAction(action);
-        });
-    }
-
-    private randomActionPicker(): Action {
+    protected actionPicker(player: Player, game: ServerGame): Action {
         const randomValue = Math.random();
-        if (randomValue <= EasyBot.actionProbability.play) {
-            let action = this.playAction();
+        if (randomValue <= EasyBotBrain.actionProbability.play) {
+            let action = this.playAction(player, game);
             if (!action) {
-                action = this.passAction();
+                action = this.passAction(player);
             }
             return action;
         } else if (
-            randomValue <= EasyBot.actionProbability.play + EasyBot.actionProbability.exchange &&
-            this.gameInfo.numberOfLettersRemaining > RACK_LETTER_COUNT
+            randomValue <= EasyBotBrain.actionProbability.play + EasyBotBrain.actionProbability.exchange &&
+            game.letterBag.lettersLeft > RACK_LETTER_COUNT
         ) {
-            return this.exchangeAction();
+            return this.exchangeAction(player);
         } else {
-            return this.passAction();
+            return this.passAction(player);
         }
     }
 
@@ -59,25 +51,25 @@ export class EasyBot extends Bot {
         const wordP7to12: ValidWord[] = [];
         const wordP13To18: ValidWord[] = [];
         validWordList.forEach((word) => {
-            if (word.value.totalPoints <= EasyBot.botPointSetting.sixOrLess.value) {
+            if (word.value.totalPoints <= EasyBotBrain.botPointSetting.sixOrLess.value) {
                 wordP6.push(word);
             } else if (
-                word.value.totalPoints > EasyBot.botPointSetting.sixOrLess.value &&
-                word.value.totalPoints <= EasyBot.botPointSetting.sevenToTwelve.value
+                word.value.totalPoints > EasyBotBrain.botPointSetting.sixOrLess.value &&
+                word.value.totalPoints <= EasyBotBrain.botPointSetting.sevenToTwelve.value
             ) {
                 wordP7to12.push(word);
             } else if (
-                word.value.totalPoints > EasyBot.botPointSetting.sevenToTwelve.value &&
-                word.value.totalPoints <= EasyBot.botPointSetting.other.value
+                word.value.totalPoints > EasyBotBrain.botPointSetting.sevenToTwelve.value &&
+                word.value.totalPoints <= EasyBotBrain.botPointSetting.other.value
             ) {
                 wordP13To18.push(word);
             }
         });
         let wordPicked: ValidWord;
-        if (randomValue <= EasyBot.botPointSetting.sixOrLess.prob) {
+        if (randomValue <= EasyBotBrain.botPointSetting.sixOrLess.prob) {
             wordPicked = this.wordPicker(wordP6);
             return wordPicked;
-        } else if (randomValue <= EasyBot.botPointSetting.sevenToTwelve.prob + EasyBot.botPointSetting.other.prob) {
+        } else if (randomValue <= EasyBotBrain.botPointSetting.sevenToTwelve.prob + EasyBotBrain.botPointSetting.other.prob) {
             wordPicked = this.wordPicker(wordP7to12);
             return wordPicked;
         } else {
@@ -86,8 +78,8 @@ export class EasyBot extends Bot {
         }
     }
 
-    private playAction(): Action {
-        const validWordsList = this.bruteForceStart();
+    private playAction(player: Player, game: ServerGame): Action {
+        const validWordsList = this.bruteForceStart(game.board.grid, player);
         const pickedWord: ValidWord = this.randomWordPicker(validWordsList);
         if (pickedWord) {
             const placeSetting: PlacementSetting = {
@@ -95,12 +87,12 @@ export class EasyBot extends Bot {
                 y: pickedWord.startingTileY,
                 direction: pickedWord.isVertical ? Direction.Vertical : Direction.Horizontal,
             };
-            return this.actionCreator.createPlaceLetter(this, pickedWord.word, placeSetting);
+            return this.actionCreator.createPlaceLetter(player, pickedWord.word, placeSetting);
         }
-        return this.passAction();
+        return this.passAction(player);
     }
 
-    private exchangeAction(): Action {
+    private exchangeAction(player: Player): Action {
         const numberOfLettersToExchange = this.getRandomInt(LetterBag.playerLetterCount, 1);
         let lettersToExchangeIndex;
         const lettersToExchange = [];
@@ -113,13 +105,13 @@ export class EasyBot extends Bot {
             randomInt = this.getRandomInt(indexArray.length);
             lettersToExchangeIndex = indexArray[randomInt];
             indexArray.splice(randomInt, 1);
-            lettersToExchange.push(this.letterRack[lettersToExchangeIndex]);
+            lettersToExchange.push(player.letterRack[lettersToExchangeIndex]);
         }
-        return this.actionCreator.createExchange(this, lettersToExchange);
+        return this.actionCreator.createExchange(player, lettersToExchange);
     }
 
-    private passAction(): Action {
-        return this.actionCreator.createPassTurn(this);
+    private passAction(player: Player): Action {
+        return this.actionCreator.createPassTurn(player);
     }
 
     private wordPicker(list: ValidWord[]): ValidWord {

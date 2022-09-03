@@ -4,10 +4,10 @@ import { BotMessagesService } from '@app/game-logic/player/bot-message/bot-messa
 import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
 import { BotHttpService } from '@app/services/bot-http.service';
 import { of } from 'rxjs';
-import { BotCreatorService } from './bot-creator.service';
+import { BotManager } from './bot-creator.service';
 
 describe('BotCreatorService', () => {
-    let botCreator: BotCreatorService;
+    let botCreator: BotManager;
     const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     const mockBotMessageService = jasmine.createSpyObj('BotMessagesService', ['sendAction']);
     const mockCommandExecuter = jasmine.createSpyObj('CommandExecuterService', ['resetDebug']);
@@ -23,7 +23,7 @@ describe('BotCreatorService', () => {
                 { provide: BotHttpService, useValue: mockBotHttpService },
             ],
         });
-        botCreator = TestBed.inject(BotCreatorService);
+        botCreator = TestBed.inject(BotManager);
     });
 
     it('should be created', () => {

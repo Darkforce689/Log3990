@@ -1,5 +1,5 @@
-import { PlaceLetterPointsEstimation } from '@app/game-logic/player/bot-calculator/calculation-estimation';
-import { Word } from '@app/game-logic/validator/word-search/word';
+import { PlaceLetterPointsEstimation } from '@app/game/game-logic/point-calculator/calculation-estimation';
+import { Word } from '@app/game/game-logic/validator/word-search/word';
 
 export const VERTICAL = true;
 export const HORIZONTAL = false;

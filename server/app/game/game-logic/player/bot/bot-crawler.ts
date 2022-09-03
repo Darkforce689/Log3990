@@ -1,13 +1,16 @@
-import { JOKER_CHAR, NOT_FOUND } from '@app/game-logic/constants';
-import { Direction } from '@app/game-logic/direction.enum';
-import { Tile } from '@app/game-logic/game/board/tile';
-import { Vec2 } from '@app/game-logic/interfaces/vec2';
-import { BotCalculatorService } from '@app/game-logic/player/bot-calculator/bot-calculator.service';
-import { Bot } from '@app/game-logic/player/bot/bot';
-import { ValidWord, VERTICAL } from '@app/game-logic/player/bot/valid-word';
-import { PositionSettings } from '@app/game-logic/player/position-settings';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
+import { Vec2 } from '@app/classes/vec2';
+import { Direction } from '@app/game/game-logic/actions/direction.enum';
+import { Tile } from '@app/game/game-logic/board/tile';
+import { JOKER_CHAR } from '@app/game/game-logic/constants';
+import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
+import { BotBrain } from '@app/game/game-logic/player/bot/bot';
+import { ValidWord, VERTICAL } from '@app/game/game-logic/player/bot/valid-word';
+import { Player } from '@app/game/game-logic/player/player';
+import { PositionSettings } from '@app/game/game-logic/player/position-settings';
+import { getRandomInt } from '@app/game/game-logic/utils';
+import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
+import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
+import { NOT_FOUND } from 'http-status-codes';
 
 const EMPTY = 0;
 const END_OF_BOARD = 14;
@@ -16,24 +19,24 @@ const MIDDLE_OF_BOARD = 7;
 
 export class BotCrawler {
     constructor(
-        private bot: Bot,
+        private bot: BotBrain,
         private dictionaryService: DictionaryService,
         protected botCalculatorService: BotCalculatorService,
         protected wordValidator: WordSearcher,
     ) {}
 
-    botFirstTurn() {
-        for (let rackIndex = 0; rackIndex < this.bot.letterRack.length; rackIndex++) {
+    botFirstTurn(player: Player) {
+        for (let rackIndex = 0; rackIndex < player.letterRack.length; rackIndex++) {
             if (this.bot.timesUp) {
                 break;
             }
-            const startingLetter = this.bot.letterRack[rackIndex].char.toLowerCase();
+            const startingLetter = player.letterRack[rackIndex].char.toLowerCase();
             if (startingLetter !== JOKER_CHAR) {
                 const placedLetter: ValidWord[] = [];
                 const initialWord = new ValidWord(startingLetter);
-                const tmpLetter = this.bot.letterRack.splice(rackIndex, 1);
+                const tmpLetter = player.letterRack.splice(rackIndex, 1);
 
-                if (this.bot.getRandomInt(1)) {
+                if (getRandomInt(1)) {
                     initialWord.isVertical = VERTICAL;
                 }
 
@@ -46,7 +49,7 @@ export class BotCrawler {
                 possiblyValidWords.forEach((word) => {
                     word.numberOfLettersPlaced++;
                 });
-                this.bot.letterRack.splice(rackIndex, 0, tmpLetter[0]);
+                player.letterRack.splice(rackIndex, 0, tmpLetter[0]);
 
                 this.possibleWordsValidator(possiblyValidWords);
             }
