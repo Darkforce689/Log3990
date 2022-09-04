@@ -1,6 +1,6 @@
 import { ForfeitedGameState, GameState, GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { TimerControls } from '@app/game/game-logic/timer/timer-controls.enum';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerGameControl, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineAction } from '@app/game/online-action.interface';
 import * as http from 'http';
@@ -25,6 +25,12 @@ export class GameSocketsHandler {
             const gameToken = timerGameControl.gameToken;
             const timerControl = timerGameControl.control;
             this.emitTimerControl(timerControl, gameToken);
+        });
+
+        this.gameManager.timeUpdate$.subscribe((timerTimeUpdate: TimerTimeLeft) => {
+            const gameToken = timerTimeUpdate.gameToken;
+            const timeLeft = timerTimeUpdate.timeLeft;
+            this.emitTimeUpdate(timeLeft, gameToken);
         });
 
         this.gameManager.forfeitedGameState$.subscribe((forfeitedGameState: GameStateToken) => {
@@ -64,6 +70,10 @@ export class GameSocketsHandler {
 
     private emitTimerControl(timerControl: TimerControls, gameToken: string) {
         this.sio.to(gameToken).emit('timerControl', timerControl);
+    }
+
+    private emitTimeUpdate(timeLeft: number, gameToken: string) {
+        this.sio.to(gameToken).emit('timeUpdate', timeLeft);
     }
 
     private emitGameState(gameState: GameState, gameToken: string) {

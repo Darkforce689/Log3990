@@ -36,6 +36,11 @@ export class GameSocketHandlerService {
         return this.timerControlsSubject;
     }
 
+    private timerTimeSubject = new Subject<number>();
+    get timerTimeLeft$(): Observable<number> {
+        return this.timerTimeSubject;
+    }
+
     private disconnectedFromServerSubject = new Subject<void>();
     get disconnectedFromServer$(): Observable<void> {
         return this.disconnectedFromServerSubject;
@@ -53,6 +58,10 @@ export class GameSocketHandlerService {
 
         this.socket.on('timerControl', (timerControl: TimerControls) => {
             this.receiveTimerControl(timerControl);
+        });
+
+        this.socket.on('timeUpdate', (timeLeft: number) => {
+            this.receiveTimerUpdate(timeLeft);
         });
 
         this.socket.on('connect_error', () => {
@@ -97,6 +106,10 @@ export class GameSocketHandlerService {
 
     private receiveTimerControl(timerControl: TimerControls) {
         this.timerControlsSubject.next(timerControl);
+    }
+
+    private receiveTimerUpdate(timeLeft: number) {
+        this.timerTimeSubject.next(timeLeft);
     }
 
     private receiveForfeitedGameState(forfeitedGameState: ForfeitedGameState) {
