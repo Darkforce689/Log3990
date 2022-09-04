@@ -1,7 +1,7 @@
 export const MAX_MESSAGE_LENGTH = 512;
 export const NEW_GAME_TIMEOUT = 5000;
 const DB_USER = 'server';
-const DB_PSW = 'ACyZhkpcAUT812QB';
+const DB_PSW = '3y6w6jmvKgBR0vJG';
 const CLUSTER_URL = 'scrabblecluster.mqtnr.mongodb.net';
 export const DATABASE_URL = `mongodb+srv://${DB_USER}:${DB_PSW}@${CLUSTER_URL}/<dbname>?retryWrites=true&w=majority`;
 export const DATABASE_NAME = 'scrabble';

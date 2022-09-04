@@ -56,7 +56,9 @@ export class Server {
         this.server.on('listening', () => this.onListening());
         try {
             await this.databaseService.start();
-        } catch {
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error(e);
             process.exit(1);
         }
     }
