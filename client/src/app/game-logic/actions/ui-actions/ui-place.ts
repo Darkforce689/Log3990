@@ -8,9 +8,7 @@ import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { convertToProperLetter, isStringALowerCaseLetter, isStringAnUpperCaseLetter } from '@app/game-logic/utils';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 
 export class UIPlace implements UIAction {
     concernedIndexes = new Set<number>();
@@ -21,8 +19,8 @@ export class UIPlace implements UIAction {
 
     constructor(
         private info: GameInfoService,
-        private pointCalculator: PointCalculatorService,
-        private wordSearcher: WordSearcher,
+        // private pointCalculator: PointCalculatorService,
+        // private wordSearcher: WordSearcher,
         private boardService: BoardService,
     ) {}
 
@@ -79,8 +77,8 @@ export class UIPlace implements UIAction {
             this.info.user,
             wordPlacement.word,
             { direction: this.direction, x: wordPlacement.x, y: wordPlacement.y },
-            this.pointCalculator,
-            this.wordSearcher,
+            // this.pointCalculator,
+            // this.wordSearcher,
         );
         return createdAction;
     }

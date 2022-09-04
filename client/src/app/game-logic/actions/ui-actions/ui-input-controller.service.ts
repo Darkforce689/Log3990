@@ -11,8 +11,6 @@ import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 
 @Injectable({
     providedIn: 'root',
@@ -29,8 +27,8 @@ export class UIInputControllerService {
     constructor(
         private avs: ActionValidatorService,
         private info: GameInfoService,
-        private pointCalculator: PointCalculatorService,
-        private wordSearcher: WordSearcher,
+        // private pointCalculator: PointCalculatorService,
+        // private wordSearcher: WordSearcher,
         private boardService: BoardService,
     ) {
         this.info.endTurn$?.subscribe(() => {
@@ -90,7 +88,7 @@ export class UIInputControllerService {
             case InputComponent.Board:
                 if (!(this.activeAction instanceof UIPlace)) {
                     this.discardAction();
-                    this.activeAction = new UIPlace(this.info, this.pointCalculator, this.wordSearcher, this.boardService);
+                    this.activeAction = new UIPlace(this.info, /* this.pointCalculator, this.wordSearcher, */ this.boardService);
                     return;
                 }
                 break;

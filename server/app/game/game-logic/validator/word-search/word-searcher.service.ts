@@ -126,6 +126,10 @@ export class WordSearcher {
         return char !== EMPTY_CHAR;
     }
 
+    private getAdjacentWordsDirection(originalWordDirection: Direction): Direction {
+        return originalWordDirection === Direction.Horizontal ? Direction.Vertical : Direction.Horizontal;
+    }
+
     private findCoordOfLettersToPlace(action: PlaceLetter, grid: Tile[][]): Vec2[] {
         const listOfCoord: Vec2[] = [];
         const originalDirection = action.placement.direction;
@@ -172,9 +176,5 @@ export class WordSearcher {
         const newTile = new Tile(letterMultiplicator, wordMultiplicator);
         newTile.letterObject = isCharUpperCase(char) ? this.letterCreator.createBlankLetter(char) : this.letterCreator.createLetter(char);
         return newTile;
-    }
-
-    private getAdjacentWordsDirection(originalWordDirection: Direction): Direction {
-        return originalWordDirection === Direction.Horizontal ? Direction.Vertical : Direction.Horizontal;
     }
 }
