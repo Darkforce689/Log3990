@@ -79,7 +79,7 @@ export class EasyBotBrain extends BotBrain {
     }
 
     private playAction(player: Player, game: ServerGame): Action {
-        const validWordsList = this.bruteForceStart(game.board.grid, player);
+        const validWordsList = this.bruteForceStart(game, player);
         const pickedWord: ValidWord = this.randomWordPicker(validWordsList);
         if (pickedWord) {
             const placeSetting: PlacementSetting = {

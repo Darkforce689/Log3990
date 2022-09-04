@@ -12,7 +12,7 @@ export class HardBotBrain extends BotBrain {
     bestWordList: ValidWord[] = [];
 
     protected actionPicker(player: Player, game: ServerGame): Action {
-        const validWordsList = this.bruteForceStart(game.board.grid, player);
+        const validWordsList = this.bruteForceStart(game, player);
         if (validWordsList.length === 0) {
             return this.exchangeAction(player, game);
         } else {

@@ -77,7 +77,8 @@ export abstract class BotBrain {
         });
     }
 
-    protected bruteForceStart(grid: Tile[][], player: Player): ValidWord[] {
+    protected bruteForceStart(game: ServerGame, player: Player): ValidWord[] {
+        const grid: Tile[][] = game.board.grid;
         const startingX = 0;
         const startingY = 0;
         const startingPosition: Vec2 = { x: startingX, y: startingY };
@@ -86,10 +87,10 @@ export abstract class BotBrain {
         const letterInMiddleBox = grid[MIDDLE_OF_BOARD][MIDDLE_OF_BOARD].letterObject.char;
 
         if (letterInMiddleBox === ' ') {
-            this.botCrawler.botFirstTurn(player);
+            this.botCrawler.botFirstTurn(player, game);
             return this.validWordList;
         }
-        this.botCrawler.boardCrawler(startingPosition, grid, startingDirection);
+        this.botCrawler.boardCrawler(startingPosition, game, player, startingDirection);
         return this.validWordList;
     }
 

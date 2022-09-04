@@ -24,7 +24,7 @@ describe('wordSearcherService', () => {
             placement,
             word: 'on',
         };
-        const answer = wordSeacherService.listOfValidWord(mockAction as PlaceLetter, grid, 'gameToken');
+        const answer = wordSeacherService.getListOfValidWords(mockAction as PlaceLetter, grid, 'gameToken');
         expect(answer.length).to.be.greaterThan(0);
     });
 
@@ -34,7 +34,7 @@ describe('wordSearcherService', () => {
             placement,
             word: 'On',
         };
-        const answer = wordSeacherService.listOfValidWord(mockAction as PlaceLetter, grid, 'gameToken');
+        const answer = wordSeacherService.getListOfValidWords(mockAction as PlaceLetter, grid, 'gameToken');
         expect(answer.length).to.be.greaterThan(0);
     });
 
@@ -44,7 +44,7 @@ describe('wordSearcherService', () => {
             placement,
             word: 'bon',
         };
-        const answer = wordSeacherService.listOfValidWord(mockAction as PlaceLetter, grid, 'gameToken');
+        const answer = wordSeacherService.getListOfValidWords(mockAction as PlaceLetter, grid, 'gameToken');
         expect(answer.length).to.be.greaterThan(0);
     });
 
@@ -54,7 +54,7 @@ describe('wordSearcherService', () => {
             placement,
             word: 'bon',
         };
-        const answer = wordSeacherService.listOfValidWord(mockAction as PlaceLetter, grid, 'gameToken');
+        const answer = wordSeacherService.getListOfValidWords(mockAction as PlaceLetter, grid, 'gameToken');
         expect(answer.length).to.be.greaterThan(0);
     });
 
@@ -64,7 +64,7 @@ describe('wordSearcherService', () => {
             placement,
             word: 'bon',
         };
-        const answer = wordSeacherService.listOfValidWord(mockAction as PlaceLetter, grid, 'gameToken');
+        const answer = wordSeacherService.getListOfValidWords(mockAction as PlaceLetter, grid, 'gameToken');
         expect(answer.length).to.equal(0);
     });
 
@@ -74,7 +74,7 @@ describe('wordSearcherService', () => {
             placement,
             word: 'tesfg',
         };
-        const answer = wordSeacherService.listOfValidWord(mockAction as PlaceLetter, grid, 'gameToken');
+        const answer = wordSeacherService.getListOfValidWords(mockAction as PlaceLetter, grid, 'gameToken');
         expect(answer.length).to.equal(0);
     });
 });

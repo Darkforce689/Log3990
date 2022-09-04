@@ -1,14 +1,13 @@
-import { ARRAY_BEGIN, FIRST_LETTER_INDEX, NOT_FOUND, RACK_LETTER_COUNT, RESET, START_OF_STRING } from '@app/game-logic/constants';
-import { Letter } from '@app/game-logic/game/board/letter.interface';
-import { ValidWord } from '@app/game-logic/player/bot/valid-word';
+import { Letter } from '@app/game/game-logic/board/letter.interface';
+import { ARRAY_BEGIN, FIRST_LETTER_INDEX, NOT_FOUND, RACK_LETTER_COUNT, RESET, START_OF_STRING } from '@app/game/game-logic/constants';
+import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
 import {
     DictInitialSearchSettings,
     DictRegexSettings,
     DictSubSearchSettings,
     DictWholeSearchSettings
-} from '@app/game-logic/validator/dict-settings';
+} from '@app/game/game-logic/validator/dictionary/dict-settings';
 
-// TODO GL3A22107-3 : whole class behavior methods -> to be removed / converted to be sent to server
 export class DictionaryHelper {
     countNumberOfLetters(partWord: ValidWord, letterCountOfPartWord: number): number {
         for (const letter of partWord.word) {
