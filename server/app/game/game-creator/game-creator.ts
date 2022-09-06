@@ -4,6 +4,7 @@ import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -28,11 +29,8 @@ export class GameCreator {
     createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): ServerGame {
         const newServerGame = this.createNewGame(onlineGameSettings, gameToken);
         const firstPlayerName = onlineGameSettings.playerName;
-        let secondPlayerName = onlineGameSettings.opponentName;
-        if (!secondPlayerName) {
-            secondPlayerName = GameCreator.defaultOpponentName;
-        }
-        const players = this.createPlayers(firstPlayerName, secondPlayerName);
+        // const opponentNames = onlineGameSettings.opponentNames ?? [GameCreator.defaultOpponentName];
+        const players = this.createPlayers(2, [firstPlayerName]);
         newServerGame.players = players;
         return newServerGame;
     }
@@ -74,9 +72,21 @@ export class GameCreator {
         );
     }
 
-    private createPlayers(firstPlayerName: string, secondPlayerName: string): Player[] {
-        const playerOne = new Player(firstPlayerName);
-        const playerTwo = new Player(secondPlayerName);
-        return [playerOne, playerTwo];
+    /**
+     * Creates N player instances, of which M-N are bots
+     *
+     * @param numberOfPlayers total number of players (N)
+     * @param playerNames real players names (array of length M)
+     * @returns created players, including bots
+     */
+    private createPlayers(numberOfPlayers: number, playerNames: string[]): Player[] {
+        const players = playerNames.map((name) => new Player(name));
+        const numberOfBots = numberOfPlayers - players.length;
+        for (let i = 0; i < numberOfBots; i++) {
+            const newBot = new BotPlayer(playerNames);
+            players.push(newBot);
+            playerNames.push(newBot.name);
+        }
+        return players;
     }
 }

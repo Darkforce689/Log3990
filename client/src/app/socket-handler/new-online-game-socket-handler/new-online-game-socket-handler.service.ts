@@ -20,7 +20,7 @@ export class NewOnlineGameSocketHandler {
         this.startGame$.next(undefined);
     }
 
-    createGameMulti(gameSettings: OnlineGameSettingsUI) {
+    createGame(gameSettings: OnlineGameSettingsUI) {
         this.connect();
         if (!isGameSettings(gameSettings)) {
             throw Error('Games Settings are not valid. Cannot create a game.');

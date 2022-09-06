@@ -1,3 +1,4 @@
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
@@ -24,6 +25,13 @@ export class NewGameManagerService {
         return gameId;
     }
 
+    createSoloGame(gameSetting: OnlineGameSettingsUI): string {
+        const gameId = this.createPendingGame(gameSetting);
+        const opponent = new BotPlayer([gameSetting.playerName]);
+        /* const gameToken = */ this.joinPendingGame(gameId, opponent.name);
+        return gameId;
+    }
+
     joinPendingGame(id: string, name: string): string | undefined {
         if (!this.isPendingGame(id)) {
             return;
@@ -32,10 +40,10 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        if (gameSettings.opponentName) {
+        if (gameSettings.opponentNames) {
             return;
         }
-        gameSettings.opponentName = name;
+        gameSettings.opponentNames = [name];
         const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken(onlineGameSettingsUI);
         this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));

@@ -4,7 +4,6 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { Router } from '@angular/router';
 import { LoadingGameComponent } from '@app/components/modals/loading-game/loading-game.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
-import { NewSoloGameFormComponent } from '@app/components/modals/new-solo-game-form/new-solo-game-form.component';
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { WaitingForPlayerComponent } from '@app/components/modals/waiting-for-player/waiting-for-player.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
@@ -49,22 +48,14 @@ export class NewGamePageComponent {
 
     // TODO GL3A22107-5 : Should be changed/removed
     openSoloGameForm() {
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.autoFocus = true;
-        dialogConfig.disableClose = true;
-        dialogConfig.minWidth = 60;
-
-        const dialogRef = this.dialog.open(NewSoloGameFormComponent, dialogConfig);
-        dialogRef.afterClosed().subscribe((formSolo) => {
-            if (!formSolo) {
-                return;
-            }
-            this.gameSettings = formSolo;
-            this.startSoloGame();
-        });
+        this.openGameForm(false);
     }
 
     openMultiGameForm() {
+        this.openGameForm(true);
+    }
+
+    openGameForm(isMultiplayerGame: boolean) {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.autoFocus = true;
         dialogConfig.disableClose = true;
@@ -83,8 +74,9 @@ export class NewGamePageComponent {
                 randomBonus: formOnline.randomBonus,
                 dictTitle: formOnline.dictTitle,
                 dictDesc: formOnline.dictDesc,
+                isMultiplayerGame,
             };
-            this.socketHandler.createGameMulti(onlineGameSettings);
+            this.socketHandler.createGame(onlineGameSettings);
             const username = formOnline.playerName;
             this.openWaitingForPlayer(username);
         });
@@ -201,6 +193,6 @@ export class NewGamePageComponent {
     }
 
     set isSpecialGame(value: boolean) {
-        this.gameMode = value ? GameMode.Special : (this.gameMode = GameMode.Classic);
+        this.gameMode = value ? GameMode.Special : GameMode.Classic;
     }
 }

@@ -126,7 +126,7 @@ export class GameManagerService {
             this.stopGame();
         }
 
-        if (!gameSettings.opponentName) {
+        if (!gameSettings.opponentNames) {
             throw Error('No opponent name was entered');
         }
 
@@ -137,8 +137,7 @@ export class GameManagerService {
         this.game = this.createOnlineGame(gameCreationParams, gameSettings.gameMode);
 
         const onlineGame = this.game as OnlineGame;
-        const opponentName = gameSettings.playerName === username ? gameSettings.opponentName : gameSettings.playerName;
-        const players = this.createOnlinePlayers(username, opponentName);
+        const players = this.createOnlinePlayers(username, gameSettings.opponentNames);
         this.allocatePlayers(players);
         onlineGame.handleUserActions();
         this.info.receiveGame(this.game);
@@ -255,11 +254,11 @@ export class GameManagerService {
     //     return [user, bot];
     // }
 
-    private createOnlinePlayers(userName: string, opponentName: string): Player[] {
+    private createOnlinePlayers(userName: string, otherPlayers: string[]): Player[] {
         const user = new User(userName);
-        const opponent = new User(opponentName);
+        const opponents = otherPlayers.map((opponentName) => new User(opponentName));
         this.info.receiveUser(user);
-        return [user, opponent];
+        return [user, ...opponents];
     }
 
     private allocatePlayers(players: Player[]) {

@@ -58,6 +58,17 @@ export class NewGameSocketHandler {
         if (!isGameSettings(gameSettings)) {
             throw Error('Impossible de rejoindre la partie, les paramètres de partie sont invalides.');
         }
+        const createGameInternal = gameSettings.isMultiplayerGame ? this.createMultiGame : this.createSoloGame;
+        return createGameInternal(gameSettings, socket);
+    }
+
+    private createSoloGame(gameSettings: OnlineGameSettingsUI, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>): string {
+        const gameId = this.newGameManagerService.createSoloGame(gameSettings);
+        socket.join(gameId);
+        return gameId;
+    }
+
+    private createMultiGame(gameSettings: OnlineGameSettingsUI, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>): string {
         const gameId = this.newGameManagerService.createPendingGame(gameSettings);
         socket.emit(pendingGameId, gameId);
         socket.join(gameId);

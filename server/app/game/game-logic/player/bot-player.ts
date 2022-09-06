@@ -7,7 +7,7 @@ import { getRandomInt } from '@app/game/game-logic/utils';
 
 export class BotPlayer extends Player {
     constructor(
-        opponentName: string,
+        opponentNames: string[],
         // private boardService: BoardService,
         // private dictionaryService: DictionaryService,
         // protected botCalculatorService: BotCalculatorService,
@@ -22,7 +22,7 @@ export class BotPlayer extends Player {
         protected botManager: BotManager,
     ) {
         super('PlaceholderName');
-        void this.updateBotName(opponentName);
+        void this.updateBotName(opponentNames);
         // this.validWordList = [];
         // this.botCrawler = new BotCrawler(this, this.dictionaryService, this.botCalculatorService, this.wordValidator);
     }
@@ -32,12 +32,12 @@ export class BotPlayer extends Player {
         bot.generateAction(this, game);
     }
 
-    private async updateBotName(opponentName: string): Promise<void> {
-        const botNames = await this.getBotNames();
-        let generatedName;
+    private async updateBotName(opponentNames: string[]): Promise<void> {
+        const botNames: string[] = await this.getBotNames();
+        let generatedName: string;
         do {
             generatedName = botNames[getRandomInt(botNames.length)];
-        } while (generatedName === opponentName);
+        } while (opponentNames.find((opponentName) => opponentName === generatedName));
         this.name = generatedName;
     }
 

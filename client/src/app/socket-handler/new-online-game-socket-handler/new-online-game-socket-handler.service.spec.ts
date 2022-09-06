@@ -28,7 +28,7 @@ describe('NewOnlineGameSocketHandler', () => {
     it('createGame should throw error if game settings are not valid', () => {
         expect(() => {
             const gameSettings = { playerName: false, randomBonus: false, timePerTurn: 65000 } as unknown;
-            service.createGameMulti(gameSettings as OnlineGameSettings);
+            service.createMultiGame(gameSettings as OnlineGameSettings);
         }).toThrowError();
     });
 
@@ -41,7 +41,7 @@ describe('NewOnlineGameSocketHandler', () => {
             gameMode: GameMode.Classic,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
         };
-        service.createGameMulti(gameSettings);
+        service.createMultiGame(gameSettings);
         expect(spyWaitingForPlayer).toHaveBeenCalled();
         service.pendingGameId$.pipe(first()).subscribe((value) => {
             expect(value[0]).toEqual('aa');

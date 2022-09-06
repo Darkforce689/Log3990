@@ -42,15 +42,16 @@ export const getRandomInt = (max: number, min: number = 0): number => {
     return Math.floor(Math.random() * (max - min) + min);
 };
 
-export const isGameSettings = (obj: unknown) => {
+export const isGameSettings = (obj: unknown): obj is OnlineGameSettingsUI => {
     return (
         (obj as OnlineGameSettingsUI).playerName !== undefined &&
         typeof (obj as OnlineGameSettingsUI).playerName === 'string' &&
-        (obj as OnlineGameSettingsUI).opponentName === undefined &&
+        (obj as OnlineGameSettingsUI).opponentNames === undefined &&
         (obj as OnlineGameSettingsUI).randomBonus !== undefined &&
         typeof (obj as OnlineGameSettingsUI).randomBonus === 'boolean' &&
         (obj as OnlineGameSettingsUI).timePerTurn !== undefined &&
-        typeof (obj as OnlineGameSettingsUI).timePerTurn === 'number'
+        typeof (obj as OnlineGameSettingsUI).timePerTurn === 'number' &&
+        typeof (obj as OnlineGameSettingsUI).isMultiplayerGame === 'boolean'
     );
 };
 

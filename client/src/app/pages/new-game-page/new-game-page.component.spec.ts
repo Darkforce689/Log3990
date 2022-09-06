@@ -189,7 +189,7 @@ describe('ClassicGameComponent', () => {
         } as MatDialogRef<NewOnlineGameFormComponent>);
         component.openMultiGameForm();
         expect(matDialog.open).toHaveBeenCalled();
-        expect(onlineSocketHandlerSpy.createGameMulti).toHaveBeenCalledOnceWith(gameSettings);
+        expect(onlineSocketHandlerSpy.createMultiGame).toHaveBeenCalledOnceWith(gameSettings);
         expect(component.openWaitingForPlayer).toHaveBeenCalledWith(gameSettings.playerName);
     });
 
@@ -206,7 +206,7 @@ describe('ClassicGameComponent', () => {
         component.openMultiGameForm();
         expect(matDialog.open).toHaveBeenCalled();
         expect(component.gameSettings).toBeUndefined();
-        expect(onlineSocketHandlerSpy.createGameMulti).not.toHaveBeenCalled();
+        expect(onlineSocketHandlerSpy.createMultiGame).not.toHaveBeenCalled();
         expect(component.openWaitingForPlayer).not.toHaveBeenCalled();
     });
 

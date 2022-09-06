@@ -4,10 +4,11 @@ export interface OnlineGameSettingsUI {
     gameMode: GameMode;
     timePerTurn: number;
     playerName: string;
-    opponentName?: string;
+    opponentNames?: string[];
     randomBonus: boolean;
     dictTitle: string;
     dictDesc?: string;
+    isMultiplayerGame: boolean;
 }
 
 export interface OnlineGameSettings extends OnlineGameSettingsUI {
