@@ -11,7 +11,7 @@ import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-
 import { BotCrawler } from '@app/game/game-logic/player/bot/bot-crawler';
 import { HORIZONTAL, ValidWord } from '@app/game/game-logic/player/bot/valid-word';
 import { Player } from '@app/game/game-logic/player/player';
-import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
+import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionnary';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 import { BehaviorSubject, takeUntil, timer } from 'rxjs';
 
@@ -25,7 +25,7 @@ export abstract class BotBrain {
 
     constructor(
         // private boardService: BoardService,
-        private dictionaryService: DictionaryService,
+        private botDictionaryService: BotDictionaryService,
         protected botCalculatorService: BotCalculatorService,
         protected wordValidator: WordSearcher,
         protected botMessage: BotMessagesService,
@@ -36,7 +36,7 @@ export abstract class BotBrain {
         protected botType: BotDifficulty,
     ) {
         this.validWordList = [];
-        this.botCrawler = new BotCrawler(this, this.dictionaryService, this.botCalculatorService, this.wordValidator);
+        this.botCrawler = new BotCrawler(this, this.botDictionaryService, this.botCalculatorService, this.wordValidator);
     }
 
     chooseAction(action: Action) {

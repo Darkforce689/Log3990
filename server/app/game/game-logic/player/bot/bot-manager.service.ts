@@ -4,7 +4,7 @@ import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { EasyBotBrain } from '@app/game/game-logic/player/bot/easy-bot';
 import { HardBotBrain } from '@app/game/game-logic/player/bot/hard-bot';
-import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
+import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionnary';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 import { Service } from 'typedi';
 
@@ -15,7 +15,7 @@ export class BotManager {
 
     constructor(
         // private boardService: BoardService,
-        private dictionaryService: DictionaryService,
+        private botDictionaryService: BotDictionaryService,
         private botCalculatorService: BotCalculatorService,
         private wordSearcher: WordSearcher,
         private botMessage: BotMessagesService,
@@ -25,7 +25,7 @@ export class BotManager {
     ) {
         this.hardBot = new HardBotBrain(
             // this.boardService,
-            this.dictionaryService,
+            this.botDictionaryService,
             this.botCalculatorService,
             this.wordSearcher,
             this.botMessage,
@@ -37,7 +37,7 @@ export class BotManager {
         );
         this.easyBot = new EasyBotBrain(
             // this.boardService,
-            this.dictionaryService,
+            this.botDictionaryService,
             this.botCalculatorService,
             this.wordSearcher,
             this.botMessage,
