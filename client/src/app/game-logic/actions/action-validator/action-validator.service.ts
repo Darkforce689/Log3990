@@ -11,6 +11,7 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { HardBot } from '@app/game-logic/player/bot/hard-bot';
 import { isStringALowerCaseLetter, placementSettingsToString } from '@app/game-logic/utils';
+import { MagicCard } from '@app/game-logic/actions/magic-card';
 
 @Injectable({
     providedIn: 'root',
@@ -58,6 +59,10 @@ export class ActionValidatorService {
 
         if (action instanceof PassTurn) {
             return this.checkPassTurn();
+        }
+
+        if (action instanceof MagicCard) {
+            return this.checkMagicCard();
         }
 
         this.sendErrorMessage("Commande impossible à réaliser : le type d'action n'est pas  reconnu");
@@ -188,6 +193,10 @@ export class ActionValidatorService {
     }
 
     private checkPassTurn() {
+        return true;
+    }
+
+    private checkMagicCard() {
         return true;
     }
 
