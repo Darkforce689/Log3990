@@ -20,7 +20,6 @@ export class OnlineChatHandlerService {
 
     joinChatRoomWithUser(roomID: string) {
         const userName = this.gameInfo.user.name;
-        this.socket = this.connectToSocket();
         this.joinChatRoom(roomID, userName);
     }
 
@@ -39,23 +38,26 @@ export class OnlineChatHandlerService {
         this.socket.emit('newMessage', content);
     }
 
-    private joinChatRoom(roomID: string, userName: string) {
-        if (this.socket) {
-            this.socket.on('error', (errorContent: string) => {
-                this.receiveChatServerError(errorContent);
-            });
+    joinChatRoom(roomID: string, userName: string) {
+        this.socket = this.connectToSocket();
+        this.bindRoomChannels(roomID, userName);
+    }
 
-            this.socket.on('roomMessages', (message: ChatMessage) => {
-                this.receiveServerMessage(message);
-            });
+    private bindRoomChannels(roomID: string, userName: string) {
+        this.socket.on('error', (errorContent: string) => {
+            this.receiveChatServerError(errorContent);
+        });
 
-            this.socket.on('systemMessages', (content: string) => {
-                this.receiveSystemMessage(content);
-            });
+        this.socket.on('roomMessages', (message: ChatMessage) => {
+            this.receiveServerMessage(message);
+        });
 
-            this.socket.emit('userName', userName);
-            this.socket.emit('joinRoom', roomID);
-        }
+        this.socket.on('systemMessages', (content: string) => {
+            this.receiveSystemMessage(content);
+        });
+
+        this.socket.emit('userName', userName);
+        this.socket.emit('joinRoom', roomID);
     }
 
     private connectToSocket() {

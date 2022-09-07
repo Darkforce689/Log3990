@@ -4,6 +4,7 @@ import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
+import { PrototypePageComponent } from '@app/pages/prototype-page/prototype-page.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -12,6 +13,7 @@ export const routes: Routes = [
     { path: 'leaderboard', component: HomepageComponent },
     { path: 'game', component: GamePageComponent },
     { path: 'admin', component: AdminPageComponent },
+    { path: 'prototype', component: PrototypePageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 
