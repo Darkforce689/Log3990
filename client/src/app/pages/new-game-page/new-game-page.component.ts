@@ -1,20 +1,17 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatRipple, RippleConfig } from '@angular/material/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { LoadingGameComponent } from '@app/components/modals/loading-game/loading-game.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
-import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { GameSettings } from '@app/game-logic/game/games/game-settings.interface';
 import { BotDifficulty } from '@app/services/bot-difficulty';
+import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
-import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
-import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
+import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { Subscription } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
 
 @Component({
     selector: 'app-new-game-page',
@@ -30,10 +27,9 @@ export class NewGamePageComponent {
 
     constructor(
         private dialog: MatDialog,
-        // TODO : REMOVE AND EXTRACT NEXT SERVICES
-        private router: Router,
-        private gameManager: GameManagerService,
+        private gameLaucherService: GameLauncherService,
         private socketHandler: NewOnlineGameSocketHandler,
+        private gameManager: GameManagerService,
     ) {}
 
     triggerRipple() {
@@ -69,7 +65,7 @@ export class NewGamePageComponent {
             const onlineGameSettings: OnlineGameSettingsUI = {
                 ...gameSettings,
                 gameMode: this.gameMode,
-                opponentNames: [],
+                playerNames: [gameSettings.playerName],
                 isMultiplayerGame,
                 // TODO GL3A22107-5 : Implement new game parameter :
                 botDifficulty: BotDifficulty.Easy,
@@ -88,24 +84,7 @@ export class NewGamePageComponent {
         secondDialogConfig.autoFocus = true;
         secondDialogConfig.disableClose = true;
 
-        const secondDialogRef = this.dialog.open(WaitingForOtherPlayersComponent, secondDialogConfig);
-        secondDialogRef.afterOpened().subscribe(() => {
-            this.socketHandler.isDisconnected$.subscribe((isDisconnected) => {
-                if (isDisconnected) {
-                    secondDialogRef.close();
-                    this.socketHandler.disconnectSocket();
-                }
-            });
-            this.startGame$$ = this.socketHandler.gameStarted$.pipe(takeWhile((val) => !val, true)).subscribe((gameSettings) => {
-                if (!gameSettings) {
-                    return;
-                }
-                secondDialogRef.close();
-                console.log('openWaitingForPlayer secondDialogRef.afterOpened');
-                this.startOnlineGame(username, gameSettings);
-                this.socketHandler.disconnectSocket();
-            });
-        });
+        this.gameLaucherService.waitForOnlineGameStart(username);
     }
 
     openPendingGames() {
@@ -130,15 +109,6 @@ export class NewGamePageComponent {
             }
         });
         return loadingGameDialog;
-    }
-
-    // TODO :  REMOVE AND EXTRACT NEXT
-    private startOnlineGame(userName: string, onlineGameSettings: OnlineGameSettings) {
-        const gameToken = onlineGameSettings.id;
-        const userAuth: UserAuth = { playerName: userName, gameToken };
-        this.socketHandler.resetGameToken();
-        this.gameManager.joinOnlineGame(userAuth, onlineGameSettings);
-        this.router.navigate(['/game']);
     }
 
     // TODO GL3A22107-5 : Should be changed/removed

@@ -33,9 +33,9 @@ export class GameCreator {
 
     createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): ServerGame {
         const newServerGame = this.createNewGame(onlineGameSettings, gameToken);
-        const firstPlayerName = onlineGameSettings.playerName;
-        const playerNames = [firstPlayerName, ...onlineGameSettings.opponentNames];
-        const players = this.createPlayers(onlineGameSettings.numberOfPlayers, playerNames, onlineGameSettings.botDifficulty);
+        // const firstPlayerName = onlineGameSettings.playerName;
+        // const playerNames = [firstPlayerName, ...onlineGameSettings.playerNames];
+        const players = this.createPlayers(onlineGameSettings.numberOfPlayers, onlineGameSettings.playerNames, onlineGameSettings.botDifficulty);
         newServerGame.players = players;
         return newServerGame;
     }

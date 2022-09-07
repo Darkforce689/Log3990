@@ -49,8 +49,8 @@ export const isGameSettings = (obj: unknown): obj is OnlineGameSettingsUI => {
         obj !== null &&
         'gameMode' in obj &&
         'timePerTurn' in obj &&
-        'playerName' in obj &&
-        'opponentNames' in obj &&
+        // 'playerName' in obj &&
+        'playerNames' in obj &&
         'randomBonus' in obj &&
         'dictTitle' in obj &&
         'dictDesc' in obj &&

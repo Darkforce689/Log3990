@@ -81,7 +81,7 @@ describe('JoinOnlineGameComponent', () => {
         const startGameButton = dom.querySelectorAll('button')[1];
         const spy = spyOn(component, 'sendParameter');
         startGameButton.click();
-        expect(component.oppName.valid).toBeFalse();
+        expect(component.myName.valid).toBeFalse();
         expect(spy.calls.count()).toBe(0);
     });
 
@@ -90,10 +90,10 @@ describe('JoinOnlineGameComponent', () => {
         const startGameButton = dom.querySelectorAll('button')[1];
         // eslint-disable-next-line dot-notation
         component['playerName'] = 'Simon';
-        component.oppName.setValue('Simon');
-        component.oppName.updateValueAndValidity();
+        component.myName.setValue('Simon');
+        component.myName.updateValueAndValidity();
         fixture.detectChanges();
-        expect(component.oppName.valid).toBeFalse();
+        expect(component.myName.valid).toBeFalse();
         const spy = spyOn(component, 'sendParameter');
         startGameButton.click();
         fixture.detectChanges();
@@ -103,13 +103,13 @@ describe('JoinOnlineGameComponent', () => {
     it('startGame should call sendParameter', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const startGameButton = dom.querySelectorAll('button')[1];
-        component.oppName.setValue('easy');
-        component.oppName.updateValueAndValidity();
+        component.myName.setValue('easy');
+        component.myName.updateValueAndValidity();
         fixture.detectChanges();
         spyOn(component, 'sendParameter');
         startGameButton.click();
         fixture.detectChanges();
-        expect(component.oppName.valid).toBeTrue();
+        expect(component.myName.valid).toBeTrue();
         expect(component.sendParameter).toHaveBeenCalled();
     });
 
@@ -119,10 +119,10 @@ describe('JoinOnlineGameComponent', () => {
     });
 
     it('cancel should close the dialog and reset form', () => {
-        component.oppName.setValue('Max');
+        component.myName.setValue('Max');
         component.cancel();
         expect(mockDialogRef.close).toHaveBeenCalled();
-        expect(component.oppName.value).toEqual(null);
+        expect(component.myName.value).toEqual(null);
     });
 
     it('should open Error dialog if cant connect to game', (done) => {

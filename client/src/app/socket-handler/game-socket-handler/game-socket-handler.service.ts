@@ -48,6 +48,7 @@ export class GameSocketHandlerService {
         this.socket = this.connectToSocket();
         this.socket.emit('joinGame', userAuth);
         this.socket.on('gameState', (gameState: GameState) => {
+            console.log(gameState);
             this.receiveGameState(gameState);
         });
 

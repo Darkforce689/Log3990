@@ -50,10 +50,10 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        // if (gameSettings.opponentNames) {
+        // if (gameSettings.playerNames) {
         //     return;
         // }
-        gameSettings.opponentNames.push(name);
+        gameSettings.playerNames.push(name);
         // this.launchPendingGame(id, gameSettings);
         return id;
     }
