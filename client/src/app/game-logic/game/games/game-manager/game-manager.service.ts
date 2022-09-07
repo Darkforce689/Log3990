@@ -254,11 +254,14 @@ export class GameManagerService {
     //     return [user, bot];
     // }
 
-    private createOnlinePlayers(userName: string, otherPlayers: string[]): Player[] {
-        const user = new User(userName);
-        const opponents = otherPlayers.map((opponentName) => new User(opponentName));
-        this.info.receiveUser(user);
-        return [user, ...opponents];
+    private createOnlinePlayers(userName: string, allPlayerNames: string[]): Player[] {
+        // const user = new User(userName);
+        const players = allPlayerNames.map((playerName) => new User(playerName));
+        const user = players.find((player) => player.name === userName);
+        if (user) {
+            this.info.receiveUser(user);
+        }
+        return players;
     }
 
     private allocatePlayers(players: Player[]) {
