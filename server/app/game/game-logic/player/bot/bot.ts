@@ -1,5 +1,5 @@
 import { Vec2 } from '@app/classes/vec2';
-import { BotType } from '@app/database/bot-info/bot-info';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { LetterCreator } from '@app/game/game-logic/board/letter-creator';
@@ -33,7 +33,7 @@ export abstract class BotBrain {
         // protected commandExecuter: CommandExecuterService,
         protected actionCreator: ActionCreatorService,
         // protected botHttpService: BotHttpService,
-        protected botType: BotType,
+        protected botType: BotDifficulty,
     ) {
         this.validWordList = [];
         this.botCrawler = new BotCrawler(this, this.dictionaryService, this.botCalculatorService, this.wordValidator);

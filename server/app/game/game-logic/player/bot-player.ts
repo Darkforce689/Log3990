@@ -1,4 +1,4 @@
-import { BotType } from '@app/database/bot-info/bot-info';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager.service';
@@ -18,8 +18,8 @@ export class BotPlayer extends Player {
         // protected actionCreator: ActionCreatorService,
         // protected botHttpService: BotHttpService,
         protected botInfoService: BotInfoService,
-        protected botType: BotType,
         protected botManager: BotManager,
+        protected botType: BotDifficulty,
     ) {
         super('PlaceholderName');
         void this.updateBotName(opponentNames);
@@ -28,7 +28,7 @@ export class BotPlayer extends Player {
     }
 
     generateAction(game: ServerGame): void {
-        const bot = this.botType === BotType.Easy ? this.botManager.easyBot : this.botManager.hardBot;
+        const bot = this.botType === BotDifficulty.Easy ? this.botManager.easyBot : this.botManager.hardBot;
         bot.generateAction(this, game);
     }
 

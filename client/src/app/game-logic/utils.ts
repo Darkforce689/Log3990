@@ -45,14 +45,18 @@ export const isCharUpperCase = (char: string) => {
 
 export const isGameSettings = (obj: unknown): obj is OnlineGameSettingsUI => {
     return (
-        (obj as OnlineGameSettingsUI).playerName !== undefined &&
-        typeof (obj as OnlineGameSettingsUI).playerName === 'string' &&
-        (obj as OnlineGameSettingsUI).opponentNames === undefined &&
-        (obj as OnlineGameSettingsUI).randomBonus !== undefined &&
-        typeof (obj as OnlineGameSettingsUI).randomBonus === 'boolean' &&
-        (obj as OnlineGameSettingsUI).timePerTurn !== undefined &&
-        typeof (obj as OnlineGameSettingsUI).timePerTurn === 'number' &&
-        typeof (obj as OnlineGameSettingsUI).isMultiplayerGame === 'boolean'
+        typeof obj === 'object' &&
+        obj !== null &&
+        'gameMode' in obj &&
+        'timePerTurn' in obj &&
+        'playerName' in obj &&
+        'opponentNames' in obj &&
+        'randomBonus' in obj &&
+        'dictTitle' in obj &&
+        'dictDesc' in obj &&
+        'isMultiplayerGame' in obj &&
+        'botDifficulty' in obj &&
+        'numberOfPlayers' in obj
     );
 };
 

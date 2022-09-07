@@ -2,7 +2,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 
-import { BotType } from '@app/database/bot-info/bot-info';
+import { BotDifficulty } from '@app/database/bot-info/bot-info';
 import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game/game-logic/actions/place-letter';
@@ -63,7 +63,7 @@ describe('EasyBot', () => {
             TestBed.inject(CommandExecuterService),
             TestBed.inject(ActionCreatorService),
             TestBed.inject(BotHttpService),
-            BotType.Easy,
+            BotDifficulty.Easy,
         );
     });
 

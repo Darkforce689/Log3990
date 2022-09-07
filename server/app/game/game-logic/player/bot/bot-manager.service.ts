@@ -1,4 +1,4 @@
-import { BotType } from '@app/database/bot-info/bot-info';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
@@ -33,7 +33,7 @@ export class BotManager {
             // this.commandExecuter,
             this.actionFactory,
             // this.botHttpService,
-            BotType.Expert,
+            BotDifficulty.Expert,
         );
         this.easyBot = new EasyBotBrain(
             // this.boardService,
@@ -45,7 +45,7 @@ export class BotManager {
             // this.commandExecuter,
             this.actionFactory,
             // this.botHttpService,
-            BotType.Easy,
+            BotDifficulty.Easy,
         );
     }
 }

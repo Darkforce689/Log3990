@@ -14,7 +14,7 @@ import {
     DEFAULT_TIME_PER_TURN,
     EMPTY_CHAR,
     MIDDLE_OF_BOARD,
-    RACK_LETTER_COUNT,
+    RACK_LETTER_COUNT
 } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
@@ -31,7 +31,7 @@ import { User } from '@app/game-logic/player/user';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
 import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
-import { BotHttpService, BotInfo, BotType } from '@app/services/bot-http.service';
+import { BotDifficulty, BotHttpService, BotInfo } from '@app/services/bot-http.service';
 import { Observable } from 'rxjs';
 
 describe('ActionValidatorService', () => {
@@ -66,7 +66,7 @@ describe('ActionValidatorService', () => {
     let mockBotHttpService: jasmine.SpyObj<BotHttpService>;
     beforeEach(() => {
         mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
-        const dummyData: BotInfo[] = [{ name: 'Test', canEdit: true, type: BotType.Easy }];
+        const dummyData: BotInfo[] = [{ name: 'Test', canEdit: true, type: BotDifficulty.Easy }];
         const obs = new Observable<BotInfo[]>((sub) => {
             sub.next(dummyData);
         });

@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { BotHttpService, BotInfo, BotType } from '@app/services/bot-http.service';
+import { BotDifficulty, BotHttpService, BotInfo } from '@app/services/bot-http.service';
 
 describe('BotHttpService', () => {
     let service: BotHttpService;
@@ -19,7 +19,7 @@ describe('BotHttpService', () => {
     });
 
     it('addBot should receive answer', () => {
-        const bot: BotInfo = { type: BotType.Expert, canEdit: true, name: 'Test' };
+        const bot: BotInfo = { type: BotDifficulty.Expert, canEdit: true, name: 'Test' };
         service.addBot(bot).subscribe((res) => {
             expect(res).toEqual(true);
         });
@@ -30,7 +30,7 @@ describe('BotHttpService', () => {
     });
 
     it('deleteBot should receive answer', () => {
-        const bot: BotInfo = { type: BotType.Expert, canEdit: true, name: 'Test' };
+        const bot: BotInfo = { type: BotDifficulty.Expert, canEdit: true, name: 'Test' };
         service.deleteBot(bot).subscribe((res) => {
             expect(res).toEqual('');
         });
@@ -42,8 +42,8 @@ describe('BotHttpService', () => {
 
     it('getDataInfo should return data', () => {
         const botList: BotInfo[] = [
-            { type: BotType.Expert, canEdit: true, name: 'Test' },
-            { type: BotType.Easy, canEdit: false, name: 'Test2' },
+            { type: BotDifficulty.Expert, canEdit: true, name: 'Test' },
+            { type: BotDifficulty.Easy, canEdit: false, name: 'Test2' },
         ];
         service.getDataInfo().subscribe((res) => {
             expect(res).toEqual(botList);
@@ -65,8 +65,8 @@ describe('BotHttpService', () => {
     });
 
     it('editBot should send request', () => {
-        const oldBot: BotInfo = { type: BotType.Expert, canEdit: true, name: 'old' };
-        const newBot: BotInfo = { type: BotType.Expert, canEdit: true, name: 'new' };
+        const oldBot: BotInfo = { type: BotDifficulty.Expert, canEdit: true, name: 'old' };
+        const newBot: BotInfo = { type: BotDifficulty.Expert, canEdit: true, name: 'new' };
 
         service.editBot(oldBot, newBot).subscribe((res) => {
             expect(res).toEqual(true);

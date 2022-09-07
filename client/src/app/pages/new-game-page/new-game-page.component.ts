@@ -8,12 +8,13 @@ import { PendingGamesComponent } from '@app/components/modals/pending-games/pend
 import { WaitingForPlayerComponent } from '@app/components/modals/waiting-for-player/waiting-for-player.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { GameSettings } from '@app/game-logic/game/games/game-settings.interface';
+import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { first, takeWhile } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-new-game-page',
@@ -46,7 +47,6 @@ export class NewGamePageComponent {
         this.ripple.launch(rippleConfig);
     }
 
-    // TODO GL3A22107-5 : Should be changed/removed
     openSoloGameForm() {
         this.openGameForm(false);
     }
@@ -62,22 +62,23 @@ export class NewGamePageComponent {
         dialogConfig.minWidth = 60;
 
         const dialogRef = this.dialog.open(NewOnlineGameFormComponent, dialogConfig);
-        dialogRef.afterClosed().subscribe((formOnline: GameSettings) => {
-            if (!formOnline) {
+        dialogRef.afterClosed().subscribe((gameSettings: GameSettings) => {
+            if (!gameSettings) {
                 return;
             }
-            this.gameSettings = formOnline;
+            this.gameSettings = gameSettings;
             const onlineGameSettings: OnlineGameSettingsUI = {
+                ...gameSettings,
                 gameMode: this.gameMode,
-                timePerTurn: formOnline.timePerTurn,
-                playerName: formOnline.playerName,
-                randomBonus: formOnline.randomBonus,
-                dictTitle: formOnline.dictTitle,
-                dictDesc: formOnline.dictDesc,
+                opponentNames: [],
                 isMultiplayerGame,
+                // TODO GL3A22107-5 : Implement new game parameter :
+                botDifficulty: BotDifficulty.Easy,
+                // TODO GL3A22107-5 : Implement new game parameter :
+                numberOfPlayers: 2,
             };
             this.socketHandler.createGame(onlineGameSettings);
-            const username = formOnline.playerName;
+            const username = gameSettings.playerName;
             this.openWaitingForPlayer(username);
         });
     }
@@ -162,31 +163,30 @@ export class NewGamePageComponent {
     }
 
     // TODO GL3A22107-5 : Should be changed/removed
-    private startSoloGame() {
-        this.gameReady$$?.unsubscribe();
-        const gameReady$ = this.createGame(this.gameSettings);
-        if (gameReady$.getValue()) {
-            this.router.navigate(['/game']);
-        } else {
-            this.gameReady$$ = gameReady$.subscribe((gameReady: boolean) => {
-                if (!gameReady) {
-                    return;
-                }
-                loadingScreen.close();
-                this.router.navigate(['/game']);
-            });
-            const loadingScreen = this.openLoadingGame();
-        }
-    }
+    // private startSoloGame() {
+    //     this.gameReady$$?.unsubscribe();
+    //     const gameReady$ = this.createGame(this.gameSettings);
+    //     if (gameReady$.getValue()) {
+    //         this.router.navigate(['/game']);
+    //     } else {
+    //         this.gameReady$$ = gameReady$.subscribe((gameReady: boolean) => {
+    //             if (!gameReady) {
+    //                 return;
+    //             }
+    //             loadingScreen.close();
+    //             this.router.navigate(['/game']);
+    //         });
+    //         const loadingScreen = this.openLoadingGame();
+    //     }
+    // }
 
     // TODO GL3A22107-5 : Create a new server game + remove old implementation
-    private createGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
-        // if (this.isSpecialGame) {
-        //     return this.gameManager.createSpecialGame(gameSettings);
-        // }
-        // return this.gameManager.createGame(gameSettings);
-        return new BehaviorSubject<boolean>(false);
-    }
+    // private createGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
+    // if (this.isSpecialGame) {
+    //     return this.gameManager.createSpecialGame(gameSettings);
+    // }
+    // return this.gameManager.createGame(gameSettings);
+    // }
 
     get isSpecialGame() {
         return this.gameMode === GameMode.Special;
