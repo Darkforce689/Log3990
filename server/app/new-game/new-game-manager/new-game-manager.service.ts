@@ -81,7 +81,6 @@ export class NewGameManagerService {
     private async startGame(gameToken: string, gameSettings: OnlineGameSettings): Promise<OnlineGameSettings> {
         const newGame = await this.gameMaster.createGame(gameToken, gameSettings);
         gameSettings.playerNames = newGame.players.map((player) => player.name);
-        newGame.start();
         return gameSettings;
     }
 

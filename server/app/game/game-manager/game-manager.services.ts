@@ -13,6 +13,7 @@ import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-o
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -129,9 +130,11 @@ export class GameManagerService {
         this.activePlayers.set(playerId, playerRef);
         const bindedSocket: BindedSocket = { socketID: playerId, name: playerName };
         linkedClientsInGame.push(bindedSocket);
-        // if (linkedClientsInGame.length === 2) {
-        //     game.start();
-        // }
+
+        const expectedClientCount = this.getExpectedNumberOfClients(game);
+        if (linkedClientsInGame.length === expectedClientCount) {
+            game.start();
+        }
     }
 
     receivePlayerAction(playerId: string, action: OnlineAction) {
@@ -166,6 +169,17 @@ export class GameManagerService {
         this.deleteGame(gameToken);
     }
 
+    private getExpectedNumberOfClients(game: ServerGame) {
+        const playerCount = game.players.length;
+        let botCount = 0;
+        for (const player of game.players) {
+            if (player instanceof BotPlayer) {
+                botCount++;
+            }
+        }
+        return playerCount - botCount;
+    }
+
     private startInactiveGameDestructionTimer(gameToken: string) {
         setTimeout(() => {
             const currentLinkedClient = this.linkedClients.get(gameToken);
@@ -174,10 +188,10 @@ export class GameManagerService {
                 return;
             }
 
-            if (currentLinkedClient.length !== 2) {
-                this.deleteInactiveGame(gameToken);
-                return;
-            }
+            // if (currentLinkedClient.length !== 2) {
+            //     this.deleteInactiveGame(gameToken);
+            //     return;
+            // }
         }, NEW_GAME_TIMEOUT);
     }
 

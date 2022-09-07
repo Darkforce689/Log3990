@@ -59,12 +59,14 @@ export class BotPlayer extends Player {
         timer(TIME_BEFORE_PICKING_ACTION).subscribe(() => {
             const action = this.chosenAction$.value;
             if (action) {
-                this.botMessage.sendAction(action);
+                // this.botMessage.sendAction(action);
+                this.action$.next(action);
                 return;
             }
             this.chosenAction$.pipe(takeUntil(timerPass)).subscribe((chosenAction) => {
                 if (chosenAction !== undefined) {
-                    this.botMessage.sendAction(chosenAction);
+                    // this.botMessage.sendAction(chosenAction);
+                    this.action$.next(chosenAction);
                 }
             });
         });
