@@ -51,7 +51,7 @@ export class BotCrawler {
                 });
                 player.letterRack.splice(rackIndex, 0, tmpLetter[0]);
 
-                this.possibleWordsValidator(possiblyValidWords, game);
+                this.possibleWordsValidator(possiblyValidWords, game, player);
             }
         }
     }
@@ -77,7 +77,7 @@ export class BotCrawler {
             const lettersOnLine = this.getLettersOnLine(position, grid, letterInBox);
             const allPlacedLettersCombination = this.getAllPossibilitiesOnLine(lettersOnLine);
             const possiblyValidWords: ValidWord[] = this.possibleWordsGenerator(allPlacedLettersCombination, player, game.gameToken);
-            this.possibleWordsValidator(possiblyValidWords, game);
+            this.possibleWordsValidator(possiblyValidWords, game, player);
         }
 
         if (isVertical && x < END_OF_BOARD) {
@@ -297,7 +297,7 @@ export class BotCrawler {
         return possiblyValidWords;
     }
 
-    private possibleWordsValidator(possiblyValidWords: ValidWord[], game: ServerGame) {
+    private possibleWordsValidator(possiblyValidWords: ValidWord[], game: ServerGame, player: BotPlayer) {
         const grid: Tile[][] = game.board.grid;
         for (const wordData of possiblyValidWords) {
             const direction = wordData.isVertical ? Direction.Vertical : Direction.Horizontal;
@@ -311,8 +311,7 @@ export class BotCrawler {
             const pointEstimation = this.botCalculatorService.testPlaceLetterCalculation(wordData.numberOfLettersPlaced, words);
             wordData.value = pointEstimation;
             wordData.adjacentWords = validWords;
-            // TODO FIX:
-            // this.bot.validWordList.push(wordData);
+            player.validWordList.push(wordData);
         }
     }
 }

@@ -68,7 +68,7 @@ export class NewGamePageComponent {
                 playerNames: [gameSettings.playerName],
                 isMultiplayerGame,
                 // TODO GL3A22107-5 : Implement new game parameter :
-                botDifficulty: BotDifficulty.Easy,
+                botDifficulty: BotDifficulty.Expert,
                 // TODO GL3A22107-5 : Implement new game parameter :
                 numberOfPlayers: 2,
             };

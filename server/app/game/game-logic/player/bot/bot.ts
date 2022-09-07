@@ -14,7 +14,6 @@ import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 
 export abstract class BotBrain {
-    private validWordList: ValidWord[];
     private botCrawler: BotCrawler;
     // private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
@@ -29,7 +28,6 @@ export abstract class BotBrain {
         // protected botHttpService: BotHttpService,
         protected botType: BotDifficulty,
     ) {
-        this.validWordList = [];
         this.botCrawler = new BotCrawler(this.botDictionaryService, this.botCalculatorService, this.wordValidator);
     }
 
@@ -38,20 +36,20 @@ export abstract class BotBrain {
     }
 
     protected bruteForceStart(game: ServerGame, player: BotPlayer): ValidWord[] {
+        player.validWordList = [];
         const grid: Tile[][] = game.board.grid;
         const startingX = 0;
         const startingY = 0;
         const startingPosition: Vec2 = { x: startingX, y: startingY };
         const startingDirection = HORIZONTAL;
-        this.validWordList = [];
         const letterInMiddleBox = grid[MIDDLE_OF_BOARD][MIDDLE_OF_BOARD].letterObject.char;
 
         if (letterInMiddleBox === ' ') {
             this.botCrawler.botFirstTurn(player, game);
-            return this.validWordList;
+            return player.validWordList;
         }
         this.botCrawler.boardCrawler(startingPosition, game, player, startingDirection);
-        return this.validWordList;
+        return player.validWordList;
     }
 
     abstract actionPicker(player: Player, game: ServerGame): Action;

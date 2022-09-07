@@ -6,12 +6,14 @@ import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager.service';
+import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
 import { Player } from '@app/game/game-logic/player/player';
 import { getRandomInt } from '@app/game/game-logic/utils';
 import { BehaviorSubject, takeUntil, timer } from 'rxjs';
 
 export class BotPlayer extends Player {
     timesUp: boolean;
+    validWordList: ValidWord[];
     private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
     constructor(

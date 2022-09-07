@@ -5,6 +5,7 @@ import { Service } from 'typedi';
 export class BotMessagesService {
     // constructor(private messagesService: MessagesService, private commandExecuter: CommandExecuterService) {}
 
+    // TODO GL3A22107-3 : fix message sent to players from bot actions
     sendAction(action: Action) {
         // const name = action.player.name;
         // if (action instanceof PassTurn) {
