@@ -1,6 +1,7 @@
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
+import { MagicCard } from '@app/game/game-logic/actions/magic-card';
 import { Board } from '@app/game/game-logic/board/board';
 import { LetterBag } from '@app/game/game-logic/board/letter-bag';
 import { MAX_CONSECUTIVE_PASS } from '@app/game/game-logic/constants';
@@ -11,7 +12,7 @@ import { PointCalculatorService } from '@app/game/game-logic/point-calculator/po
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
 import { Timer } from '@app/game/game-logic/timer/timer.service';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
-import { first, mapTo, merge, Subject } from 'rxjs';
+import { first, mapTo, Subject } from 'rxjs';
 
 export class ServerGame {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -141,10 +142,26 @@ export class ServerGame {
             this.onEndOfGame(this.endReason);
             return;
         }
-        const activePlayer = this.players[this.activePlayerIndex];
+        const activePlayer = this.setPlayerActive();
         const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
-        const turnEnds$ = merge(activePlayer.action$, timerEnd$, this.isEnded$);
-        turnEnds$.pipe(first()).subscribe((action) => this.endOfTurn(action));
+        timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
+    }
+
+    private setPlayerActive(player: Player = this.getActivePlayer()): Player {
+        player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
+        return player;
+    }
+
+    private takeAction(action: Action) {
+        if (!(action instanceof MagicCard)) {
+            // If it isn't a magic cards, it is the last action of the turn
+            this.endOfTurn(action);
+            return;
+        }
+        // If it is a magic card, can take more action(s)
+        action.execute(this);
+        this.emitGameState();
+        this.setPlayerActive();
     }
 
     private endOfTurn(action: Action | undefined) {

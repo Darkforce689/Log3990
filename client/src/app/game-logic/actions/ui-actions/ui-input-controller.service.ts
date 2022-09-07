@@ -13,6 +13,7 @@ import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/i
 import { User } from '@app/game-logic/player/user';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
+import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
 
 @Injectable({
     providedIn: 'root',
@@ -67,6 +68,10 @@ export class UIInputControllerService {
 
     pass(user: User) {
         this.avs.sendAction(new PassTurn(user));
+    }
+
+    gainAPoint(user: User) {
+        this.avs.sendAction(new GainAPoint(user));
     }
 
     private processInput(input: UIInput) {

@@ -3,7 +3,9 @@ import { Action } from '@app/game-logic/actions/action';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
-import { OnlineAction, OnlineActionType } from '@app/socket-handler/interfaces/online-action.interface';
+import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
+import { MagicCard } from '@app/game-logic/actions/magic-card';
+import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
 
 @Injectable({
     providedIn: 'root',
@@ -20,6 +22,10 @@ export class OnlineActionCompilerService {
 
         if (action instanceof PassTurn) {
             return this.compilePassTurnOnline(action);
+        }
+
+        if (action instanceof MagicCard) {
+            return this.compileMagicCardOnline(action);
         }
         return undefined;
     }
@@ -50,6 +56,21 @@ export class OnlineActionCompilerService {
     private compilePassTurnOnline(action: PassTurn): OnlineAction {
         const passTurn: OnlineAction = {
             type: OnlineActionType.Pass,
+            letterRack: action.player.letterRack,
+        };
+        return passTurn;
+    }
+
+    private compileMagicCardOnline(action: MagicCard): OnlineAction | undefined {
+        if (action instanceof GainAPoint) {
+            return this.compileGainAPointOnline(action);
+        }
+        return undefined;
+    }
+
+    private compileGainAPointOnline(action: GainAPoint): OnlineAction {
+        const passTurn: OnlineAction = {
+            type: OnlineMagicCardActionType.GainAPoint,
             letterRack: action.player.letterRack,
         };
         return passTurn;
