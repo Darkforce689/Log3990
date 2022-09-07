@@ -1,7 +1,6 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { EasyBotBrain } from '@app/game/game-logic/player/bot/easy-bot';
 import { HardBotBrain } from '@app/game/game-logic/player/bot/hard-bot';
 import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionnary';
@@ -18,7 +17,7 @@ export class BotManager {
         private botDictionaryService: BotDictionaryService,
         private botCalculatorService: BotCalculatorService,
         private wordSearcher: WordSearcher,
-        private botMessage: BotMessagesService,
+        // private botMessage: BotMessagesService,
         // private gameInfo: GameInfoService,
         // private commandExecuter: CommandExecuterService,
         private actionFactory: ActionCreatorService, // private botHttpService: BotHttpService,
@@ -28,7 +27,7 @@ export class BotManager {
             this.botDictionaryService,
             this.botCalculatorService,
             this.wordSearcher,
-            this.botMessage,
+            // this.botMessage,
             // this.gameInfo,
             // this.commandExecuter,
             this.actionFactory,
@@ -40,7 +39,7 @@ export class BotManager {
             this.botDictionaryService,
             this.botCalculatorService,
             this.wordSearcher,
-            this.botMessage,
+            // this.botMessage,
             // this.gameInfo,
             // this.commandExecuter,
             this.actionFactory,

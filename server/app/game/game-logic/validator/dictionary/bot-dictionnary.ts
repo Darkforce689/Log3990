@@ -106,28 +106,11 @@ export class BotDictionaryService {
     }
 
     private getDynamicWordList(gameToken: string): Set<string>[] {
-        const dict = this.dictionaryService.liveDictMap.get(gameToken);
+        const dictName = this.dictionaryService.liveGamesMap.get(gameToken);
+        if (!dictName) {
+            return [];
+        }
+        const dict = this.dictionaryService.liveDictMap.get(dictName);
         return dict ? dict.dynamicWordList : [];
     }
-
-    // private addGameDictWords(dictionary: Dictionary) {
-    //     // this.clearWords();
-    //     dictionary.words.forEach((word: string) => {
-    //         let wordLength = word.length;
-    //         for (wordLength; wordLength <= MAX_WORD_LENGTH; wordLength++) {
-    //             this.getDynamicWordList[wordLength].add(word);
-    //         }
-    //     });
-    // }
-
-    // private ready() {
-    //     this.dictReady$.next(true);
-    // }
-
-    // private clearWords() {
-    //     this.dynamicWordList = new Map<string, Set<string>[]>();
-    //     for (let i = 0; i <= MAX_WORD_LENGTH; i++) {
-    //         this.dynamicWordList.push(new Set());
-    //     }
-    // }
 }

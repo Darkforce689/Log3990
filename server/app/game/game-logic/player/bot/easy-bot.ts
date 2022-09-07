@@ -4,6 +4,7 @@ import { LetterBag } from '@app/game/game-logic/board/letter-bag';
 import { RACK_LETTER_COUNT } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotBrain } from '@app/game/game-logic/player/bot/bot';
 import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
 import { Player } from '@app/game/game-logic/player/player';
@@ -26,7 +27,7 @@ export class EasyBotBrain extends BotBrain {
         },
     };
 
-    protected actionPicker(player: Player, game: ServerGame): Action {
+    actionPicker(player: BotPlayer, game: ServerGame): Action {
         const randomValue = Math.random();
         if (randomValue <= EasyBotBrain.actionProbability.play) {
             let action = this.playAction(player, game);
@@ -78,7 +79,7 @@ export class EasyBotBrain extends BotBrain {
         }
     }
 
-    private playAction(player: Player, game: ServerGame): Action {
+    private playAction(player: BotPlayer, game: ServerGame): Action {
         const validWordsList = this.bruteForceStart(game, player);
         const pickedWord: ValidWord = this.randomWordPicker(validWordsList);
         if (pickedWord) {

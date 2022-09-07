@@ -40,9 +40,9 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(launchGame, (id: string) => {
+            socket.on(launchGame, async (id: string) => {
                 try {
-                    this.launchGame(id);
+                    await this.launchGame(id);
                     this.emitPendingGamesToAll();
                 } catch (e) {
                     this.sendError(e, socket);
@@ -94,10 +94,11 @@ export class NewGameSocketHandler {
         return gameId;
     }
 
-    private launchGame(id: string) {
+    private async launchGame(id: string) {
         const gameSettings = this.getPendingGame(id);
-        const gameToken = this.newGameManagerService.launchPendingGame(id);
+        const gameToken = await this.newGameManagerService.launchPendingGame(id, gameSettings);
         this.sendGameStartedToPlayers(id, gameToken, gameSettings);
+        this.deletePendingGame(id);
         // this.sendGameSettingsToPlayers(id, gameToken, gameSettings);
     }
 
@@ -121,6 +122,11 @@ export class NewGameSocketHandler {
     private getPendingGame(id: string): OnlineGameSettings {
         return this.newGameManagerService.getPendingGame(id);
     }
+
+    private deletePendingGame(id: string): void {
+        this.newGameManagerService.deletePendingGame(id);
+    }
+
     private onDisconnect(gameId: string) {
         if (!gameId) {
             return;

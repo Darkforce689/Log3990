@@ -6,11 +6,13 @@ import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { GameCreator } from '@app/game/game-creator/game-creator';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCompilerService } from '@app/game/game-logic/actions/action-compiler.service';
+import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
+import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -67,6 +69,8 @@ export class GameManagerService {
         private dictionaryService: DictionaryService,
         private botInfoService: BotInfoService,
         private botManager: BotManager,
+        protected botMessage: BotMessagesService,
+        protected actionCreator: ActionCreatorService,
     ) {
         this.gameCreator = new GameCreator(
             this.pointCalculator,
@@ -78,6 +82,8 @@ export class GameManagerService {
             this.objectiveCreator,
             this.botInfoService,
             this.botManager,
+            this.botMessage,
+            this.actionCreator,
         );
 
         this.endGame$.subscribe((endOfGame: EndOfGame) => {
@@ -89,8 +95,8 @@ export class GameManagerService {
         });
     }
 
-    createGame(gameToken: string, onlineGameSettings: OnlineGameSettings): ServerGame {
-        const newServerGame = this.gameCreator.createGame(onlineGameSettings, gameToken);
+    async createGame(gameToken: string, onlineGameSettings: OnlineGameSettings): Promise<ServerGame> {
+        const newServerGame = await this.gameCreator.createGame(onlineGameSettings, gameToken);
         this.activeGames.set(gameToken, newServerGame);
         this.linkedClients.set(gameToken, []);
         this.startInactiveGameDestructionTimer(gameToken);

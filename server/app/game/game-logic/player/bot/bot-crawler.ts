@@ -4,7 +4,7 @@ import { Tile } from '@app/game/game-logic/board/tile';
 import { JOKER_CHAR, NOT_FOUND } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
-import { BotBrain } from '@app/game/game-logic/player/bot/bot';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { ValidWord, VERTICAL } from '@app/game/game-logic/player/bot/valid-word';
 import { Player } from '@app/game/game-logic/player/player';
 import { PositionSettings } from '@app/game/game-logic/player/position-settings';
@@ -19,15 +19,15 @@ const MIDDLE_OF_BOARD = 7;
 
 export class BotCrawler {
     constructor(
-        private bot: BotBrain,
+        // private bot: BotBrain,
         private botDictionaryService: BotDictionaryService,
         protected botCalculatorService: BotCalculatorService,
         protected wordValidator: WordSearcher,
     ) {}
 
-    botFirstTurn(player: Player, game: ServerGame) {
+    botFirstTurn(player: BotPlayer, game: ServerGame) {
         for (let rackIndex = 0; rackIndex < player.letterRack.length; rackIndex++) {
-            if (this.bot.timesUp) {
+            if (player.timesUp) {
                 break;
             }
             const startingLetter = player.letterRack[rackIndex].char.toLowerCase();
@@ -56,9 +56,9 @@ export class BotCrawler {
         }
     }
 
-    boardCrawler(startingPosition: Vec2, game: ServerGame, player: Player, isVerticalFlag: boolean) {
+    boardCrawler(startingPosition: Vec2, game: ServerGame, player: BotPlayer, isVerticalFlag: boolean) {
         const grid: Tile[][] = game.board.grid;
-        if (this.bot.timesUp) {
+        if (player.timesUp) {
             return;
         }
         let x = startingPosition.x;
@@ -311,7 +311,8 @@ export class BotCrawler {
             const pointEstimation = this.botCalculatorService.testPlaceLetterCalculation(wordData.numberOfLettersPlaced, words);
             wordData.value = pointEstimation;
             wordData.adjacentWords = validWords;
-            this.bot.validWordList.push(wordData);
+            // TODO FIX:
+            // this.bot.validWordList.push(wordData);
         }
     }
 }

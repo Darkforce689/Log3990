@@ -24,13 +24,13 @@ export class NewGameManagerService {
         return gameId;
     }
 
-    launchPendingGame(id: string, gameSettings?: OnlineGameSettingsUI): string {
+    async launchPendingGame(id: string, gameSettings?: OnlineGameSettingsUI): Promise<string> {
         if (!gameSettings) {
             gameSettings = this.pendingGames.get(id);
         }
         const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken(onlineGameSettingsUI);
-        this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
+        await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
         return id;
     }
 
@@ -78,10 +78,11 @@ export class NewGameManagerService {
         return this.pendingGames.has(id);
     }
 
-    private startGame(gameToken: string, gameSettings: OnlineGameSettings) {
-        const newGame = this.gameMaster.createGame(gameToken, gameSettings);
-        this.deletePendingGame(gameSettings.id);
+    private async startGame(gameToken: string, gameSettings: OnlineGameSettings): Promise<OnlineGameSettings> {
+        const newGame = await this.gameMaster.createGame(gameToken, gameSettings);
+        gameSettings.playerNames = newGame.players.map((player) => player.name);
         newGame.start();
+        return gameSettings;
     }
 
     private generateId(): string {

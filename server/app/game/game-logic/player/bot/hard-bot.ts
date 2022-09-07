@@ -4,6 +4,7 @@ import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { RACK_LETTER_COUNT } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotBrain } from '@app/game/game-logic/player/bot/bot';
 import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
 import { Player } from '@app/game/game-logic/player/player';
@@ -11,7 +12,7 @@ import { Player } from '@app/game/game-logic/player/player';
 export class HardBotBrain extends BotBrain {
     bestWordList: ValidWord[] = [];
 
-    protected actionPicker(player: Player, game: ServerGame): Action {
+    actionPicker(player: BotPlayer, game: ServerGame): Action {
         const validWordsList = this.bruteForceStart(game, player);
         if (validWordsList.length === 0) {
             return this.exchangeAction(player, game);
