@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { LoadingGameComponent } from '@app/components/modals/loading-game/loading-game.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
-import { WaitingForPlayerComponent } from '@app/components/modals/waiting-for-player/waiting-for-player.component';
+import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { GameSettings } from '@app/game-logic/game/games/game-settings.interface';
 import { BotDifficulty } from '@app/services/bot-difficulty';
@@ -14,7 +14,7 @@ import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/in
 import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { Subscription } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { takeWhile } from 'rxjs/operators';
 
 @Component({
     selector: 'app-new-game-page',
@@ -24,15 +24,15 @@ import { first } from 'rxjs/operators';
 export class NewGamePageComponent {
     @ViewChild(MatRipple) ripple: MatRipple;
 
-    gameSettings: GameSettings;
     startGame$$: Subscription;
     gameMode = GameMode.Classic;
     gameReady$$: Subscription;
 
     constructor(
+        private dialog: MatDialog,
+        // TODO : REMOVE AND EXTRACT NEXT SERVICES
         private router: Router,
         private gameManager: GameManagerService,
-        private dialog: MatDialog,
         private socketHandler: NewOnlineGameSocketHandler,
     ) {}
 
@@ -66,7 +66,6 @@ export class NewGamePageComponent {
             if (!gameSettings) {
                 return;
             }
-            this.gameSettings = gameSettings;
             const onlineGameSettings: OnlineGameSettingsUI = {
                 ...gameSettings,
                 gameMode: this.gameMode,
@@ -89,7 +88,7 @@ export class NewGamePageComponent {
         secondDialogConfig.autoFocus = true;
         secondDialogConfig.disableClose = true;
 
-        const secondDialogRef = this.dialog.open(WaitingForPlayerComponent, secondDialogConfig);
+        const secondDialogRef = this.dialog.open(WaitingForOtherPlayersComponent, secondDialogConfig);
         secondDialogRef.afterOpened().subscribe(() => {
             this.socketHandler.isDisconnected$.subscribe((isDisconnected) => {
                 if (isDisconnected) {
@@ -97,21 +96,15 @@ export class NewGamePageComponent {
                     this.socketHandler.disconnectSocket();
                 }
             });
-            this.startGame$$ = this.socketHandler.startGame$.pipe(takeWhile((val) => !val, true)).subscribe((gameSettings) => {
+            this.startGame$$ = this.socketHandler.gameStarted$.pipe(takeWhile((val) => !val, true)).subscribe((gameSettings) => {
                 if (!gameSettings) {
                     return;
                 }
                 secondDialogRef.close();
+                console.log('openWaitingForPlayer secondDialogRef.afterOpened');
                 this.startOnlineGame(username, gameSettings);
                 this.socketHandler.disconnectSocket();
             });
-        });
-        secondDialogRef.afterClosed().subscribe((botDifficulty) => {
-            if (botDifficulty) {
-                this.socketHandler.disconnectSocket();
-                this.gameSettings.botDifficulty = botDifficulty;
-                this.startSoloGame();
-            }
         });
     }
 
@@ -122,22 +115,7 @@ export class NewGamePageComponent {
         pendingGamesDialogConfig.disableClose = true;
         pendingGamesDialogConfig.minWidth = 550;
         pendingGamesDialogConfig.data = this.gameMode;
-        const dialogRef = this.dialog.open(PendingGamesComponent, pendingGamesDialogConfig);
-        dialogRef
-            .afterClosed()
-            .pipe(first())
-            .subscribe((name: string) => {
-                if (!name) {
-                    return;
-                }
-                this.startGame$$ = this.socketHandler.startGame$.pipe(takeWhile((val) => !val, true)).subscribe((onlineGameSettings) => {
-                    if (!onlineGameSettings) {
-                        return;
-                    }
-                    this.startOnlineGame(name, onlineGameSettings);
-                    this.socketHandler.disconnectSocket();
-                });
-            });
+        this.dialog.open(PendingGamesComponent, pendingGamesDialogConfig);
     }
 
     openLoadingGame(): MatDialogRef<LoadingGameComponent> {
@@ -154,6 +132,7 @@ export class NewGamePageComponent {
         return loadingGameDialog;
     }
 
+    // TODO :  REMOVE AND EXTRACT NEXT
     private startOnlineGame(userName: string, onlineGameSettings: OnlineGameSettings) {
         const gameToken = onlineGameSettings.id;
         const userAuth: UserAuth = { playerName: userName, gameToken };

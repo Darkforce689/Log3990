@@ -68,7 +68,7 @@ describe('NewOnlineGameSocketHandler', () => {
 
         (service.socket as any).peerSideEmit('gameJoined', gameSettings);
         service['listenForGameToken']();
-        service.startGame$.pipe(first()).subscribe((gameSettingsServer) => {
+        service.gameStarted$.pipe(first()).subscribe((gameSettingsServer) => {
             expect(gameSettingsServer).not.toBeUndefined();
         });
         expect(service.disconnectSocket).toHaveBeenCalled();
@@ -109,7 +109,7 @@ describe('NewOnlineGameSocketHandler', () => {
     });
 
     it('should resetGameToken ', () => {
-        service.startGame$.subscribe((value) => {
+        service.gameStarted$.subscribe((value) => {
             expect(value).toBeUndefined();
         });
         service.resetGameToken();

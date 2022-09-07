@@ -1,4 +1,3 @@
-import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
@@ -19,18 +18,29 @@ export class NewGameManagerService {
         return games;
     }
 
-    createPendingGame(gameSetting: OnlineGameSettingsUI): string {
+    createPendingGame(gameSettings: OnlineGameSettingsUI): string {
         const gameId = this.generateId();
-        this.pendingGames.set(gameId, gameSetting);
+        this.pendingGames.set(gameId, gameSettings);
         return gameId;
     }
 
-    createSoloGame(gameSetting: OnlineGameSettingsUI): string {
-        const gameId = this.createPendingGame(gameSetting);
-        const opponent = new BotPlayer([gameSetting.playerName]);
-        /* const gameToken = */ this.joinPendingGame(gameId, opponent.name);
-        return gameId;
+    launchPendingGame(id: string, gameSettings?: OnlineGameSettingsUI): string {
+        if (!gameSettings) {
+            gameSettings = this.pendingGames.get(id);
+        }
+        const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
+        const gameToken = this.generateGameToken(onlineGameSettingsUI);
+        this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
+        return id;
     }
+
+    // createSoloGame(gameSettings: OnlineGameSettingsUI): string {
+    //     console.log('NewGameManagerService : createSoloGame');
+    //     const gameId = this.createPendingGame(gameSettings);
+    //     // const opponent = new BotPlayer([gameSetting.playerName]);
+    //     /* const gameToken = */ this.launchPendingGame(gameId, gameSettings);
+    //     return gameId;
+    // }
 
     joinPendingGame(id: string, name: string): string | undefined {
         if (!this.isPendingGame(id)) {
@@ -40,13 +50,11 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        if (gameSettings.opponentNames) {
-            return;
-        }
-        gameSettings.opponentNames = [name];
-        const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
-        const gameToken = this.generateGameToken(onlineGameSettingsUI);
-        this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
+        // if (gameSettings.opponentNames) {
+        //     return;
+        // }
+        gameSettings.opponentNames.push(name);
+        // this.launchPendingGame(id, gameSettings);
         return id;
     }
 
@@ -71,8 +79,9 @@ export class NewGameManagerService {
     }
 
     private startGame(gameToken: string, gameSettings: OnlineGameSettings) {
-        this.gameMaster.createGame(gameToken, gameSettings);
+        const newGame = this.gameMaster.createGame(gameToken, gameSettings);
         this.deletePendingGame(gameSettings.id);
+        newGame.start();
     }
 
     private generateId(): string {
@@ -81,8 +90,8 @@ export class NewGameManagerService {
         return gameId;
     }
 
-    private generateGameToken(gameSetting: OnlineGameSettings): string {
-        return gameSetting.id;
+    private generateGameToken(gameSettings: OnlineGameSettings): string {
+        return gameSettings.id;
     }
 
     private toOnlineGameSettings(id: string, settings: OnlineGameSettingsUI | undefined): OnlineGameSettings {

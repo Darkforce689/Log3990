@@ -9,15 +9,18 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class NewOnlineGameSocketHandler {
-    pendingGameId$ = new Subject<string>();
+    pendingGameId$ = new BehaviorSubject<string | undefined>(undefined);
     pendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
-    startGame$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
+    gameSettings$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
+    gameStarted$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
+    isGameOwner: boolean = false;
     isDisconnected$ = new Subject<boolean>();
     error$ = new Subject<string>();
     socket: Socket;
 
     resetGameToken() {
-        this.startGame$.next(undefined);
+        this.gameStarted$.next(undefined);
+        this.isGameOwner = false;
     }
 
     createGame(gameSettings: OnlineGameSettingsUI) {
@@ -26,7 +29,8 @@ export class NewOnlineGameSocketHandler {
             throw Error('Games Settings are not valid. Cannot create a game.');
         }
         this.socket.emit('createGame', gameSettings);
-        this.waitForSecondPlayer();
+        this.isGameOwner = true;
+        this.waitForOtherPlayers();
     }
 
     listenForPendingGames() {
@@ -41,8 +45,20 @@ export class NewOnlineGameSocketHandler {
             throw Error("Can't join game, not connected to server");
         }
         this.socket.emit('joinGame', id, playerName);
-        this.listenForGameToken();
+        this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
+        this.listenForGameStart();
+    }
+
+    launchGame() {
+        if (!this.socket.connected) {
+            throw Error("Can't launch game, not connected to server");
+        }
+        if (this.pendingGameId$.value === undefined) {
+            throw Error("Can't launch game, no pending game id");
+        }
+        this.socket.emit('launchGame', this.pendingGameId$.value);
+        this.listenForGameStart();
     }
 
     disconnectSocket() {
@@ -65,16 +81,23 @@ export class NewOnlineGameSocketHandler {
         });
     }
 
-    private waitForSecondPlayer() {
+    private waitForOtherPlayers() {
         this.socket.on('pendingGameId', (pendingGameid: string) => {
             this.pendingGameId$.next(pendingGameid);
         });
-        this.listenForGameToken();
+        this.listenForUpdatedGameSettings();
     }
 
-    private listenForGameToken() {
-        this.socket.on('gameJoined', (gameSetting: OnlineGameSettings) => {
-            this.startGame$.next(gameSetting);
+    private listenForUpdatedGameSettings() {
+        this.socket.on('gameJoined', (gameSettings: OnlineGameSettings) => {
+            this.gameSettings$.next(gameSettings);
+            // this.disconnectSocket();
+        });
+    }
+
+    private listenForGameStart() {
+        this.socket.on('gameStarted', (gameSettings: OnlineGameSettings) => {
+            this.gameStarted$.next(gameSettings);
             this.disconnectSocket();
         });
     }

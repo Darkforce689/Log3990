@@ -14,7 +14,7 @@ import { HeaderBarComponent } from '@app/components/header-bar/header-bar.compon
 import { LoadingGameComponent } from '@app/components/modals/loading-game/loading-game.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
 import { NewSoloGameFormComponent } from '@app/components/modals/new-solo-game-form/new-solo-game-form.component';
-import { WaitingForPlayerComponent } from '@app/components/modals/waiting-for-player/waiting-for-player.component';
+import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game-logic/constants';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { routes } from '@app/modules/app-routing.module';
@@ -202,7 +202,7 @@ describe('ClassicGameComponent', () => {
             close: () => {
                 return;
             },
-        } as MatDialogRef<WaitingForPlayerComponent>);
+        } as MatDialogRef<WaitingForOtherPlayersComponent>);
         component.openMultiGameForm();
         expect(matDialog.open).toHaveBeenCalled();
         expect(component.gameSettings).toBeUndefined();
@@ -230,7 +230,7 @@ describe('ClassicGameComponent', () => {
             close: () => {
                 return;
             },
-        } as MatDialogRef<WaitingForPlayerComponent>);
+        } as MatDialogRef<WaitingForOtherPlayersComponent>);
         component.openWaitingForPlayer('Sam');
         const soloGameSettings = component.gameSettings;
         soloGameSettings.botDifficulty = 'easy';
@@ -259,7 +259,7 @@ describe('ClassicGameComponent', () => {
             close: () => {
                 return;
             },
-        } as MatDialogRef<WaitingForPlayerComponent>);
+        } as MatDialogRef<WaitingForOtherPlayersComponent>);
         component.openWaitingForPlayer('Sam');
         mockIsDisconnect$.next(true);
         mockStartGame$.next(undefined);
@@ -288,7 +288,7 @@ describe('ClassicGameComponent', () => {
             close: () => {
                 return;
             },
-        } as MatDialogRef<WaitingForPlayerComponent>);
+        } as MatDialogRef<WaitingForOtherPlayersComponent>);
 
         component.openWaitingForPlayer('Sam');
         mockIsDisconnect$.next(false);
@@ -316,7 +316,7 @@ describe('ClassicGameComponent', () => {
             close: () => {
                 return;
             },
-        } as MatDialogRef<WaitingForPlayerComponent>);
+        } as MatDialogRef<WaitingForOtherPlayersComponent>);
         component.openPendingGames();
         mockStartGame$.next(onlineGameSettings);
         expect(matDialog.open).toHaveBeenCalled();
@@ -335,7 +335,7 @@ describe('ClassicGameComponent', () => {
             close: () => {
                 return;
             },
-        } as MatDialogRef<WaitingForPlayerComponent>);
+        } as MatDialogRef<WaitingForOtherPlayersComponent>);
         component.openPendingGames();
         mockStartGame$.next(undefined);
         expect(matDialog.open).toHaveBeenCalled();
@@ -351,7 +351,7 @@ describe('ClassicGameComponent', () => {
             close: () => {
                 return;
             },
-        } as MatDialogRef<WaitingForPlayerComponent>);
+        } as MatDialogRef<WaitingForOtherPlayersComponent>);
         component.openPendingGames();
         mockStartGame$.next(undefined);
         expect(matDialog.open).toHaveBeenCalled();

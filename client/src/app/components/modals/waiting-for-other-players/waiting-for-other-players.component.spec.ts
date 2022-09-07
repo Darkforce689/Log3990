@@ -5,15 +5,15 @@ import { ConvertToSoloFormComponent } from '@app/components/modals/convert-to-so
 import { AppMaterialModule } from '@app/modules/material.module';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { of } from 'rxjs';
-import { WaitingForPlayerComponent } from './waiting-for-player.component';
+import { WaitingForOtherPlayersComponent } from './waiting-for-other-players.component';
 
 const mockDialogRef = {
     close: jasmine.createSpy('close'),
 };
 
-describe('WaitingForPlayerComponent', () => {
-    let component: WaitingForPlayerComponent;
-    let fixture: ComponentFixture<WaitingForPlayerComponent>;
+describe('WaitingForOtherPlayersComponent', () => {
+    let component: WaitingForOtherPlayersComponent;
+    let fixture: ComponentFixture<WaitingForOtherPlayersComponent>;
     let onlineSocketHandlerSpy: jasmine.SpyObj<NewOnlineGameSocketHandler>;
     let matDialog: jasmine.SpyObj<MatDialog>;
 
@@ -32,12 +32,12 @@ describe('WaitingForPlayerComponent', () => {
                 { provide: MatDialog, useValue: matDialog },
                 { provide: NewOnlineGameSocketHandler, useValue: onlineSocketHandlerSpy },
             ],
-            declarations: [WaitingForPlayerComponent],
+            declarations: [WaitingForOtherPlayersComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(WaitingForPlayerComponent);
+        fixture = TestBed.createComponent(WaitingForOtherPlayersComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -63,7 +63,7 @@ describe('WaitingForPlayerComponent', () => {
         const convertButton = dom.querySelectorAll('button')[1];
         spyOn(component, 'convertToModeSolo');
         convertButton.click();
-        expect(component.convertToModeSolo).toHaveBeenCalled();
+        expect(component.launchGame).toHaveBeenCalled();
     });
 
     it('converToSolo should open convertToSolo dialog and get bot difficulty', () => {
@@ -77,7 +77,7 @@ describe('WaitingForPlayerComponent', () => {
             },
         } as MatDialogRef<ConvertToSoloFormComponent>);
 
-        component.convertToModeSolo();
+        component.launchGame();
         expect(component.botDifficulty).toEqual('easy');
         expect(component.isSoloStarted).toBeTrue();
         expect(mockDialogRef.close).toHaveBeenCalledWith('easy');
@@ -93,7 +93,7 @@ describe('WaitingForPlayerComponent', () => {
                 return;
             },
         } as MatDialogRef<ConvertToSoloFormComponent>);
-        component.convertToModeSolo();
+        component.launchGame();
         expect(component.botDifficulty).toBeUndefined();
         expect(component.isSoloStarted).toBeFalse();
     });
