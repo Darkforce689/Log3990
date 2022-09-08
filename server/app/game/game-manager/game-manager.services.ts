@@ -14,7 +14,7 @@ import { GameStateToken } from '@app/game/game-logic/interface/game-state.interf
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager.service';
+import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -187,11 +187,6 @@ export class GameManagerService {
                 this.deleteInactiveGame(gameToken);
                 return;
             }
-
-            // if (currentLinkedClient.length !== 2) {
-            //     this.deleteInactiveGame(gameToken);
-            //     return;
-            // }
         }, NEW_GAME_TIMEOUT);
     }
 

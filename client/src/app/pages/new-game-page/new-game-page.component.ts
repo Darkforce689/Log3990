@@ -44,14 +44,14 @@ export class NewGamePageComponent {
     }
 
     openSoloGameForm() {
-        this.openGameForm(false);
+        this.openGameForm();
     }
 
     openMultiGameForm() {
-        this.openGameForm(true);
+        this.openGameForm();
     }
 
-    openGameForm(isMultiplayerGame: boolean) {
+    openGameForm() {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.autoFocus = true;
         dialogConfig.disableClose = true;
@@ -66,7 +66,6 @@ export class NewGamePageComponent {
                 ...gameSettings,
                 gameMode: this.gameMode,
                 playerNames: [gameSettings.playerName],
-                isMultiplayerGame,
                 // TODO GL3A22107-5 : Implement new game parameter :
                 botDifficulty: BotDifficulty.Expert,
                 // TODO GL3A22107-5 : Implement new game parameter :

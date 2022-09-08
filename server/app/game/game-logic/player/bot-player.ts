@@ -4,9 +4,9 @@ import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
+import { ValidWord } from '@app/game/game-logic/interface/valid-word';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager.service';
-import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { getRandomInt } from '@app/game/game-logic/utils';
 import { BehaviorSubject, takeUntil, timer } from 'rxjs';
@@ -17,24 +17,14 @@ export class BotPlayer extends Player {
     private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
     constructor(
-        // private boardService: BoardService,
-        // private dictionaryService: DictionaryService,
-        // protected botCalculatorService: BotCalculatorService,
-        // protected wordValidator: WordSearcher,
         // protected botMessage: BotMessagesService,
-        // protected gameInfo: GameInfoService,
-        // protected commandExecuter: CommandExecuterService,
-        // protected actionCreator: ActionCreatorService,
-        // protected botHttpService: BotHttpService,
         protected botInfoService: BotInfoService,
         protected botManager: BotManager,
         protected botDifficulty: BotDifficulty,
         protected botMessage: BotMessagesService,
         protected actionCreator: ActionCreatorService,
     ) {
-        super('PlaceholderName');
-        // this.validWordList = [];
-        // this.botCrawler = new BotCrawler(this, this.dictionaryService, this.botCalculatorService, this.wordValidator);
+        super('BotPlaceholderName');
     }
 
     generateAction(game: ServerGame): void {

@@ -34,14 +34,6 @@ export class NewGameManagerService {
         return id;
     }
 
-    // createSoloGame(gameSettings: OnlineGameSettingsUI): string {
-    //     console.log('NewGameManagerService : createSoloGame');
-    //     const gameId = this.createPendingGame(gameSettings);
-    //     // const opponent = new BotPlayer([gameSetting.playerName]);
-    //     /* const gameToken = */ this.launchPendingGame(gameId, gameSettings);
-    //     return gameId;
-    // }
-
     joinPendingGame(id: string, name: string): string | undefined {
         if (!this.isPendingGame(id)) {
             return;
@@ -50,11 +42,7 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        // if (gameSettings.playerNames) {
-        //     return;
-        // }
         gameSettings.playerNames.push(name);
-        // this.launchPendingGame(id, gameSettings);
         return id;
     }
 

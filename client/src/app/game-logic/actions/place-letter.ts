@@ -6,14 +6,8 @@ import { Player } from '@app/game-logic/player/player';
 
 export class PlaceLetter extends Action {
     affectedCoords: Vec2[];
-    // private lettersToRemoveInRack: Letter[];
-    // private letterFactory = new LetterCreator();
 
-    constructor(
-        player: Player,
-        public word: string,
-        public placement: PlacementSetting, // private pointCalculator: PointCalculatorService, // private wordSearcher: WordSearcher,
-    ) {
+    constructor(player: Player, public word: string, public placement: PlacementSetting) {
         super(player);
     }
 

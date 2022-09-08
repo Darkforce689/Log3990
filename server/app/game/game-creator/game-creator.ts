@@ -9,7 +9,7 @@ import { GameStateToken } from '@app/game/game-logic/interface/game-state.interf
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager.service';
+import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -37,8 +37,6 @@ export class GameCreator {
 
     async createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): Promise<ServerGame> {
         const newServerGame = this.createNewGame(onlineGameSettings, gameToken);
-        // const firstPlayerName = onlineGameSettings.playerName;
-        // const playerNames = [firstPlayerName, ...onlineGameSettings.playerNames];
         const players = await this.createPlayers(
             onlineGameSettings.numberOfPlayers,
             onlineGameSettings.playerNames,

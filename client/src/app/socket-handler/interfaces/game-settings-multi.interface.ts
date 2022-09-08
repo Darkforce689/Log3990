@@ -4,12 +4,10 @@ import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 export interface OnlineGameSettingsUI {
     gameMode: GameMode;
     timePerTurn: number;
-    // playerName: string;
     playerNames: string[];
     randomBonus: boolean;
     dictTitle: string;
     dictDesc?: string;
-    isMultiplayerGame: boolean;
     botDifficulty: BotDifficulty;
     numberOfPlayers: number;
 }

@@ -1,4 +1,4 @@
-import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { ValidWord } from '@app/game/game-logic/interface/valid-word';
 
 export interface DictInitialSearchSettings {
     partWord: ValidWord;

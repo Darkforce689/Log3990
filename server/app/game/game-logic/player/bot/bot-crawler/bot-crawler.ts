@@ -3,13 +3,13 @@ import { Direction } from '@app/game/game-logic/actions/direction.enum';
 import { Tile } from '@app/game/game-logic/board/tile';
 import { JOKER_CHAR, NOT_FOUND } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
+import { PositionSettings } from '@app/game/game-logic/interface/position-settings';
+import { ValidWord, VERTICAL } from '@app/game/game-logic/interface/valid-word';
 import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { ValidWord, VERTICAL } from '@app/game/game-logic/player/bot/valid-word';
 import { Player } from '@app/game/game-logic/player/player';
-import { PositionSettings } from '@app/game/game-logic/player/position-settings';
 import { getRandomInt } from '@app/game/game-logic/utils';
-import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionnary';
+import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionary/bot-dictionary';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 
 const EMPTY = 0;
@@ -19,7 +19,6 @@ const MIDDLE_OF_BOARD = 7;
 
 export class BotCrawler {
     constructor(
-        // private bot: BotBrain,
         private botDictionaryService: BotDictionaryService,
         protected botCalculatorService: BotCalculatorService,
         protected wordValidator: WordSearcher,

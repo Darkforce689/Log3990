@@ -1,13 +1,13 @@
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { MAX_WORD_LENGTH, NOT_FOUND, RACK_LETTER_COUNT, RESET, START_OF_STRING } from '@app/game/game-logic/constants';
-import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { ValidWord } from '@app/game/game-logic/interface/valid-word';
+import { DictionaryHelper } from '@app/game/game-logic/validator/dictionary/bot-dictionary/dictionary-helper';
 import {
     DictInitialSearchSettings,
     DictRegexSettings,
     DictSubSearchSettings,
     DictWholeSearchSettings
 } from '@app/game/game-logic/validator/dictionary/dict-settings';
-import { DictionaryHelper } from '@app/game/game-logic/validator/dictionary/dictionary-helper';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { Service } from 'typedi';
 
@@ -16,26 +16,6 @@ export class BotDictionaryService {
     static dictionaryHelper = new DictionaryHelper();
 
     constructor(private dictionaryService: DictionaryService) {}
-
-    // fetchDictionary(dictTitle: string): BehaviorSubject<boolean> {
-    // if (dictTitle === DEFAULT_DICTIONARY_TITLE && this.isDefaultDict) {
-    //     this.ready();
-    //     return this.dictReady$;
-    // }
-    // if (dictTitle === DEFAULT_DICTIONARY_TITLE && !this.isDefaultDict) {
-    //     // this.addDefault();
-    //     this.ready();
-    //     return this.dictReady$;
-    // }
-    // this.dictReady$.next(false);
-    // this.dictHttpService.getDict(dictTitle).subscribe((response) => {
-    //     const dictionary = response as Dictionary;
-    //     this.addWords(dictionary);
-    //     this.isDefaultDict = false;
-    //     this.ready();
-    // });
-    // return this.dictReady$;
-    // }
 
     isWordInDict(word: string, gameToken: string): boolean {
         const dict = this.getDynamicWordList(gameToken);

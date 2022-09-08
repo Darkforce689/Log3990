@@ -1,6 +1,6 @@
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { ARRAY_BEGIN, FIRST_LETTER_INDEX, NOT_FOUND, RACK_LETTER_COUNT, RESET, START_OF_STRING } from '@app/game/game-logic/constants';
-import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { ValidWord } from '@app/game/game-logic/interface/valid-word';
 import {
     DictInitialSearchSettings,
     DictRegexSettings,

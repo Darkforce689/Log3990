@@ -17,12 +17,7 @@ export class UIPlace implements UIAction {
     direction = Direction.Horizontal;
     pointerPosition: { x: number; y: number } | null = null;
 
-    constructor(
-        private info: GameInfoService,
-        // private pointCalculator: PointCalculatorService,
-        // private wordSearcher: WordSearcher,
-        private boardService: BoardService,
-    ) {}
+    constructor(private info: GameInfoService, private boardService: BoardService) {}
 
     get canBeCreated(): boolean {
         return this.orderedIndexes.length > 0 && this.concernedIndexes.size > 0;

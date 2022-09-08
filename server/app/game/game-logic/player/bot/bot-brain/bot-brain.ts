@@ -5,27 +5,22 @@ import { ActionCreatorService } from '@app/game/game-logic/actions/action-creato
 import { Tile } from '@app/game/game-logic/board/tile';
 import { MIDDLE_OF_BOARD } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
+import { HORIZONTAL, ValidWord } from '@app/game/game-logic/interface/valid-word';
 import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotCrawler } from '@app/game/game-logic/player/bot/bot-crawler';
-import { HORIZONTAL, ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { BotCrawler } from '@app/game/game-logic/player/bot/bot-crawler/bot-crawler';
 import { Player } from '@app/game/game-logic/player/player';
-import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionnary';
+import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionary/bot-dictionary';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 
 export abstract class BotBrain {
     private botCrawler: BotCrawler;
-    // private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
     constructor(
-        // private boardService: BoardService,
         private botDictionaryService: BotDictionaryService,
         protected botCalculatorService: BotCalculatorService,
         protected wordValidator: WordSearcher,
         protected actionCreator: ActionCreatorService,
-        // protected gameInfo: GameInfoService,
-        // protected commandExecuter: CommandExecuterService,
-        // protected botHttpService: BotHttpService,
         protected botType: BotDifficulty,
     ) {
         this.botCrawler = new BotCrawler(this.botDictionaryService, this.botCalculatorService, this.wordValidator);

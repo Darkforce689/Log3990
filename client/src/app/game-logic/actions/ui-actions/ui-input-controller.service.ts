@@ -24,13 +24,7 @@ export class UIInputControllerService {
         return this.activeAction ? this.activeAction.canBeCreated : false;
     }
 
-    constructor(
-        private avs: ActionValidatorService,
-        private info: GameInfoService,
-        // private pointCalculator: PointCalculatorService,
-        // private wordSearcher: WordSearcher,
-        private boardService: BoardService,
-    ) {
+    constructor(private avs: ActionValidatorService, private info: GameInfoService, private boardService: BoardService) {
         this.info.endTurn$?.subscribe(() => {
             if (this.activeAction instanceof UIPlace) {
                 this.discardAction();
@@ -88,7 +82,7 @@ export class UIInputControllerService {
             case InputComponent.Board:
                 if (!(this.activeAction instanceof UIPlace)) {
                     this.discardAction();
-                    this.activeAction = new UIPlace(this.info, /* this.pointCalculator, this.wordSearcher, */ this.boardService);
+                    this.activeAction = new UIPlace(this.info, this.boardService);
                     return;
                 }
                 break;

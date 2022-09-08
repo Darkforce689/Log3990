@@ -10,10 +10,8 @@ import { Player } from '@app/game-logic/player/player';
     providedIn: 'root',
 })
 export class ActionCreatorService {
-    // constructor(private pointCalculatorService: PointCalculatorService, private wordSearcher: WordSearcher) {}
-
     createPlaceLetter(player: Player, wordToPlace: string, placementSetting: PlacementSetting): PlaceLetter {
-        return new PlaceLetter(player, wordToPlace, placementSetting /* this.pointCalculatorService, this.wordSearcher*/);
+        return new PlaceLetter(player, wordToPlace, placementSetting);
     }
 
     createExchange(player: Player, lettersToExchange: Letter[]): ExchangeLetter {

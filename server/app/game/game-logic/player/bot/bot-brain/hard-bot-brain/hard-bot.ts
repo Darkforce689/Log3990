@@ -4,9 +4,9 @@ import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { RACK_LETTER_COUNT } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
+import { ValidWord } from '@app/game/game-logic/interface/valid-word';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotBrain } from '@app/game/game-logic/player/bot/bot';
-import { ValidWord } from '@app/game/game-logic/player/bot/valid-word';
+import { BotBrain } from '@app/game/game-logic/player/bot/bot-brain/bot-brain';
 import { Player } from '@app/game/game-logic/player/player';
 
 export class HardBotBrain extends BotBrain {
