@@ -89,7 +89,7 @@ describe('JoinOnlineGameComponent', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const startGameButton = dom.querySelectorAll('button')[1];
         // eslint-disable-next-line dot-notation
-        component['playerName'] = 'Simon';
+        component['playerNames'] = ['Simon'];
         component.myName.setValue('Simon');
         component.myName.updateValueAndValidity();
         fixture.detectChanges();

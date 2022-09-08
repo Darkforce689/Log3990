@@ -54,6 +54,7 @@ export class GameManagerService {
         });
     }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     // createGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
     //     if (this.game && this.game instanceof OfflineGame) {
     //         this.stopGame();
@@ -70,6 +71,7 @@ export class GameManagerService {
     //     return dictReady$;
     // }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     // createSpecialGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
     //     const newGame = this.gameCreator.createSpecialOfflineGame(gameSettings);
     //     this.game = newGame;
@@ -86,7 +88,7 @@ export class GameManagerService {
     // }
 
     /* TODO GL3A22107-5 : Instead of migrating from OnlineGame -> OfflineGame,
-     * Game should stay online, opponent should be replaced with "Server Bot"
+     * Game should always stay online, opponent should be replaced with "Server Bot"
      * Also, find more appropriate method name
      */
     instanciateGameFromForfeitedState(forfeitedGameState: ForfeitedGameState) {
@@ -180,6 +182,7 @@ export class GameManagerService {
         (this.game as OfflineGame).resume(activePlayerIndex);
     }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     // private createConvertedGame(forfeitedGameState: ForfeitedGameState, isSpecial: boolean) {
     //     const timePerTurn = (this.game as OnlineGame).timePerTurn;
     //     this.stopGame();
@@ -223,6 +226,7 @@ export class GameManagerService {
         });
     }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     // private setupOfflineGame(gameSettings: GameSettings) {
     //     const playerName = gameSettings.playerName;
     //     const botDifficulty = gameSettings.botDifficulty;
@@ -247,6 +251,7 @@ export class GameManagerService {
         });
     }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     // private createOfflinePlayers(playerName: string, botDifficulty: string): Player[] {
     //     const user = new User(playerName);
     //     const bot = this.botService.createBot(playerName, botDifficulty);
@@ -278,6 +283,7 @@ export class GameManagerService {
         return this.gameCreator.createSpecialOnlineGame(gameCreationParams);
     }
 
+    // TODO GL3A22107-5 : Should be changed/removed
     // private createLoadedGame(gameCreationParams: OfflineGameCreationParams, isSpecial: boolean) {
     //     const isLoaded = true;
     //     if (isSpecial) {

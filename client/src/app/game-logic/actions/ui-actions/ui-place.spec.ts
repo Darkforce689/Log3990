@@ -8,17 +8,14 @@ import {
     EMPTY_CHAR,
     JOKER_CHAR,
     MIDDLE_OF_BOARD,
-    RACK_LETTER_COUNT,
+    RACK_LETTER_COUNT
 } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { getRandomInt } from '@app/game-logic/utils';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 import { UIPlace } from './ui-place';
 
 class MockGameInfoService {
@@ -34,20 +31,12 @@ describe('UIPlace', () => {
     let player: Player;
     let action: UIPlace;
     let boardService: BoardService;
-    let pointCalculator: PointCalculatorService;
-    let wordSearcher: WordSearcher;
     let info: GameInfoService;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                { provide: DictionaryService, useValue: dict },
-                { provide: GameInfoService, useClass: MockGameInfoService },
-            ],
+            providers: [{ provide: GameInfoService, useClass: MockGameInfoService }],
         });
         boardService = TestBed.inject(BoardService);
-        pointCalculator = TestBed.inject(PointCalculatorService);
-        wordSearcher = TestBed.inject(WordSearcher);
         player = new User('p1');
         player.letterRack = [
             { char: 'A', value: 0 },
@@ -61,7 +50,7 @@ describe('UIPlace', () => {
         info = TestBed.inject(GameInfoService);
         info.players = [player, new User('opponent')];
         info.user = player;
-        action = new UIPlace(info, pointCalculator, wordSearcher, boardService);
+        action = new UIPlace(info, boardService);
     });
 
     it('should create an instance', () => {

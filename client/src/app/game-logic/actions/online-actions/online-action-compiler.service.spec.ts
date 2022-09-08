@@ -17,8 +17,6 @@ import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 import { OnlineAction, OnlineActionType } from '@app/socket-handler/interfaces/online-action.interface';
 
 class UnknownAction extends Action {
@@ -44,10 +42,8 @@ describe('Service: OnlineActionCompiler', () => {
     let board: BoardService;
     let info: GameInfoService;
     let messagesSpy: MessagesService;
-    let wordSearcher: WordSearcher;
     let letters: Letter[];
     let pointCalculator: PointCalculatorService;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     const randomBonus = false;
 
     beforeEach(() => {
@@ -60,7 +56,6 @@ describe('Service: OnlineActionCompiler', () => {
 
         TestBed.configureTestingModule({
             providers: [
-                { provide: DictionaryService, useValue: dict },
                 { provide: MessagesService, useValue: messagesSpy },
                 { provide: ActionValidatorService, useValue: actionValidatorSpy },
             ],
@@ -70,7 +65,6 @@ describe('Service: OnlineActionCompiler', () => {
         timer = TestBed.inject(TimerService);
         board = TestBed.inject(BoardService);
         info = TestBed.inject(GameInfoService);
-        pointCalculator = TestBed.inject(PointCalculatorService);
         game = new OfflineGame(randomBonus, DEFAULT_TIME_PER_TURN, timer, pointCalculator, board, messagesSpy);
         p1 = new User('p1');
         p2 = new User('p2');
@@ -91,7 +85,7 @@ describe('Service: OnlineActionCompiler', () => {
     });
 
     it('should only call compilePlaceLetter', () => {
-        const placeLetter = new PlaceLetter(p1, 'abc', placement, pointCalculator, wordSearcher);
+        const placeLetter = new PlaceLetter(p1, 'abc', placement);
         const onlinePlaceLetterTest: OnlineAction = {
             type: OnlineActionType.Place,
             placementSettings: placeLetter.placement,

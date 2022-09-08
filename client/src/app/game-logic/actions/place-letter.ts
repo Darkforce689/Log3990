@@ -4,6 +4,7 @@ import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.i
 import { Vec2 } from '@app/game-logic/interfaces/vec2';
 import { Player } from '@app/game-logic/player/player';
 
+// TODO GL3A22107-5 : whole class behavior methods -> to be removed / converted to be sent to server
 export class PlaceLetter extends Action {
     affectedCoords: Vec2[];
 
@@ -11,7 +12,6 @@ export class PlaceLetter extends Action {
         super(player);
     }
 
-    // TODO GL3A22107-5 : whole class behavior methods -> to be removed / converted to be sent to server
     protected perform(game: OfflineGame) {
         // const previousGrid = copyGrid(game.board.grid);
         // const validWordList = this.wordSearcher.listOfValidWord(this);

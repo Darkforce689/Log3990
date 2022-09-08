@@ -17,7 +17,6 @@ import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
 import { LeaderboardService } from '@app/leaderboard/leaderboard.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { Observable, Subject } from 'rxjs';
@@ -35,14 +34,10 @@ describe('GameInfoService', () => {
     let pointCalculator: PointCalculatorService;
     let board: BoardService;
     let messages: MessagesService;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     const randomBonus = false;
     const mockEndOfTurn$ = new Subject<void>();
     const mockEndOfGame$ = new Subject<void>();
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [{ provide: DictionaryService, useValue: dict }],
-        });
         service = TestBed.inject(GameInfoService);
         timer = TestBed.inject(TimerService);
         board = TestBed.inject(BoardService);

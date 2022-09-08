@@ -91,7 +91,6 @@ export class NewOnlineGameSocketHandler {
     private listenForUpdatedGameSettings() {
         this.socket.on('gameJoined', (gameSettings: OnlineGameSettings) => {
             this.gameSettings$.next(gameSettings);
-            // this.disconnectSocket();
         });
     }
 

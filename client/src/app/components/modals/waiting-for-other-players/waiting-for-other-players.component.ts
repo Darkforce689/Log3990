@@ -15,33 +15,13 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     botDifficulty: string;
     isSoloStarted: boolean = false;
 
-    constructor(
-        // private dialogRef: MatDialogRef<WaitingForPlayerComponent>,
-        // private dialog: MatDialog,
-        private cdref: ChangeDetectorRef,
-        private socketHandler: NewOnlineGameSocketHandler,
-    ) {}
+    constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler) {}
 
     ngAfterContentChecked() {
         this.cdref.detectChanges();
     }
 
     launchGame() {
-        // const dialogConfig = new MatDialogConfig();
-        // dialogConfig.autoFocus = true;
-        // dialogConfig.disableClose = true;
-        // dialogConfig.minWidth = 60;
-
-        // const botDifficultyForm = this.dialog.open(ConvertToSoloFormComponent, dialogConfig);
-        // botDifficultyForm.afterClosed().subscribe((botDifficulty: string) => {
-        //     if (!botDifficulty) {
-        //         return;
-        //     }
-        //     this.botDifficulty = botDifficulty;
-        //     this.isSoloStarted = true;
-        //     this.dialogRef.close(this.botDifficulty);
-        // });
-
         this.socketHandler.launchGame();
     }
 
@@ -50,6 +30,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     }
 
     cancel() {
+        this.socketHandler.isGameOwner = false;
         this.socketHandler.disconnectSocket();
     }
 

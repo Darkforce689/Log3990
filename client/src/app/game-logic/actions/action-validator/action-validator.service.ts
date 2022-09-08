@@ -163,11 +163,6 @@ export class ActionValidatorService {
 
     private checkExchangeLetter(action: ExchangeLetter): boolean {
         const lettersLeft = this.gameInfo.numberOfLettersRemaining;
-        // TODO GL3A22107-3 : Verify that this isn't a use case for client side
-        // if (action.player instanceof HardBot && lettersLeft >= action.lettersToExchange.length) {
-        //     return true;
-        // }
-
         if (lettersLeft < RACK_LETTER_COUNT) {
             this.sendErrorMessage(
                 'Commande impossible à réaliser : Aucun échange de lettres lorsque la réserve en contient moins de ' + RACK_LETTER_COUNT,

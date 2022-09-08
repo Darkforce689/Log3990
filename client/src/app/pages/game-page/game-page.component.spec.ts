@@ -15,8 +15,6 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 import { routes } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
@@ -222,13 +220,11 @@ describe('GamePageComponent', () => {
     });
 
     it('canPlace coverage', () => {
-        const spyWordSearcher: jasmine.SpyObj<WordSearcher> = jasmine.createSpyObj('WordSearcher', ['']);
         const spyGameInfo: jasmine.SpyObj<GameInfoService> = jasmine.createSpyObj('WordSearcher', ['']);
-        const spyPointCalc: jasmine.SpyObj<PointCalculatorService> = jasmine.createSpyObj('WordSearcher', ['']);
         const spyBoard: jasmine.SpyObj<BoardService> = jasmine.createSpyObj('WordSearcher', ['']);
 
         spyOnProperty(component, 'isItMyTurn').and.returnValue(true);
-        component['inputController'].activeAction = new UIPlace(spyGameInfo, spyPointCalc, spyWordSearcher, spyBoard);
+        component['inputController'].activeAction = new UIPlace(spyGameInfo, spyBoard);
         const ans = component.canPlace;
         expect(ans as unknown).toEqual(true);
     });

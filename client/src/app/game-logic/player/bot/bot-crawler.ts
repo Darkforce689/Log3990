@@ -6,7 +6,7 @@ import { BotCalculatorService } from '@app/game-logic/player/bot-calculator/bot-
 import { Bot } from '@app/game-logic/player/bot/bot';
 import { ValidWord, VERTICAL } from '@app/game-logic/player/bot/valid-word';
 import { PositionSettings } from '@app/game-logic/player/position-settings';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
+
 import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 
 const EMPTY = 0;

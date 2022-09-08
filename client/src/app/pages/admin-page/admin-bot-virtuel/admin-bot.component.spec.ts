@@ -3,7 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EditBotDialogComponent } from '@app/components/modals/edit-bot-dialog/edit-bot-dialog.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { BotDifficulty, BotHttpService, BotInfo } from '@app/services/bot-http.service';
+import { BotDifficulty } from '@app/services/bot-difficulty';
+import { BotHttpService } from '@app/services/bot-http.service';
+import { BotInfo } from '@app/services/bot-info';
 import { Observable, of, throwError } from 'rxjs';
 import { AdminBotComponent } from './admin-bot.component';
 

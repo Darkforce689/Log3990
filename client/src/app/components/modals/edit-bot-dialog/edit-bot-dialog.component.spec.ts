@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { BotDifficulty, BotHttpService, BotInfo } from '@app/services/bot-http.service';
+import { BotDifficulty } from '@app/services/bot-difficulty';
+import { BotHttpService } from '@app/services/bot-http.service';
+import { BotInfo } from '@app/services/bot-info';
 import { Observable, throwError } from 'rxjs';
 import { EditBotDialogComponent } from './edit-bot-dialog.component';
 

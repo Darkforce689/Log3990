@@ -58,11 +58,11 @@ describe('WaitingForOtherPlayersComponent', () => {
         expect(onlineSocketHandlerSpy.disconnectSocket).toHaveBeenCalled();
     });
 
-    it('converToSolo should call convertToSolo', () => {
+    it('launchGame should call launchGame', () => {
         const dom = fixture.nativeElement as HTMLElement;
-        const convertButton = dom.querySelectorAll('button')[1];
-        spyOn(component, 'convertToModeSolo');
-        convertButton.click();
+        const launchButton = dom.querySelectorAll('button')[1];
+        spyOn(component, 'launchGame');
+        launchButton.click();
         expect(component.launchGame).toHaveBeenCalled();
     });
 

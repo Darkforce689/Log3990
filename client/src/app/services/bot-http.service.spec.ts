@@ -1,6 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { BotDifficulty, BotHttpService, BotInfo } from '@app/services/bot-http.service';
+import { BotDifficulty } from '@app/services/bot-difficulty';
+import { BotHttpService } from '@app/services/bot-http.service';
+import { BotInfo } from '@app/services/bot-info';
 
 describe('BotHttpService', () => {
     let service: BotHttpService;
