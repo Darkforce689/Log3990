@@ -4,9 +4,9 @@ import { TestBed } from '@angular/core/testing';
 import { SocketMock } from '@app/game-logic/socket-mock';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
-import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
+import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { first, take } from 'rxjs/operators';
+import { first, skip, take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
 
 describe('NewOnlineGameSocketHandler', () => {
@@ -21,7 +21,7 @@ describe('NewOnlineGameSocketHandler', () => {
         dictTitle: 'dictTitle',
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
-    };
+    } as OnlineGameSettingsUI;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
@@ -37,15 +37,15 @@ describe('NewOnlineGameSocketHandler', () => {
 
     it('createGame should throw error if game settings are not valid', () => {
         expect(() => {
-            service.createGame(gameSettings as OnlineGameSettings);
+            service.createGame({} as OnlineGameSettings);
         }).toThrowError();
     });
 
     it('createGame should emit createGame if game settings are valid and receive pendingGameId', () => {
-        const spyWaitingForPlayer = spyOn<any>(service, 'waitForSecondPlayer').and.callThrough();
+        const spyWaitingForPlayer = spyOn<any>(service, 'waitForOtherPlayers').and.callThrough();
         service.createGame(gameSettings);
         expect(spyWaitingForPlayer).toHaveBeenCalled();
-        service.pendingGameId$.pipe(first()).subscribe((value) => {
+        service.pendingGameId$.pipe(skip(1)).subscribe((value) => {
             expect(value).toEqual('aa');
         });
         (service.socket as any).peerSideEmit('pendingGameId', 'aa');
@@ -60,12 +60,12 @@ describe('NewOnlineGameSocketHandler', () => {
 
     it('join pending game should emit joinGame and receive GameSettings', () => {
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(true);
-        spyOn<any>(service, 'listenForGameToken').and.callThrough();
+        spyOn<any>(service, 'listenForUpdatedGameSettings').and.callThrough();
         spyOn(service, 'disconnectSocket').and.callThrough();
         service.joinPendingGame('abc', 'allo1');
         expect(service['listenForUpdatedGameSettings']).toHaveBeenCalled();
 
-        (service.socket as any).peerSideEmit('gameJoined', gameSettings);
+        (service.socket as any).peerSideEmit('gameStarted', gameSettings);
         service['listenForUpdatedGameSettings']();
         service.gameStarted$.pipe(first()).subscribe((gameSettingsServer) => {
             expect(gameSettingsServer).not.toBeUndefined();

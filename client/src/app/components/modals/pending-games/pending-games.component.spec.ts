@@ -33,16 +33,6 @@ describe('PendingGamesComponent', () => {
 
     const pendingGames = [
         {
-            id: '1',
-            playerNames: ['Tom'],
-            randomBonus: true,
-            timePerTurn: 60000,
-            gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-            botDifficulty: BotDifficulty.Easy,
-            numberOfPlayers: 2,
-        },
-        {
             id: '4',
             playerNames: ['Jerry'],
             randomBonus: false,
@@ -50,6 +40,16 @@ describe('PendingGamesComponent', () => {
             gameMode: GameMode.Classic,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Expert,
+            numberOfPlayers: 2,
+        },
+        {
+            id: '1',
+            playerNames: ['Tom'],
+            randomBonus: true,
+            timePerTurn: 60000,
+            gameMode: GameMode.Classic,
+            dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         },
     ];

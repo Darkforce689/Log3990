@@ -13,7 +13,7 @@ import { takeWhile } from 'rxjs/operators';
     providedIn: 'root',
 })
 export class GameLauncherService {
-    startGame$$: Subscription;
+    private startGame$$: Subscription;
 
     constructor(
         private gameManager: GameManagerService,
