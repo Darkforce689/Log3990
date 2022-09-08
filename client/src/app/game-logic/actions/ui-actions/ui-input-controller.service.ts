@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
 import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
+import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
@@ -59,6 +60,10 @@ export class UIInputControllerService {
 
     pass(user: User) {
         this.avs.sendAction(new PassTurn(user));
+    }
+
+    gainAPoint(user: User) {
+        this.avs.sendAction(new GainAPoint(user));
     }
 
     private processInput(input: UIInput) {

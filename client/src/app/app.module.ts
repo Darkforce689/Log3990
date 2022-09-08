@@ -43,6 +43,7 @@ import { LoadingGameComponent } from './components/modals/loading-game/loading-g
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
 import { AdminDropDbComponent } from './pages/admin-page/admin-drop-db/admin-drop-db.component';
 import { ObjectivesListComponent } from './pages/game-page/objectives/objectives-list.component';
+import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -91,6 +92,7 @@ import { ObjectivesListComponent } from './pages/game-page/objectives/objectives
         AbandonDialogComponent,
         LoadingGameComponent,
         WinnerDialogComponent,
+        PrototypePageComponent,
     ],
     imports: [
         AppMaterialModule,
