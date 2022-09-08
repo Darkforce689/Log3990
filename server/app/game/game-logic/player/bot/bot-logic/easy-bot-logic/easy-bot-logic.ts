@@ -6,10 +6,10 @@ import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
 import { ValidWord } from '@app/game/game-logic/interface/valid-word';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotBrain } from '@app/game/game-logic/player/bot/bot-brain/bot-brain';
+import { BotLogic } from '@app/game/game-logic/player/bot/bot-logic/bot-logic';
 import { Player } from '@app/game/game-logic/player/player';
 
-export class EasyBotBrain extends BotBrain {
+export class EasyBotLogic extends BotLogic {
     static actionProbability = { play: 0.8, exchange: 0.1, pass: 0.1 };
     static placementProbability = { sixOrLess: 0.4, sevenToTwelve: 0.3, other: 0.3 };
     static botPointSetting = {
@@ -29,14 +29,14 @@ export class EasyBotBrain extends BotBrain {
 
     actionPicker(player: BotPlayer, game: ServerGame): Action {
         const randomValue = Math.random();
-        if (randomValue <= EasyBotBrain.actionProbability.play) {
+        if (randomValue <= EasyBotLogic.actionProbability.play) {
             let action = this.playAction(player, game);
             if (!action) {
                 action = this.passAction(player);
             }
             return action;
         } else if (
-            randomValue <= EasyBotBrain.actionProbability.play + EasyBotBrain.actionProbability.exchange &&
+            randomValue <= EasyBotLogic.actionProbability.play + EasyBotLogic.actionProbability.exchange &&
             game.letterBag.lettersLeft > RACK_LETTER_COUNT
         ) {
             return this.exchangeAction(player);
@@ -52,25 +52,25 @@ export class EasyBotBrain extends BotBrain {
         const wordP7to12: ValidWord[] = [];
         const wordP13To18: ValidWord[] = [];
         validWordList.forEach((word) => {
-            if (word.value.totalPoints <= EasyBotBrain.botPointSetting.sixOrLess.value) {
+            if (word.value.totalPoints <= EasyBotLogic.botPointSetting.sixOrLess.value) {
                 wordP6.push(word);
             } else if (
-                word.value.totalPoints > EasyBotBrain.botPointSetting.sixOrLess.value &&
-                word.value.totalPoints <= EasyBotBrain.botPointSetting.sevenToTwelve.value
+                word.value.totalPoints > EasyBotLogic.botPointSetting.sixOrLess.value &&
+                word.value.totalPoints <= EasyBotLogic.botPointSetting.sevenToTwelve.value
             ) {
                 wordP7to12.push(word);
             } else if (
-                word.value.totalPoints > EasyBotBrain.botPointSetting.sevenToTwelve.value &&
-                word.value.totalPoints <= EasyBotBrain.botPointSetting.other.value
+                word.value.totalPoints > EasyBotLogic.botPointSetting.sevenToTwelve.value &&
+                word.value.totalPoints <= EasyBotLogic.botPointSetting.other.value
             ) {
                 wordP13To18.push(word);
             }
         });
         let wordPicked: ValidWord;
-        if (randomValue <= EasyBotBrain.botPointSetting.sixOrLess.prob) {
+        if (randomValue <= EasyBotLogic.botPointSetting.sixOrLess.prob) {
             wordPicked = this.wordPicker(wordP6);
             return wordPicked;
-        } else if (randomValue <= EasyBotBrain.botPointSetting.sevenToTwelve.prob + EasyBotBrain.botPointSetting.other.prob) {
+        } else if (randomValue <= EasyBotLogic.botPointSetting.sevenToTwelve.prob + EasyBotLogic.botPointSetting.other.prob) {
             wordPicked = this.wordPicker(wordP7to12);
             return wordPicked;
         } else {

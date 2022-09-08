@@ -13,7 +13,7 @@ import { Player } from '@app/game/game-logic/player/player';
 import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionary/bot-dictionary';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 
-export abstract class BotBrain {
+export abstract class BotLogic {
     private botCrawler: BotCrawler;
 
     constructor(

@@ -6,10 +6,10 @@ import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
 import { ValidWord } from '@app/game/game-logic/interface/valid-word';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotBrain } from '@app/game/game-logic/player/bot/bot-brain/bot-brain';
+import { BotLogic } from '@app/game/game-logic/player/bot/bot-logic/bot-logic';
 import { Player } from '@app/game/game-logic/player/player';
 
-export class HardBotBrain extends BotBrain {
+export class HardBotLogic extends BotLogic {
     bestWordList: ValidWord[] = [];
 
     actionPicker(player: BotPlayer, game: ServerGame): Action {
