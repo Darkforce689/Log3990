@@ -1,6 +1,7 @@
-// /* eslint-disable max-lines */
-// /* eslint-disable dot-notation */
-// /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-len */
+/* eslint-disable max-lines */
+/* eslint-disable dot-notation */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // import { CommonModule } from '@angular/common';
 // import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 // import { ComponentFixture, TestBed } from '@angular/core/testing';
