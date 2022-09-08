@@ -1,7 +1,6 @@
 /* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
-import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { RACK_LETTER_COUNT } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
@@ -88,15 +87,6 @@ describe('Game', () => {
         expect(game.isEndOfGame()).toBe(true);
     });
 
-    it('action should call onEndOfGame if it is end of game', () => {
-        game.start();
-        game.consecutivePass = 5;
-        const passAction = new PassTurn(game.getActivePlayer());
-        game.getActivePlayer().play(passAction);
-        const isEndGame = game.isEndOfGame();
-        expect(isEndGame).toBeTrue();
-    });
-
     it('next player should return next player', () => {
         game.start();
         const currentPlayer = game.getActivePlayer();
@@ -131,16 +121,6 @@ describe('Game', () => {
         game.players[1].points = 10;
         const winners = game.getWinner();
         expect(winners.length).toBe(2);
-    });
-
-    it('action from player should end his turn and change to next player', () => {
-        game.start();
-        const currentPlayer = game.getActivePlayer();
-        const action = new PassTurn(currentPlayer);
-        currentPlayer.play(action);
-        const nextPlayer = game.getActivePlayer();
-        const isSamePlayer = currentPlayer.name === nextPlayer.name;
-        expect(isSamePlayer).toBeFalse();
     });
 
     it('game should not resume if no players', () => {

@@ -9,8 +9,8 @@ import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { merge } from 'rxjs';
-import { first, mapTo } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 export class OfflineGame extends Game {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -60,7 +60,7 @@ export class OfflineGame extends Game {
     }
 
     stop() {
-        this.timer.stop();
+        // this.timer.stop();
     }
 
     isEndOfGame() {
@@ -130,14 +130,16 @@ export class OfflineGame extends Game {
         this.turnNumber++;
         const activePlayer = this.players[this.activePlayerIndex];
         activePlayer.setActive();
-        const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
-        const turnEnds$ = merge(activePlayer.action$, timerEnd$);
+        // const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
+        // const turnEnds$ = merge(activePlayer.action$, timerEnd$);
+        // TODO: Clean offline game code
+        this.timer.start(this.timePerTurn);
+        // TODO: Code below means nothing and should be deleted
+        const turnEnds$: Observable<Action> = new Observable();
         turnEnds$.pipe(first()).subscribe((action) => this.endOfTurn(action));
     }
 
     private endOfTurn(action: Action) {
-        this.timer.stop();
-
         action.end$.subscribe(() => {
             if (this.isEndOfGame()) {
                 this.onEndOfGame();

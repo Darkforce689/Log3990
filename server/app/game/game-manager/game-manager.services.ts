@@ -13,7 +13,7 @@ import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-crea
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
-import { TimerGameControl, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { BindedSocket } from '@app/game/game-manager/binded-client.interface';
 import { GameMode } from '@app/game/game-mode.enum';
@@ -49,8 +49,8 @@ export class GameManagerService {
         return this.newGameStateSubject;
     }
 
-    get timerControl$(): Observable<TimerGameControl> {
-        return this.timerController.timerControl$;
+    get timerStartingTime$(): Observable<TimerStartingTime> {
+        return this.timerController.timerStartingTime$;
     }
 
     get timeUpdate$(): Observable<TimerTimeLeft> {

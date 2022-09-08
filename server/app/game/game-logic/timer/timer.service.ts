@@ -31,7 +31,6 @@ export class Timer {
     }
 
     stop() {
-        this.emitStopControl();
         this.end$$.unsubscribe();
         this.source = new Subject();
     }
@@ -40,9 +39,6 @@ export class Timer {
         this.timerController.startClientTimers(this.gameToken, initialTime);
     }
 
-    private emitStopControl() {
-        this.timerController.stopClientTimers(this.gameToken);
-    }
     private emitTimeUpdate(timeLeft: number) {
         this.timerController.updateClientTimers(this.gameToken, timeLeft);
     }

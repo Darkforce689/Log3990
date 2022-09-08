@@ -32,7 +32,6 @@ describe('PassTurn', () => {
     });
 
     it('should pass turn', () => {
-        game.start();
         const beforePlayer: Player = game.getActivePlayer();
         const passAction = new PassTurn(beforePlayer);
         beforePlayer.play(passAction);

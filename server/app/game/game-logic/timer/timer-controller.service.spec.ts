@@ -1,6 +1,5 @@
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
-import { TimerControls } from '@app/game/game-logic/timer/timer-controls.enum';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { expect } from 'chai';
 
 describe('TimerController', () => {
@@ -9,27 +8,41 @@ describe('TimerController', () => {
         service = new TimerController();
     });
 
-    it('should start client timers', () => {
+    it('should start client timers with initial time', () => {
         const gameToken = '1';
-        const control: TimerGameControl = {
+        const initialTime = 300;
+        const startingTime: TimerStartingTime = {
             gameToken,
-            control: TimerControls.Start,
+            initialTime,
         };
-        service.timerControl$.subscribe((receivedControl) => {
-            expect(receivedControl).to.be.deep.equal(control);
+        service.timerStartingTime$.subscribe((receivedStartingTime) => {
+            expect(receivedStartingTime).to.be.deep.equal(startingTime);
         });
-        service.startClientTimers(gameToken);
+        service.startClientTimers(gameToken, initialTime);
     });
 
-    it('should stop client timers', () => {
+    it('should send time', () => {
         const gameToken = '1';
-        const control: TimerGameControl = {
+        const timeLeft = 300;
+        const timerTimeLeft: TimerTimeLeft = {
             gameToken,
-            control: TimerControls.Stop,
+            timeLeft,
         };
-        service.timerControl$.subscribe((receivedControl) => {
-            expect(receivedControl).to.be.deep.equal(control);
+        service.timerTimeUpdate$.subscribe((receivedTime) => {
+            expect(receivedTime).to.be.deep.equal(timerTimeLeft);
         });
-        service.stopClientTimers(gameToken);
+        service.startClientTimers(gameToken, timeLeft);
     });
+
+    //  it('should stop client timers', () => {
+    //      const gameToken = '1';
+    //      const control: TimerGameControl = {
+    //          gameToken,
+    //          control: TimerControls.Stop,
+    //      };
+    //      service.timerControl$.subscribe((receivedControl) => {
+    //          expect(receivedControl).to.be.deep.equal(control);
+    //      });
+    //      service.stopClientTimers(gameToken);
+    //  });
 });
