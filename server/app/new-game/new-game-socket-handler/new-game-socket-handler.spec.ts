@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-vars */
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameMode } from '@app/game/game-mode.enum';
@@ -53,11 +54,13 @@ describe('New Online Game Service', () => {
 
     it('should create pendingGame', (done) => {
         const gameSettings = {
-            playerName: 'Max',
+            playerNames: ['Max'],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
+            numberOfPlayers: 2,
         };
         serverSocket.on('createGame', () => {
             expect(newGameManagerService.createPendingGame.calledWith(gameSettings)).to.be.true;
@@ -69,7 +72,7 @@ describe('New Online Game Service', () => {
     it('should receive pendingGameId on create', (done) => {
         const id = 'abc';
         newGameManagerService.createPendingGame.returns(id);
-        const gameSettings = { playerName: 'Max', randomBonus: true, timePerTurn: 60000 };
+        const gameSettings = { playerNames: ['Max'], randomBonus: true, timePerTurn: 60000 };
         clientSocket.on('pendingGameId', (pendingId: string) => {
             expect(pendingId).to.deep.equal(id);
             done();
@@ -87,7 +90,7 @@ describe('New Online Game Service', () => {
     });
 
     it('should delete pending game if client disconnect', (done) => {
-        const gameSettings = { playerName: 'name', randomBonus: true, timePerTurn: 60000 };
+        const gameSettings = { playerNames: ['name'], randomBonus: true, timePerTurn: 60000 };
         clientSocket.emit('createGame', gameSettings);
         serverSocket.on('disconnect', () => {
             expect(newGameManagerService.deletePendingGame.called).to.be.true;
@@ -119,19 +122,23 @@ describe('New Online Game Service', () => {
 
     it('should send gameSettings to players on joinGame', (done) => {
         const gameSettingsUI = {
-            playerName: 'name',
+            playerNames: ['name'],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
+            numberOfPlayers: 2,
         };
         const gameSettings = {
             id: 'a',
-            playerName: 'name',
+            playerNames: ['name'],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
+            numberOfPlayers: 2,
         };
 
         newGameManagerService.createPendingGame.returns('a');
