@@ -1,4 +1,5 @@
-import { BotDifficulty, BotInfo } from '@app/database/bot-info/bot-info';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotInfo } from '@app/database/bot-info/bot-info';
 import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { DatabaseServiceMock } from '@app/database/database.service.mock';
 import { expect } from 'chai';

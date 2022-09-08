@@ -12,6 +12,7 @@ export class PlaceLetter extends Action {
         super(player);
     }
 
+    // eslint-disable-next-line no-unused-vars
     protected perform(game: OfflineGame) {
         // const previousGrid = copyGrid(game.board.grid);
         // const validWordList = this.wordSearcher.listOfValidWord(this);

@@ -91,6 +91,7 @@ export class GameManagerService {
      * Game should always stay online, opponent should be replaced with "Server Bot"
      * Also, find more appropriate method name
      */
+    // eslint-disable-next-line no-unused-vars
     instanciateGameFromForfeitedState(forfeitedGameState: ForfeitedGameState) {
         // if (!this.game) {
         //     return;
