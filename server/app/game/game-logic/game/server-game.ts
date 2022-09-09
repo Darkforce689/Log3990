@@ -14,6 +14,7 @@ import { TimerController } from '@app/game/game-logic/timer/timer-controller.ser
 import { Timer } from '@app/game/game-logic/timer/timer.service';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { first, mapTo, Subject } from 'rxjs';
+import { randomInt } from 'crypto';
 
 export class ServerGame {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -111,6 +112,25 @@ export class ServerGame {
             }
         }
         return winners;
+    }
+
+    getNonActiveTopPlayer(): Player {
+        let topPlayers: Player[] = this.players[0] !== this.getActivePlayer() ? [this.players[0]] : [this.players[1]];
+        let highestScore = topPlayers[0].points;
+        for (const player of this.players) {
+            if (player === this.getActivePlayer()) continue;
+            if (player.points === highestScore) {
+                topPlayers.push(player);
+            }
+            if (player.points > highestScore) {
+                highestScore = player.points;
+                topPlayers = [player];
+            }
+        }
+        if (topPlayers.length > 1) {
+            return topPlayers[randomInt(0, topPlayers.length)];
+        }
+        return topPlayers[0];
     }
 
     private onEndOfGame(reason: EndOfGameReason) {
