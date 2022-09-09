@@ -68,13 +68,11 @@ export class UIPlace implements UIAction {
 
     create(): Action {
         const wordPlacement = this.getWordFromBoard();
-        const createdAction = new PlaceLetter(
-            this.info.user,
-            wordPlacement.word,
-            { direction: this.direction, x: wordPlacement.x, y: wordPlacement.y },
-            // this.pointCalculator,
-            // this.wordSearcher,
-        );
+        const createdAction = new PlaceLetter(this.info.user, wordPlacement.word, {
+            direction: this.direction,
+            x: wordPlacement.x,
+            y: wordPlacement.y,
+        });
         return createdAction;
     }
 
