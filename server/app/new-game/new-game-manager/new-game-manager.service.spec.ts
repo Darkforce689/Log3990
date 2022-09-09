@@ -34,12 +34,13 @@ describe('NewGameManagerService', () => {
         expect(service.pendingGames.size).to.equal(1);
     });
 
-    it('on JoinGame should update gameSetting and delete pendingGame', () => {
+    it('on JoinGame should update gameSetting', () => {
         gameManagerStub.activeGames = new Map();
         const id = service.getPendingGames()[0].id;
         const playerName = 'Sim';
         service.joinPendingGame(id, playerName);
-        expect(service.pendingGames.size).to.equal(0);
+        const pendingGamePlayerNames = service.pendingGames.get(id)?.playerNames;
+        expect(pendingGamePlayerNames?.find((name) => name === playerName)).to.be.true;
     });
 
     it('on JoinGame should not delete pending game if player join not existing game', () => {

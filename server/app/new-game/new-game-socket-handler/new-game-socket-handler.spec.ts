@@ -6,7 +6,7 @@ import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
-import { OnlineGameSettings } from '@app/new-game/online-game.interface';
+import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -72,7 +72,15 @@ describe('New Online Game Service', () => {
     it('should receive pendingGameId on create', (done) => {
         const id = 'abc';
         newGameManagerService.createPendingGame.returns(id);
-        const gameSettings = { playerNames: ['Max'], randomBonus: true, timePerTurn: 60000 };
+        const gameSettings = {
+            playerNames: ['Max'],
+            randomBonus: true,
+            timePerTurn: 60000,
+            botDifficulty: BotDifficulty.Easy,
+            dictTitle: DEFAULT_DICTIONARY_TITLE,
+            gameMode: GameMode.Classic,
+            numberOfPlayers: 2,
+        } as OnlineGameSettingsUI;
         clientSocket.on('pendingGameId', (pendingId: string) => {
             expect(pendingId).to.deep.equal(id);
             done();
@@ -129,6 +137,45 @@ describe('New Online Game Service', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+        } as OnlineGameSettingsUI;
+        const gameSettings = {
+            id: 'a',
+            playerNames: ['name'],
+            randomBonus: true,
+            timePerTurn: 60000,
+            gameMode: GameMode.Classic,
+            dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
+            numberOfPlayers: 2,
+        } as OnlineGameSettings;
+
+        newGameManagerService.createPendingGame.returns('a');
+        newGameManagerService.joinPendingGame.returns('id');
+        newGameManagerService.getPendingGame.returns(gameSettings);
+
+        const clientSocket2 = Client(`http://localhost:${port}`, { path: '/newGame', multiplex: false });
+        const playerName = 'abc';
+
+        clientSocket2.on('gameJoined', (gameSettingServer: OnlineGameSettings) => {
+            expect(gameSettingServer).to.deep.equal(gameSettings);
+            clientSocket2.close();
+            done();
+        });
+        clientSocket2.emit('createGame', gameSettingsUI);
+        clientSocket2.on('pendingGameId', (idGame: string) => {
+            clientSocket.emit('joinGame', idGame, playerName);
+        });
+    });
+
+    it('should delete pending game on game launch', (done) => {
+        const gameSettingsUI = {
+            playerNames: ['name'],
+            randomBonus: true,
+            timePerTurn: 60000,
+            gameMode: GameMode.Classic,
+            dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
+            numberOfPlayers: 2,
         };
         const gameSettings = {
             id: 'a',
@@ -146,16 +193,11 @@ describe('New Online Game Service', () => {
         newGameManagerService.getPendingGame.returns(gameSettings as OnlineGameSettings);
 
         const clientSocket2 = Client(`http://localhost:${port}`, { path: '/newGame', multiplex: false });
-        const playerName = 'abc';
-
-        clientSocket2.on('gameJoined', (gameSettingServer: OnlineGameSettings) => {
-            expect(gameSettingServer).to.deep.equal(gameSettings);
-            clientSocket2.close();
+        clientSocket2.on('gameStarted', (clientGameSettings: OnlineGameSettings) => {
+            expect(newGameManagerService.deletePendingGame.calledWith(gameSettings.id)).to.be.true;
             done();
         });
         clientSocket2.emit('createGame', gameSettingsUI);
-        clientSocket2.on('pendingGameId', (idGame: string) => {
-            clientSocket.emit('joinGame', idGame, playerName);
-        });
+        clientSocket2.emit('launchGame', gameSettings.id);
     });
 });

@@ -113,9 +113,6 @@ export class NewGameSocketHandler {
     }
 
     private onDisconnect(gameId: string) {
-        if (!gameId) {
-            return;
-        }
         this.newGameManagerService.deletePendingGame(gameId);
     }
 
