@@ -37,7 +37,7 @@ import { before } from 'mocha';
 import { Observable } from 'rxjs';
 import * as sinon from 'sinon';
 
-describe.only('GameManagerService', () => {
+describe('GameManagerService', () => {
     const botDifficulty = BotDifficulty.Easy;
     const numberOfPlayers = 2;
 

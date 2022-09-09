@@ -33,13 +33,21 @@ describe('GameCreator', () => {
     let dictTitle: string;
     let botDifficulty: BotDifficulty;
     let numberOfPlayers: number;
+    const botInfo = {
+        name: 'BotA',
+        type: BotDifficulty.Easy,
+        canEdit: true,
+    };
+
     const pointCalculatorStub = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompilerStub = createSinonStubInstance<GameCompiler>(GameCompiler);
     const systemMessagesServiceStub = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const timerControllerStub = createSinonStubInstance<TimerController>(TimerController);
     const objectiveCreatorStub = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
     const botInfoServiceStub = createSinonStubInstance<BotInfoService>(BotInfoService);
-    const botManagerStub = createSinonStubInstance<BotManager>(BotManager);
+    botInfoServiceStub.getBotInfoList.resolves([botInfo]);
+    // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
+    const botManagerStub = {} as BotManager;
     const botMessageStub = createSinonStubInstance<BotMessagesService>(BotMessagesService);
     const actionCreatorStub = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
 
@@ -84,10 +92,7 @@ describe('GameCreator', () => {
         singlePlayerOnlineGameSettings.playerNames = ['p1'];
         const createdGame = await gameCreator.createGame(singlePlayerOnlineGameSettings, gameToken);
         expect(createdGame.gameToken).to.be.equal(gameToken);
-        expect(createdGame.players).to.be.deep.equal([
-            new Player(singlePlayerOnlineGameSettings.playerNames[0]),
-            new Player(GameCreator.defaultOpponentName),
-        ]);
+        expect(createdGame.players.map((p) => p.name)).to.be.deep.equal([singlePlayerOnlineGameSettings.playerNames[0], botInfo.name]);
         expect(createdGame.timePerTurn).to.be.equal(timePerTurn);
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
     });
@@ -98,10 +103,7 @@ describe('GameCreator', () => {
         specialSinglePlayerOnlineGameSettings.playerNames = ['p1'];
         const createdGame = await gameCreator.createGame(specialSinglePlayerOnlineGameSettings, gameToken);
         expect(createdGame.gameToken).to.be.equal(gameToken);
-        expect(createdGame.players).to.be.deep.equal([
-            new Player(specialSinglePlayerOnlineGameSettings.playerNames[0]),
-            new Player(GameCreator.defaultOpponentName),
-        ]);
+        expect(createdGame.players.map((p) => p.name)).to.be.deep.equal([specialSinglePlayerOnlineGameSettings.playerNames[0], botInfo.name]);
         expect(createdGame.timePerTurn).to.be.equal(timePerTurn);
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
         expect(createdGame as SpecialServerGame).instanceof(SpecialServerGame);
