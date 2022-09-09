@@ -25,7 +25,7 @@
 // import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 // import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 
-// describe('ClassicGameComponent', () => {
+// describe('NewGamePageComponent', () => {
 //     let component: NewGamePageComponent;
 //     let fixture: ComponentFixture<NewGamePageComponent>;
 //     const mockIsDisconnect$ = new Subject<boolean>();
