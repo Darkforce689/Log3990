@@ -128,8 +128,7 @@ export class GameManagerService {
         if (this.game) {
             this.stopGame();
         }
-
-        if (!gameSettings.playerNames) {
+        if (gameSettings.playerNames.length === 0) {
             throw Error('No opponent name was entered');
         }
 
