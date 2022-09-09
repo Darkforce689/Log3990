@@ -6,6 +6,7 @@ export class BotMessagesService {
     // constructor(private messagesService: MessagesService, private commandExecuter: CommandExecuterService) {}
 
     // TODO GL3A22107-3 : fix message sent to players from bot actions
+    // eslint-disable-next-line no-unused-vars
     sendAction(action: Action) {
         // const name = action.player.name;
         // if (action instanceof PassTurn) {
