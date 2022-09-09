@@ -135,6 +135,10 @@ export class GamePageComponent implements OnDestroy {
         this.inputController.gainAPoint(this.info.user);
     }
 
+    splitPoints() {
+        this.inputController.splitPoints(this.info.user);
+    }
+
     confirm() {
         this.inputController.confirm();
     }

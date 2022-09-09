@@ -6,6 +6,7 @@ import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
 import { MagicCard } from '@app/game-logic/actions/magic-card';
 import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
+import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
 
 @Injectable({
     providedIn: 'root',
@@ -65,12 +66,24 @@ export class OnlineActionCompilerService {
         if (action instanceof GainAPoint) {
             return this.compileGainAPointOnline(action);
         }
+
+        if (action instanceof SplitPoints) {
+            return this.compileSplitPointsOnline(action);
+        }
         return undefined;
     }
 
     private compileGainAPointOnline(action: GainAPoint): OnlineAction {
         const passTurn: OnlineAction = {
             type: OnlineMagicCardActionType.GainAPoint,
+            letterRack: action.player.letterRack,
+        };
+        return passTurn;
+    }
+
+    private compileSplitPointsOnline(action: SplitPoints): OnlineAction {
+        const passTurn: OnlineAction = {
+            type: OnlineMagicCardActionType.SplitPoints,
             letterRack: action.player.letterRack,
         };
         return passTurn;
