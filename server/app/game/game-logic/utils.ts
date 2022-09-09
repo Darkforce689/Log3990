@@ -44,15 +44,16 @@ export const getRandomInt = (max: number, min: number = 0): number => {
 
 export const isGameSettings = (obj: unknown): obj is OnlineGameSettingsUI => {
     return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        'gameMode' in obj &&
-        'timePerTurn' in obj &&
-        'playerNames' in obj &&
-        'randomBonus' in obj &&
-        'dictTitle' in obj &&
-        'botDifficulty' in obj &&
-        'numberOfPlayers' in obj
+        (obj as OnlineGameSettingsUI).playerNames !== undefined &&
+        typeof (obj as OnlineGameSettingsUI).playerNames === 'object' &&
+        (obj as OnlineGameSettingsUI).numberOfPlayers !== undefined &&
+        typeof (obj as OnlineGameSettingsUI).numberOfPlayers === 'number' &&
+        (obj as OnlineGameSettingsUI).randomBonus !== undefined &&
+        typeof (obj as OnlineGameSettingsUI).randomBonus === 'boolean' &&
+        (obj as OnlineGameSettingsUI).randomBonus !== undefined &&
+        typeof (obj as OnlineGameSettingsUI).randomBonus === 'boolean' &&
+        (obj as OnlineGameSettingsUI).timePerTurn !== undefined &&
+        typeof (obj as OnlineGameSettingsUI).timePerTurn === 'number'
     );
 };
 
