@@ -120,7 +120,7 @@ test:server:
     <<: *only-server
     script:
         - cd server
-        - npm run coverage
+        - npm run test
     dependencies:
         - build:server
     artifacts:
