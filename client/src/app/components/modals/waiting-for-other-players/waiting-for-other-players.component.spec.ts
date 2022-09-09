@@ -59,6 +59,7 @@ describe('WaitingForOtherPlayersComponent', () => {
         cancelButton.click();
         expect(component.cancel).toHaveBeenCalled();
     });
+
     it('should disconnect socket on cancel', () => {
         component.cancel();
         expect(onlineSocketHandlerSpy.disconnectSocket).toHaveBeenCalled();
@@ -68,6 +69,7 @@ describe('WaitingForOtherPlayersComponent', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const launchButton = dom.querySelectorAll('button')[1];
         spyOn(component, 'launchGame');
+        onlineSocketHandlerSpy.isGameOwner = true;
         launchButton.click();
         expect(component.launchGame).toHaveBeenCalled();
     });
