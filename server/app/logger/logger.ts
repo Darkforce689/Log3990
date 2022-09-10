@@ -1,14 +1,18 @@
 /* eslint-disable no-console */
 export class ServerLogger {
     static logInfo(...logs: unknown[]) {
-        console.log('< - INFO - > : ', ...logs);
+        ServerLogger.logInternal(console.log, 'INFO', ...logs);
     }
 
     static logDebug(...logs: unknown[]) {
-        console.debug('< - DEBUG - > : ', ...logs);
+        ServerLogger.logInternal(console.debug, 'DEBUG', ...logs);
     }
 
     static logError(...logs: unknown[]) {
-        console.error('< - ERROR - > : ', ...logs);
+        ServerLogger.logInternal(console.error, 'ERROR', ...logs);
+    }
+
+    private static logInternal(consolePrinter: (...params: unknown[]) => void, severity: string, ...logs: unknown[]) {
+        consolePrinter(' [ ', new Date(Date.now()).toISOString(), ' - ', severity, ' ] ', ...logs);
     }
 }
