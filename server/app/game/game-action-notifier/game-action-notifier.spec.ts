@@ -51,7 +51,8 @@ describe('GameActionNotifier', () => {
             gameActionNotifierService.notification$.subscribe((message) => {
                 expect(message).to.be.undefined;
             });
-        } catch (e) {
+        } catch (error) {
+            LoggerService.logError(error);
             expect(e.message).to.equal('No opponent found for Joueur1');
         }
     });

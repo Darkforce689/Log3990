@@ -102,6 +102,7 @@ describe('NewGameManagerService', () => {
         try {
             service.getPendingGame(id);
         } catch (error) {
+            LoggerService.logError(error);
             expect(error.message).to.equal('This game does not exist.');
         }
     });
