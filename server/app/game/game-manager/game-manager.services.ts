@@ -227,6 +227,8 @@ export class GameManagerService {
     }
 
     private deleteGame(gameToken: string) {
+        const game = this.activeGames.get(gameToken);
+        game?.stop();
         this.activeGames.delete(gameToken);
         this.linkedClients.delete(gameToken);
         this.dictionaryService.deleteGameDictionary(gameToken);
