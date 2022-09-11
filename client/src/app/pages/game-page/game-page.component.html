@@ -18,6 +18,10 @@
                 <button mat-raised-button color="accent" [disabled]="!canPlace" (click)="confirm()">Placer</button>
                 <button mat-raised-button color="accent" [disabled]="!canCancel" (click)="cancel()">Annuler</button>
             </div>
+            <div>
+                <button mat-raised-button color="accent" [disabled]="!canUseMagicCards" (click)="gainAPoint()">+1 Point</button>
+                <button mat-raised-button color="accent" [disabled]="!canUseMagicCards" (click)="splitPoints()">Communisme</button>
+            </div>
         </div>
         <div class="abandonner">
             <button mat-raised-button (click)="abandon()" *ngIf="!isEndOfGame">Abandonner la partie</button>

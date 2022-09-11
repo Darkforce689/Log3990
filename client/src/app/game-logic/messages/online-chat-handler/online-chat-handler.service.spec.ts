@@ -14,7 +14,7 @@ describe('online chat handler', () => {
         TestBed.configureTestingModule({ providers: [{ provide: GameInfoService, useValue: gameInfo }] });
         service = TestBed.inject(OnlineChatHandlerService);
         (service.socket as any) = new SocketMock();
-        service['joinChatRoom']('1', 'bob');
+        service['bindRoomChannels']('1', 'bob');
     });
 
     it('should be created', () => {

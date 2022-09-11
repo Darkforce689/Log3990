@@ -3,6 +3,8 @@
 /.vs/
 /client/.vscode
 
+/client/build
+
 package-lock.json
 .DS_Store
 

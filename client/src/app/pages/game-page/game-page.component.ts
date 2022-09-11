@@ -123,8 +123,20 @@ export class GamePageComponent implements OnDestroy {
         return this.canPlace || this.canExchange;
     }
 
+    get canUseMagicCards(): boolean {
+        return this.isItMyTurn;
+    }
+
     pass() {
         this.inputController.pass(this.info.user);
+    }
+
+    gainAPoint() {
+        this.inputController.gainAPoint(this.info.user);
+    }
+
+    splitPoints() {
+        this.inputController.splitPoints(this.info.user);
     }
 
     confirm() {

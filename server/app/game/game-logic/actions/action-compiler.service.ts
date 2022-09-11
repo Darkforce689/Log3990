@@ -7,8 +7,10 @@ import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
-import { OnlineAction, OnlineActionType } from '@app/game/online-action.interface';
+import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/game/online-action.interface';
 import { Service } from 'typedi';
+import { GainAPoint } from '@app/game/game-logic/actions/magic-card-gain-1pt';
+import { SplitPoints } from '@app/game/game-logic/actions/magic-card-split-points';
 
 @Service()
 export class ActionCompilerService {
@@ -43,6 +45,16 @@ export class ActionCompilerService {
                 }
                 this.letterRackUpdateValidator(command, player);
                 return new PlaceLetter(player, letters, settings, this.pointCalculator, this.wordSearcher);
+            }
+
+            case OnlineMagicCardActionType.GainAPoint: {
+                this.letterRackUpdateValidator(command, player);
+                return new GainAPoint(player);
+            }
+
+            case OnlineMagicCardActionType.SplitPoints: {
+                this.letterRackUpdateValidator(command, player);
+                return new SplitPoints(player);
             }
 
             default:
