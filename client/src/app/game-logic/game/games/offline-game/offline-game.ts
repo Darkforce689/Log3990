@@ -11,7 +11,6 @@ import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
 import { first, mapTo } from 'rxjs/operators';
 
 export class OfflineGame extends Game {
@@ -131,8 +130,8 @@ export class OfflineGame extends Game {
     private startTurn() {
         this.turnNumber++;
         const activePlayer = this.setPlayerActive();
-        const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
-        timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
+        // TODO: Destroy const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
+        // TODO: Destroy timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
     }
 
     private setPlayerActive(player: Player = this.getActivePlayer()): Player {
