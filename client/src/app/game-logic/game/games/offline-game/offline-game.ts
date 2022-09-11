@@ -6,12 +6,10 @@ import { Board } from '@app/game-logic/game/board/board';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { LetterBag } from '@app/game-logic/game/board/letter-bag';
 import { Game } from '@app/game-logic/game/games/game';
-import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { Observable } from 'rxjs';
-import { first, mapTo } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 export class OfflineGame extends Game {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -25,7 +23,6 @@ export class OfflineGame extends Game {
     constructor(
         public randomBonus: boolean,
         public timePerTurn: number,
-        private timer: TimerService,
         private pointCalculator: PointCalculatorService,
         private boardService: BoardService,
         private messagesService: MessagesService,
@@ -129,14 +126,14 @@ export class OfflineGame extends Game {
 
     private startTurn() {
         this.turnNumber++;
-        const activePlayer = this.setPlayerActive();
+        // TODO: Destroy const activePlayer = this.setPlayerActive();
         // TODO: Destroy const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
         // TODO: Destroy timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
     }
 
     private setPlayerActive(player: Player = this.getActivePlayer()): Player {
         player.setActive();
-        player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
+        player.action$.pipe(first()).subscribe((action: Action) => this.takeAction(action));
         return player;
     }
 

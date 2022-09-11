@@ -65,7 +65,6 @@ export class GameCreatorService {
         return new OfflineGame(
             gameCreationParams.randomBonus,
             gameCreationParams.timePerTurn,
-            this.timer,
             this.pointCalculator,
             this.boardService,
             this.messageService,
