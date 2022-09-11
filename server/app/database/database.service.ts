@@ -4,7 +4,7 @@ import {
     DEFAULT_LEADERBOARD_CLASSIC,
     DEFAULT_LEADERBOARD_LOG,
     LEADERBOARD_CLASSIC_COLLECTION,
-    LEADERBOARD_LOG_COLLECTION
+    LEADERBOARD_LOG_COLLECTION,
 } from '@app/database/leaderboard-service/leaderboard-constants';
 import { ServerLogger } from '@app/logger/logger';
 import { CollectionInfo, Db, MongoClient } from 'mongodb';
