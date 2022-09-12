@@ -14,10 +14,7 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { getRandomInt } from '@app/game-logic/utils';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 import { Observable, Subject } from 'rxjs';
 import { UIInputControllerService } from './ui-input-controller.service';
 
@@ -37,22 +34,14 @@ class MockGameInfoService {
 describe('UIInputControllerService', () => {
     let player: Player;
     let service: UIInputControllerService;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     let info: GameInfoService;
-    let pointCalculator: PointCalculatorService;
-    let wordSearcher: WordSearcher;
     let boardService: BoardService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                { provide: DictionaryService, useValue: dict },
-                { provide: GameInfoService, useClass: MockGameInfoService },
-            ],
+            providers: [{ provide: GameInfoService, useClass: MockGameInfoService }],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
-        pointCalculator = TestBed.inject(PointCalculatorService);
-        wordSearcher = TestBed.inject(WordSearcher);
         boardService = TestBed.inject(BoardService);
         player = new User('p1');
         player.letterRack = [
@@ -75,7 +64,7 @@ describe('UIInputControllerService', () => {
     });
 
     it('should discard current UIPlace action on end of turn', () => {
-        service.activeAction = new UIPlace(info, pointCalculator, wordSearcher, boardService);
+        service.activeAction = new UIPlace(info, boardService);
         (info as any as MockGameInfoService).endOfTurnMockSubject.next();
         expect(service.activeAction).toBeNull();
     });
@@ -239,7 +228,7 @@ describe('UIInputControllerService', () => {
     it('should remove letters temporarily placed on the board after UIPlace switches to UIMove', () => {
         service.activeComponent = InputComponent.Board;
         const board = TestBed.inject(BoardService).board;
-        service.activeAction = new UIPlace(info, pointCalculator, wordSearcher, boardService);
+        service.activeAction = new UIPlace(info, boardService);
         const char = 'A';
         player.letterRack[0].char = char;
         const pos = BOARD_MAX_POSITION / 2;
@@ -255,7 +244,7 @@ describe('UIInputControllerService', () => {
     it('should remove letters temporarily placed on the board after UIPlace switches to UIExchange', () => {
         service.activeComponent = InputComponent.Board;
         const board = TestBed.inject(BoardService).board;
-        service.activeAction = new UIPlace(info, pointCalculator, wordSearcher, boardService);
+        service.activeAction = new UIPlace(info, boardService);
         const char = 'A';
         player.letterRack[0].char = char;
         const pos = BOARD_MAX_POSITION / 2;
@@ -314,7 +303,7 @@ describe('UIInputControllerService', () => {
     });
 
     it('should create the Action following the "ENTER" Keypress', () => {
-        service.activeAction = new UIPlace(info, pointCalculator, wordSearcher, boardService);
+        service.activeAction = new UIPlace(info, boardService);
         service.activeComponent = InputComponent.Board;
         const input1: UIInput = { type: InputType.LeftClick, from: InputComponent.Board, args: { x: MIDDLE_OF_BOARD, y: MIDDLE_OF_BOARD } };
         service['processInput'](input1);

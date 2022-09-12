@@ -9,7 +9,6 @@ import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 import { NOT_FOUND } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasDrawer } from '@app/pages/game-page/board/canvas-drawer';
 import { BoardComponent } from './board.component';
@@ -17,7 +16,6 @@ import { BoardComponent } from './board.component';
 describe('BoardComponent', () => {
     let component: BoardComponent;
     let fixture: ComponentFixture<BoardComponent>;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     let canvasDrawerMock: CanvasDrawer;
     let inputControllerMock: UIInputControllerService;
     beforeEach(async () => {
@@ -25,10 +23,7 @@ describe('BoardComponent', () => {
         inputControllerMock = jasmine.createSpyObj('UIInputControllerService', [], ['activeAction']);
         await TestBed.configureTestingModule({
             declarations: [BoardComponent, ClickAndClickoutDirective],
-            providers: [
-                { provide: DictionaryService, useValue: dict },
-                { provide: UIInputControllerService, useValue: inputControllerMock },
-            ],
+            providers: [{ provide: UIInputControllerService, useValue: inputControllerMock }],
             imports: [AppMaterialModule, FormsModule, CommonModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
@@ -92,12 +87,7 @@ describe('BoardComponent', () => {
         component.canvasDrawer = canvasDrawerMock;
         const dirAnswer: Direction = Direction.Horizontal;
 
-        const test = new UIPlace(
-            jasmine.createSpyObj('GameInfoService', ['void']),
-            jasmine.createSpyObj('PointCalculatorService', ['void']),
-            jasmine.createSpyObj('WordSearcher', ['void']),
-            jasmine.createSpyObj('BoardService', ['void']),
-        );
+        const test = new UIPlace(jasmine.createSpyObj('GameInfoService', ['void']), jasmine.createSpyObj('PointCalculatorService', ['void']));
 
         test.pointerPosition = { x: 1, y: 1 };
         test.direction = Direction.Horizontal;
@@ -111,12 +101,7 @@ describe('BoardComponent', () => {
     it('ngDoCheck should enter all condition expect if pointerPosition', () => {
         component.canvasDrawer = canvasDrawerMock;
 
-        const test = new UIPlace(
-            jasmine.createSpyObj('GameInfoService', ['void']),
-            jasmine.createSpyObj('PointCalculatorService', ['void']),
-            jasmine.createSpyObj('WordSearcher', ['void']),
-            jasmine.createSpyObj('BoardService', ['void']),
-        );
+        const test = new UIPlace(jasmine.createSpyObj('GameInfoService', ['void']), jasmine.createSpyObj('PointCalculatorService', ['void']));
 
         (Object.getOwnPropertyDescriptor(inputControllerMock, 'activeAction')?.get as jasmine.Spy<() => UIPlace>).and.returnValue(test);
         component.ngDoCheck();

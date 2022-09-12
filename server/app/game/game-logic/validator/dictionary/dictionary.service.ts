@@ -8,7 +8,7 @@ import { Service } from 'typedi';
 export class DictionaryService {
     liveDictMap: Map<string, LiveDict> = new Map();
     liveGamesMap: Map<string, string> = new Map();
-    dynamicWordList: Set<string>[] = [];
+
     constructor(private dictionaryServer: DictionaryServerService) {}
 
     makeGameDictionary(gameToken: string, dictTitle: string) {

@@ -12,9 +12,6 @@ import { GameState, LightPlayer } from '@app/game-logic/game/games/online-game/g
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { Socket } from 'socket.io-client';
 import { OnlineGame } from './online-game';
@@ -26,12 +23,8 @@ describe('OnlineGame', () => {
     let timer: TimerService;
     let player1: Player;
     let player2: Player;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
 
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [{ provide: DictionaryService, useValue: dict }],
-        });
         boardService = TestBed.inject(BoardService);
         gameSocketHandlerService = TestBed.inject(GameSocketHandlerService);
         timer = TestBed.inject(TimerService);
@@ -190,13 +183,7 @@ describe('OnlineGame', () => {
         H.letterObject = { char: 'H', value: 1 };
         boardService.board.grid[7][7] = H;
         gameSocketHandlerService['gameStateSubject'].next(gameState);
-        const action = new PlaceLetter(
-            onlineGame.players[0],
-            'hello',
-            { x: 7, y: 7, direction: Direction.Horizontal },
-            TestBed.inject(PointCalculatorService),
-            TestBed.inject(WordSearcher),
-        );
+        const action = new PlaceLetter(onlineGame.players[0], 'hello', { x: 7, y: 7, direction: Direction.Horizontal });
 
         onlineGame.handleUserActions();
         const playActionSpy = spyOn(gameSocketHandlerService, 'playAction');
@@ -274,13 +261,7 @@ describe('OnlineGame', () => {
         };
 
         gameSocketHandlerService['gameStateSubject'].next(gameState);
-        const action = new PlaceLetter(
-            onlineGame.players[0],
-            'hello',
-            { x: 7, y: 7, direction: Direction.Horizontal },
-            TestBed.inject(PointCalculatorService),
-            TestBed.inject(WordSearcher),
-        );
+        const action = new PlaceLetter(onlineGame.players[0], 'hello', { x: 7, y: 7, direction: Direction.Horizontal });
 
         onlineGame.handleUserActions();
         const playActionSpy = spyOn(gameSocketHandlerService, 'playAction');
@@ -303,13 +284,7 @@ describe('OnlineGame', () => {
             { char: '*', value: 1 },
             { char: 'L', value: 1 },
         ];
-        const action = new PlaceLetter(
-            onlineGame.players[0],
-            'heLLo',
-            { x: 7, y: 7, direction: Direction.Vertical },
-            TestBed.inject(PointCalculatorService),
-            TestBed.inject(WordSearcher),
-        );
+        const action = new PlaceLetter(onlineGame.players[0], 'heLLo', { x: 7, y: 7, direction: Direction.Vertical });
         onlineGame['placeTemporaryLetter'](action);
         const result = boardService.board.grid[11][7].letterObject.char;
         const expected = 'O';

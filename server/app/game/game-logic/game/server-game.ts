@@ -1,12 +1,13 @@
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
-import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { MagicCard } from '@app/game/game-logic/actions/magic-card';
+import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { Board } from '@app/game/game-logic/board/board';
 import { LetterBag } from '@app/game/game-logic/board/letter-bag';
 import { MAX_CONSECUTIVE_PASS } from '@app/game/game-logic/constants';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -163,6 +164,9 @@ export class ServerGame {
             return;
         }
         const activePlayer = this.setPlayerActive();
+        if (activePlayer instanceof BotPlayer) {
+            activePlayer.generateAction(this);
+        }
         const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
         timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
     }

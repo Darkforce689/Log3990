@@ -8,6 +8,8 @@ import { Objective } from '@app/game-logic/game/objectives/objectives/objective'
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 
+// TODO GL3A22107-5 : "Online/Offline" behavior doesn't exist anymore.
+// Find better name (or simply migrate everything in parent class 'SpecialGame')
 export class SpecialOnlineGame extends OnlineGame implements SpecialGame {
     privateObjectives = new Map<string, Objective[]>();
     publicObjectives = [] as Objective[];

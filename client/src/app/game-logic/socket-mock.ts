@@ -16,14 +16,14 @@ export class SocketMock {
         return;
     }
 
-    peerSideEmit(event: string, ...params: any) {
+    peerSideEmit<T>(event: string, param: T) {
         if (!this.callbacks.has(event)) {
             return;
         }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         for (const callback of this.callbacks.get(event)!) {
-            callback(params);
+            callback(param);
         }
     }
     close() {

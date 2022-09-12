@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { BotHttpService, BotInfo, BotType } from '@app/services/bot-http.service';
+import { BotDifficulty } from '@app/services/bot-difficulty';
+import { BotHttpService } from '@app/services/bot-http.service';
+import { BotInfo } from '@app/services/bot-info';
 import { Observable, throwError } from 'rxjs';
 import { EditBotDialogComponent } from './edit-bot-dialog.component';
 
@@ -50,8 +52,8 @@ describe('EditbotDialogComponent', () => {
             subscriber.next(true);
         });
         botHttpMock.editBot.and.returnValue(obs);
-        const mockBot = { canEdit: true, name: 'test', type: BotType.Easy };
-        const oldMockBot = { canEdit: true, name: 'old', type: BotType.Easy };
+        const mockBot = { canEdit: true, name: 'test', type: BotDifficulty.Easy };
+        const oldMockBot = { canEdit: true, name: 'old', type: BotDifficulty.Easy };
 
         component.editBotInfo = oldMockBot;
         component.bot = mockBot;
@@ -61,7 +63,7 @@ describe('EditbotDialogComponent', () => {
     });
 
     it('editbot should open alert dialog if problem', () => {
-        const mockBot = { canEdit: true, name: 'test', type: BotType.Easy };
+        const mockBot = { canEdit: true, name: 'test', type: BotDifficulty.Easy };
         component.bot = mockBot;
         const obs = new Observable<boolean>((subscriber) => {
             subscriber.next(false);
@@ -76,7 +78,7 @@ describe('EditbotDialogComponent', () => {
             subscriber.next(true);
         });
         botHttpMock.addBot.and.returnValue(obs);
-        const mockBot = { canEdit: true, name: 'test', type: BotType.Easy };
+        const mockBot = { canEdit: true, name: 'test', type: BotDifficulty.Easy };
         component.bot = mockBot;
         component.addBot();
         expect(botHttpMock.addBot).toHaveBeenCalledOnceWith(mockBot);
@@ -84,7 +86,7 @@ describe('EditbotDialogComponent', () => {
     });
 
     it('addBot should open alert dialog if problem', () => {
-        const mockBot = { canEdit: true, name: 'test', type: BotType.Easy };
+        const mockBot = { canEdit: true, name: 'test', type: BotDifficulty.Easy };
         component.bot = mockBot;
         const obs = new Observable<boolean>((subscriber) => {
             subscriber.next(false);
@@ -109,7 +111,7 @@ describe('EditbotDialogComponent', () => {
     it('isBotFill should return false if bot is correctly defined', () => {
         const errorBot = {
             name: 'test',
-            type: BotType.Easy,
+            type: BotDifficulty.Easy,
         };
         component.bot = errorBot as unknown as BotInfo;
         expect(!component.isValuesValid).toBe(false);
@@ -118,7 +120,7 @@ describe('EditbotDialogComponent', () => {
     it('isBotFill should return true if bot is not correctly defined', () => {
         const errorBot = {
             name: undefined,
-            type: BotType.Easy,
+            type: BotDifficulty.Easy,
         };
         component.bot = errorBot as unknown as BotInfo;
         expect(!component.isValuesValid).toBe(true);
@@ -127,7 +129,7 @@ describe('EditbotDialogComponent', () => {
     it('isBotFill should return true if bot is only space', () => {
         const errorBot = {
             name: ' ',
-            type: BotType.Easy,
+            type: BotDifficulty.Easy,
         };
         component.bot = errorBot as unknown as BotInfo;
         expect(!component.isValuesValid).toBe(true);

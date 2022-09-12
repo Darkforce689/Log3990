@@ -18,10 +18,20 @@ export class NewGameManagerService {
         return games;
     }
 
-    createPendingGame(gameSetting: OnlineGameSettingsUI): string {
+    createPendingGame(gameSettings: OnlineGameSettingsUI): string {
         const gameId = this.generateId();
-        this.pendingGames.set(gameId, gameSetting);
+        this.pendingGames.set(gameId, gameSettings);
         return gameId;
+    }
+
+    async launchPendingGame(id: string, gameSettings?: OnlineGameSettingsUI): Promise<string> {
+        if (!gameSettings) {
+            gameSettings = this.pendingGames.get(id);
+        }
+        const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
+        const gameToken = this.generateGameToken(onlineGameSettingsUI);
+        await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
+        return id;
     }
 
     joinPendingGame(id: string, name: string): string | undefined {
@@ -32,13 +42,7 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        if (gameSettings.opponentName) {
-            return;
-        }
-        gameSettings.opponentName = name;
-        const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
-        const gameToken = this.generateGameToken(onlineGameSettingsUI);
-        this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
+        gameSettings.playerNames.push(name);
         return id;
     }
 
@@ -62,9 +66,10 @@ export class NewGameManagerService {
         return this.pendingGames.has(id);
     }
 
-    private startGame(gameToken: string, gameSettings: OnlineGameSettings) {
-        this.gameMaster.createGame(gameToken, gameSettings);
-        this.deletePendingGame(gameSettings.id);
+    private async startGame(gameToken: string, gameSettings: OnlineGameSettings): Promise<OnlineGameSettings> {
+        const newGame = await this.gameMaster.createGame(gameToken, gameSettings);
+        gameSettings.playerNames = newGame.players.map((player) => player.name);
+        return gameSettings;
     }
 
     private generateId(): string {
@@ -73,8 +78,8 @@ export class NewGameManagerService {
         return gameId;
     }
 
-    private generateGameToken(gameSetting: OnlineGameSettings): string {
-        return gameSetting.id;
+    private generateGameToken(gameSettings: OnlineGameSettings): string {
+        return gameSettings.id;
     }
 
     private toOnlineGameSettings(id: string, settings: OnlineGameSettingsUI | undefined): OnlineGameSettings {

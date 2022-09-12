@@ -1,10 +1,7 @@
-export enum BotType {
-    Easy = 'Facile',
-    Expert = 'Expert',
-}
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 
 export interface BotInfo {
     name: string;
-    type: BotType;
+    type: BotDifficulty;
     canEdit: boolean;
 }

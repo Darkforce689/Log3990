@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditBotDialogComponent } from '@app/components/modals/edit-bot-dialog/edit-bot-dialog.component';
 import { openErrorDialog } from '@app/game-logic/utils';
-import { BotHttpService, BotInfo } from '@app/services/bot-http.service';
+import { BotHttpService } from '@app/services/bot-http.service';
+import { BotInfo } from '@app/services/bot-info';
 
 @Component({
     selector: 'app-admin-bot',

@@ -1,9 +1,15 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
+import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
+import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
+import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -23,16 +29,19 @@ export class GameCreator {
         private endGameSubject: Subject<EndOfGame>,
         private timerController: TimerController,
         private objectiveCreator: ObjectiveCreator,
+        private botInfoService: BotInfoService,
+        private botManager: BotManager,
+        protected botMessage: BotMessagesService,
+        protected actionCreator: ActionCreatorService,
     ) {}
 
-    createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): ServerGame {
+    async createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): Promise<ServerGame> {
         const newServerGame = this.createNewGame(onlineGameSettings, gameToken);
-        const firstPlayerName = onlineGameSettings.playerName;
-        let secondPlayerName = onlineGameSettings.opponentName;
-        if (!secondPlayerName) {
-            secondPlayerName = GameCreator.defaultOpponentName;
-        }
-        const players = this.createPlayers(firstPlayerName, secondPlayerName);
+        const players = await this.createPlayers(
+            onlineGameSettings.numberOfPlayers,
+            onlineGameSettings.playerNames,
+            onlineGameSettings.botDifficulty,
+        );
         newServerGame.players = players;
         return newServerGame;
     }
@@ -74,9 +83,24 @@ export class GameCreator {
         );
     }
 
-    private createPlayers(firstPlayerName: string, secondPlayerName: string): Player[] {
-        const playerOne = new Player(firstPlayerName);
-        const playerTwo = new Player(secondPlayerName);
-        return [playerOne, playerTwo];
+    /**
+     * Creates N player instances from M real players names.
+     * When N > M, creates N-M bots players
+     *
+     * @param numberOfPlayers total number of players (N)
+     * @param playerNames real players names (array of length M)
+     * @param botDifficulty uniform difficulty of the bots created
+     * @returns created players, including bots
+     */
+    private async createPlayers(numberOfPlayers: number, playerNames: string[], botDifficulty: BotDifficulty): Promise<Player[]> {
+        const players = playerNames.map((name) => new Player(name));
+        const numberOfBots = numberOfPlayers - players.length;
+        for (let i = 0; i < numberOfBots; i++) {
+            const newBot = new BotPlayer(this.botInfoService, this.botManager, botDifficulty, this.botMessage, this.actionCreator);
+            await newBot.updateBotName(playerNames);
+            players.push(newBot);
+            playerNames.push(newBot.name);
+        }
+        return players;
     }
 }

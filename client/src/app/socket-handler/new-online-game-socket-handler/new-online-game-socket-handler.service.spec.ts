@@ -1,17 +1,27 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game-logic/constants';
 import { SocketMock } from '@app/game-logic/socket-mock';
+import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
-import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
+import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { first, take } from 'rxjs/operators';
+import { first, skip, take } from 'rxjs/operators';
 import { Socket } from 'socket.io-client';
 
 describe('NewOnlineGameSocketHandler', () => {
     let service: NewOnlineGameSocketHandler;
     let createSocketFunction: () => Socket;
+    const gameSettings = {
+        id: '1',
+        timePerTurn: 60000,
+        playerNames: ['allo1'],
+        randomBonus: false,
+        gameMode: GameMode.Classic,
+        dictTitle: 'dictTitle',
+        botDifficulty: BotDifficulty.Easy,
+        numberOfPlayers: 2,
+    } as OnlineGameSettingsUI;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
@@ -27,26 +37,17 @@ describe('NewOnlineGameSocketHandler', () => {
 
     it('createGame should throw error if game settings are not valid', () => {
         expect(() => {
-            const gameSettings = { playerName: false, randomBonus: false, timePerTurn: 65000 } as unknown;
-            service.createGameMulti(gameSettings as OnlineGameSettings);
+            service.createGame({} as OnlineGameSettings);
         }).toThrowError();
     });
 
     it('createGame should emit createGame if game settings are valid and receive pendingGameId', () => {
-        const spyWaitingForPlayer = spyOn<any>(service, 'waitForSecondPlayer').and.callThrough();
-        const gameSettings = {
-            playerName: 'allo',
-            randomBonus: false,
-            timePerTurn: 65000,
-            gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-        };
-        service.createGameMulti(gameSettings);
+        const spyWaitingForPlayer = spyOn<any>(service, 'waitForOtherPlayers').and.callThrough();
+        service.createGame(gameSettings);
         expect(spyWaitingForPlayer).toHaveBeenCalled();
-        service.pendingGameId$.pipe(first()).subscribe((value) => {
-            expect(value[0]).toEqual('aa');
+        service.pendingGameId$.pipe(skip(1)).subscribe((value) => {
+            expect(value).toEqual('aa');
         });
-
         (service.socket as any).peerSideEmit('pendingGameId', 'aa');
     });
 
@@ -58,24 +59,22 @@ describe('NewOnlineGameSocketHandler', () => {
     });
 
     it('join pending game should emit joinGame and receive GameSettings', () => {
-        const gameSettings = { id: '1', playerName: 'allo', randomBonus: false, timePerTurn: 65000 };
-
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(true);
-        spyOn<any>(service, 'listenForGameToken').and.callThrough();
+        spyOn<any>(service, 'listenForUpdatedGameSettings').and.callThrough();
         spyOn(service, 'disconnectSocket').and.callThrough();
         service.joinPendingGame('abc', 'allo1');
-        expect(service['listenForGameToken']).toHaveBeenCalled();
+        expect(service['listenForUpdatedGameSettings']).toHaveBeenCalled();
 
-        (service.socket as any).peerSideEmit('gameJoined', gameSettings);
-        service['listenForGameToken']();
-        service.startGame$.pipe(first()).subscribe((gameSettingsServer) => {
+        (service.socket as any).peerSideEmit('gameStarted', gameSettings);
+        service['listenForUpdatedGameSettings']();
+        service.gameStarted$.pipe(first()).subscribe((gameSettingsServer) => {
             expect(gameSettingsServer).not.toBeUndefined();
         });
         expect(service.disconnectSocket).toHaveBeenCalled();
     });
 
     it('listenForPendingGames should return pending games', () => {
-        const pendingGames = [{ id: '1', timePerTurn: 60000, playerName: 'allo1', randomBonus: false }];
+        const pendingGames = [gameSettings];
 
         service.pendingGames$.pipe().subscribe((value) => {
             expect(value).not.toBeUndefined();
@@ -109,7 +108,7 @@ describe('NewOnlineGameSocketHandler', () => {
     });
 
     it('should resetGameToken ', () => {
-        service.startGame$.subscribe((value) => {
+        service.gameStarted$.subscribe((value) => {
             expect(value).toBeUndefined();
         });
         service.resetGameToken();
