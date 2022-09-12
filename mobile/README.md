@@ -32,6 +32,10 @@
 
     ![launch1](..\mobile\docs\launch1.png)
 
+    ![launch2](..\mobile\docs\launch2.png)
+
+    ![launch3](..\mobile\docs\launch3.png)
+
 5. Launching Emulator
 
     ![emulator1](..\mobile\docs\emulator1.png)
