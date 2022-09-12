@@ -22,6 +22,8 @@ interface PlayerWithIndex {
     player: Player;
 }
 
+// TODO GL3A22107-5 : "Online/Offline" behavior doesn't exist anymore.
+// Find better name (or simply migrate everything in parent class 'Game')
 export class OnlineGame extends Game {
     players: Player[] = [];
     activePlayerIndex: number = 0;

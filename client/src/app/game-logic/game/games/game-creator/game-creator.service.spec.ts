@@ -1,14 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { OfflineGameCreationParams, OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
-import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
+import { OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
-import { SpecialOfflineGame } from '@app/game-logic/game/games/special-games/special-offline-game';
 import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
 import { GameCreatorService } from './game-creator.service';
 
 describe('GameCreatorService', () => {
     let service: GameCreatorService;
-    const randomBonus = false;
+    // TODO GL3A22107-5 : Should be changed/removed
+    // const randomBonus = false;
     const timePerTurn = 10000;
     const id = 'id';
     const username = 'p1';
@@ -22,17 +21,19 @@ describe('GameCreatorService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should create offline game', () => {
-        const gameCreationParams: OfflineGameCreationParams = { randomBonus, timePerTurn };
-        const newGame = service.createOfflineGame(gameCreationParams);
-        expect(newGame).toBeInstanceOf(OfflineGame);
-    });
+    // TODO GL3A22107-5 : Should be changed/removed
+    // it('should create offline game', () => {
+    //     const gameCreationParams: OfflineGameCreationParams = { randomBonus, timePerTurn };
+    //     const newGame = service.createOfflineGame(gameCreationParams);
+    //     expect(newGame).toBeInstanceOf(OfflineGame);
+    // });
 
-    it('should create special offline game', () => {
-        const gameCreationParams: OfflineGameCreationParams = { randomBonus, timePerTurn };
-        const newGame = service.createSpecialOfflineGame(gameCreationParams);
-        expect(newGame).toBeInstanceOf(SpecialOfflineGame);
-    });
+    // TODO GL3A22107-5 : Should be changed/removed
+    // it('should create special offline game', () => {
+    //     const gameCreationParams: OfflineGameCreationParams = { randomBonus, timePerTurn };
+    //     const newGame = service.createSpecialOfflineGame(gameCreationParams);
+    //     expect(newGame).toBeInstanceOf(SpecialOfflineGame);
+    // });
 
     it('should create online game', () => {
         const gameCreationParams: OnlineGameCreationParams = { id, timePerTurn, username };

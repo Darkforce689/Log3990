@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
 import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
+import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
+import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
@@ -11,10 +13,6 @@ import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
-import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
-import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
 
 @Injectable({
     providedIn: 'root',
@@ -28,13 +26,7 @@ export class UIInputControllerService {
         return this.activeAction ? this.activeAction.canBeCreated : false;
     }
 
-    constructor(
-        private avs: ActionValidatorService,
-        private info: GameInfoService,
-        private pointCalculator: PointCalculatorService,
-        private wordSearcher: WordSearcher,
-        private boardService: BoardService,
-    ) {
+    constructor(private avs: ActionValidatorService, private info: GameInfoService, private boardService: BoardService) {
         this.info.endTurn$?.subscribe(() => {
             if (this.activeAction instanceof UIPlace) {
                 this.discardAction();
@@ -100,7 +92,7 @@ export class UIInputControllerService {
             case InputComponent.Board:
                 if (!(this.activeAction instanceof UIPlace)) {
                     this.discardAction();
-                    this.activeAction = new UIPlace(this.info, this.pointCalculator, this.wordSearcher, this.boardService);
+                    this.activeAction = new UIPlace(this.info, this.boardService);
                     return;
                 }
                 break;

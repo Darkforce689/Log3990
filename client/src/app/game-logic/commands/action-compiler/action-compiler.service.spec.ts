@@ -11,26 +11,18 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 
 describe('ActionCompilerService', () => {
     let service: ActionCompilerService;
     let gameInfo: GameInfoService;
     let player: Player;
-    let pointCalculator: PointCalculatorService;
-    let wordSearcher: WordSearcher;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: DictionaryService, useValue: dict }, ActionCreatorService],
+            providers: [ActionCreatorService],
         });
         service = TestBed.inject(ActionCompilerService);
         gameInfo = TestBed.inject(GameInfoService);
-        pointCalculator = TestBed.inject(PointCalculatorService);
-        wordSearcher = TestBed.inject(WordSearcher);
         player = new User('p1');
         gameInfo.user = player;
         gameInfo.players = [player];
@@ -91,7 +83,7 @@ describe('ActionCompilerService', () => {
             direction: Direction.Horizontal,
         };
 
-        const expectedAction = new PlaceLetter(player, 'abc', placement, pointCalculator, wordSearcher);
+        const expectedAction = new PlaceLetter(player, 'abc', placement);
         expect(service.translate(command)).toEqual(expectedAction);
     });
 

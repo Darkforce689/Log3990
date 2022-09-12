@@ -9,15 +9,12 @@ import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
 
 describe('ExchangeLetter', () => {
     let game: OfflineGame;
     const player: Player = new User('Tim');
     const randomBonus = false;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     beforeEach(() => {
-        TestBed.configureTestingModule({ providers: [{ provide: DictionaryService, useValue: dict }] });
         const messageService = TestBed.inject(MessagesService);
         const timerService = TestBed.inject(TimerService);
         const pointCalulatorService = TestBed.inject(PointCalculatorService);

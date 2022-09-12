@@ -12,6 +12,7 @@ import { Player } from '@app/game-logic/player/player';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { first, mapTo } from 'rxjs/operators';
 
+// TODO GL3A22107-5 : whole class -> to be removed
 export class OfflineGame extends Game {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
     letterBag: LetterBag = new LetterBag();

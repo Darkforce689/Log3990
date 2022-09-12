@@ -43,7 +43,7 @@ describe('PlaceLetter', () => {
     const mockEndGame$ = new Subject<EndOfGame>();
     beforeEach(() => {
         clock = useFakeTimers();
-        wordSearcherStub.listOfValidWord.returns([{ letters: [new Tile()], index: [0] }]);
+        wordSearcherStub.getListOfValidWords.returns([{ letters: [new Tile()], index: [0] }]);
         pointCalculatorStub.placeLetterCalculation.callsFake((action, listOfWord) => {
             const points = action.word.length + listOfWord.length;
             const player = action.player;
@@ -85,7 +85,7 @@ describe('PlaceLetter', () => {
     });
 
     it('should have proper revert behavior', async () => {
-        wordSearcherStub.listOfValidWord.returns([]);
+        wordSearcherStub.getListOfValidWords.returns([]);
         const TIME_BEFORE_REVERT = 3000;
         placeLetter.execute(game);
         clock.tick(TIME_BEFORE_REVERT);

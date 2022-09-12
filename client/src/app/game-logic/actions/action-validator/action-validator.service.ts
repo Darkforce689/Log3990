@@ -9,7 +9,6 @@ import { BoardService } from '@app/game-logic/game/board/board.service';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
-import { HardBot } from '@app/game-logic/player/bot/hard-bot';
 import { isStringALowerCaseLetter, placementSettingsToString } from '@app/game-logic/utils';
 import { MagicCard } from '@app/game-logic/actions/magic-card';
 
@@ -169,10 +168,6 @@ export class ActionValidatorService {
 
     private checkExchangeLetter(action: ExchangeLetter): boolean {
         const lettersLeft = this.gameInfo.numberOfLettersRemaining;
-        if (action.player instanceof HardBot && lettersLeft >= action.lettersToExchange.length) {
-            return true;
-        }
-
         if (lettersLeft < RACK_LETTER_COUNT) {
             this.sendErrorMessage(
                 'Commande impossible à réaliser : Aucun échange de lettres lorsque la réserve en contient moins de ' + RACK_LETTER_COUNT,

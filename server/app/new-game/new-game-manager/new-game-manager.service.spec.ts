@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
@@ -21,22 +22,25 @@ describe('NewGameManagerService', () => {
 
     it('should createGame', () => {
         const gameSettings = {
-            playerName: 'Max',
+            playerNames: ['Max'],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
+            numberOfPlayers: 2,
         };
         service.createPendingGame(gameSettings);
         expect(service.pendingGames.size).to.equal(1);
     });
 
-    it('on JoinGame should update gameSetting and delete pendingGame', () => {
+    it('on JoinGame should update gameSetting', () => {
         gameManagerStub.activeGames = new Map();
         const id = service.getPendingGames()[0].id;
         const playerName = 'Sim';
         service.joinPendingGame(id, playerName);
-        expect(service.pendingGames.size).to.equal(0);
+        const pendingGamePlayerNames = service.pendingGames.get(id)?.playerNames;
+        expect(pendingGamePlayerNames?.find((name) => name === playerName)).to.be.equal(playerName);
     });
 
     it('on JoinGame should not delete pending game if player join not existing game', () => {
@@ -57,31 +61,35 @@ describe('NewGameManagerService', () => {
         expect(confirmedId).to.be.undefined;
     });
 
-    it('on JoinGame should not delete pending game if two players are already in gameSetting', () => {
-        service.pendingGames.clear();
-        const gameSettings = {
-            playerName: 'Max',
-            opponentName: 'Allo',
-            randomBonus: true,
-            timePerTurn: 60000,
-            gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-        };
-        service.pendingGames.set('abc', gameSettings);
-        const id = 'abc';
-        const playerName = 'Sim';
-        const confirmedId = service.joinPendingGame(id, playerName);
-        expect(confirmedId).to.be.undefined;
-    });
+    // TODO GL3A22107-35 : Remove or Adapt server-side tests
+    // it('on JoinGame should not delete pending game if two players are already in gameSetting', () => {
+    //     service.pendingGames.clear();
+    //     const gameSettings = {
+    //         playerNames: ['Max', 'Allo'],
+    //         randomBonus: true,
+    //         timePerTurn: 60000,
+    //         gameMode: GameMode.Classic,
+    //         dictTitle: DEFAULT_DICTIONARY_TITLE,
+    //         botDifficulty: BotDifficulty.Easy,
+    //         numberOfPlayers: 2,
+    //     } as OnlineGameSettingsUI;
+    //     service.pendingGames.set('abc', gameSettings);
+    //     const id = 'abc';
+    //     const playerName = 'Sim';
+    //     const confirmedId = service.joinPendingGame(id, playerName);
+    //     expect(confirmedId).to.be.undefined;
+    // });
 
     it('getPendingGame should return correct pending game', () => {
         service.pendingGames.clear();
         const gameSettings = {
-            playerName: 'Max',
+            playerNames: ['Max'],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
+            botDifficulty: BotDifficulty.Easy,
+            numberOfPlayers: 2,
         };
         service.pendingGames.set('abc', gameSettings);
         const id = 'abc';

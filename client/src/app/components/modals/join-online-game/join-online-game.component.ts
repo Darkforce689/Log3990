@@ -3,6 +3,7 @@ import { AbstractControl, FormControl, ValidatorFn, Validators } from '@angular/
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from '@app/game-logic/constants';
+import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 const NO_WHITE_SPACE_RGX = /^\S*$/;
@@ -12,19 +13,21 @@ const NO_WHITE_SPACE_RGX = /^\S*$/;
     styleUrls: ['./join-online-game.component.scss'],
 })
 export class JoinOnlineGameComponent implements AfterContentChecked, OnInit {
-    oppName: FormControl;
-    private playerName: string;
+    myName: FormControl;
+    private playerNames: string[];
+
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: OnlineGameSettings,
         private dialogRef: MatDialogRef<JoinOnlineGameComponent>,
         private dialog: MatDialog,
         private cdref: ChangeDetectorRef,
-        private onlineSocketHandler: NewOnlineGameSocketHandler,
+        private socketHandler: NewOnlineGameSocketHandler,
+        private gameLaucherService: GameLauncherService,
     ) {}
 
     ngOnInit() {
-        this.playerName = this.data.playerName;
-        this.oppName = new FormControl('', [
+        this.playerNames = this.data.playerNames;
+        this.myName = new FormControl('', [
             Validators.required,
             Validators.minLength(MIN_NAME_LENGTH),
             Validators.maxLength(MAX_NAME_LENGTH),
@@ -39,26 +42,29 @@ export class JoinOnlineGameComponent implements AfterContentChecked, OnInit {
 
     cancel(): void {
         this.dialogRef.close();
-        this.oppName.reset();
+        this.myName.reset();
     }
 
     sendParameter(): void {
-        this.dialogRef.close(this.oppName.value);
-        this.onlineSocketHandler.joinPendingGame(this.data.id, this.oppName.value);
-        this.onlineSocketHandler.error$.subscribe((error: string) => {
+        this.dialogRef.close(this.myName.value);
+        this.socketHandler.joinPendingGame(this.data.id, this.myName.value);
+        this.socketHandler.error$.subscribe((error: string) => {
             if (error) {
                 this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error });
             }
         });
+
+        this.gameLaucherService.waitForOnlineGameStart(this.myName.value);
     }
 
     private forbiddenNameValidator(): ValidatorFn {
         return (control: AbstractControl): { [key: string]: unknown } | null =>
-            control.value !== this.playerName ? null : { forbidden: control.value };
+            // TODO GL3A22107-5 : FIX NAME VALIDATOR (next line is faulty)
+            control.value !== this.playerNames ? null : { forbidden: control.value };
     }
 
     get valid() {
-        return this.oppName.valid;
+        return this.myName.valid;
     }
 
     get randomBonusType() {

@@ -3,7 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EditBotDialogComponent } from '@app/components/modals/edit-bot-dialog/edit-bot-dialog.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { BotHttpService, BotInfo, BotType } from '@app/services/bot-http.service';
+import { BotDifficulty } from '@app/services/bot-difficulty';
+import { BotHttpService } from '@app/services/bot-http.service';
+import { BotInfo } from '@app/services/bot-info';
 import { Observable, of, throwError } from 'rxjs';
 import { AdminBotComponent } from './admin-bot.component';
 
@@ -16,7 +18,7 @@ describe('AdminbotComponent', () => {
         matDialogMock = jasmine.createSpyObj('MatDialog', ['open']);
         botHttpServiceMock = jasmine.createSpyObj('BotHttpService', ['deleteBot', 'getDataInfo']);
 
-        const dummyData: BotInfo[] = [{ name: 'Test', canEdit: true, type: BotType.Easy }];
+        const dummyData: BotInfo[] = [{ name: 'Test', canEdit: true, type: BotDifficulty.Easy }];
         const obs = new Observable<BotInfo[]>((sub) => {
             sub.next(dummyData);
         });
@@ -53,7 +55,7 @@ describe('AdminbotComponent', () => {
     });
 
     it('deleteBot should call http service', () => {
-        const botMock: BotInfo = { canEdit: true, name: 'test', type: BotType.Easy };
+        const botMock: BotInfo = { canEdit: true, name: 'test', type: BotDifficulty.Easy };
         const obs = new Observable<string>((subscribe) => {
             subscribe.next('');
         });
@@ -63,7 +65,7 @@ describe('AdminbotComponent', () => {
     });
 
     it('showUpdateMenu should open dialog', () => {
-        const botMock: BotInfo = { canEdit: true, name: 'test', type: BotType.Easy };
+        const botMock: BotInfo = { canEdit: true, name: 'test', type: BotDifficulty.Easy };
 
         matDialogMock.open.and.returnValue({
             afterClosed: () => {
