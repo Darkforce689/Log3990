@@ -2,7 +2,7 @@
 
 ## Android Studio Setup
 
-1. (Download Android Studio)[https://developer.android.com/studio]
+1. [Download Android Studio](https://developer.android.com/studio)
 
 2. Customize keymaps [Optionnal]
 
