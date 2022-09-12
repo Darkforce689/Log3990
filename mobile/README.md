@@ -30,6 +30,32 @@
 
 4. Launching Project
 
+    ![launch1](..\mobile\docs\launch1.png)
+
+5. Launching Emulator
+
+    ![emulator1](..\mobile\docs\emulator1.png)
+
+    ![emulator2](..\mobile\docs\emulator2.png)
+
+    ![emulator3](..\mobile\docs\emulator3.png)
+
+    ![emulator4](..\mobile\docs\emulator4.png)
+
+    ![emulator5](..\mobile\docs\emulator5.png)
+
+    ![emulator6](..\mobile\docs\emulator6.png)
+
+    ![emulator7](..\mobile\docs\emulator7.png)
+
+    ![emulator8](..\mobile\docs\emulator8.png)
+
+    ![emulator9](..\mobile\docs\emulator9.png)
+
+    ![emulator10](..\mobile\docs\emulator10.png)
+
+    ![emulator11](..\mobile\docs\emulator11.png)
+
 # Documentation
 
 -   [Canvas](https://developer.android.com/reference/android/graphics/Canvas)
