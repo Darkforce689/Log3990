@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable dot-notation */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-
-// TODO GL3A22107-35 : Remove or Adapt server-side tests
 
 // import { BotDifficulty } from '@app/database/bot-info/bot-info';
 // import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
@@ -70,7 +66,7 @@
 //     });
 
 //     it('should create an instance', () => {
-//         expect(easyBot).toBeTruthy();
+//         expect(easyBot).to.be.true;
 //     });
 
 //     it('should call actions based on setting', () => {
@@ -102,7 +98,7 @@
 //         tick(TIME_BUFFER_BEFORE_ACTION);
 
 //         const result: Action = test.calls.first().returnValue;
-//         expect(result).toBeTruthy();
+//         expect(result).to.be.true;
 //         tick(TIME_BEFORE_PICKING_ACTION);
 //         tick(TIME_BEFORE_PASS);
 //     }));
@@ -121,7 +117,7 @@
 //         if (pickedWord.value.totalPoints >= 2 && pickedWord.value.totalPoints <= 6) {
 //             result = true;
 //         }
-//         expect(result).toBeTruthy();
+//         expect(result).to.be.true;
 //     });
 
 //     it('should return a valid word 7-12 points', () => {
@@ -138,7 +134,7 @@
 //         if (pickedWord.value.totalPoints >= 7 && pickedWord.value.totalPoints <= 12) {
 //             result = true;
 //         }
-//         expect(result).toBeTruthy();
+//         expect(result).to.be.true;
 //     });
 
 //     it('should return a valid word 13-18 points', () => {
@@ -156,7 +152,7 @@
 //         if (pickedWord.value.totalPoints >= 13 && pickedWord.value.totalPoints <= 18) {
 //             result = true;
 //         }
-//         expect(result).toBeTruthy();
+//         expect(result).to.be.true;
 //     });
 
 //     it('should return a valid PlaceLetter action (playAction through spied randomAction)(vertical)', () => {
@@ -171,7 +167,7 @@
 
 //         spyOn(Math, 'random').and.returnValue(0.2);
 //         const result = easyBot['randomActionPicker']();
-//         expect(result).toBeInstanceOf(PlaceLetter);
+//         expect(result).to.be.instanceOf(PlaceLetter);
 //     });
 
 //     it('should return a valid PlaceLetter action (playAction through spied randomAction)(horizontal)', () => {
@@ -186,7 +182,7 @@
 
 //         spyOn(Math, 'random').and.returnValue(0.2);
 //         const result = easyBot['randomActionPicker']();
-//         expect(result).toBeInstanceOf(PlaceLetter);
+//         expect(result).to.be.instanceOf(PlaceLetter);
 //     });
 
 //     it('should a valid PassTurn because no words were found (playAction through spied randomAction)', () => {
@@ -194,7 +190,7 @@
 //         easyBot.letterRack = letters;
 //         spyOn(Math, 'random').and.returnValue(0.5);
 //         const result = easyBot['randomActionPicker']();
-//         expect(result).toBeInstanceOf(PassTurn);
+//         expect(result).to.be.instanceOf(PassTurn);
 //     });
 
 //     it('should return a valid ExchangeAction (exchangeAction)', () => {
@@ -210,6 +206,6 @@
 //         easyBot.letterRack = letters;
 //         spyOn(Math, 'random').and.returnValue(0.9);
 //         const result = easyBot['randomActionPicker']();
-//         expect(result).toBeInstanceOf(ExchangeLetter);
+//         expect(result).to.be.instanceOf(ExchangeLetter);
 //     });
 // });

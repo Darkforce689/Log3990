@@ -20,9 +20,9 @@ export class BotPlayer extends Player {
         // protected botMessage: BotMessagesService,
         protected botInfoService: BotInfoService,
         protected botManager: BotManager,
-        protected botDifficulty: BotDifficulty,
         protected botMessage: BotMessagesService,
         protected actionCreator: ActionCreatorService,
+        protected botDifficulty: BotDifficulty,
     ) {
         super('BotPlaceholderName');
     }

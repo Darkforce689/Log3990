@@ -29,16 +29,16 @@
 //     });
 
 //     it('should be created', () => {
-//         expect(botCreator).toBeTruthy();
+//         expect(botCreator).to.be.true;
 //     });
 
 //     it('should create easy bot', () => {
 //         const easyBot = botCreator.createBot('Tim', 'easy');
-//         expect(easyBot).toBeTruthy();
+//         expect(easyBot).to.be.true;
 //     });
 
 //     it('should create hard bot', () => {
 //         const hardBot = botCreator.createBot('Tim', 'hard');
-//         expect(hardBot).toBeTruthy();
+//         expect(hardBot).to.be.true;
 //     });
 // });

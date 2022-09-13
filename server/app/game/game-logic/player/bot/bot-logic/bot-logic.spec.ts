@@ -1,89 +1,67 @@
 /* eslint-disable dot-notation */
 
 // TODO GL3A22107-35 : Remove or Adapt server-side tests
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
+import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
+import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION } from '@app/game/game-logic/constants';
+import { BotCalculatorService } from '@app/game/game-logic/player/bot-calculator/bot-calculator.service';
+import { BotLogic } from '@app/game/game-logic/player/bot/bot-logic/bot-logic';
+import { EasyBotLogic } from '@app/game/game-logic/player/bot/bot-logic/easy-bot-logic/easy-bot-logic';
+import { BotDictionaryService } from '@app/game/game-logic/validator/dictionary/bot-dictionary/bot-dictionary';
+import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
+import { createSinonStubInstance } from '@app/test.util';
+import { expect } from 'chai';
 
-// import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-// import { ActionCreatorService } from '@app/game-logic/actions/action-creator/action-creator.service';
-// import { PassTurn } from '@app/game-logic/actions/pass-turn';
-// import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
-// import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION } from '@app/game-logic/constants';
-// import { BoardService } from '@app/game-logic/game/board/board.service';
-// import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-// import { BotCalculatorService } from '@app/game-logic/player/bot-calculator/bot-calculator.service';
-// import { BotMessagesService } from '@app/game-logic/player/bot-message/bot-messages.service';
-// import { EasyBot } from '@app/game-logic/player/bot/easy-bot';
-// import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-// import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
-// import { BotHttpService, BotType } from '@app/services/bot-http.service';
-// import { of } from 'rxjs';
+describe('Bot', () => {
+    let bot: EasyBotLogic;
+    // const dict = new DictionaryService(dictHttpServiceMock);
+    // const obs = of(['Test1', 'Test2', 'Test3']);
+    // mockBotHttpService.getDataInfo.and.returnValue(obs);
 
-// describe('Bot', () => {
-//     const dictHttpServiceMock = jasmine.createSpyObj('DictHttpService', ['getDictionary']);
-//     const dict = new DictionaryService(dictHttpServiceMock);
-//     let bot: EasyBot;
-//     const commandExecuterMock = jasmine.createSpyObj('CommandExecuterService', ['execute']);
-//     const botMessageMock = jasmine.createSpyObj('BotMessageService', ['sendAction']);
-//     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
-//     const obs = of(['Test1', 'Test2', 'Test3']);
-//     mockBotHttpService.getDataInfo.and.returnValue(obs);
-//     beforeEach(() => {
-//         TestBed.configureTestingModule({
-//             providers: [
-//                 { provide: DictionaryService, useValue: dict },
-//                 { provide: CommandExecuterService, useValue: commandExecuterMock },
-//                 { provide: BotMessagesService, useValue: botMessageMock },
-//                 { provide: BotHttpService, useValue: mockBotHttpService },
-//             ],
-//         });
-//         bot = new EasyBot(
-//             'test',
-//             TestBed.inject(BoardService),
-//             TestBed.inject(DictionaryService),
-//             TestBed.inject(BotCalculatorService),
-//             TestBed.inject(WordSearcher),
-//             TestBed.inject(BotMessagesService),
-//             TestBed.inject(GameInfoService),
-//             TestBed.inject(CommandExecuterService),
-//             TestBed.inject(ActionCreatorService),
-//             TestBed.inject(BotHttpService),
-//             BotType.Easy,
-//         );
-//     });
+    const stubBotDictionaryService = createSinonStubInstance(BotDictionaryService);
+    const stubBotCalculatorService = createSinonStubInstance(BotCalculatorService);
+    const stubWordValidator = createSinonStubInstance(WordSearcher);
+    const stubActionCreator = createSinonStubInstance(ActionCreatorService);
 
-//     it('should create an instance', () => {
-//         expect(bot).toBeTruthy();
-//     });
+    beforeEach(() => {
+        bot = new EasyBotLogic(stubBotDictionaryService, stubBotCalculatorService, stubWordValidator, stubActionCreator, BotDifficulty.Easy);
+    });
 
-//     it('should generate a different name', () => {
-//         const numberOfTime = 1000;
-//         const opponentName = 'Jimmy';
-//         for (let i = 0; i < numberOfTime; i++) {
-//             const botName = bot['generateBotName'](opponentName);
-//             const sameName: boolean = botName === opponentName;
-//             expect(sameName).toBeFalsy();
-//         }
-//     });
+    it('should create an instance', () => {
+        expect(bot).to.be.instanceOf(BotLogic);
+    });
 
-//     it('should play before 3 seconds', fakeAsync(() => {
-//         bot.startTimerAction();
-//         bot.chooseAction(new PassTurn(bot));
-//         tick(TIME_BEFORE_PICKING_ACTION);
-//         expect(botMessageMock.sendAction.calls.argsFor(0)[0]).toBeInstanceOf(PassTurn);
-//         tick(TIME_BEFORE_PASS);
-//     }));
+    it('should generate a different name', () => {
+        const numberOfTime = 1000;
+        const opponentName = 'Jimmy';
+        for (let i = 0; i < numberOfTime; i++) {
+            const botName = bot['generateBotName'](opponentName);
+            const sameName: boolean = botName === opponentName;
+            expect(sameName).to.be.false;
+        }
+    });
 
-//     it('should play after 3 seconds', fakeAsync(() => {
-//         bot.startTimerAction();
-//         tick(TIME_BEFORE_PICKING_ACTION);
-//         bot.chooseAction(new PassTurn(bot));
-//         expect(botMessageMock.sendAction.calls.argsFor(0)[0]).toBeInstanceOf(PassTurn);
-//         tick(TIME_BEFORE_PASS);
-//     }));
+    it('should play before 3 seconds', fakeAsync(() => {
+        bot.startTimerAction();
+        bot.chooseAction(new PassTurn(bot));
+        tick(TIME_BEFORE_PICKING_ACTION);
+        expect(botMessageMock.sendAction.calls.argsFor(0)[0]).to.be.instanceOf(PassTurn);
+        tick(TIME_BEFORE_PASS);
+    }));
 
-//     it('should pass turn after 20 seconds', fakeAsync(() => {
-//         bot.startTimerAction();
-//         tick(TIME_BEFORE_PICKING_ACTION);
-//         tick(TIME_BEFORE_PASS);
-//         expect(botMessageMock.sendAction.calls.argsFor(0)[0]).toBeInstanceOf(PassTurn);
-//     }));
-// });
+    it('should play after 3 seconds', fakeAsync(() => {
+        bot.startTimerAction();
+        tick(TIME_BEFORE_PICKING_ACTION);
+        bot.chooseAction(new PassTurn(bot));
+        expect(botMessageMock.sendAction.calls.argsFor(0)[0]).to.be.instanceOf(PassTurn);
+        tick(TIME_BEFORE_PASS);
+    }));
+
+    it('should pass turn after 20 seconds', fakeAsync(() => {
+        bot.startTimerAction();
+        tick(TIME_BEFORE_PICKING_ACTION);
+        tick(TIME_BEFORE_PASS);
+        expect(botMessageMock.sendAction.calls.argsFor(0)[0]).to.be.instanceOf(PassTurn);
+    }));
+});
