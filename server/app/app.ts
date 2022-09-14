@@ -1,3 +1,4 @@
+import { AuthController } from '@app/auth/controllers/auth.controller';
 import { HttpException } from '@app/classes/http.exception';
 import { BotInfoController } from '@app/controllers/bot-info.controller';
 import { DebugController } from '@app/controllers/debug.controller';
@@ -32,6 +33,7 @@ export class Application {
         private readonly leaderboardController: LeaderboardController,
         private readonly botInfoController: BotInfoController,
         private readonly dictionaryController: DictionaryController,
+        private readonly authController: AuthController,
     ) {
         this.app = express();
         this.config();
@@ -39,6 +41,7 @@ export class Application {
     }
 
     bindRoutes(): void {
+        this.app.use('/auth/', this.authController.router);
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
         this.app.use('/api/servergame', this.debugController.router);
         this.app.use('/api/scores', this.leaderboardController.router);
