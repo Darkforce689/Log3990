@@ -9,6 +9,7 @@ import {
     DictWholeSearchSettings,
 } from '@app/game/game-logic/validator/dictionary/dict-settings';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
+import { ServerLogger } from '@app/logger/logger';
 import { Service } from 'typedi';
 
 @Service()
@@ -45,6 +46,10 @@ export class BotDictionaryService {
 
         const dict = this.getDynamicWordList(gameToken);
         const dictWords = dict[maxDictWordLength];
+        if (!dictWords) {
+            ServerLogger.logDebug('Bot failed to load dict words for game with id ', gameToken);
+            return [];
+        }
 
         if (partWord.word.includes('-')) {
             BotDictionaryService.dictionaryHelper.getSubWordsOfPartWord(partWord, tmpWordList);

@@ -2,6 +2,7 @@ import { ForfeitedGameState, GameState, GameStateToken } from '@app/game/game-lo
 import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineAction } from '@app/game/online-action.interface';
+import { ServerLogger } from '@app/logger/logger';
 import * as http from 'http';
 import * as io from 'socket.io';
 import { UserAuth } from './user-auth.interface';
@@ -48,7 +49,8 @@ export class GameSocketsHandler {
                     const gameToken = userAuth.gameToken;
                     socket.join(gameToken);
                     this.addPlayerToGame(socket.id, userAuth);
-                } catch (e) {
+                } catch (error) {
+                    ServerLogger.logError(error);
                     socket.disconnect();
                 }
             });
@@ -56,7 +58,8 @@ export class GameSocketsHandler {
             socket.on('nextAction', (action: OnlineAction) => {
                 try {
                     this.sendPlayerAction(socket.id, action);
-                } catch (e) {
+                } catch (error) {
+                    ServerLogger.logError(error);
                     socket.disconnect();
                 }
             });

@@ -12,9 +12,10 @@ import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
 import { Timer } from '@app/game/game-logic/timer/timer.service';
+import { ServerLogger } from '@app/logger/logger';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
-import { first, mapTo, Subject } from 'rxjs';
 import { randomInt } from 'crypto';
+import { first, mapTo, Subject } from 'rxjs';
 
 export class ServerGame {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -55,7 +56,8 @@ export class ServerGame {
     }
 
     stop() {
-        this.endReason = EndOfGameReason.Other;
+        ServerLogger.logDebug('Game with id ', this.gameToken, ' manually stopped');
+        this.endReason = EndOfGameReason.ManualStop;
         this.isEnded$.next(undefined);
     }
 
