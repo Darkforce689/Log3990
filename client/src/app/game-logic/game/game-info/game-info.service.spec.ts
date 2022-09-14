@@ -1,7 +1,7 @@
-/* eslint-disable max-lines */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable dot-notation */
+// /* eslint-disable max-lines */
+// /* eslint-disable @typescript-eslint/no-unused-expressions */
+// /* eslint-disable @typescript-eslint/no-magic-numbers */
+// /* eslint-disable dot-notation */
 // import { TestBed } from '@angular/core/testing';
 // import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 // import { DEFAULT_TIME_PER_TURN, EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
