@@ -233,9 +233,11 @@ export class GameManagerService {
     private updateLeaderboard(players: Player[], gameToken: string) {
         const isSpecial = this.activeGames.get(gameToken) instanceof SpecialServerGame;
         const gameMode = isSpecial ? GameMode.Special : GameMode.Classic;
-        players.forEach((player) => {
-            const score = { name: player.name, point: player.points };
-            this.leaderboardService.updateLeaderboard(score, gameMode);
-        });
+        players
+            .filter((player) => !(player instanceof BotPlayer))
+            .forEach((player) => {
+                const score = { name: player.name, point: player.points };
+                this.leaderboardService.updateLeaderboard(score, gameMode);
+            });
     }
 }
