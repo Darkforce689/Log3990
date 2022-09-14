@@ -3,7 +3,7 @@ import { Player } from '@app/game/game-logic/player/player';
 export enum EndOfGameReason {
     Forfeit,
     GameEnded,
-    Other,
+    ManualStop,
 }
 
 export interface EndOfGame {

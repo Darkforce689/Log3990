@@ -1,5 +1,6 @@
 import { isGameSettings } from '@app/game/game-logic/utils';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
+import { ServerLogger } from '@app/logger/logger';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import * as http from 'http';
@@ -35,8 +36,9 @@ export class NewGameSocketHandler {
                     gameId = this.createGame(gameSettings, socket);
                     this.dictionaryService.makeGameDictionary(gameId, gameSettings.dictTitle);
                     this.emitPendingGamesToAll();
-                } catch (e) {
-                    this.sendError(e, socket);
+                } catch (error) {
+                    ServerLogger.logError(error);
+                    this.sendError(error, socket);
                 }
             });
 
@@ -44,8 +46,9 @@ export class NewGameSocketHandler {
                 try {
                     await this.launchGame(id);
                     this.emitPendingGamesToAll();
-                } catch (e) {
-                    this.sendError(e, socket);
+                } catch (error) {
+                    ServerLogger.logError(error);
+                    this.sendError(error, socket);
                 }
             });
 
@@ -53,8 +56,9 @@ export class NewGameSocketHandler {
                 try {
                     this.joinGame(id, name, this.getPendingGame(id), socket);
                     this.emitPendingGamesToAll();
-                } catch (e) {
-                    this.sendError(e, socket);
+                } catch (error) {
+                    ServerLogger.logError(error);
+                    this.sendError(error, socket);
                 }
             });
 

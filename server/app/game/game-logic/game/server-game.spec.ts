@@ -163,7 +163,7 @@ describe('ServerGame', () => {
 
     it('endOfTurn should return true and call onEndOfGame if the endReason is defined', () => {
         game.stop();
-        expect(game.endReason).to.be.equal(EndOfGameReason.Other);
+        expect(game.endReason).to.be.equal(EndOfGameReason.ManualStop);
         const gameSpy = spy(game, 'onEndOfGame' as any);
         game['startTurn']();
         expect(gameSpy.called).to.be.equal(true);

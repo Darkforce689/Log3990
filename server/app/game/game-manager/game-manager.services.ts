@@ -24,6 +24,7 @@ import { BindedSocket } from '@app/game/game-manager/binded-client.interface';
 import { GameMode } from '@app/game/game-mode.enum';
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction } from '@app/game/online-action.interface';
+import { ServerLogger } from '@app/logger/logger';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { Observable, Subject } from 'rxjs';
@@ -148,7 +149,8 @@ export class GameManagerService {
             const gameToken = playerRef.gameToken;
             this.notifyAction(compiledAction, gameToken);
             player.play(compiledAction);
-        } catch (e) {
+        } catch (error) {
+            ServerLogger.logError(error);
             return;
         }
     }
@@ -225,6 +227,8 @@ export class GameManagerService {
     }
 
     private deleteGame(gameToken: string) {
+        const game = this.activeGames.get(gameToken);
+        game?.stop();
         this.activeGames.delete(gameToken);
         this.linkedClients.delete(gameToken);
         this.dictionaryService.deleteGameDictionary(gameToken);
