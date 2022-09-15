@@ -6,13 +6,14 @@
     </mat-form-field>
     <br />
     <br />
+    <mat-checkbox color="accent" formControlName="privateGame">Partie privé</mat-checkbox>
+    <br />
+    <br />
     <mat-checkbox color="accent" formControlName="randomBonus">Bonus aléatoire</mat-checkbox>
     <br />
     <br />
     <mat-form-field>
-        <mat-error>
-            Dictionnaire supprimé, veuillez en choisir un autre
-        </mat-error>
+        <mat-error> Dictionnaire supprimé, veuillez en choisir un autre </mat-error>
         <mat-label>Dictionnaire de la partie</mat-label>
         <mat-select [formControlName]="'dictTitle'">
             <mat-option

@@ -8,7 +8,7 @@ import {
     MAX_TIME_PER_TURN,
     MIN_NAME_LENGTH,
     MIN_TIME_PER_TURN,
-    STEP_TIME_PER_TURN,
+    STEP_TIME_PER_TURN
 } from '@app/game-logic/constants';
 import { DictInfo } from '@app/pages/admin-page/admin-dict/admin-dict.component';
 import { DictHttpService } from '@app/services/dict-http.service';
@@ -34,6 +34,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             Validators.min(MIN_TIME_PER_TURN),
             Validators.max(MAX_TIME_PER_TURN),
         ]),
+        privateGame: new FormControl(false, [Validators.required]),
         randomBonus: new FormControl(false, [Validators.required]),
         dictTitle: new FormControl(DEFAULT_DICTIONARY_TITLE, [Validators.required]),
         dictDesc: new FormControl(''),
@@ -77,6 +78,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
         this.onlineGameSettingsUIForm.reset({
             playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
+            privateGame: false,
             randomBonus: false,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             dictDesc: '',

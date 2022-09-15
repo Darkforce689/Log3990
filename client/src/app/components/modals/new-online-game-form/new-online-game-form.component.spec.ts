@@ -67,6 +67,7 @@ describe('NewOnlineGameFormComponent', () => {
         component.onlineGameSettingsUIForm.setValue({
             playerName: 'samuel',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             dictDesc: '',
@@ -83,6 +84,7 @@ describe('NewOnlineGameFormComponent', () => {
         const settings = {
             playerName: 'samuel',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             dictDesc: '',
@@ -96,6 +98,7 @@ describe('NewOnlineGameFormComponent', () => {
         component.onlineGameSettingsUIForm.setValue({
             playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
+            privateGame: false,
             randomBonus: false,
             dictTitle: 'testTitle',
             dictDesc: '',
@@ -108,6 +111,7 @@ describe('NewOnlineGameFormComponent', () => {
         const setting = {
             playerName: 'samuel',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             dictDesc: '',
@@ -119,6 +123,7 @@ describe('NewOnlineGameFormComponent', () => {
         expect(component.onlineGameSettingsUIForm.value).toEqual({
             playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
+            privateGame: false,
             randomBonus: false,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             dictDesc: '',
@@ -139,6 +144,7 @@ describe('NewOnlineGameFormComponent', () => {
         const setting = {
             playerName: 'samuel',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             dictTitle: 'deletedTitle',
             dictDesc: '',
