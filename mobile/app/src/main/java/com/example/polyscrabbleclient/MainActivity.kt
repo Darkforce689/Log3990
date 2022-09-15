@@ -18,15 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.polyscrabbleclient.ui.components.Tile
+import com.example.polyscrabbleclient.ui.components.LetterRack
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            App() {
-                Greeting("Android")
+            App {
+                LetterRack()
             }
         }
     }
@@ -42,66 +42,69 @@ fun App(content: @Composable () -> Unit) {
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    var isSelected by remember {
-        mutableStateOf(false)
-    }
-    val targetColor by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colors.primary else Color.Transparent,
-        animationSpec = tween(durationMillis = 4000)
-    )
-    Surface(color = targetColor) {
-        Text(
-            text = "Hello $name!",
-            modifier = Modifier
-                .clickable { isSelected = !isSelected }
-                .padding(16.dp)
-        )
-    }
-}
-
-@Composable
-fun ScreenContent(names: List<String> = List(3) {"android $it"}) {
-    var countState by remember {
-        mutableStateOf(0)
-    }
-    Column (modifier = Modifier.fillMaxHeight()) {
-        NamesList(names, Modifier.weight(1f))
-        Counter(
-            count = countState,
-            updateCount = { newCount -> countState = newCount}
-        )
-        if (countState > 5) {
-            Text(text = "Count > 5")
-        }
-        Tile(letter = 'A')
-    }
-}
-
-@Composable
-private fun NamesList(names: List<String>, modifier: Modifier) {
-    LazyColumn(modifier = modifier) {
-        items(items = names) {
-            Greeting(name = it)
-            Divider()
-        }
-    }
-}
-
-@Composable
-fun Counter(count: Int, updateCount: (Int) -> Unit) {
-    Button (onClick = { updateCount(count + 1) } ) {
-        Text(
-            text = "Click: $count",
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     App {
-        ScreenContent()
+        LetterRack()
     }
 }
+
+//
+//@Composable
+//fun Greeting(name: String) {
+//    var isSelected by remember {
+//        mutableStateOf(false)
+//    }
+//    val targetColor by animateColorAsState(
+//        targetValue = if (isSelected) MaterialTheme.colors.primary else Color.Transparent,
+//        animationSpec = tween(durationMillis = 4000)
+//    )
+//    Surface(color = targetColor) {
+//        Text(
+//            text = "Hello $name!",
+//            modifier = Modifier
+//                .clickable { isSelected = !isSelected }
+//                .padding(16.dp)
+//        )
+//    }
+//}
+//
+//@Composable
+//fun ScreenContent(names: List<String> = List(3) {"android $it"}) {
+//    var countState by remember {
+//        mutableStateOf(0)
+//    }
+//    Column (modifier = Modifier.fillMaxHeight()) {
+//        NamesList(names, Modifier.weight(1f))
+//        Counter(
+//            count = countState,
+//            updateCount = { newCount -> countState = newCount}
+//        )
+//        if (countState > 5) {
+//            Text(text = "Count > 5")
+//        }
+//        LetterRack()
+//    }
+//}
+//
+//@Composable
+//private fun NamesList(names: List<String>, modifier: Modifier) {
+//    LazyColumn(modifier = modifier) {
+//        items(items = names) {
+//            Greeting(name = it)
+//            Divider()
+//        }
+//    }
+//}
+//
+//@Composable
+//fun Counter(count: Int, updateCount: (Int) -> Unit) {
+//    Button (onClick = { updateCount(count + 1) } ) {
+//        Text(
+//            text = "Click: $count",
+//        )
+//    }
+//}
+//
+
