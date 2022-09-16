@@ -23,7 +23,7 @@ export class HorseComponent implements AfterContentChecked {
     constructor(private info: GameInfoService, private inputController: UIInputControllerService) {}
 
     ngAfterContentChecked(): void {
-        this.playerRack = this.info.user.letterRack;
+        this.playerRack = this.info.player.letterRack;
     }
 
     click(type: InputType, index: number) {

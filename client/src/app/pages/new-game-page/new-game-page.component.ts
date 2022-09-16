@@ -43,10 +43,6 @@ export class NewGamePageComponent {
         this.ripple.launch(rippleConfig);
     }
 
-    openSoloGameForm() {
-        this.openGameForm();
-    }
-
     openMultiGameForm() {
         this.openGameForm();
     }
@@ -66,9 +62,9 @@ export class NewGamePageComponent {
                 ...gameSettings,
                 gameMode: this.gameMode,
                 playerNames: [gameSettings.playerName],
-                // TODO GL3A22107-5 : Implement new game parameter :
+                // TODO GL3A22107-32 : Implement new game parameter :
                 botDifficulty: BotDifficulty.Expert,
-                // TODO GL3A22107-5 : Implement new game parameter :
+                // TODO GL3A22107-32 : Implement new game parameter :
                 numberOfPlayers: 2,
             };
             this.socketHandler.createGame(onlineGameSettings);
@@ -109,32 +105,6 @@ export class NewGamePageComponent {
         });
         return loadingGameDialog;
     }
-
-    // TODO GL3A22107-5 : Should be changed/removed
-    // private startSoloGame() {
-    //     this.gameReady$$?.unsubscribe();
-    //     const gameReady$ = this.createGame(this.gameSettings);
-    //     if (gameReady$.getValue()) {
-    //         this.router.navigate(['/game']);
-    //     } else {
-    //         this.gameReady$$ = gameReady$.subscribe((gameReady: boolean) => {
-    //             if (!gameReady) {
-    //                 return;
-    //             }
-    //             loadingScreen.close();
-    //             this.router.navigate(['/game']);
-    //         });
-    //         const loadingScreen = this.openLoadingGame();
-    //     }
-    // }
-
-    // TODO GL3A22107-5 : Create a new server game + remove old implementation
-    // private createGame(gameSettings: GameSettings): BehaviorSubject<boolean> {
-    // if (this.isSpecialGame) {
-    //     return this.gameManager.createSpecialGame(gameSettings);
-    // }
-    // return this.gameManager.createGame(gameSettings);
-    // }
 
     get isSpecialGame() {
         return this.gameMode === GameMode.Special;

@@ -13,7 +13,6 @@ import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { getRandomInt } from '@app/game-logic/utils';
 import { Observable, Subject } from 'rxjs';
 import { UIInputControllerService } from './ui-input-controller.service';
@@ -21,13 +20,13 @@ import { UIInputControllerService } from './ui-input-controller.service';
 class MockGameInfoService {
     players: Player[];
     activePlayerIndex: number = 0;
-    user: Player;
+    player: Player;
     endOfTurnMockSubject = new Subject<void>();
     get endTurn$(): Observable<void> {
         return this.endOfTurnMockSubject;
     }
     get activePlayer() {
-        return this.user;
+        return this.player;
     }
 }
 
@@ -43,7 +42,7 @@ describe('UIInputControllerService', () => {
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
         boardService = TestBed.inject(BoardService);
-        player = new User('p1');
+        player = new Player('p1');
         player.letterRack = [
             { char: EMPTY_CHAR, value: 0 },
             { char: EMPTY_CHAR, value: 0 },
@@ -55,7 +54,7 @@ describe('UIInputControllerService', () => {
         ];
         info = TestBed.inject(GameInfoService);
         info.players = [player];
-        info.user = player;
+        info.player = player;
         service = TestBed.inject(UIInputControllerService);
     });
 

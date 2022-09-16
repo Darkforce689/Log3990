@@ -1,7 +1,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
-import { ForfeitedGameState, GameState } from '@app/game-logic/game/games/online-game/game-state';
+import { GameState } from '@app/game-logic/game/games/online-game/game-state';
 import { TimerControls } from '@app/game-logic/game/timer/timer-controls.enum';
 import { SocketMock } from '@app/game-logic/socket-mock';
 import { OnlineAction, OnlineActionType } from '@app/socket-handler/interfaces/online-action.interface';
@@ -100,31 +100,12 @@ describe('GameSocketHandlerService', () => {
         expect(gameStateSubject.isEndOfGame).toBeFalse();
     });
 
-    it('receiveTransitionGameState should set forfeitGameStateSubject', () => {
-        let forfeitGameStateSubject: ForfeitedGameState = {} as ForfeitedGameState;
-        service.forfeitGameState$.pipe(take(1)).subscribe((value) => {
-            forfeitGameStateSubject = value;
-        });
-        const forfeitGameState = { lettersRemaining: 3 } as ForfeitedGameState;
-        service['receiveForfeitedGameState'](forfeitGameState);
-        expect(forfeitGameStateSubject.lettersRemaining).toEqual(3);
-    });
-
     it('should receive disconnected event and handle it properly', (done) => {
         service.disconnectedFromServer$.subscribe(() => {
             expect(true).toBeTrue();
             done();
         });
         (service.socket as any).peerSideEmit('disconnected');
-    });
-
-    it('should receive forfeited gamestate and handle it properly', (done) => {
-        service.forfeitGameState$.subscribe((forfeitedState) => {
-            expect(forfeitedState).toBeTruthy();
-            done();
-        });
-        const forfeitedGameState = {} as unknown as ForfeitedGameState;
-        (service.socket as any).peerSideEmit('transitionGameState', forfeitedGameState);
     });
 
     it('should emit disconnected from server when receiving connect_error', (done) => {

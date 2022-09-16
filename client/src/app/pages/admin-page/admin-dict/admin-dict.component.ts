@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddDictDialogComponent } from '@app/components/modals/add-dict-dialog/add-dict-dialog.component';
 import { EditDictDialogComponent } from '@app/components/modals/edit-dict/edit-dict.component';
 import { MAX_FILE_LENGTH } from '@app/game-logic/constants';
+import { Dictionary } from '@app/game-logic/interfaces/dictionary';
 import { dictionaryToDownloadedDict, openErrorDialog } from '@app/game-logic/utils';
-import { Dictionary } from '@app/game-logic/validator/dictionary';
 import { DictHttpService } from '@app/services/dict-http.service';
 
 export interface DictInfo {

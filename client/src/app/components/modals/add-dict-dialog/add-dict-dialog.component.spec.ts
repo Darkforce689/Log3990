@@ -2,7 +2,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
-import { Dictionary } from '@app/game-logic/validator/dictionary';
+import { Dictionary } from '@app/game-logic/interfaces/dictionary';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { DictHttpService } from '@app/services/dict-http.service';
 import { of } from 'rxjs';

@@ -25,7 +25,6 @@ export class ServerGame {
     consecutivePass: number = 0;
     board: Board;
     timer: Timer;
-    winnerByForfeitedIndex: number;
 
     isEnded$ = new Subject<undefined>();
     endReason: EndOfGameReason;
@@ -61,14 +60,6 @@ export class ServerGame {
         this.isEnded$.next(undefined);
     }
 
-    forfeit(playerName: string) {
-        this.winnerByForfeitedIndex = this.players.findIndex((player) => {
-            return player.name !== playerName;
-        });
-        this.endReason = EndOfGameReason.Forfeit;
-        this.isEnded$.next(undefined);
-    }
-
     isEndOfGame() {
         if (this.letterBag.isEmpty) {
             for (const player of this.players) {
@@ -98,11 +89,6 @@ export class ServerGame {
     getWinner(): Player[] {
         let highestScore = Number.MIN_SAFE_INTEGER;
         let winners: Player[] = [];
-        if (this.winnerByForfeitedIndex !== undefined) {
-            const winner = this.players[this.winnerByForfeitedIndex];
-            winners = [winner];
-            return winners;
-        }
 
         for (const player of this.players) {
             if (player.points === highestScore) {
@@ -135,13 +121,19 @@ export class ServerGame {
         return topPlayers[0];
     }
 
+    forcePlay() {
+        this.startTurn();
+    }
+
+    forceEndturn() {
+        this.timer.stop();
+    }
+
     private onEndOfGame(reason: EndOfGameReason) {
         this.pointCalculator.endOfGamePointDeduction(this);
         this.displayLettersLeft();
         this.emitGameState();
-        if (reason === EndOfGameReason.GameEnded) {
-            this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
-        }
+        this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
     }
 
     private nextPlayer() {

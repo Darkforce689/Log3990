@@ -3,7 +3,6 @@ import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { ARROWLEFT, ARROWRIGHT, BACKSPACE, ENTER, JOKER_CHAR, RACK_LETTER_COUNT, SHIFT, SPACE } from '@app/game-logic/constants';
 import { WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { getRandomInt } from '@app/game-logic/utils';
 import { UIMove } from './ui-move';
 
@@ -11,7 +10,7 @@ describe('UIMove', () => {
     let player: Player;
     let action: UIAction;
     beforeEach(() => {
-        player = new User('p1');
+        player = new Player('p1');
         player.letterRack = [
             { char: 'A', value: 0 },
             { char: 'B', value: 0 },

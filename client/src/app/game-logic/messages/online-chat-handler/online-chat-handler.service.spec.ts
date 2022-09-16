@@ -8,7 +8,7 @@ import { SocketMock } from '@app/game-logic/socket-mock';
 import { take } from 'rxjs/operators';
 
 describe('online chat handler', () => {
-    const gameInfo = { user: { name: 'Tim' } };
+    const gameInfo = { player: { name: 'Tim' } };
     let service: OnlineChatHandlerService;
     beforeEach(() => {
         TestBed.configureTestingModule({ providers: [{ provide: GameInfoService, useValue: gameInfo }] });

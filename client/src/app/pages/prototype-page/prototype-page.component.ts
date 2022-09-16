@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { OnlineChatHandlerService } from '@app/game-logic/messages/online-chat-handler/online-chat-handler.service';
-import { User } from '@app/game-logic/player/user';
+import { Player } from '@app/game-logic/player/player';
+
 import * as uuid from 'uuid';
 
 @Component({
@@ -14,7 +15,7 @@ export class PrototypePageComponent implements OnInit {
 
     ngOnInit(): void {
         const name = this.genUserName();
-        this.gameInfo.user = new User(name);
+        this.gameInfo.player = new Player(name);
         this.onlineChat.joinChatRoom('prototype', name);
     }
 

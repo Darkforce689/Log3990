@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { ObjectiveNotifierService } from '@app/game-logic/game/objectives/objective-notifier/objective-notifier.service';
 import { Objective } from '@app/game-logic/game/objectives/objectives/objective';
-import { User } from '@app/game-logic/player/user';
+import { Player } from '@app/game-logic/player/player';
 import { ObjectiveStatus } from '@app/pages/game-page/objectives/objectives-status.enum';
 import { ObjectiveComponent } from './objective.component';
 
@@ -28,7 +28,7 @@ describe('ObjectiveComponent', () => {
     let fixture: ComponentFixture<ObjectiveComponent>;
     beforeEach(async () => {
         const mockInfoService = jasmine.createSpyObj('GameInfoService', ['getObjective']);
-        mockInfoService.user = new User('test');
+        mockInfoService.player = new Player('test');
         await TestBed.configureTestingModule({
             providers: [{ provide: GameInfoService, useValue: mockInfoService }],
             declarations: [ObjectiveComponent],

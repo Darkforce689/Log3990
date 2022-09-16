@@ -8,7 +8,6 @@ export class Player {
     action$: Subject<Action> = new Subject();
 
     points: number = 0;
-    isActive: boolean;
     letterRack: Letter[] = [];
 
     constructor(public name: string) {}
