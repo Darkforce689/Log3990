@@ -48,7 +48,7 @@ fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewMod
             Card(modifier= Modifier.padding(25.dp, 10.dp, 25.dp, 25.dp),
                 shape = RoundedCornerShape(13.dp),
                 elevation = 5.dp,
-                backgroundColor = MaterialTheme.colors.background,
+                backgroundColor = Color.LightGray,
                 onClick = { keyboardController?.hide()}) {
                     Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(),
                     verticalArrangement = Arrangement.Bottom) {
