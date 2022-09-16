@@ -80,7 +80,6 @@ fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
     var input by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-//    Todo: when click anywhere else keyboard disappear
     fun sendMessage() {
         if(input.isNotBlank()) {
             viewModel.sendMessage(Message(input, User.name, MessageType.ME ))
