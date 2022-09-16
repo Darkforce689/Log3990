@@ -4,6 +4,7 @@ import { USER_COLLECTION } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
 import { Service } from 'typedi';
+import { UserQuery } from '@app/user/user-query.interface';
 import { ServerLogger } from '@app/logger/logger';
 
 export enum UserCreationError {
@@ -48,6 +49,12 @@ export class UserService {
                 object: undefined,
             };
         }
+    }
+
+    async getUser(query: UserQuery): Promise<User | undefined> {
+        const result = await this.collection.findOne(query);
+        const user = (result ?? undefined) as User | undefined;
+        return user;
     }
 
     private async isEmailExists(email: string) {

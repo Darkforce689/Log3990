@@ -21,6 +21,7 @@ cache:
         policy: pull
 
 .only-server: &only-server
+    image: node:18
     only:
         refs:
             - master
