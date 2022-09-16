@@ -19,7 +19,6 @@ import com.example.polyscrabbleclient.Message.EventType
 import com.example.polyscrabbleclient.Message.SocketHandler
 import com.example.polyscrabbleclient.Message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.Message.model.User
-import com.example.polyscrabbleclient.ui.components.LetterRack
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.Message.viewModel.ChatBoxViewModel
 
@@ -51,7 +50,6 @@ fun NavGraph() {
         composable("startPage") { // 2
             Column() {
                 Prototype(navController)
-                LetterRack()
             }
         }
         composable("messageList") {
@@ -92,7 +90,6 @@ fun App(content: @Composable () -> Unit) {
 @Composable
 fun DefaultPreview() {
     App {
-        LetterRack()
     }
 }
 
