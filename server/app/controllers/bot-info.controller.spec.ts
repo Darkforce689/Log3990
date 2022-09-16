@@ -11,11 +11,11 @@ import { Container } from 'typedi';
 describe('BotInfoController', () => {
     let botInfoService: sinon.SinonStubbedInstance<BotInfoService>;
     let expressApp: Express.Application;
+    const app = Container.get(Application);
+    app.start(false, false);
 
     beforeEach(async () => {
         botInfoService = sinon.createStubInstance(BotInfoService);
-        const app = Container.get(Application);
-
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['botInfoController'], 'botInfoService', { value: botInfoService });
         expressApp = app.app;

@@ -10,10 +10,12 @@ import { Container } from 'typedi';
 describe('LeaderboardController', () => {
     let leaderboardService: sinon.SinonStubbedInstance<LeaderboardService>;
     let expressApp: Express.Application;
+    const app = Container.get(Application);
+    app.start(false, false);
 
     beforeEach(async () => {
         leaderboardService = sinon.createStubInstance(LeaderboardService);
-        const app = Container.get(Application);
+
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['leaderboardController'], 'leaderboardService', { value: leaderboardService });
         expressApp = app.app;

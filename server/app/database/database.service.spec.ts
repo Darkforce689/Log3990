@@ -6,6 +6,7 @@ import { BOT_INFO_COLLECTION } from '@app/constants';
 import { DatabaseService } from '@app/database/database.service';
 import { LEADERBOARD_CLASSIC_COLLECTION, LEADERBOARD_LOG_COLLECTION } from '@app/database/leaderboard-service/leaderboard-constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
+import { RedisClientService } from '@app/database/redis-client.service';
 import { fail } from 'assert';
 import { expect } from 'chai';
 import { describe } from 'mocha';
@@ -19,7 +20,8 @@ describe('Database service', () => {
 
     beforeEach(async () => {
         const mongodbClientService = new MongoDBClientService();
-        databaseService = new DatabaseService(mongodbClientService);
+        const redisClient = new RedisClientService();
+        databaseService = new DatabaseService(mongodbClientService, redisClient);
         mongoServer = await MongoMemoryServer.create();
         mongoUri = mongoServer.getUri();
     });
