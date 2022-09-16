@@ -12,7 +12,6 @@ import { GameState, LightPlayer } from '@app/game-logic/game/games/online-game/g
 import { TimerControls } from '@app/game-logic/game/timer/timer-controls.enum';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { Socket } from 'socket.io-client';
 import { OnlineGame } from './online-game';
@@ -39,8 +38,8 @@ describe('OnlineGame', () => {
             boardService,
             TestBed.inject(OnlineActionCompilerService),
         );
-        player1 = new User('p1');
-        player2 = new User('p2');
+        player1 = new Player('p1');
+        player2 = new Player('p2');
         onlineGame.players = [player1, player2];
     });
 
@@ -440,7 +439,7 @@ describe('OnlineGame', () => {
             { char: 'B', value: 1 },
             { char: 'C', value: 1 },
         ];
-        const player = new User('QWERTY');
+        const player = new Player('QWERTY');
         player.letterRack = [
             { char: 'A', value: 1 },
             { char: 'A', value: 1 },
@@ -466,7 +465,7 @@ describe('OnlineGame', () => {
             { char: 'E', value: 1 },
         ];
 
-        const player = new User('QWERTY');
+        const player = new Player('QWERTY');
         player.letterRack = [
             { char: 'A', value: 1 },
             { char: 'A', value: 1 },

@@ -6,7 +6,6 @@ import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { Direction } from '@app/game-logic/direction.enum';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 
 describe('ActionCreatorService', () => {
     let service: ActionCreatorService;
@@ -14,7 +13,7 @@ describe('ActionCreatorService', () => {
     const letterFactory = new LetterCreator();
     beforeEach(() => {
         service = TestBed.inject(ActionCreatorService);
-        player = new User('Allo');
+        player = new Player('Allo');
     });
 
     it('should be created', () => {

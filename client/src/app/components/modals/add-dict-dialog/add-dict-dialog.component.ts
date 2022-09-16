@@ -1,8 +1,8 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NOT_FOUND } from '@app/game-logic/constants';
+import { Dictionary } from '@app/game-logic/interfaces/dictionary';
 import { openErrorDialog } from '@app/game-logic/utils';
-import { Dictionary } from '@app/game-logic/validator/dictionary';
 import { DictHttpService } from '@app/services/dict-http.service';
 
 @Component({

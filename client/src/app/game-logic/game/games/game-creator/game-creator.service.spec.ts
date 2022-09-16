@@ -6,8 +6,6 @@ import { GameCreatorService } from './game-creator.service';
 
 describe('GameCreatorService', () => {
     let service: GameCreatorService;
-    // TODO GL3A22107-5 : Should be changed/removed
-    // const randomBonus = false;
     const timePerTurn = 10000;
     const id = 'id';
     const username = 'p1';
@@ -20,20 +18,6 @@ describe('GameCreatorService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-    // TODO GL3A22107-5 : Should be changed/removed
-    // it('should create offline game', () => {
-    //     const gameCreationParams: OfflineGameCreationParams = { randomBonus, timePerTurn };
-    //     const newGame = service.createOfflineGame(gameCreationParams);
-    //     expect(newGame).toBeInstanceOf(OfflineGame);
-    // });
-
-    // TODO GL3A22107-5 : Should be changed/removed
-    // it('should create special offline game', () => {
-    //     const gameCreationParams: OfflineGameCreationParams = { randomBonus, timePerTurn };
-    //     const newGame = service.createSpecialOfflineGame(gameCreationParams);
-    //     expect(newGame).toBeInstanceOf(SpecialOfflineGame);
-    // });
 
     it('should create online game', () => {
         const gameCreationParams: OnlineGameCreationParams = { id, timePerTurn, username };

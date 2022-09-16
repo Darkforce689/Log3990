@@ -14,7 +14,7 @@ export class ObjectivesListComponent {
     }
 
     get userPrivateObjectives() {
-        return this.info.getPrivateObjectives(this.info.user.name);
+        return this.info.getPrivateObjectives(this.info.player.name);
     }
 
     get opponentPrivateObjectives() {

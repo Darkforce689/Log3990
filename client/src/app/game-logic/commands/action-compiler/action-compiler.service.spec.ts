@@ -10,7 +10,6 @@ import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 
 describe('ActionCompilerService', () => {
     let service: ActionCompilerService;
@@ -23,8 +22,8 @@ describe('ActionCompilerService', () => {
         });
         service = TestBed.inject(ActionCompilerService);
         gameInfo = TestBed.inject(GameInfoService);
-        player = new User('p1');
-        gameInfo.user = player;
+        player = new Player('p1');
+        gameInfo.player = player;
         gameInfo.players = [player];
     });
 

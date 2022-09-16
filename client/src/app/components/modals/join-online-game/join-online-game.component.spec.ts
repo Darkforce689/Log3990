@@ -91,22 +91,6 @@ describe('JoinOnlineGameComponent', () => {
         expect(spy.calls.count()).toBe(0);
     });
 
-    // TODO GL3A22107-5 : Should be changed/removed due to faulty implementation
-    // it('startGame not responsive if second player name is playerName', () => {
-    //     const dom = fixture.nativeElement as HTMLElement;
-    //     const startGameButton = dom.querySelectorAll('button')[1];
-    //     // eslint-disable-next-line dot-notation
-    //     component['playerNames'] = ['Simon'];
-    //     component.myName.setValue('Simon');
-    //     component.myName.updateValueAndValidity();
-    //     fixture.detectChanges();
-    //     expect(component.myName.valid).toBeFalse();
-    //     const spy = spyOn(component, 'sendParameter');
-    //     startGameButton.click();
-    //     fixture.detectChanges();
-    //     expect(spy.calls.count()).toBe(0);
-    // });
-
     it('startGame should call sendParameter', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const startGameButton = dom.querySelectorAll('button')[1];

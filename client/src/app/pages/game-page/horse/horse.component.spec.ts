@@ -13,12 +13,11 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { InputComponent, InputType } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { getRandomInt } from '@app/game-logic/utils';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { HorseComponent } from './horse.component';
 
-const mockPlayers: Player[] = [new User('Tim'), new User('George')];
+const mockPlayers: Player[] = [new Player('Tim'), new Player('George')];
 mockPlayers[0].letterRack = [{ char: 'A', value: 3 }];
 
 class MockGameManagerService {
@@ -28,7 +27,7 @@ class MockGameManagerService {
 }
 
 class MockGameInfoService {
-    user = mockPlayers[0];
+    player = mockPlayers[0];
     players = mockPlayers;
 }
 

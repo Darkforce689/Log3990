@@ -3,8 +3,8 @@ import { AlertDialogComponent } from '@app/components/modals/alert-dialog/alert-
 import { BOARD_MAX_POSITION, BOARD_MIN_POSITION } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
 import { Tile } from '@app/game-logic/game/board/tile';
+import { Dictionary } from '@app/game-logic/interfaces/dictionary';
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
-import { Dictionary } from '@app/game-logic/validator/dictionary';
 import { DownloadedDict } from '@app/pages/admin-page/admin-dict/admin-dict.component';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { Socket } from 'socket.io-client';

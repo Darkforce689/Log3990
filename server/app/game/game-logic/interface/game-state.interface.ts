@@ -1,6 +1,5 @@
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { Tile } from '@app/game/game-logic/board/tile';
-import { TransitionObjectives } from '@app/game/game-logic/objectives/objectives/objective-converter/transition-objectives';
 
 export interface LightPlayer {
     name: string;
@@ -33,11 +32,9 @@ export interface SpecialGameState extends GameState {
     privateObjectives: PrivateLightObjectives[];
 }
 
-export interface ForfeitedGameState extends GameState {
-    letterBag: Letter[];
-    consecutivePass: number;
-    randomBonus: boolean;
-    objectives: TransitionObjectives[];
+export interface ForfeitPlayerInfo {
+    name: string;
+    previousPlayerName: string;
 }
 
 export interface PrivateLightObjectives {
@@ -45,6 +42,11 @@ export interface PrivateLightObjectives {
     privateObjectives: LightObjective[];
 }
 export interface GameStateToken {
-    gameState: GameState | ForfeitedGameState;
+    gameState: GameState;
+    gameToken: string;
+}
+
+export interface PlayerInfoToken {
+    playerInfo: ForfeitPlayerInfo;
     gameToken: string;
 }

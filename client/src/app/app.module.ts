@@ -6,13 +6,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
-import { ConvertToSoloFormComponent } from '@app/components/modals/convert-to-solo-form/convert-to-solo-form.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
-import { NewSoloGameFormComponent } from '@app/components/modals/new-solo-game-form/new-solo-game-form.component';
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
@@ -61,7 +59,6 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         ChatBoxComponent,
         BoardComponent,
         HorseComponent,
-        NewSoloGameFormComponent,
         NewOnlineGameFormComponent,
         HomepageComponent,
         NewGamePageComponent,
@@ -71,7 +68,6 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         ClickAndClickoutDirective,
         MouseRollDirective,
         WaitingForOtherPlayersComponent,
-        ConvertToSoloFormComponent,
         PendingGamesComponent,
         JoinOnlineGameComponent,
         DisconnectedFromServerComponent,

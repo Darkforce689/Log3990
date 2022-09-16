@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { ForfeitedGameState, GameState, GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
 import { TimerControls } from '@app/game/game-logic/timer/timer-controls.enum';
 import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
@@ -25,7 +25,7 @@ describe('GameSocketHandler', () => {
     let port: number;
     let sandbox: sinon.SinonSandbox;
     let stubGameManager: StubbedClass<GameManagerService>;
-    const mockFinaleGameState$ = new Subject<GameStateToken>();
+    const mockPlayerInfo$ = new Subject<PlayerInfoToken>();
     const mockNewGameState$ = new Subject<GameStateToken>();
     const mockTimerControl$ = new Subject<TimerGameControl>();
 
@@ -36,7 +36,7 @@ describe('GameSocketHandler', () => {
 
             stubGameManager = createSinonStubInstance<GameManagerService>(GameManagerService);
             sinon.stub(stubGameManager, 'newGameState$').value(mockNewGameState$);
-            sinon.stub(stubGameManager, 'forfeitedGameState$').value(mockFinaleGameState$);
+            sinon.stub(stubGameManager, 'forfeitedGameState$').value(mockPlayerInfo$);
             sinon.stub(stubGameManager, 'timerControl$').value(mockTimerControl$);
             handler = new GameSocketsHandler(httpServer, stubGameManager);
             handler.handleSockets();
@@ -147,25 +147,17 @@ describe('GameSocketHandler', () => {
 
     it('should emit forfeited gamestate to client with valid game state', (done) => {
         stubGameManager.addPlayerToGame.returns();
-        const forfeitedGameState: ForfeitedGameState = {
-            players: [],
-            activePlayerIndex: 0,
-            grid: [],
-            lettersRemaining: 0,
-            isEndOfGame: false,
-            winnerIndex: [],
-            consecutivePass: 0,
-            randomBonus: false,
-            letterBag: [],
-            objectives: [],
+        const forfeitedGameState: ForfeitPlayerInfo = {
+            name: 'Name',
+            previousPlayerName: 'OtherName',
         };
 
         const gameToken = 'abc';
-        const gameStateToken: GameStateToken = {
+        const gameStateToken: PlayerInfoToken = {
             gameToken,
-            gameState: forfeitedGameState,
+            playerInfo: forfeitedGameState,
         };
-        clientSocket.on('transitionGameState', (lastGameState: GameState) => {
+        clientSocket.on('transitionGameState', (lastGameState: ForfeitPlayerInfo) => {
             expect(lastGameState).to.deep.equal(forfeitedGameState);
             done();
         });
@@ -177,44 +169,8 @@ describe('GameSocketHandler', () => {
 
         clientSocket.emit('joinGame', userAuth);
         serverSocket.on('joinGame', () => {
-            mockFinaleGameState$.next(gameStateToken);
+            mockPlayerInfo$.next(gameStateToken);
         });
-    });
-
-    it('should emit forfeited gamestate to client with invalid game state', (done) => {
-        stubGameManager.addPlayerToGame.returns();
-        const forfeitedGameState: GameState = {
-            players: [],
-            activePlayerIndex: 0,
-            grid: [],
-            lettersRemaining: 0,
-            isEndOfGame: false,
-            winnerIndex: [],
-        };
-
-        const gameToken = 'abc';
-        const gameStateToken: GameStateToken = {
-            gameToken,
-            gameState: forfeitedGameState,
-        };
-        clientSocket.on('transitionGameState', () => {
-            expect.fail();
-        });
-
-        const userAuth: UserAuth = {
-            playerName: 'test',
-            gameToken,
-        };
-
-        clientSocket.emit('joinGame', userAuth);
-        serverSocket.on('joinGame', () => {
-            mockFinaleGameState$.next(gameStateToken);
-        });
-
-        setTimeout(() => {
-            expect(true).be.true;
-            done();
-        }, 20);
     });
 
     it('should send timer controls to client', (done) => {

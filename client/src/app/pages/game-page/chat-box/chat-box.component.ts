@@ -46,7 +46,7 @@ export class ChatBoxComponent implements AfterViewInit {
         if (!this.isMessageValid(content)) {
             return;
         }
-        const playerName = this.gameInfo.user.name;
+        const playerName = this.gameInfo.player.name;
         this.messageService.receiveMessagePlayer(playerName, content);
 
         this.resetMessageContent();
