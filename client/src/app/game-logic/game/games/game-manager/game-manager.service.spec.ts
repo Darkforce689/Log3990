@@ -179,6 +179,7 @@ describe('GameManagerService Online Edition', () => {
     const onlineGameSettings: OnlineGameSettings = {
         timePerTurn: DEFAULT_TIME_PER_TURN,
         playerNames: ['p1', 'p2'],
+        privateGame: false,
         randomBonus: false,
         id: '0',
         dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -321,6 +322,7 @@ describe('GameManagerService Online Edition', () => {
         const faultyOnlineGameSettings: OnlineGameSettings = {
             timePerTurn: DEFAULT_TIME_PER_TURN,
             playerNames: [],
+            privateGame: false,
             randomBonus: false,
             id: '0',
             dictTitle: DEFAULT_DICTIONARY_TITLE,

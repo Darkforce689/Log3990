@@ -27,6 +27,7 @@ describe('GameCreator', () => {
     let id: string;
     let timePerTurn: number;
     let playerNames: string[];
+    let privateGame: boolean;
     let randomBonus: boolean;
     let gameMode: GameMode;
     let gameToken: string;
@@ -58,12 +59,13 @@ describe('GameCreator', () => {
         gameToken = id + 'token';
         timePerTurn = getRandomInt(Number.MAX_SAFE_INTEGER);
         playerNames = ['p1', 'p2'];
+        privateGame = false;
         randomBonus = getRandomInt(1) === 0;
         dictTitle = DEFAULT_DICTIONARY_TITLE;
         botDifficulty = BotDifficulty.Easy;
         gameMode = GameMode.Classic;
         numberOfPlayers = playerNames.length;
-        onlineGameSettings = { id, playerNames, randomBonus, timePerTurn, gameMode, dictTitle, botDifficulty, numberOfPlayers };
+        onlineGameSettings = { id, playerNames, privateGame, randomBonus, timePerTurn, gameMode, dictTitle, botDifficulty, numberOfPlayers };
         gameCreator = new GameCreator(
             pointCalculatorStub,
             gameCompilerStub,

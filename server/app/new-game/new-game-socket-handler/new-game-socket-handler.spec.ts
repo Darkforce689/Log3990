@@ -55,6 +55,7 @@ describe('New Online Game Service', () => {
     it('should create pendingGame', (done) => {
         const gameSettings = {
             playerNames: ['Max'],
+            privateGame: false,
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,

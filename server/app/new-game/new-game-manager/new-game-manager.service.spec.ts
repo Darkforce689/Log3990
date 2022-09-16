@@ -23,6 +23,7 @@ describe('NewGameManagerService', () => {
     it('should createGame', () => {
         const gameSettings = {
             playerNames: ['Max'],
+            privateGame: false,
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
@@ -84,6 +85,7 @@ describe('NewGameManagerService', () => {
         service.pendingGames.clear();
         const gameSettings = {
             playerNames: ['Max'],
+            privateGame: false,
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,

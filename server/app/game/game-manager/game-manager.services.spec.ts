@@ -99,6 +99,7 @@ describe('GameManagerService', () => {
 
     it('should create game', async () => {
         const gameToken = '1';
+        const privateGame = false;
         const randomBonus = false;
         const timePerTurn = 60000;
         const playerNames = ['test1', 'test2'];
@@ -107,6 +108,7 @@ describe('GameManagerService', () => {
             id: gameToken,
             timePerTurn,
             playerNames,
+            privateGame,
             randomBonus,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
@@ -131,6 +133,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -168,6 +171,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -194,6 +198,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -220,6 +225,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -248,6 +254,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -275,6 +282,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -306,6 +314,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -332,6 +341,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -364,6 +374,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -390,6 +401,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -412,6 +424,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -438,6 +451,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: '1',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -455,6 +469,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: '1',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -475,6 +490,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -504,6 +520,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: '1',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -533,6 +550,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -568,6 +586,7 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,
@@ -610,6 +629,7 @@ describe('GameManagerService', () => {
             gameMode: GameMode.Special,
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             dictTitle: DEFAULT_DICTIONARY_TITLE,

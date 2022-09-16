@@ -19,7 +19,7 @@ export const DELAY = 100;
 })
 export class PendingGamesComponent implements AfterContentChecked, OnInit, AfterViewInit {
     @ViewChild(MatSort) tableSort: MatSort;
-    columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn', 'dictionary'];
+    columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn', 'dictionary', 'privateGame'];
     selectedRow: OnlineGameSettings | undefined;
     dataSource = new MatTableDataSource<OnlineGameSettings>();
     columns: {
@@ -62,6 +62,12 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
                 columnDef: 'dictionary',
                 header: 'Dictionnaire utilisé',
                 cell: (form: OnlineGameSettings) => `${form.dictTitle}`,
+                tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
+            },
+            {
+                columnDef: 'privateGame',
+                header: 'Type de partie',
+                cell: (form: OnlineGameSettings) => `${form.privateGame ? 'Privée' : 'Publique'}`,
                 tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
             {

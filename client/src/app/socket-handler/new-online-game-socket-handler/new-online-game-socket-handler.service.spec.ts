@@ -16,6 +16,7 @@ describe('NewOnlineGameSocketHandler', () => {
         id: '1',
         timePerTurn: 60000,
         playerNames: ['allo1'],
+        privateGame: false,
         randomBonus: false,
         gameMode: GameMode.Classic,
         dictTitle: 'dictTitle',
