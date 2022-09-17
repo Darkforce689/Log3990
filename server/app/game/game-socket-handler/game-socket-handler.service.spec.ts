@@ -37,6 +37,8 @@ describe('GameSocketHandler', () => {
             stubGameManager = createSinonStubInstance<GameManagerService>(GameManagerService);
             sinon.stub(stubGameManager, 'newGameState$').value(mockNewGameState$);
             sinon.stub(stubGameManager, 'forfeitedGameState$').value(mockPlayerInfo$);
+            sinon.stub(stubGameManager, 'timerStartingTime$').value(mockTimerStartingTime$);
+            sinon.stub(stubGameManager, 'timeUpdate$').value(mockTimeUpdate$);
             handler = new GameSocketsHandler(httpServer, stubGameManager);
             handler.handleSockets();
             handler.sio.on('connection', (socket) => {

@@ -90,9 +90,10 @@ describe('GameInfoService', () => {
     });
 
     it('should return the player points with provided index', () => {
+        const testPoints = 1000;
         service.receiveGame(game);
-        game.players[0].points = Math.floor(Math.random() * 1000);
-        game.players[1].points = Math.floor(Math.random() * 1000);
+        game.players[0].points = Math.floor(Math.random() * testPoints);
+        game.players[1].points = Math.floor(Math.random() * testPoints);
         expect(service.getPlayerScore(0)).toBe(game.players[0].points);
         expect(service.getPlayerScore(1)).toBe(game.players[1].points);
     });
