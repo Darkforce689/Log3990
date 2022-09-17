@@ -16,6 +16,8 @@ const HTTP_BAD_REQUEST = StatusCodes.BAD_REQUEST;
 describe('ServerGameController', () => {
     let gameManagerService: SinonStubbedInstance<GameManagerService>;
     let expressApp: Express.Application;
+    const app = Container.get(Application);
+    app.start(false, false);
 
     beforeEach(async () => {
         gameManagerService = createStubInstance(GameManagerService);
@@ -37,7 +39,6 @@ describe('ServerGameController', () => {
 
         gameManagerService.activeGames = mockActiveGame as unknown as Map<string, ServerGame>;
 
-        const app = Container.get(Application);
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['debugController'], 'gameManager', { value: gameManagerService });
         expressApp = app.app;

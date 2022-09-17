@@ -10,7 +10,7 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { InputComponent, InputType } from '@app/game-logic/interfaces/ui-input';
 import { Message, MessageType } from '@app/game-logic/messages/message.interface';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
-import { User } from '@app/game-logic/player/user';
+import { Player } from '@app/game-logic/player/player';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BehaviorSubject } from 'rxjs';
 import { ChatBoxComponent } from './chat-box.component';
@@ -39,7 +39,7 @@ describe('ChatBoxComponent', () => {
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
-        gameInfoServiceSpy.user = new User('SAMUEL');
+        gameInfoServiceSpy.player = new Player('SAMUEL');
         fixture = TestBed.createComponent(ChatBoxComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();

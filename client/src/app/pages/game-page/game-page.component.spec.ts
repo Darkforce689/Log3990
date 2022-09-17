@@ -27,7 +27,7 @@ describe('GamePageComponent', () => {
     let cdRefSpy: jasmine.SpyObj<ChangeDetectorRef>;
     let uiInput: UIInput;
     let mockObservableDisconnect: Subject<void>;
-    let mockObservableForfeited: Subject<void>;
+    let mockObservablePlayerInfo: Subject<{ name: ''; previousPlayerName: '' }>;
     let mockEndOfGame$: Subject<void>;
     let mockClosedModal$: Subject<void>;
     let mockInfo: jasmine.SpyObj<GameInfoService>;
@@ -69,14 +69,14 @@ describe('GamePageComponent', () => {
         mockClosedModal$ = new Subject();
         gameManagerServiceSpy = jasmine.createSpyObj(
             'GameManagerService',
-            ['stopGame', 'instanciateGameFromForfeitedState', 'startConvertedGame'],
+            ['stopGame', 'updatePlayerInfo', 'startConvertedGame'],
             ['disconnectedFromServer$', 'forfeitGameState$'],
         );
         cdRefSpy = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
         mockObservableDisconnect = new Subject<void>();
-        mockObservableForfeited = new Subject<void>();
+        mockObservablePlayerInfo = new Subject<{ name: ''; previousPlayerName: '' }>();
         mockEndOfGame$ = new Subject<void>();
-        mockInfo = jasmine.createSpyObj('GameInfoService', [], ['user', 'activePlayer', 'isEndOfGame', 'isEndOfGame$', 'winner']);
+        mockInfo = jasmine.createSpyObj('GameInfoService', [], ['player', 'activePlayer', 'isEndOfGame', 'isEndOfGame$', 'winner']);
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, DisconnectedFromServerComponent],
             imports: [RouterTestingModule.withRoutes(routes), AppMaterialModule, CommonModule],
@@ -94,9 +94,11 @@ describe('GamePageComponent', () => {
         (
             Object.getOwnPropertyDescriptor(gameManagerServiceSpy, 'disconnectedFromServer$')?.get as jasmine.Spy<() => Observable<void>>
         ).and.returnValue(mockObservableDisconnect);
-        (Object.getOwnPropertyDescriptor(gameManagerServiceSpy, 'forfeitGameState$')?.get as jasmine.Spy<() => Observable<void>>).and.returnValue(
-            mockObservableForfeited,
-        );
+        (
+            Object.getOwnPropertyDescriptor(gameManagerServiceSpy, 'forfeitGameState$')?.get as jasmine.Spy<
+                () => Observable<{ name: ''; previousPlayerName: '' }>
+            >
+        ).and.returnValue(mockObservablePlayerInfo);
         (Object.getOwnPropertyDescriptor(mockInfo, 'isEndOfGame$')?.get as jasmine.Spy<() => Observable<void>>).and.returnValue(mockEndOfGame$);
 
         fixture = TestBed.createComponent(GamePageComponent);
@@ -192,9 +194,9 @@ describe('GamePageComponent', () => {
     });
 
     it('#isItMyTurn should work properly', () => {
-        const mockUser = {} as unknown as Player;
-        mockInfo.user = mockUser;
-        (Object.getOwnPropertyDescriptor(mockInfo, 'activePlayer')?.get as jasmine.Spy<() => Player>).and.returnValue(mockUser);
+        const mockplayer = {} as unknown as Player;
+        mockInfo.player = mockplayer;
+        (Object.getOwnPropertyDescriptor(mockInfo, 'activePlayer')?.get as jasmine.Spy<() => Player>).and.returnValue(mockplayer);
         expect(component.isItMyTurn).toBeFalse();
         (Object.getOwnPropertyDescriptor(mockInfo, 'isEndOfGame')?.get as jasmine.Spy<() => boolean>).and.returnValue(true);
         expect(component.isItMyTurn).toBeFalse();
@@ -206,17 +208,10 @@ describe('GamePageComponent', () => {
     it('#isEndOfGame should work properly', () => {
         const mockPlayer = { name: 'allo' } as unknown as Player;
         (Object.getOwnPropertyDescriptor(mockInfo, 'winner')?.get as jasmine.Spy<() => Player[]>).and.returnValue([mockPlayer]);
-        (Object.getOwnPropertyDescriptor(mockInfo, 'user')?.get as jasmine.Spy<() => Player>).and.returnValue(mockPlayer);
+        (Object.getOwnPropertyDescriptor(mockInfo, 'player')?.get as jasmine.Spy<() => Player>).and.returnValue(mockPlayer);
         mockEndOfGame$.next();
         (Object.getOwnPropertyDescriptor(mockInfo, 'isEndOfGame')?.get as jasmine.Spy<() => boolean>).and.returnValue(false);
         expect(component.isEndOfGame).toBeFalse();
-    });
-
-    it('should receive forfeited game state properly', () => {
-        mockObservableForfeited.next();
-        mockClosedModal$.next();
-        expect(gameManagerServiceSpy.instanciateGameFromForfeitedState).toHaveBeenCalled();
-        expect(gameManagerServiceSpy.startConvertedGame).toHaveBeenCalled();
     });
 
     it('canPlace coverage', () => {

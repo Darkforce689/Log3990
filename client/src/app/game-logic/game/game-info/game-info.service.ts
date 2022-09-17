@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
 import { Game } from '@app/game-logic/game/games/game';
-import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { SpecialGame } from '@app/game-logic/game/games/special-games/special-game';
-import { SpecialOfflineGame } from '@app/game-logic/game/games/special-games/special-offline-game';
 import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
 import { Objective } from '@app/game-logic/game/objectives/objectives/objective';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { Observable, Subject, Subscription } from 'rxjs';
 
 @Injectable({
@@ -17,7 +14,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 })
 export class GameInfoService {
     players: Player[];
-    user: User;
+    player: Player;
     private game: Game | undefined;
     private endTurn$$: Subscription;
     private endTurnSubject = new Subject<void>();
@@ -52,8 +49,8 @@ export class GameInfoService {
         });
     }
 
-    receiveUser(user: User): void {
-        this.user = user;
+    receivePlayer(player: Player): void {
+        this.player = player;
     }
 
     getPlayer(index: number): Player {
@@ -71,7 +68,7 @@ export class GameInfoService {
     }
 
     getPrivateObjectives(playerName: string): Objective[] {
-        if (!this.game || !this.user) {
+        if (!this.game || !this.player) {
             return [];
         }
         const specialGame = this.game as SpecialGame;
@@ -83,15 +80,8 @@ export class GameInfoService {
         if (!this.players) {
             throw new Error('No Players in GameInfo');
         }
-        const opponent = this.user === this.players[0] ? this.players[1] : this.players[0];
+        const opponent = this.player === this.players[0] ? this.players[1] : this.players[0];
         return opponent;
-    }
-
-    get letterOccurences(): Map<string, number> {
-        if (!this.game) {
-            throw Error('No Game in GameInfo');
-        }
-        return this.game instanceof OfflineGame ? (this.game as OfflineGame).letterBag.countLetters() : new Map<string, number>();
     }
 
     get numberOfPlayers(): number {
@@ -130,14 +120,14 @@ export class GameInfoService {
     }
 
     get gameId(): string {
-        if (!this.game || !(this.game instanceof OnlineGame)) {
+        if (!this.game) {
             return EMPTY_CHAR;
         }
         return (this.game as OnlineGame).gameToken;
     }
 
     get isSpecialGame(): boolean {
-        return this.game ? this.game instanceof SpecialOfflineGame || this.game instanceof SpecialOnlineGame : false;
+        return this.game ? this.game instanceof SpecialOnlineGame : false;
     }
 
     get publicObjectives(): Objective[] {

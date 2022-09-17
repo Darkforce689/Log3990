@@ -46,6 +46,12 @@ export class GameCreator {
         return newServerGame;
     }
 
+    async createBotPlayer(botDifficulty: BotDifficulty, playerNames: string[]) {
+        const botPlayer = new BotPlayer(this.botInfoService, this.botManager, botDifficulty, this.botMessage, this.actionCreator);
+        await botPlayer.updateBotName(playerNames);
+        return botPlayer;
+    }
+
     private createNewGame(gameSettings: OnlineGameSettings, gameToken: string) {
         const gameMode = gameSettings.gameMode;
         if (gameMode === GameMode.Special) {
@@ -96,8 +102,7 @@ export class GameCreator {
         const players = playerNames.map((name) => new Player(name));
         const numberOfBots = numberOfPlayers - players.length;
         for (let i = 0; i < numberOfBots; i++) {
-            const newBot = new BotPlayer(this.botInfoService, this.botManager, botDifficulty, this.botMessage, this.actionCreator);
-            await newBot.updateBotName(playerNames);
+            const newBot = await this.createBotPlayer(botDifficulty, playerNames);
             players.push(newBot);
             playerNames.push(newBot.name);
         }

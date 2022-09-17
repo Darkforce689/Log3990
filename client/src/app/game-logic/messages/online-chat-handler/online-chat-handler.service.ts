@@ -19,7 +19,7 @@ export class OnlineChatHandlerService {
     constructor(private gameInfo: GameInfoService) {}
 
     joinChatRoomWithUser(roomID: string) {
-        const userName = this.gameInfo.user.name;
+        const userName = this.gameInfo.player.name;
         this.joinChatRoom(roomID, userName);
     }
 
@@ -84,7 +84,7 @@ export class OnlineChatHandlerService {
         return this.newRoomMessageSubject.pipe(
             filter((chatMessage: ChatMessage) => {
                 const name = chatMessage.from;
-                const userName = this.gameInfo.user.name;
+                const userName = this.gameInfo.player.name;
                 return name !== userName;
             }),
         );

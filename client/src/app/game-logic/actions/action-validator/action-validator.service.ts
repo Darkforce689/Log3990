@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
+import { MagicCard } from '@app/game-logic/actions/magic-card';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { BOARD_DIMENSION, BOARD_MAX_POSITION, EMPTY_CHAR, JOKER_CHAR, RACK_LETTER_COUNT } from '@app/game-logic/constants';
@@ -10,7 +11,6 @@ import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { isStringALowerCaseLetter, placementSettingsToString } from '@app/game-logic/utils';
-import { MagicCard } from '@app/game-logic/actions/magic-card';
 
 @Injectable({
     providedIn: 'root',
@@ -252,7 +252,7 @@ export class ActionValidatorService {
     private sendExchangeLetterMessage(action: ExchangeLetter) {
         const letters = action.lettersToExchange;
         const playerName = action.player.name;
-        const userName = this.gameInfo.user.name;
+        const userName = this.gameInfo.player.name;
         if (playerName !== userName) {
             const nLetters = letters.length;
             const playerMessageContent = `${playerName} échange ${nLetters} lettres`;

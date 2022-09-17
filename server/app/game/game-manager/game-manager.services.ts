@@ -1,4 +1,5 @@
 import { NEW_GAME_TIMEOUT } from '@app/constants';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
@@ -10,7 +11,7 @@ import { ActionCreatorService } from '@app/game/game-logic/actions/action-creato
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
@@ -45,9 +46,9 @@ export class GameManagerService {
 
     private gameCreator: GameCreator;
     private newGameStateSubject = new Subject<GameStateToken>();
-    private forfeitedGameStateSubject = new Subject<GameStateToken>();
+    private forfeitedGameStateSubject = new Subject<PlayerInfoToken>();
 
-    get forfeitedGameState$(): Observable<GameStateToken> {
+    get forfeitedGameState$(): Observable<PlayerInfoToken> {
         return this.forfeitedGameStateSubject;
     }
 
@@ -159,20 +160,38 @@ export class GameManagerService {
         }
     }
 
-    removePlayerFromGame(playerId: string) {
+    async removePlayerFromGame(playerId: string) {
         const playerRef = this.activePlayers.get(playerId);
         if (!playerRef) {
             return;
         }
         const gameToken = playerRef.gameToken;
         const game = this.activeGames.get(gameToken);
-        this.activePlayers.delete(playerId);
         if (!game) {
             return;
         }
-        this.sendForfeitedGameState(game);
-        this.endForfeitedGame(game, playerRef.player.name);
-        this.deleteGame(gameToken);
+        const playerNames: string[] = [];
+        this.activePlayers.forEach((playerReference) => playerNames.push(playerReference.player.name));
+        this.activePlayers.delete(playerId);
+        if (this.activePlayers.size <= 0) {
+            this.deleteGame(gameToken);
+            return;
+        }
+        const newPlayer = await this.createNewBotPlayer(playerRef, playerNames);
+        const index = game.players.findIndex((player) => player.name === playerRef.player.name);
+        game.players[index] = newPlayer;
+        this.sendForfeitPlayerInfo(gameToken, newPlayer, playerRef.player.name);
+        if (game.activePlayerIndex === index) {
+            game.forceEndturn();
+            game.forcePlay();
+        }
+    }
+    // TODO GL3A22107-32 : Update bot difficulty to what is specified when game created by player.
+    private async createNewBotPlayer(playerRef: PlayerRef, playerNames: string[]) {
+        const newPlayer = await this.gameCreator.createBotPlayer(BotDifficulty.Easy, playerNames);
+        newPlayer.letterRack = playerRef.player.letterRack;
+        newPlayer.points = playerRef.player.points;
+        return newPlayer;
     }
 
     private getExpectedNumberOfClients(game: ServerGame) {
@@ -208,18 +227,10 @@ export class GameManagerService {
         game.stop();
     }
 
-    private endForfeitedGame(game: ServerGame, playerName: string) {
-        game.forfeit(playerName);
-    }
-
-    private sendForfeitedGameState(game: ServerGame) {
-        if (game.activePlayerIndex === undefined) {
-            return;
-        }
-        const gameToken = game.gameToken;
-        const gameState = this.gameCompiler.compileForfeited(game);
-        const lastGameToken: GameStateToken = { gameState, gameToken };
-        this.forfeitedGameStateSubject.next(lastGameToken);
+    private sendForfeitPlayerInfo(gameToken: string, newPlayer: Player, previousName: string) {
+        const playerInfo = this.gameCompiler.compilePlayerInfo(newPlayer, previousName);
+        const playerInfoToken: PlayerInfoToken = { playerInfo, gameToken };
+        this.forfeitedGameStateSubject.next(playerInfoToken);
     }
 
     private deleteInactiveGame(gameToken: string) {
@@ -241,9 +252,11 @@ export class GameManagerService {
     private updateLeaderboard(players: Player[], gameToken: string) {
         const isSpecial = this.activeGames.get(gameToken) instanceof SpecialServerGame;
         const gameMode = isSpecial ? GameMode.Special : GameMode.Classic;
-        players.forEach((player) => {
-            const score = { name: player.name, point: player.points };
-            this.leaderboardService.updateLeaderboard(score, gameMode);
-        });
+        players
+            .filter((player) => !(player instanceof BotPlayer))
+            .forEach((player) => {
+                const score = { name: player.name, point: player.points };
+                this.leaderboardService.updateLeaderboard(score, gameMode);
+            });
     }
 }

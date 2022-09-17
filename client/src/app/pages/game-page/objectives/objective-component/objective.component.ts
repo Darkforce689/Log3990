@@ -31,14 +31,14 @@ export class ObjectiveComponent {
             return ObjectiveStatus.NotClaimed;
         }
 
-        if (this.objective.owner === this.info.user.name) {
+        if (this.objective.owner === this.info.player.name) {
             return ObjectiveStatus.Won;
         }
         return ObjectiveStatus.Lost;
     }
 
     get progression(): number {
-        return this.objective.getPlayerProgression(this.info.user.name);
+        return this.objective.getPlayerProgression(this.info.player.name);
     }
 
     get name(): string {

@@ -14,9 +14,7 @@ import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handle
 export class GameCreatorService {
     constructor(
         private timer: TimerService,
-        // private pointCalculator: PointCalculatorService,
         private boardService: BoardService,
-        // private messageService: MessagesService,
         private gameSocketHandler: GameSocketHandlerService,
         private onlineActionCompiler: OnlineActionCompilerService,
         private objectiveCreator: ObjectiveCreator,
@@ -45,27 +43,4 @@ export class GameCreatorService {
             this.onlineActionCompiler,
         );
     }
-    // createSpecialOfflineGame(gameCreationParams: OfflineGameCreationParams, isLoaded: boolean = false): SpecialOfflineGame {
-    //     return new SpecialOfflineGame(
-    //         gameCreationParams.randomBonus,
-    //         gameCreationParams.timePerTurn,
-    //         this.timer,
-    //         this.pointCalculator,
-    //         this.boardService,
-    //         this.messageService,
-    //         this.objectiveCreator,
-    //         isLoaded,
-    //     );
-    // }
-    // createOfflineGame(gameCreationParams: OfflineGameCreationParams, isLoaded: boolean = false): OfflineGame {
-    //     return new OfflineGame(
-    //         gameCreationParams.randomBonus,
-    //         gameCreationParams.timePerTurn,
-    //         this.timer,
-    //         this.pointCalculator,
-    //         this.boardService,
-    //         this.messageService,
-    //         isLoaded,
-    //     );
-    // }
 }

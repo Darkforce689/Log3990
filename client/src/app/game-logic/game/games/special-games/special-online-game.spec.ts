@@ -10,7 +10,6 @@ import { ObjectiveNotifierService } from '@app/game-logic/game/objectives/object
 import { OnlineObjective } from '@app/game-logic/game/objectives/online-objective/online-objective';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 
 describe('OnlineGame', () => {
@@ -40,8 +39,8 @@ describe('OnlineGame', () => {
             TestBed.inject(OnlineActionCompilerService),
             TestBed.inject(ObjectiveCreator),
         );
-        player1 = new User('p1');
-        player2 = new User('p2');
+        player1 = new Player('p1');
+        player2 = new Player('p2');
         game.players = [player1, player2];
 
         lightObjective = {
