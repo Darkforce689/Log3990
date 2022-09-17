@@ -5,6 +5,7 @@
 export const environment = {
     production: false,
     serverUrl: 'http://localhost:3000/api',
+    serverAuthUrl: 'http://localhost:3000/auth',
     serverSocketUrl: 'http://localhost:3000',
 };
 

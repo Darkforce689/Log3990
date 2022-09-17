@@ -1,0 +1,44 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background: url('^assets/img/home-bg.jpg') no-repeat center top;
+    background-size: 100vw 100vh;
+}
+
+.login-form {
+    padding: 20px 22px 11px;
+    height: auto;
+    width: 500px;
+}
+
+.login-header {
+    padding-bottom: 3%;
+}
+
+.mat-card-content {
+    padding-top: 5%;
+    margin-left: 5%;
+    margin-right: 5%;
+    display: flex;
+    flex-direction: column;
+}
+
+.mat-card-header {
+    justify-content: center;
+}
+
+// TODO add primary color in theming
+.register-link {
+    color: cyan;
+}
+
+.mat-card-footer {
+    padding-top: 1.5%;
+    padding-bottom: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

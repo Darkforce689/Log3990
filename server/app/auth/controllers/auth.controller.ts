@@ -1,12 +1,12 @@
-import { UserCreation } from '@app/user/interfaces/user-creation.interface';
-import { UserCredentials } from '@app/auth/user-credentials.interface';
 import { AuthService } from '@app/auth/services/auth.service';
+import { UserCredentials } from '@app/auth/user-credentials.interface';
+import { ServerLogger } from '@app/logger/logger';
+import { UserCreation } from '@app/user/interfaces/user-creation.interface';
+import { User } from '@app/user/interfaces/user.interface';
 import { UserService } from '@app/user/user.service';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { User } from '@app/user/interfaces/user.interface';
-import { ServerLogger } from '@app/logger/logger';
 
 export enum AuthErrors {
     EmailNotFound = 'EMAIL_NOT_FOUND',
@@ -65,9 +65,15 @@ export class AuthController {
         });
 
         this.router.post('/login', async (req, res) => {
+            // User already that already have session
+            const loginSession = req.session as unknown as { userId: string };
+            if (loginSession.userId !== undefined) {
+                return res.status(StatusCodes.OK).send({ message: 'OK' });
+            }
+
             const { email, password } = req.body;
             if (!email || !password) {
-                return res.sendStatus(StatusCodes.BAD_REQUEST);
+                return res.status(StatusCodes.BAD_REQUEST).send({ errors: ['There is one or more missing field'] });
             }
 
             const user = await this.userService.getUser({ email });
@@ -91,7 +97,7 @@ export class AuthController {
             const { _id: userId } = user;
             session.userId = userId;
             session.loggedIn = true;
-            return res.sendStatus(StatusCodes.OK);
+            return res.status(StatusCodes.OK).send({ message: 'OK' });
         });
     }
 }

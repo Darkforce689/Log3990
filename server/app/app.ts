@@ -1,22 +1,22 @@
 import { AuthController } from '@app/auth/controllers/auth.controller';
+import { AuthService } from '@app/auth/services/auth.service';
 import { HttpException } from '@app/classes/http.exception';
+import { ENABLE_API_LOGIN, EXPRESS_SESSION_SECRET, SESSION_MAX_AGE } from '@app/constants';
 import { BotInfoController } from '@app/controllers/bot-info.controller';
 import { DebugController } from '@app/controllers/debug.controller';
 import { DictionaryController } from '@app/controllers/dictionary.controller';
 import { LeaderboardController } from '@app/controllers/leaderboard-controller/leaderboard.controller';
+import { RedisClientService } from '@app/database/redis-client.service';
+import * as connectRedis from 'connect-redis';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
+import * as session from 'express-session';
 import { StatusCodes } from 'http-status-codes';
 import * as logger from 'morgan';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
-import * as session from 'express-session';
-import * as connectRedis from 'connect-redis';
 import { Service } from 'typedi';
-import { ENABLE_API_LOGIN, EXPRESS_SESSION_SECRET, SESSION_MAX_AGE } from '@app/constants';
-import { AuthService } from '@app/auth/services/auth.service';
-import { RedisClientService } from '@app/database/redis-client.service';
 
 @Service()
 export class Application {
@@ -77,7 +77,7 @@ export class Application {
                 store,
                 name: 'session-id',
                 secret: EXPRESS_SESSION_SECRET,
-                saveUninitialized: true,
+                saveUninitialized: false,
                 resave: false,
                 cookie: { maxAge: SESSION_MAX_AGE },
             }),
@@ -87,7 +87,8 @@ export class Application {
         this.app.use(express.json({ limit: '50mb' }));
         this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
         this.app.use(cookieParser());
-        this.app.use(cors());
+        // TODO put this in env var
+        this.app.use(cors({ origin: ['http://localhost:4200'], credentials: true }));
     }
 
     private errorHandling(): void {
