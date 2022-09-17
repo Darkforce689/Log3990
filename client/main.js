@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, session } = require('electron');
 
 let appWindow;
 
@@ -26,7 +26,23 @@ function initWindow() {
     });
 }
 
-app.on('ready', initWindow);
+app.on('ready', () => {
+    session.defaultSession.webRequest.onHeadersReceived(
+        { urls: ['http://localhost:3000/*', 'https://d2niwfi3hp97su.cloudfront.net/*'] },
+        (details, callback) => {
+            if (
+                details.responseHeaders &&
+                details.responseHeaders['Set-Cookie'] &&
+                details.responseHeaders['Set-Cookie'].length &&
+                !details.responseHeaders['Set-Cookie'][0].includes('SameSite=none')
+            ) {
+                details.responseHeaders['Set-Cookie'][0] = details.responseHeaders['Set-Cookie'][0] + '; SameSite=none; Secure';
+            }
+            callback({ cancel: false, responseHeaders: details.responseHeaders });
+        },
+    );
+    initWindow();
+});
 
 // Close when all windows are closed.
 app.on('window-all-closed', function () {

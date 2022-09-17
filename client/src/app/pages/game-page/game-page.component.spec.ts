@@ -1,6 +1,7 @@
 /* eslint-disable dot-notation */
 // eslint-disable-next-line max-classes-per-file
 import { CommonModule } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
@@ -79,7 +80,7 @@ describe('GamePageComponent', () => {
         mockInfo = jasmine.createSpyObj('GameInfoService', [], ['player', 'activePlayer', 'isEndOfGame', 'isEndOfGame$', 'winner']);
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, DisconnectedFromServerComponent],
-            imports: [RouterTestingModule.withRoutes(routes), AppMaterialModule, CommonModule],
+            imports: [RouterTestingModule.withRoutes(routes), AppMaterialModule, CommonModule, HttpClientTestingModule],
             providers: [
                 { provide: GameManagerService, useValue: gameManagerServiceSpy },
                 { provide: ActionValidatorService, useClass: ActionValidatorServiceMock },
