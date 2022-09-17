@@ -1,8 +1,4 @@
-/* eslint-disable max-lines */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable dot-notation */
-import { TestBed } from '@angular/core/testing';
++import { TestBed } from '@angular/core/testing';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { DEFAULT_TIME_PER_TURN, EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
@@ -96,7 +92,7 @@ describe('GameInfoService', () => {
     });
 
     it('should return the number of players', () => {
-        service.players = [new User('p1'), new User('p2')];
+        service.players = [new Player('p1'), new Player('p2')];
         expect(service.numberOfPlayers).toBe(service.players.length);
     });
 
