@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
             App {
                 Column {
                     NavGraph()
-//                    LetterRack()
                 }
             }
         }
@@ -41,6 +40,7 @@ class MainActivity : ComponentActivity() {
         SocketHandler.closeConnection()
     }
 }
+
 // Main Component
 @Composable
 fun NavGraph() {
@@ -51,12 +51,16 @@ fun NavGraph() {
         composable("startPage") { // 2
             Column() {
                 Prototype(navController)
+                GamePage(navController)
             }
         }
         composable("messageList") {
             // To place in other function somewhere else
             chatView.joinRoom("prototype", User)
             ChatRoomScreen(navController, chatView)
+        }
+        composable("gamePage") {
+            LetterRack(navController)
         }
     }
 
@@ -76,6 +80,23 @@ fun Prototype(navController: NavController) {
     }
 }
 
+@Composable
+fun GamePage(navController: NavController) {
+    Button(
+        modifier = Modifier.padding(20.dp),
+        onClick = {
+            navController.navigate("gamePage") {
+                popUpTo("startPage") {
+                    inclusive = true
+                }
+            }
+        }
+    )
+    {
+        Text(text = "GamePageWIP")
+    }
+}
+
 
 @Composable
 fun App(content: @Composable () -> Unit) {
@@ -86,70 +107,3 @@ fun App(content: @Composable () -> Unit) {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    App {
-        LetterRack()
-    }
-}
-
-//
-//@Composable
-//fun Greeting(name: String) {
-//    var isSelected by remember {
-//        mutableStateOf(false)
-//    }
-//    val targetColor by animateColorAsState(
-//        targetValue = if (isSelected) MaterialTheme.colors.primary else Color.Transparent,
-//        animationSpec = tween(durationMillis = 4000)
-//    )
-//    Surface(color = targetColor) {
-//        Text(
-//            text = "Hello $name!",
-//            modifier = Modifier
-//                .clickable { isSelected = !isSelected }
-//                .padding(16.dp)
-//        )
-//    }
-//}
-//
-//@Composable
-//fun ScreenContent(names: List<String> = List(3) {"android $it"}) {
-//    var countState by remember {
-//        mutableStateOf(0)
-//    }
-//    Column (modifier = Modifier.fillMaxHeight()) {
-//        NamesList(names, Modifier.weight(1f))
-//        Counter(
-//            count = countState,
-//            updateCount = { newCount -> countState = newCount}
-//        )
-//        if (countState > 5) {
-//            Text(text = "Count > 5")
-//        }
-//        LetterRack()
-//    }
-//}
-//
-//@Composable
-//private fun NamesList(names: List<String>, modifier: Modifier) {
-//    LazyColumn(modifier = modifier) {
-//        items(items = names) {
-//            Greeting(name = it)
-//            Divider()
-//        }
-//    }
-//}
-//
-//@Composable
-//fun Counter(count: Int, updateCount: (Int) -> Unit) {
-//    Button (onClick = { updateCount(count + 1) } ) {
-//        Text(
-//            text = "Click: $count",
-//        )
-//    }
-//}
-//
-

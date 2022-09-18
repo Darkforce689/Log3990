@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavController
 import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 
-@Preview(showBackground = true)
 @Composable
-fun LetterRack() {
+fun LetterRack(navController: NavController) {
     val viewModel: LetterRackViewModel = viewModel()
     val selectedLetters = remember {
         mutableStateListOf('B')
