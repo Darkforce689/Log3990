@@ -61,18 +61,6 @@ export class MessagesSocketHandler {
                         this.sendError(socket, error);
                     }
                 });
-            } else {
-                try {
-                    const { userId: _id } = (socket.request as unknown as { session: Session }).session;
-                    const user = await this.userService.getUser({ _id });
-                    if (user === undefined) {
-                        throw Error(`No user found with userId ${_id}`);
-                    }
-                    ServerLogger.logDebug(user);
-                    this.createUser(user.name, socket.id);
-                } catch (error) {
-                    this.sendError(socket, error);
-                }
             }
 
             socket.on(NEW_MESSAGE, (content: string) => {
@@ -83,7 +71,21 @@ export class MessagesSocketHandler {
                 }
             });
 
-            socket.on(JOIN_ROOM, (roomID: string) => {
+            socket.on(JOIN_ROOM, async (roomID: string) => {
+                if (enableAuth) {
+                    try {
+                        const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+                        const user = await this.userService.getUser({ _id });
+                        if (user === undefined) {
+                            throw Error(`No user found with userId ${_id}`);
+                        }
+                        ServerLogger.logDebug(user);
+                        this.createUser(user.name, socket.id);
+                    } catch (error) {
+                        this.sendError(socket, error);
+                    }
+                }
+
                 try {
                     this.addUserToRoom(socket, roomID);
                 } catch (error) {
