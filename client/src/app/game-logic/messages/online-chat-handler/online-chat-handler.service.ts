@@ -42,7 +42,8 @@ export class OnlineChatHandlerService {
         this.socket = this.connectToSocket();
         this.bindRoomChannels(roomID, userName);
     }
-
+    // TODO refactor
+    // eslint-disable-next-line no-unused-vars
     private bindRoomChannels(roomID: string, userName: string) {
         this.socket.on('error', (errorContent: string) => {
             this.receiveChatServerError(errorContent);
@@ -56,12 +57,14 @@ export class OnlineChatHandlerService {
             this.receiveSystemMessage(content);
         });
 
-        this.socket.emit('userName', userName);
+        // TODO un comment if no login
+        // this.socket.emit('userName', userName);
         this.socket.emit('joinRoom', roomID);
     }
 
     private connectToSocket() {
-        return io(environment.serverSocketUrl, { path: '/messages' });
+        // transports used to prevent cors error
+        return io(environment.serverSocketUrl, { path: '/messages', withCredentials: true, transports: ['websocket'] });
     }
 
     private receiveChatServerError(content: string) {
