@@ -10,6 +10,7 @@ import { MessagesSocketHandler } from '@app/messages-service/message-socket-hand
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { NewGameSocketHandler } from '@app/new-game/new-game-socket-handler/new-game-socket-handler';
+import { UserService } from '@app/user/user.service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
@@ -31,6 +32,7 @@ export class Server {
         private dictionaryService: DictionaryService,
         private sessionMiddlewareService: SessionMiddlewareService,
         private authService: AuthService,
+        private userService: UserService,
     ) {}
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -62,7 +64,13 @@ export class Server {
         this.gameSocketsHandler = new GameSocketsHandler(this.server, this.gameManager);
         this.gameSocketsHandler.handleSockets();
 
-        this.messageHandler = new MessagesSocketHandler(this.server, this.systemMessagesService, this.sessionMiddlewareService, this.authService);
+        this.messageHandler = new MessagesSocketHandler(
+            this.server,
+            this.systemMessagesService,
+            this.sessionMiddlewareService,
+            this.authService,
+            this.userService,
+        );
         this.messageHandler.handleSockets();
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
