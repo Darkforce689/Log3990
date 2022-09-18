@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.ui.components
+package com.example.polyscrabbleclient.game.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
-import com.example.polyscrabbleclient.ui.viewmodels.LetterRackViewModel
+import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 
 @Preview(showBackground = true)
 @Composable

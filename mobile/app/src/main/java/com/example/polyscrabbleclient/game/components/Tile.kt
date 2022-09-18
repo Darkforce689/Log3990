@@ -1,8 +1,7 @@
-package com.example.polyscrabbleclient.ui.components
+package com.example.polyscrabbleclient.game.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.MaterialTheme

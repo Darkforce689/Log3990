@@ -1,7 +1,7 @@
-package com.example.polyscrabbleclient.ui.viewmodels
+package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.example.polyscrabbleclient.data.sources.Player
+import com.example.polyscrabbleclient.game.sources.Player
 
 class LetterRackViewModel : ViewModel() {
     private val player = Player()
