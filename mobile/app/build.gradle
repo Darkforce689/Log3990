@@ -4,6 +4,10 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        developpment {}
+        production {}
+    }
     compileSdk 32
 
     defaultConfig {
@@ -17,12 +21,18 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        production {
+                buildConfigField("String", "COMMUNICATION_URL", "\"https://d2niwfi3hp97su.cloudfront.net\"")
+                buildConfigField("String",  "API_URL", "\"https://d2niwfi3hp97su.cloudfront.net/api\"")
+
+        }
+        developpment {
+            buildConfigField("String", "COMMUNICATION_URL", "\"http://10.0.2.2:3000\"")
+            buildConfigField("String", "API_URL", "\"http://10.0.2.2:3000/api\"")
         }
     }
     compileOptions {

@@ -1,5 +1,6 @@
 package com.example.polyscrabbleclient.Message
 
+import com.example.polyscrabbleclient.BuildConfig
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -15,8 +16,7 @@ enum class EventType (val event: String){
     ROOM_MESSAGES("roomMessages")
 }
 
-private const val URL = "http://10.0.2.2:3000" // "http://10.0.2.2:3000" is the network your Android emulator must use to join the localhost network on your computer
-// "http://localhost:3000/" will not work
+private const val URL = BuildConfig.COMMUNICATION_URL
 
  object SocketHandler {
 
