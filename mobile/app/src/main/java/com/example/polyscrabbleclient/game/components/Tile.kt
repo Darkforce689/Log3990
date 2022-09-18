@@ -18,9 +18,6 @@ fun Tile(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val isSelected by remember {
-        mutableStateOf(isSelected)
-    }
     val targetColor by animateColorAsState(
         targetValue =
             if (isSelected)

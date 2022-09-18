@@ -2,9 +2,11 @@ package com.example.polyscrabbleclient.game.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,12 +46,10 @@ fun LetterRack(navController: NavController) {
         items(viewModel.letters.size) { index ->
             val letter = viewModel.letters[index]
             val onClick = { clicked(letter) }
-            val isSelected by remember {
-                mutableStateOf(selectedLetters.contains(letter))
-            }
-            Tile (
+
+            Tile(
                 letter,
-                isSelected,
+                isSelected(letter),
                 onClick
             )
         }
