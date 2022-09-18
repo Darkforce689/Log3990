@@ -1,4 +1,6 @@
 import { Application } from '@app/app';
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { DatabaseService } from '@app/database/database.service';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
@@ -27,6 +29,8 @@ export class Server {
         private systemMessagesService: SystemMessagesService,
         private databaseService: DatabaseService,
         private dictionaryService: DictionaryService,
+        private sessionMiddlewareService: SessionMiddlewareService,
+        private authService: AuthService,
     ) {}
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -58,7 +62,7 @@ export class Server {
         this.gameSocketsHandler = new GameSocketsHandler(this.server, this.gameManager);
         this.gameSocketsHandler.handleSockets();
 
-        this.messageHandler = new MessagesSocketHandler(this.server, this.systemMessagesService);
+        this.messageHandler = new MessagesSocketHandler(this.server, this.systemMessagesService, this.sessionMiddlewareService, this.authService);
         this.messageHandler.handleSockets();
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));

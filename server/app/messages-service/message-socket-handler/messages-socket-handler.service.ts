@@ -1,4 +1,6 @@
-import { MAX_MESSAGE_LENGTH } from '@app/constants';
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
+import { ENABLE_SOCKET_LOGIN, MAX_MESSAGE_LENGTH } from '@app/constants';
 import { ServerLogger } from '@app/logger/logger';
 import { ChatUser } from '@app/messages-service/chat-user.interface';
 import { Message } from '@app/messages-service/message.interface';
@@ -20,7 +22,12 @@ export class MessagesSocketHandler {
     users = new Map<string, ChatUser>();
     readonly sio: io.Server;
 
-    constructor(server: http.Server, private systemMessagesService: SystemMessagesService) {
+    constructor(
+        server: http.Server,
+        private systemMessagesService: SystemMessagesService,
+        private sessionMiddleware: SessionMiddlewareService,
+        private authService: AuthService,
+    ) {
         this.sio = new io.Server(server, {
             path: '/messages',
             cors: { origin: '*', methods: ['GET', 'POST'] },
@@ -35,7 +42,13 @@ export class MessagesSocketHandler {
         });
     }
 
-    handleSockets() {
+    handleSockets(enableAuth: boolean = ENABLE_SOCKET_LOGIN, enableRedisSession: boolean = true) {
+        if (enableAuth) {
+            const sessionMiddleware = this.sessionMiddleware.getSocketSessionMiddlewaresocket(enableRedisSession);
+            this.sio.use(sessionMiddleware);
+            this.sio.use(this.authService.socketAuthGuard);
+        }
+
         this.sio.on('connection', (socket) => {
             socket.on(NEW_USER_NAME, (userName: string) => {
                 try {
