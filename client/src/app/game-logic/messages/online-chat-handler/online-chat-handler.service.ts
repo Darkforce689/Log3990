@@ -18,7 +18,7 @@ export class OnlineChatHandlerService {
     private newRoomMessageSubject = new Subject<ChatMessage>();
     private errorSubject = new Subject<string>();
     private sysMessageSubject = new Subject<string>();
-    private userName: string | undefined;
+    // private userName: string | undefined;
 
     constructor(private accountService: AccountService, private authService: AuthService) {
         this.authService.isAuthenticated$.subscribe((isAuth) => {
@@ -71,7 +71,6 @@ export class OnlineChatHandlerService {
             this.receiveSystemMessage(content);
         });
 
-        this.userName = userName;
         this.socket.emit('joinRoom', roomID);
     }
 
@@ -100,7 +99,11 @@ export class OnlineChatHandlerService {
         return this.newRoomMessageSubject.pipe(
             filter((chatMessage: ChatMessage) => {
                 const name = chatMessage.from;
-                return name !== this.userName;
+                const account = this.accountService.account;
+                if (!account) {
+                    throw Error('No account defined');
+                }
+                return name !== account.name;
             }),
         );
     }
