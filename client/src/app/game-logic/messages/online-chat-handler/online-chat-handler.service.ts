@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { ChatMessage } from '@app/game-logic/messages/message.interface';
 import { isSocketConnected } from '@app/game-logic/utils';
+import { AccountService } from '@app/services/account.service';
+import { AuthService } from '@app/services/auth.service';
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
@@ -11,21 +12,35 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class OnlineChatHandlerService {
+    // TODO refactor class for multi-room
+
     socket: Socket;
     private newRoomMessageSubject = new Subject<ChatMessage>();
     private errorSubject = new Subject<string>();
     private sysMessageSubject = new Subject<string>();
+    private userName: string | undefined;
 
-    constructor(private gameInfo: GameInfoService) {}
+    constructor(private accountService: AccountService, private authService: AuthService) {
+        this.authService.isAuthenticated$.subscribe((isAuth) => {
+            if (!isAuth) {
+                this.leaveChatRoom();
+            }
+        });
+    }
 
     joinChatRoomWithUser(roomID: string) {
-        const userName = this.gameInfo.player.name;
+        const account = this.accountService.account;
+        if (account === undefined) {
+            throw Error("Can't join chat room because client not connected");
+        }
+
+        const { name: userName } = account;
         this.joinChatRoom(roomID, userName);
     }
 
     leaveChatRoom() {
         if (!this.socket) {
-            throw Error('No socket to disconnect from room');
+            return;
         }
         this.socket.close();
         this.socket = undefined as unknown as Socket;
@@ -43,7 +58,6 @@ export class OnlineChatHandlerService {
         this.bindRoomChannels(roomID, userName);
     }
     // TODO refactor
-    // eslint-disable-next-line no-unused-vars
     private bindRoomChannels(roomID: string, userName: string) {
         this.socket.on('error', (errorContent: string) => {
             this.receiveChatServerError(errorContent);
@@ -57,8 +71,7 @@ export class OnlineChatHandlerService {
             this.receiveSystemMessage(content);
         });
 
-        // TODO un comment if no login
-        // this.socket.emit('userName', userName);
+        this.userName = userName;
         this.socket.emit('joinRoom', roomID);
     }
 
@@ -87,8 +100,7 @@ export class OnlineChatHandlerService {
         return this.newRoomMessageSubject.pipe(
             filter((chatMessage: ChatMessage) => {
                 const name = chatMessage.from;
-                const userName = this.gameInfo.player.name;
-                return name !== userName;
+                return name !== this.userName;
             }),
         );
     }
