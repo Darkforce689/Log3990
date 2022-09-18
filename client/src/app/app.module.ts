@@ -14,7 +14,7 @@ import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderb
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
 import { NewSoloGameFormComponent } from '@app/components/modals/new-solo-game-form/new-solo-game-form.component';
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
-import { WaitingForPlayerComponent } from '@app/components/modals/waiting-for-player/waiting-for-player.component';
+import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { MouseRollDirective } from '@app/directives/mouse-roll.directive';
 import { PreventContextMenuDirective } from '@app/directives/prevent-context-menu.directive';
@@ -70,7 +70,7 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         PreventContextMenuDirective,
         ClickAndClickoutDirective,
         MouseRollDirective,
-        WaitingForPlayerComponent,
+        WaitingForOtherPlayersComponent,
         ConvertToSoloFormComponent,
         PendingGamesComponent,
         JoinOnlineGameComponent,

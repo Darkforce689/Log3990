@@ -2,7 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NOT_ONLY_SPACE_RGX } from '@app/game-logic/constants';
 import { openErrorDialog } from '@app/game-logic/utils';
-import { BotHttpService, BotInfo } from '@app/services/bot-http.service';
+import { BotHttpService } from '@app/services/bot-http.service';
+import { BotInfo } from '@app/services/bot-info';
 
 const ERROR_BOT_NAME_ALREADY_USED = 'Le nom du joueur virtuel est déjà utilisé';
 const ERROR_BOT_NOT_FOUND = `Le serveur n'est pas en mesure de trouver le joueur virtuel que vous voulez modifier.

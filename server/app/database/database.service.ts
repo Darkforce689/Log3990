@@ -1,4 +1,4 @@
-import { BOT_INFO_COLLECTION, DATABASE_NAME, DATABASE_URL } from '@app/constants';
+import { BOT_INFO_COLLECTION, DATABASE_URL, USER_COLLECTION, USER_CREDS_COLLECTION } from '@app/constants';
 import { DEFAULT_EASY_BOT, DEFAULT_EXPERT_BOT } from '@app/database/bot-info/default-bot-names';
 import {
     DEFAULT_LEADERBOARD_CLASSIC,
@@ -6,7 +6,9 @@ import {
     LEADERBOARD_CLASSIC_COLLECTION,
     LEADERBOARD_LOG_COLLECTION,
 } from '@app/database/leaderboard-service/leaderboard-constants';
-import { CollectionInfo, Db, MongoClient } from 'mongodb';
+import { MongoDBClientService } from '@app/database/mongodb-client.service';
+import { ServerLogger } from '@app/logger/logger';
+import { CollectionInfo, Db } from 'mongodb';
 import 'reflect-metadata';
 import { Service } from 'typedi';
 
@@ -14,17 +16,45 @@ import { Service } from 'typedi';
 export class DatabaseService {
     private db: Db;
 
+    constructor(private mongodbService: MongoDBClientService) {}
+
     async start(url: string = DATABASE_URL) {
-        try {
-            const client = await MongoClient.connect(url);
-            this.db = client.db(DATABASE_NAME);
-        } catch {
-            throw new Error('Database connection error');
-        }
+        // TODO refactor this service
+        await this.mongodbService.start(url);
+        this.db = this.mongodbService.db;
 
         this.createLeaderboardCollection(LEADERBOARD_CLASSIC_COLLECTION);
         this.createLeaderboardCollection(LEADERBOARD_LOG_COLLECTION);
         this.createBotInfoCollection();
+        this.createUserCollection();
+        this.createUserCredentialsCollection();
+    }
+
+    private async createUserCollection() {
+        try {
+            const isCollectionExist = await this.isCollectionInDb(USER_COLLECTION);
+            if (isCollectionExist) {
+                return;
+            }
+            const collection = await this.db.createCollection(USER_COLLECTION);
+            await collection.createIndex({ email: 1 }, { unique: true });
+            await collection.createIndex({ name: 1 }, { unique: true });
+        } catch (e) {
+            throw Error('Data base users collection creation error');
+        }
+    }
+
+    private async createUserCredentialsCollection() {
+        try {
+            const isCollectionExist = await this.isCollectionInDb(USER_COLLECTION);
+            if (isCollectionExist) {
+                return;
+            }
+            const collection = await this.db.createCollection(USER_CREDS_COLLECTION);
+            await collection.createIndex({ email: 1 }, { unique: true });
+        } catch (e) {
+            throw Error('Data base users collection creation error');
+        }
     }
 
     private async createLeaderboardCollection(collectionName: string): Promise<void> {
@@ -36,7 +66,8 @@ export class DatabaseService {
             await this.db.createCollection(collectionName);
             await this.db.collection(collectionName).createIndex({ name: 1 }, { unique: true });
             await this.populateLeaderboardCollection(collectionName);
-        } catch (e) {
+        } catch (error) {
+            ServerLogger.logError(error);
             throw Error('Data base collection creation error');
         }
     }
@@ -57,6 +88,7 @@ export class DatabaseService {
             await this.db.collection(BOT_INFO_COLLECTION).createIndex({ name: 1 }, { unique: true });
             this.populateBotInfoCollection();
         } catch (error) {
+            ServerLogger.logError(error);
             throw Error('Data base collection creation error');
         }
     }
@@ -66,6 +98,7 @@ export class DatabaseService {
             await this.db.collection(BOT_INFO_COLLECTION).insertMany(DEFAULT_EASY_BOT);
             await this.db.collection(BOT_INFO_COLLECTION).insertMany(DEFAULT_EXPERT_BOT);
         } catch (error) {
+            ServerLogger.logError(error);
             throw Error('Data base collection population error');
         }
     }
@@ -76,7 +109,8 @@ export class DatabaseService {
             if ((await this.db.collection(name).countDocuments()) === 0) {
                 await this.db.collection(name).insertMany(defaultPopulation);
             }
-        } catch (e) {
+        } catch (error) {
+            ServerLogger.logError(error);
             throw Error('Data base collection population error');
         }
     }

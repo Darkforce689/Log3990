@@ -7,6 +7,7 @@ import {
 } from '@app/database/leaderboard-service/leaderboard-constants';
 import { Score } from '@app/database/leaderboard-service/score.interface';
 import { GameMode } from '@app/game/game-mode.enum';
+import { ServerLogger } from '@app/logger/logger';
 import { Collection } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -27,7 +28,8 @@ export class LeaderboardService {
             await this.populateCollection(GameMode.Classic);
             await this.populateCollection(GameMode.Special);
             return true;
-        } catch (e) {
+        } catch (error) {
+            ServerLogger.logError(error);
             return false;
         }
     }
@@ -46,7 +48,8 @@ export class LeaderboardService {
                 return true;
             }
             return true;
-        } catch (e) {
+        } catch (error) {
+            ServerLogger.logError(error);
             return false;
         }
     }

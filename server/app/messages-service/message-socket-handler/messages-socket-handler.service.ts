@@ -1,4 +1,5 @@
 import { MAX_MESSAGE_LENGTH } from '@app/constants';
+import { ServerLogger } from '@app/logger/logger';
 import { ChatUser } from '@app/messages-service/chat-user.interface';
 import { Message } from '@app/messages-service/message.interface';
 import { Room } from '@app/messages-service/room/room';
@@ -39,24 +40,24 @@ export class MessagesSocketHandler {
             socket.on(NEW_USER_NAME, (userName: string) => {
                 try {
                     this.createUser(userName, socket.id);
-                } catch (e) {
-                    this.sendError(socket, e);
+                } catch (error) {
+                    this.sendError(socket, error);
                 }
             });
 
             socket.on(NEW_MESSAGE, (content: string) => {
                 try {
                     this.sendMessageToRoom(socket.id, content);
-                } catch (e) {
-                    this.sendError(socket, e);
+                } catch (error) {
+                    this.sendError(socket, error);
                 }
             });
 
             socket.on(JOIN_ROOM, (roomID: string) => {
                 try {
                     this.addUserToRoom(socket, roomID);
-                } catch (e) {
-                    this.sendError(socket, e);
+                } catch (error) {
+                    this.sendError(socket, error);
                 }
             });
 
@@ -157,6 +158,7 @@ export class MessagesSocketHandler {
     }
 
     private sendError(socket: io.Socket, error: Error) {
+        ServerLogger.logError(error);
         const errorMessage = error.message;
         socket.emit('error', errorMessage);
     }

@@ -1,4 +1,5 @@
-import { BotInfo, BotType } from '@app/database/bot-info/bot-info';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotInfo } from '@app/database/bot-info/bot-info';
 import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { DatabaseServiceMock } from '@app/database/database.service.mock';
 import { expect } from 'chai';
@@ -10,12 +11,12 @@ describe('BotInfoService', () => {
     const testBotInfo = [
         {
             name: 'Test',
-            type: BotType.Easy,
+            type: BotDifficulty.Easy,
             canEdit: true,
         },
         {
             name: 'Test2',
-            type: BotType.Expert,
+            type: BotDifficulty.Expert,
             canEdit: false,
         },
     ];
@@ -51,7 +52,7 @@ describe('BotInfoService', () => {
     it('add bot should instert the new bot in the collection', async () => {
         const newBot: BotInfo = {
             name: 'newBot',
-            type: BotType.Easy,
+            type: BotDifficulty.Easy,
             canEdit: true,
         };
 
@@ -65,7 +66,7 @@ describe('BotInfoService', () => {
         const editBot: BotInfo = {
             canEdit: true,
             name: 'editBot',
-            type: BotType.Easy,
+            type: BotDifficulty.Easy,
         };
 
         expect(await service.updateBot(testBotInfo[0], editBot)).to.equal(true);
@@ -75,7 +76,7 @@ describe('BotInfoService', () => {
         const editBot: BotInfo = {
             canEdit: true,
             name: 'Test2',
-            type: BotType.Easy,
+            type: BotDifficulty.Easy,
         };
 
         expect(await service.updateBot(testBotInfo[0], editBot)).to.equal(false);

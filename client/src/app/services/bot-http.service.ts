@@ -1,17 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BotInfo } from '@app/services/bot-info';
 import { environment } from 'src/environments/environment';
-
-export enum BotType {
-    Easy = 'Facile',
-    Expert = 'Expert',
-}
-
-export interface BotInfo {
-    name: string;
-    type: BotType;
-    canEdit: boolean;
-}
 
 @Injectable({
     providedIn: 'root',

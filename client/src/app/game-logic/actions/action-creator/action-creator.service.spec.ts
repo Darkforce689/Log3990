@@ -7,19 +7,12 @@ import { Direction } from '@app/game-logic/direction.enum';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 
 describe('ActionCreatorService', () => {
     let service: ActionCreatorService;
     let player: Player;
     const letterFactory = new LetterCreator();
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [{ provide: DictionaryService, useValue: dict }, PointCalculatorService, WordSearcher],
-        });
         service = TestBed.inject(ActionCreatorService);
         player = new User('Allo');
     });

@@ -11,7 +11,6 @@ import { OnlineObjective } from '@app/game-logic/game/objectives/online-objectiv
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
 import { User } from '@app/game-logic/player/user';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 
 describe('OnlineGame', () => {
@@ -24,12 +23,8 @@ describe('OnlineGame', () => {
     let gameState: SpecialGameState;
     let lightObjective: LightObjective;
     let objectiveNotifierSpy: jasmine.SpyObj<ObjectiveNotifierService>;
-    const dict = jasmine.createSpyObj('DictionaryService', ['getDictionary']);
 
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [{ provide: DictionaryService, useValue: dict }],
-        });
         boardService = TestBed.inject(BoardService);
         gameSocketHandlerService = TestBed.inject(GameSocketHandlerService);
         timer = TestBed.inject(TimerService);

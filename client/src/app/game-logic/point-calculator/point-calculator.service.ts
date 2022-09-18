@@ -6,6 +6,8 @@ import { Tile } from '@app/game-logic/game/board/tile';
 import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
 import { Player } from '@app/game-logic/player/player';
 
+// TODO GL3A22107-5 : whole class -> to be removed
+// Whole 'point-calculator' folder could be removed too
 const MAX_LETTER_IN_RACK = 7;
 const BONUS = 50;
 @Injectable({

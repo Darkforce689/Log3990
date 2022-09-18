@@ -12,9 +12,8 @@ import { User } from '@app/game-logic/player/user';
 import { MockGame } from '@app/game-logic/point-calculator/mock-game';
 import { MockPlaceLetter } from '@app/game-logic/point-calculator/mock-place-letter';
 import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
-import { DictionaryService } from '@app/game-logic/validator/dictionary.service';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 
+// TODO GL3A22107-5 : tests -> to be removed
 describe('PointCalculatorService', () => {
     let pointCalculator: PointCalculatorService;
     let timer: TimerService;
@@ -39,24 +38,13 @@ describe('PointCalculatorService', () => {
     ];
     let listOfWord: Tile[][];
     let word: Tile[];
-    let wordSearcher: WordSearcher;
-    const dictHttpServiceMock = jasmine.createSpyObj('DictHttpService', ['getDictionary']);
-    const dict = new DictionaryService(dictHttpServiceMock);
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                { provide: DictionaryService, useValue: dict },
-                TimerService,
-                BoardService,
-                PointCalculatorService,
-                WordSearcher,
-                MessagesService,
-            ],
+            providers: [TimerService, BoardService, PointCalculatorService, MessagesService],
         });
         timer = TestBed.inject(TimerService);
         boardService = TestBed.inject(BoardService);
         pointCalculator = TestBed.inject(PointCalculatorService);
-        wordSearcher = TestBed.inject(WordSearcher);
         messages = TestBed.inject(MessagesService);
         game = new MockGame(randomBonus, timePerTurn, timer, pointCalculator, boardService, messages);
         player1 = new User('Tim');
@@ -86,7 +74,7 @@ describe('PointCalculatorService', () => {
 
     it('should calculate the correct points of a word with letter multiplicator', () => {
         const totalPointsOfWord = 11;
-        action = new MockPlaceLetter(player2, 'bateaux', { x: 0, y: 0, direction: Direction.Horizontal }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player2, 'bateaux', { x: 0, y: 0, direction: Direction.Horizontal });
         word = [
             { letterObject: { char: 'B', value: 3 }, letterMultiplicator: 2, wordMultiplicator: 1 },
             { letterObject: { char: 'A', value: 1 }, letterMultiplicator: 1, wordMultiplicator: 1 },
@@ -110,7 +98,7 @@ describe('PointCalculatorService', () => {
 
     it('should calculate the correct points of a word with word multiplicator', () => {
         const totalPointsOfWord = 66;
-        action = new MockPlaceLetter(player2, 'bateaux', { x: 0, y: 0, direction: Direction.Horizontal }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player2, 'bateaux', { x: 0, y: 0, direction: Direction.Horizontal });
         word = [
             { letterObject: { char: 'B', value: 3 }, letterMultiplicator: 2, wordMultiplicator: 1 },
             { letterObject: { char: 'A', value: 1 }, letterMultiplicator: 1, wordMultiplicator: 2 },
@@ -161,7 +149,7 @@ describe('PointCalculatorService', () => {
             { char: 'U', value: 1 },
             { char: 'X', value: 8 },
         ];
-        action = new MockPlaceLetter(player2, bateaux, { x: 0, y: 0, direction: Direction.Horizontal }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player2, bateaux, { x: 0, y: 0, direction: Direction.Horizontal });
         action.execute(game);
         action.affectedCoords = [
             { x: 0, y: 0 },
@@ -193,7 +181,7 @@ describe('PointCalculatorService', () => {
         grid[0][1].letterObject = { char: 'A', value: 1 };
         grid[0][2].letterObject = { char: 'T', value: 1 };
         listOfWord.push(wordBat);
-        action = new MockPlaceLetter(player1, 'bat', { x: 0, y: 0, direction: Direction.Horizontal }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player1, 'bat', { x: 0, y: 0, direction: Direction.Horizontal });
         action.execute(game);
         action.affectedCoords = [
             { x: 0, y: 0 },
@@ -219,7 +207,7 @@ describe('PointCalculatorService', () => {
         grid[0][4].letterObject = { char: 'A', value: 1 };
         grid[0][5].letterObject = { char: 'U', value: 1 };
         grid[0][6].letterObject = { char: 'X', value: 8 };
-        action = new MockPlaceLetter(player2, 'bateaux', { x: 0, y: 0, direction: Direction.Horizontal }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player2, 'bateaux', { x: 0, y: 0, direction: Direction.Horizontal });
         action.execute(game);
         action.affectedCoords = [
             { x: 3, y: 0 },
@@ -257,7 +245,7 @@ describe('PointCalculatorService', () => {
         grid[4][0].letterObject = { char: 'T', value: 1 };
         const wordAt = [grid[3][0], grid[4][0]];
         listOfWord.push(wordAt);
-        action = new MockPlaceLetter(player1, 'at', { x: 0, y: 3, direction: Direction.Vertical }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player1, 'at', { x: 0, y: 3, direction: Direction.Vertical });
         action.execute(game);
         action.affectedCoords = [
             { x: 0, y: 3 },
@@ -274,7 +262,7 @@ describe('PointCalculatorService', () => {
         const wordBake = [grid[2][0], grid[2][1], grid[2][2], grid[2][3]];
         listOfWord.push(wordBat);
         listOfWord.push(wordBake);
-        action = new MockPlaceLetter(player2, 'bake', { x: 0, y: 2, direction: Direction.Horizontal }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player2, 'bake', { x: 0, y: 2, direction: Direction.Horizontal });
         action.execute(game);
         action.affectedCoords = [
             { x: 0, y: 2 },
@@ -307,7 +295,7 @@ describe('PointCalculatorService', () => {
             { char: 'U', value: 1 },
             { char: 'N', value: 1 },
         ];
-        action = new MockPlaceLetter(player1, 'cet', { x: 5, y: 0, direction: Direction.Vertical }, pointCalculator, wordSearcher);
+        action = new MockPlaceLetter(player1, 'cet', { x: 5, y: 0, direction: Direction.Vertical });
         action.affectedCoords = [
             { x: 5, y: 0 },
             { x: 5, y: 1 },

@@ -1,5 +1,6 @@
 import { Application } from '@app/app';
-import { BotInfo, BotType } from '@app/database/bot-info/bot-info';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotInfo } from '@app/database/bot-info/bot-info';
 import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
@@ -21,7 +22,7 @@ describe('BotInfoController', () => {
     });
 
     it('get should return the right bot info', async () => {
-        const botInfo: BotInfo[] = [{ name: 'Test', canEdit: false, type: BotType.Easy }];
+        const botInfo: BotInfo[] = [{ name: 'Test', canEdit: false, type: BotDifficulty.Easy }];
         botInfoService.getBotInfoList.resolves(botInfo);
 
         return supertest(expressApp)
@@ -39,7 +40,7 @@ describe('BotInfoController', () => {
     });
 
     it('post should send true if new bot', async () => {
-        const sendData: BotInfo = { name: 'Test', type: BotType.Easy, canEdit: true };
+        const sendData: BotInfo = { name: 'Test', type: BotDifficulty.Easy, canEdit: true };
         botInfoService.isBotExist.resolves(false);
         return supertest(expressApp)
             .post('/api/botinfo')
@@ -51,7 +52,7 @@ describe('BotInfoController', () => {
     });
 
     it('post should send false if bot already exist', async () => {
-        const sendData: BotInfo = { name: 'Test', type: BotType.Easy, canEdit: true };
+        const sendData: BotInfo = { name: 'Test', type: BotDifficulty.Easy, canEdit: true };
         botInfoService.isBotExist.resolves(true);
         return supertest(expressApp)
             .post('/api/botinfo')

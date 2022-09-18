@@ -1,15 +1,20 @@
 import { NEW_GAME_TIMEOUT } from '@app/constants';
+import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { GameCreator } from '@app/game/game-creator/game-creator';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCompilerService } from '@app/game/game-logic/actions/action-compiler.service';
+import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
+import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
+import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -19,6 +24,7 @@ import { BindedSocket } from '@app/game/game-manager/binded-client.interface';
 import { GameMode } from '@app/game/game-mode.enum';
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction } from '@app/game/online-action.interface';
+import { ServerLogger } from '@app/logger/logger';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { Observable, Subject } from 'rxjs';
@@ -63,6 +69,10 @@ export class GameManagerService {
         private objectiveCreator: ObjectiveCreator,
         private leaderboardService: LeaderboardService,
         private dictionaryService: DictionaryService,
+        private botInfoService: BotInfoService,
+        private botManager: BotManager,
+        protected botMessage: BotMessagesService,
+        protected actionCreator: ActionCreatorService,
     ) {
         this.gameCreator = new GameCreator(
             this.pointCalculator,
@@ -72,6 +82,10 @@ export class GameManagerService {
             this.endGame$,
             this.timerController,
             this.objectiveCreator,
+            this.botInfoService,
+            this.botManager,
+            this.botMessage,
+            this.actionCreator,
         );
 
         this.endGame$.subscribe((endOfGame: EndOfGame) => {
@@ -83,11 +97,12 @@ export class GameManagerService {
         });
     }
 
-    createGame(gameToken: string, onlineGameSettings: OnlineGameSettings) {
-        const newServerGame = this.gameCreator.createGame(onlineGameSettings, gameToken);
+    async createGame(gameToken: string, onlineGameSettings: OnlineGameSettings): Promise<ServerGame> {
+        const newServerGame = await this.gameCreator.createGame(onlineGameSettings, gameToken);
         this.activeGames.set(gameToken, newServerGame);
         this.linkedClients.set(gameToken, []);
         this.startInactiveGameDestructionTimer(gameToken);
+        return newServerGame;
     }
 
     addPlayerToGame(playerId: string, userAuth: UserAuth) {
@@ -116,7 +131,9 @@ export class GameManagerService {
         this.activePlayers.set(playerId, playerRef);
         const bindedSocket: BindedSocket = { socketID: playerId, name: playerName };
         linkedClientsInGame.push(bindedSocket);
-        if (linkedClientsInGame.length === 2) {
+
+        const expectedClientCount = this.getExpectedNumberOfClients(game);
+        if (linkedClientsInGame.length === expectedClientCount) {
             game.start();
         }
     }
@@ -132,7 +149,8 @@ export class GameManagerService {
             const gameToken = playerRef.gameToken;
             this.notifyAction(compiledAction, gameToken);
             player.play(compiledAction);
-        } catch (e) {
+        } catch (error) {
+            ServerLogger.logError(error);
             return;
         }
     }
@@ -153,15 +171,21 @@ export class GameManagerService {
         this.deleteGame(gameToken);
     }
 
+    private getExpectedNumberOfClients(game: ServerGame) {
+        const playerCount = game.players.length;
+        let botCount = 0;
+        for (const player of game.players) {
+            if (player instanceof BotPlayer) {
+                botCount++;
+            }
+        }
+        return playerCount - botCount;
+    }
+
     private startInactiveGameDestructionTimer(gameToken: string) {
         setTimeout(() => {
             const currentLinkedClient = this.linkedClients.get(gameToken);
             if (!currentLinkedClient) {
-                this.deleteInactiveGame(gameToken);
-                return;
-            }
-
-            if (currentLinkedClient.length !== 2) {
                 this.deleteInactiveGame(gameToken);
                 return;
             }
@@ -203,6 +227,8 @@ export class GameManagerService {
     }
 
     private deleteGame(gameToken: string) {
+        const game = this.activeGames.get(gameToken);
+        game?.stop();
         this.activeGames.delete(gameToken);
         this.linkedClients.delete(gameToken);
         this.dictionaryService.deleteGameDictionary(gameToken);
@@ -211,9 +237,11 @@ export class GameManagerService {
     private updateLeaderboard(players: Player[], gameToken: string) {
         const isSpecial = this.activeGames.get(gameToken) instanceof SpecialServerGame;
         const gameMode = isSpecial ? GameMode.Special : GameMode.Classic;
-        players.forEach((player) => {
-            const score = { name: player.name, point: player.points };
-            this.leaderboardService.updateLeaderboard(score, gameMode);
-        });
+        players
+            .filter((player) => !(player instanceof BotPlayer))
+            .forEach((player) => {
+                const score = { name: player.name, point: player.points };
+                this.leaderboardService.updateLeaderboard(score, gameMode);
+            });
     }
 }

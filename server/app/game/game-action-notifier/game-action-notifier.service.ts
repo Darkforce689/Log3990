@@ -34,19 +34,16 @@ export class GameActionNotifierService {
         }
     }
 
-    private findOpponentName(playerName: string, linkedClients: BindedSocket[]): string {
-        const opponentClient = linkedClients.find((client) => client.name !== playerName);
-        if (!opponentClient) {
-            throw Error(`No opponent found for ${playerName}`);
-        }
-        return opponentClient.name;
+    private findOpponentNames(playerName: string, linkedClients: BindedSocket[]): string[] {
+        const opponentClients = linkedClients.filter((client) => client.name !== playerName);
+        return opponentClients.map((client) => client.name);
     }
 
     private notifyExchangeLetter(exchangeLetter: ExchangeLetter, linkedClients: BindedSocket[], gameToken: string) {
         const player = exchangeLetter.player;
         const lettersToExchange = exchangeLetter.lettersToExchange;
         const content = `${player.name} échange ${lettersToExchange.length} lettres`;
-        const to = [this.findOpponentName(player.name, linkedClients)];
+        const to = this.findOpponentNames(player.name, linkedClients);
         const notification: GameActionNotification = { gameToken, content, to };
         this.notificationSubject.next(notification);
     }
@@ -57,7 +54,7 @@ export class GameActionNotifierService {
         const placement = placeLetter.placement;
         const placementString = placementSettingsToString(placement);
         const content = `${player.name} place le mot ${word} en ${placementString}`;
-        const to = [this.findOpponentName(player.name, linkedClients)];
+        const to = this.findOpponentNames(player.name, linkedClients);
         const notification: GameActionNotification = { gameToken, content, to };
         this.notificationSubject.next(notification);
     }
@@ -65,7 +62,7 @@ export class GameActionNotifierService {
     private notifyPassTurn(passTurn: PassTurn, linkedClients: BindedSocket[], gameToken: string) {
         const player = passTurn.player;
         const content = `${player.name} passe son tour`;
-        const to = [this.findOpponentName(player.name, linkedClients)];
+        const to = this.findOpponentNames(player.name, linkedClients);
         const notification: GameActionNotification = { gameToken, content, to };
         this.notificationSubject.next(notification);
     }

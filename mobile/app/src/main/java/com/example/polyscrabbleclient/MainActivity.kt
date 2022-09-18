@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,18 +21,71 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.ui.components.LetterRack
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.polyscrabbleclient.Message.EventType
+import com.example.polyscrabbleclient.Message.SocketHandler
+import com.example.polyscrabbleclient.Message.components.ChatRoomScreen
+import com.example.polyscrabbleclient.Message.model.User
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.example.polyscrabbleclient.Message.viewModel.ChatBoxViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             App {
-                LetterRack()
+                Column {
+                    NavGraph()
+//                    LetterRack()
+                }
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SocketHandler.closeConnection()
+    }
 }
+// Main Component
+@Composable
+fun NavGraph() {
+    SocketHandler.setSocket()
+    val chatView : ChatBoxViewModel = viewModel()
+    val navController = rememberNavController() // 1
+    NavHost(navController, startDestination = "startPage") {
+        composable("startPage") { // 2
+            Column() {
+                Prototype(navController)
+            }
+        }
+        composable("messageList") {
+            // To place in other function somewhere else
+            chatView.joinRoom("prototype", User)
+            ChatRoomScreen(navController, chatView)
+        }
+    }
+
+}
+
+@Composable
+fun Prototype(navController: NavController) {
+    Button(modifier = Modifier.padding(20.dp),
+        onClick = {
+            navController.navigate("messageList") {
+                popUpTo("startPage") {
+                    inclusive = true
+                }
+            }
+        }) {
+        Text(text = "Prototype")
+    }
+}
+
 
 @Composable
 fun App(content: @Composable () -> Unit) {

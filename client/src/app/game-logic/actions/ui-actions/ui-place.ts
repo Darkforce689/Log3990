@@ -8,9 +8,7 @@ import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { convertToProperLetter, isStringALowerCaseLetter, isStringAnUpperCaseLetter } from '@app/game-logic/utils';
-import { WordSearcher } from '@app/game-logic/validator/word-search/word-searcher.service';
 
 export class UIPlace implements UIAction {
     concernedIndexes = new Set<number>();
@@ -19,12 +17,7 @@ export class UIPlace implements UIAction {
     direction = Direction.Horizontal;
     pointerPosition: { x: number; y: number } | null = null;
 
-    constructor(
-        private info: GameInfoService,
-        private pointCalculator: PointCalculatorService,
-        private wordSearcher: WordSearcher,
-        private boardService: BoardService,
-    ) {}
+    constructor(private info: GameInfoService, private boardService: BoardService) {}
 
     get canBeCreated(): boolean {
         return this.orderedIndexes.length > 0 && this.concernedIndexes.size > 0;
@@ -75,13 +68,11 @@ export class UIPlace implements UIAction {
 
     create(): Action {
         const wordPlacement = this.getWordFromBoard();
-        const createdAction = new PlaceLetter(
-            this.info.user,
-            wordPlacement.word,
-            { direction: this.direction, x: wordPlacement.x, y: wordPlacement.y },
-            this.pointCalculator,
-            this.wordSearcher,
-        );
+        const createdAction = new PlaceLetter(this.info.user, wordPlacement.word, {
+            direction: this.direction,
+            x: wordPlacement.x,
+            y: wordPlacement.y,
+        });
         return createdAction;
     }
 
