@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
 import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
@@ -29,6 +30,7 @@ describe('Player', () => {
                 { provide: CommandExecuterService, useValue: commandExecuterMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
             ],
+            imports: [HttpClientTestingModule],
         });
         boardService = TestBed.inject(BoardService);
         timer = TestBed.inject(TimerService);

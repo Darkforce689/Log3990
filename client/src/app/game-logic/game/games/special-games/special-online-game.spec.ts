@@ -1,4 +1,5 @@
 /* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
@@ -24,6 +25,7 @@ describe('OnlineGame', () => {
     let objectiveNotifierSpy: jasmine.SpyObj<ObjectiveNotifierService>;
 
     beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
         boardService = TestBed.inject(BoardService);
         gameSocketHandlerService = TestBed.inject(GameSocketHandlerService);
         timer = TestBed.inject(TimerService);

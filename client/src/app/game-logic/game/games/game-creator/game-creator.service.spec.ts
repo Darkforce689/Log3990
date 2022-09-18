@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
@@ -11,7 +12,9 @@ describe('GameCreatorService', () => {
     const username = 'p1';
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         service = TestBed.inject(GameCreatorService);
     });
 

@@ -1,5 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { ChatMessage } from '@app/game-logic/messages/message.interface';
@@ -11,7 +12,7 @@ describe('online chat handler', () => {
     const gameInfo = { player: { name: 'Tim' } };
     let service: OnlineChatHandlerService;
     beforeEach(() => {
-        TestBed.configureTestingModule({ providers: [{ provide: GameInfoService, useValue: gameInfo }] });
+        TestBed.configureTestingModule({ providers: [{ provide: GameInfoService, useValue: gameInfo }], imports: [HttpClientTestingModule] });
         service = TestBed.inject(OnlineChatHandlerService);
         (service.socket as any) = new SocketMock();
         service['bindRoomChannels']('1', 'bob');
@@ -102,7 +103,7 @@ describe('online chat handler', () => {
         (service.socket as unknown) = undefined;
         expect(() => {
             service.leaveChatRoom();
-        }).toThrowError();
+        }).not.toThrowError();
     });
 
     it('should throw error when leaving chat room when not connected', () => {

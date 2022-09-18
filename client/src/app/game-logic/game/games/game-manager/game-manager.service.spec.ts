@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
 import { BOARD_DIMENSION, DEFAULT_DICTIONARY_TITLE, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
@@ -54,6 +55,7 @@ describe('GameManagerService Online Edition', () => {
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
             ],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(GameManagerService);
         gameSocketHandler = TestBed.inject(GameSocketHandlerService);
