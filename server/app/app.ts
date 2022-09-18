@@ -1,3 +1,4 @@
+import { AccountController } from '@app/account/account.controller';
 import { AuthController } from '@app/auth/controllers/auth.controller';
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
@@ -39,6 +40,7 @@ export class Application {
         private readonly authController: AuthController,
         private readonly authService: AuthService,
         private readonly sessionMiddlewareService: SessionMiddlewareService,
+        private readonly accountController: AccountController,
     ) {}
 
     start(enableRedisSession = true, enableApiLogin = ENABLE_API_LOGIN): void {
@@ -60,6 +62,7 @@ export class Application {
         this.app.use('/api/scores', this.leaderboardController.router);
         this.app.use('/api/botinfo', this.botInfoController.router);
         this.app.use('/api/dictionary', this.dictionaryController.router);
+        this.app.use('/api/account', this.accountController.router);
 
         this.errorHandling();
     }
