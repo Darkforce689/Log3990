@@ -34,8 +34,7 @@ export class OnlineChatHandlerService {
             throw Error("Can't join chat room because client not connected");
         }
 
-        const { name: userName } = account;
-        this.joinChatRoom(roomID, userName);
+        this.joinChatRoom(roomID);
     }
 
     leaveChatRoom() {
@@ -53,12 +52,12 @@ export class OnlineChatHandlerService {
         this.socket.emit('newMessage', content);
     }
 
-    joinChatRoom(roomID: string, userName: string) {
+    joinChatRoom(roomID: string) {
         this.socket = this.connectToSocket();
-        this.bindRoomChannels(roomID, userName);
+        this.bindRoomChannels(roomID);
     }
     // TODO refactor
-    private bindRoomChannels(roomID: string, userName: string) {
+    private bindRoomChannels(roomID: string) {
         this.socket.on('error', (errorContent: string) => {
             this.receiveChatServerError(errorContent);
         });
