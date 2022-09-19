@@ -5,6 +5,7 @@ cache:
     paths:
         - client/node_modules/
         - server/node_modules/
+        - mobile/.gradle/
     policy: pull
 
 .only-client: &only-client
@@ -32,6 +33,24 @@ cache:
         key: '${CI_COMMIT_REF_SLUG}-server'
         paths:
             - server/node_modules/
+        policy: pull
+
+.only-mobile: &only-mobile
+    image: openjdk:11-jdk
+    variables:
+        ANDROID_COMPILE_SDK: "32"
+        ANDROID_BUILD_TOOLS: "30.0.3"
+        ANDROID_SDK_TOOLS: "7583922"
+    only:
+        refs:
+            - master
+            - merge_requests
+        changes:
+            - mobile/**/*
+    cache:
+        key: '${CI_COMMIT_REF_SLUG}-mobile'
+        paths:
+           - mobile/.gradle/
         policy: pull
 
 stages:
@@ -65,7 +84,33 @@ install:server:
         paths:
             - server/node_modules/
             - server/.npm/
-        policy: pull-push
+        policy: pull-push   
+
+install:mobile:
+    stage: install
+    <<: *only-mobile
+    script:
+        - cd mobile
+        - export GRADLE_USER_HOME=$(pwd)/.gradle
+        - chmod +x ./gradlew
+        - apt-get --quiet update --yes
+        - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+        - mkdir -p android-sdk-linux/cmdline-tools
+        - export ANDROID_SDK_ROOT=$PWD/android-sdk-linux
+        - cd android-sdk-linux/cmdline-tools
+        - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+        - unzip android-sdk.zip
+        - rm android-sdk.zip
+        - mv cmdline-tools version
+        - echo y | version/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" >/dev/null
+        - echo y | version/bin/sdkmanager "platform-tools" >/dev/null
+        - echo y | version/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null
+        - export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools/
+  # temporarily disable checking for EPIPE error and use yes to accept all licenses
+        - set +o pipefail
+        - yes | version/bin/sdkmanager --licenses
+        - set -o pipefail
+        - cd ../../
 
 lint:webclient:
     stage: lint
@@ -83,6 +128,35 @@ lint:server:
         - cd server
         - npm run lint
 
+lint:mobile:
+    stage: lint
+    allow_failure: true
+    <<: *only-mobile
+    script:
+        - cd mobile
+        - export GRADLE_USER_HOME=$(pwd)/.gradle
+        - chmod +x ./gradlew
+        - apt-get --quiet update --yes
+        - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+        - mkdir -p android-sdk-linux/cmdline-tools
+        - export ANDROID_SDK_ROOT=$PWD/android-sdk-linux
+        - cd android-sdk-linux/cmdline-tools
+        - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+        - unzip android-sdk.zip
+        - rm android-sdk.zip
+        - mv cmdline-tools version
+        - echo y | version/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" >/dev/null
+        - echo y | version/bin/sdkmanager "platform-tools" >/dev/null
+        - echo y | version/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null
+        - export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools/
+  # temporarily disable checking for EPIPE error and use yes to accept all licenses
+        - set +o pipefail
+        - yes | version/bin/sdkmanager --licenses
+        - set -o pipefail
+        - cd ../../
+        - chmod +x ./gradlew
+        - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
+        
 build:webclient:
     stage: build
     <<: *only-client
@@ -102,6 +176,37 @@ build:server:
     artifacts:
         paths:
             - server/out/
+
+build:mobile:
+    stage: build
+    <<: *only-mobile
+    script:
+        - cd mobile
+        - export GRADLE_USER_HOME=$(pwd)/.gradle
+        - chmod +x ./gradlew
+        - apt-get --quiet update --yes
+        - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+        - mkdir -p android-sdk-linux/cmdline-tools
+        - export ANDROID_SDK_ROOT=$PWD/android-sdk-linux
+        - cd android-sdk-linux/cmdline-tools
+        - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+        - unzip android-sdk.zip
+        - rm android-sdk.zip
+        - mv cmdline-tools version
+        - echo y | version/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" >/dev/null
+        - echo y | version/bin/sdkmanager "platform-tools" >/dev/null
+        - echo y | version/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" >/dev/null
+        - export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools/
+  # temporarily disable checking for EPIPE error and use yes to accept all licenses
+        - set +o pipefail
+        - yes | version/bin/sdkmanager --licenses
+        - set -o pipefail
+        - cd ../../
+        - chmod +x ./gradlew
+        - ./gradlew assemble
+    artifacts:
+        paths:
+        - app/build/outputs/    
 
 test:webclient:
     stage: test
