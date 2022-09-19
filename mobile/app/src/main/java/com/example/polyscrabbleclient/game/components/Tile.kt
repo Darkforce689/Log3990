@@ -20,12 +20,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.polyscrabbleclient.game.model.Tile
 
-@Preview(showBackground = true)
+val subscript = SpanStyle(
+    baselineShift = BaselineShift.Subscript,
+    fontSize = 16.sp,
+)
+
+
 @Composable
 fun Tile(
-    tile: Tile = Tile('A', 1),
-    isSelected: Boolean = false,
-    onClick: () -> Unit = {}
+    tile: Tile,
+    isSelected: Boolean,
+    onClick: () -> Unit
 ) {
     val targetColor by animateColorAsState(
         targetValue =
@@ -44,13 +49,7 @@ fun Tile(
             .padding(32.dp),
             text = buildAnnotatedString {
                 append(tile.letter)
-                withStyle(
-                    SpanStyle(
-                        baselineShift = BaselineShift.Subscript,
-                        fontSize = 16.sp,
-                        color = targetColor
-                    )
-                ) {
+                withStyle(subscript) {
                     append(tile.point.toString())
                 }
             }
