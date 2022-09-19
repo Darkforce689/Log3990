@@ -16,7 +16,6 @@ import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { ForfeitedGameState } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
@@ -431,7 +430,7 @@ describe('GameManagerService', () => {
         expect(() => {
             service.removePlayerFromGame(userId);
         }).to.not.throw(Error);
-        expect(service.activePlayers.size).to.be.equal(0);
+        expect(service.activePlayers.size).to.be.equal(1);
     });
 
     it('should delete game when unjoined for a certain time', () => {
@@ -619,19 +618,5 @@ describe('GameManagerService', () => {
         await service.createGame(gameToken, gameSettings);
         service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player] });
         expect(service.activeGames.size).to.be.equal(0);
-    });
-
-    it('should create appropriate transition objectives', (done) => {
-        const mockGame = {
-            activePlayerIndex: 0,
-        } as unknown as ServerGame;
-        const mockGameState = {} as unknown as ForfeitedGameState;
-        service.forfeitedGameState$.subscribe((forfeitedGameState) => {
-            expect(forfeitedGameState).to.equal(mockGameState);
-            done();
-        });
-        stubGameCompiler.compileForfeited.returns(mockGameState);
-        service['sendForfeitedGameState'](mockGame);
-        done();
     });
 });

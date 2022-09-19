@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,7 +22,7 @@ describe('HomepageComponent', () => {
     }
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(routes)],
+            imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule],
             providers: [{ provide: MatDialog, useClass: MatDialogMock }],
             declarations: [HomepageComponent],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],

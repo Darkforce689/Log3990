@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -6,19 +6,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
-import { ConvertToSoloFormComponent } from '@app/components/modals/convert-to-solo-form/convert-to-solo-form.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
-import { NewSoloGameFormComponent } from '@app/components/modals/new-solo-game-form/new-solo-game-form.component';
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { MouseRollDirective } from '@app/directives/mouse-roll.directive';
 import { PreventContextMenuDirective } from '@app/directives/prevent-context-menu.directive';
 import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
+import { AuthInterceptor } from '@app/interceptors/auth.interceptor';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AdminBotComponent } from '@app/pages/admin-page/admin-bot-virtuel/admin-bot.component';
@@ -43,7 +42,9 @@ import { LoadingGameComponent } from './components/modals/loading-game/loading-g
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
 import { AdminDropDbComponent } from './pages/admin-page/admin-drop-db/admin-drop-db.component';
 import { ObjectivesListComponent } from './pages/game-page/objectives/objectives-list.component';
+import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
+import { RegisterPageComponent } from './pages/register-page/register-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -61,7 +62,6 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         ChatBoxComponent,
         BoardComponent,
         HorseComponent,
-        NewSoloGameFormComponent,
         NewOnlineGameFormComponent,
         HomepageComponent,
         NewGamePageComponent,
@@ -71,7 +71,6 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         ClickAndClickoutDirective,
         MouseRollDirective,
         WaitingForOtherPlayersComponent,
-        ConvertToSoloFormComponent,
         PendingGamesComponent,
         JoinOnlineGameComponent,
         DisconnectedFromServerComponent,
@@ -93,6 +92,8 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         LoadingGameComponent,
         WinnerDialogComponent,
         PrototypePageComponent,
+        LoginPageComponent,
+        RegisterPageComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -105,6 +106,11 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         MatTableModule,
     ],
     providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        },
         {
             provide: APP_INITIALIZER,
             useFactory: () => {

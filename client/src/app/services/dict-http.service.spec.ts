@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Dictionary } from '@app/game-logic/validator/dictionary';
+import { Dictionary } from '@app/game-logic/interfaces/dictionary';
 import { DictInfo } from '@app/pages/admin-page/admin-dict/admin-dict.component';
 import { DictHttpService } from '@app/services/dict-http.service';
 

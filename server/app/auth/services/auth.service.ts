@@ -1,6 +1,8 @@
 import { UserCredentials } from '@app/auth/user-credentials.interface';
 import { USER_CREDS_COLLECTION } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
+import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { ObjectId } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -29,5 +31,16 @@ export class AuthService {
     async getUserCredentials(userEmail: string) {
         const [userCredentials] = await this.collection.find({ email: userEmail }).project({ _id: 0 }).toArray();
         return userCredentials;
+    }
+
+    get authGuard() {
+        return (req: Request, res: Response, next: NextFunction): void => {
+            const session = req.session as unknown as { userId: string };
+            if (session.userId === undefined) {
+                res.sendStatus(StatusCodes.UNAUTHORIZED);
+                return;
+            }
+            next();
+        };
     }
 }

@@ -89,10 +89,10 @@ export class OnlineGame extends Game {
     }
 
     handleUserActions() {
-        const user = this.players.find((player: Player) => {
-            return player.name === this.userName;
+        const player = this.players.find((playerRef: Player) => {
+            return playerRef.name === this.userName;
         });
-        (user as Player).action$.subscribe((action) => {
+        (player as Player).action$.subscribe((action) => {
             const activePlayerName = this.players[this.activePlayerIndex].name;
             if (activePlayerName !== this.userName) {
                 return;

@@ -7,6 +7,7 @@ import {
     LEADERBOARD_LOG_COLLECTION,
 } from '@app/database/leaderboard-service/leaderboard-constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
+import { RedisClientService } from '@app/database/redis-client.service';
 import { ServerLogger } from '@app/logger/logger';
 import { CollectionInfo, Db } from 'mongodb';
 import 'reflect-metadata';
@@ -16,7 +17,7 @@ import { Service } from 'typedi';
 export class DatabaseService {
     private db: Db;
 
-    constructor(private mongodbService: MongoDBClientService) {}
+    constructor(private mongodbService: MongoDBClientService, private redisService: RedisClientService) {}
 
     async start(url: string = DATABASE_URL) {
         // TODO refactor this service
@@ -28,6 +29,7 @@ export class DatabaseService {
         this.createBotInfoCollection();
         this.createUserCollection();
         this.createUserCredentialsCollection();
+        await this.redisService.start();
     }
 
     private async createUserCollection() {

@@ -40,6 +40,14 @@ export class Server {
     }
 
     async init(): Promise<void> {
+        try {
+            await this.databaseService.start();
+        } catch (e) {
+            ServerLogger.logError(e);
+            process.exit(1);
+        }
+
+        this.application.start();
         this.application.app.set('port', Server.appPort);
 
         this.server = http.createServer(this.application.app);
@@ -55,12 +63,6 @@ export class Server {
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());
-        try {
-            await this.databaseService.start();
-        } catch (error) {
-            ServerLogger.logError(error);
-            process.exit(1);
-        }
     }
 
     private onError(error: NodeJS.ErrnoException): void {

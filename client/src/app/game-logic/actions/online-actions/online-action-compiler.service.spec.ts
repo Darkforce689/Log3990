@@ -10,13 +10,11 @@ import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
+import { MockGame } from '@app/game-logic/game/games/mock-game';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { OnlineAction, OnlineActionType } from '@app/socket-handler/interfaces/online-action.interface';
 
 class UnknownAction extends Action {
@@ -35,16 +33,14 @@ describe('Service: OnlineActionCompiler', () => {
     let service: OnlineActionCompilerService;
     let placement: PlacementSetting;
     let actionValidatorSpy: ActionValidatorService;
-    let game: OfflineGame;
-    let p1: User;
-    let p2: User;
+    let game: MockGame;
+    let p1: Player;
+    let p2: Player;
     let timer: TimerService;
     let board: BoardService;
     let info: GameInfoService;
     let messagesSpy: MessagesService;
     let letters: Letter[];
-    let pointCalculator: PointCalculatorService;
-    const randomBonus = false;
 
     beforeEach(() => {
         actionValidatorSpy = jasmine.createSpyObj(ActionValidatorService, [
@@ -61,13 +57,12 @@ describe('Service: OnlineActionCompiler', () => {
             ],
         });
         service = TestBed.inject(OnlineActionCompilerService);
-        pointCalculator = TestBed.inject(PointCalculatorService);
         timer = TestBed.inject(TimerService);
         board = TestBed.inject(BoardService);
         info = TestBed.inject(GameInfoService);
-        game = new OfflineGame(randomBonus, DEFAULT_TIME_PER_TURN, timer, pointCalculator, board, messagesSpy);
-        p1 = new User('p1');
-        p2 = new User('p2');
+        game = new MockGame(DEFAULT_TIME_PER_TURN, timer, board, messagesSpy);
+        p1 = new Player('p1');
+        p2 = new Player('p2');
         game.players.push(p1);
         game.players.push(p2);
         info.receiveGame(game);

@@ -2,7 +2,6 @@ import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { JOKER_CHAR, RACK_LETTER_COUNT } from '@app/game-logic/constants';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { getRandomInt } from '@app/game-logic/utils';
 import { UIExchange } from './ui-exchange';
 
@@ -10,7 +9,7 @@ describe('UIExchange', () => {
     let player: Player;
     let action: UIAction;
     beforeEach(() => {
-        player = new User('p1');
+        player = new Player('p1');
         player.letterRack = [
             { char: 'A', value: 0 },
             { char: 'B', value: 0 },

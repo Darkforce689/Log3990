@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
 import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
-import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
 import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
@@ -12,7 +11,7 @@ import { ENTER, ESCAPE } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
-import { User } from '@app/game-logic/player/user';
+import { Player } from '@app/game-logic/player/player';
 
 @Injectable({
     providedIn: 'root',
@@ -59,16 +58,12 @@ export class UIInputControllerService {
         this.activeComponent = InputComponent.Outside;
     }
 
-    pass(user: User) {
-        this.avs.sendAction(new PassTurn(user));
+    pass(player: Player) {
+        this.avs.sendAction(new PassTurn(player));
     }
 
-    gainAPoint(user: User) {
-        this.avs.sendAction(new GainAPoint(user));
-    }
-
-    splitPoints(user: User) {
-        this.avs.sendAction(new SplitPoints(user));
+    splitPoints(player: Player) {
+        this.avs.sendAction(new SplitPoints(player));
     }
 
     private processInput(input: UIInput) {
@@ -100,13 +95,13 @@ export class UIInputControllerService {
                 if (inputType === InputType.RightClick) {
                     if (!(this.activeAction instanceof UIExchange)) {
                         this.discardAction();
-                        this.activeAction = new UIExchange(this.info.user);
+                        this.activeAction = new UIExchange(this.info.player);
                         return;
                     }
                 } else {
                     if (!(this.activeAction instanceof UIMove)) {
                         this.discardAction();
-                        this.activeAction = new UIMove(this.info.user);
+                        this.activeAction = new UIMove(this.info.player);
                         return;
                     }
                 }

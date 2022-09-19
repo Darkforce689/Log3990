@@ -1,6 +1,5 @@
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { Tile } from '@app/game-logic/game/board/tile';
-import { TransitionObjective } from '@app/game-logic/game/objectives/objectives/transition-objectives';
 
 export interface LightPlayer {
     name: string;
@@ -30,11 +29,9 @@ export interface GameState {
     winnerIndex: number[];
 }
 
-export interface ForfeitedGameState extends GameState {
-    letterBag: Letter[];
-    consecutivePass: number;
-    randomBonus: boolean;
-    objectives: TransitionObjective[];
+export interface PlayerInfoForfeit {
+    name: string;
+    previousPlayerName: string;
 }
 
 export interface SpecialGameState extends GameState {

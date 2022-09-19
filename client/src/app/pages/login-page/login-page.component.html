@@ -1,0 +1,26 @@
+<div class="container">
+    <mat-card class="login-form">
+        <mat-card-header class="login-header">Connection</mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content class="fields-container" [formGroup]="loginForm">
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput type="email" placeholder="Ex. ex@example.com" [formControlName]="'email'" />
+                <mat-error *ngIf="!isEmailFormValid"> Veuillez saisir un e-mail valide </mat-error>
+                <mat-error *ngIf="!isEmailValid">Aucun utilisateur n'a ce e-mail</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Mot de passe</mat-label>
+                <input matInput autocomplete="off" type="password" [formControlName]="'password'" />
+                <mat-error *ngIf="!isPasswordValid">Mot de passe invalide</mat-error>
+            </mat-form-field>
+        </mat-card-content>
+
+        <mat-divider></mat-divider>
+
+        <mat-card-footer>
+            <button mat-button (click)="login()">Connexion</button>
+            <a class="register-link" routerLink="/register">Vous n'avez pas de compte?</a>
+        </mat-card-footer>
+    </mat-card>
+</div>

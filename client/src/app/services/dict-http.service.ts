@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MAX_FILE_LENGTH } from '@app/game-logic/constants';
-import { Dictionary } from '@app/game-logic/validator/dictionary';
+import { Dictionary } from '@app/game-logic/interfaces/dictionary';
 import { DictInfo } from '@app/pages/admin-page/admin-dict/admin-dict.component';
 import { environment } from 'src/environments/environment';
 
