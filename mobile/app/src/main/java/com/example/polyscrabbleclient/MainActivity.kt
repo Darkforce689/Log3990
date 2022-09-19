@@ -11,6 +11,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.game.components.LetterRack
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -21,6 +27,11 @@ import com.example.polyscrabbleclient.Message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.Message.model.User
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.Message.viewModel.ChatBoxViewModel
+import com.example.polyscrabbleclient.message.SocketHandler
+import com.example.polyscrabbleclient.message.components.ChatRoomScreen
+import com.example.polyscrabbleclient.message.model.User
+import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

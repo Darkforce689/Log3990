@@ -9,7 +9,6 @@ import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { GameState, LightPlayer } from '@app/game-logic/game/games/online-game/game-state';
-import { TimerControls } from '@app/game-logic/game/timer/timer-controls.enum';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
@@ -88,15 +87,10 @@ describe('OnlineGame', () => {
         expect(result).toEqual(expected);
     });
 
-    it('should receive a timerControl start from gameSocketHandlerService', () => {
+    it('should receive a timerStartingTime start from gameSocketHandlerService', () => {
         const timerSpy = spyOn(timer, 'start').and.callThrough();
-        gameSocketHandlerService['timerControlsSubject'].next(TimerControls.Start);
-        expect(timerSpy).toHaveBeenCalled();
-    });
 
-    it('should receive a timerControl stop from gameSocketHandlerService', () => {
-        const timerSpy = spyOn(timer, 'stop').and.callThrough();
-        gameSocketHandlerService['timerControlsSubject'].next(TimerControls.Stop);
+        gameSocketHandlerService['timerStartingTimeSubject'].next();
         expect(timerSpy).toHaveBeenCalled();
     });
 
