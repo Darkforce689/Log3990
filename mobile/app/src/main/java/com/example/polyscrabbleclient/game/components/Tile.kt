@@ -50,7 +50,7 @@ fun Tile(
             text = buildAnnotatedString {
                 append(tile.letter)
                 withStyle(subscript) {
-                    append(tile.point.toString())
+                    append(tile.points.toString())
                 }
             }
         )
