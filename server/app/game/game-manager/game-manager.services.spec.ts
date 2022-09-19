@@ -23,7 +23,7 @@ import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-mana
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService, PlayerRef } from '@app/game/game-manager/game-manager.services';
 import { GameMode } from '@app/game/game-mode.enum';
@@ -521,9 +521,14 @@ describe('GameManagerService', () => {
         expect(service.newGameState$).to.be.instanceof(Observable);
     });
 
-    it('should get gameState$ properly', () => {
-        sinon.stub(stubTimerController, 'timerControl$').get(() => new Observable<TimerGameControl>());
-        expect(service.timerControl$).to.be.instanceOf(Observable);
+    it('should get timerStartingTime$ properly', () => {
+        sinon.stub(stubTimerController, 'timerStartingTime$').get(() => new Observable<TimerStartingTime>());
+        expect(service.timerStartingTime$).to.be.instanceOf(Observable);
+    });
+
+    it('should get timeUpdate$ properly', () => {
+        sinon.stub(stubTimerController, 'timerTimeUpdate$').get(() => new Observable<TimerTimeLeft>());
+        expect(service.timeUpdate$).to.be.instanceOf(Observable);
     });
 
     it('should do nothing when trying to notify an action when no more userlinked', async () => {

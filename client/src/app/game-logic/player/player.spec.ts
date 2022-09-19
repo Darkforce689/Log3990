@@ -10,7 +10,6 @@ import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { BotHttpService } from '@app/services/bot-http.service';
-import { of } from 'rxjs';
 
 describe('Player', () => {
     let boardService: BoardService;
@@ -20,9 +19,6 @@ describe('Player', () => {
     let player: Player;
     const commandExecuterMock = jasmine.createSpyObj('CommandExecuterService', ['execute']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
-
-    const obs = of(['Test1', 'Test2', 'Test3']);
-    mockBotHttpService.getDataInfo.and.returnValue(obs);
 
     beforeEach(() => {
         TestBed.configureTestingModule({

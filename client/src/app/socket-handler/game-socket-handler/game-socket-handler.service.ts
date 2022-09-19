@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { GameState, PlayerInfoForfeit } from '@app/game-logic/game/games/online-game/game-state';
-import { TimerControls } from '@app/game-logic/game/timer/timer-controls.enum';
 import { OnlineAction } from '@app/socket-handler/interfaces/online-action.interface';
 import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
 import { Observable, Subject } from 'rxjs';
@@ -31,9 +30,14 @@ export class GameSocketHandlerService {
         return this.gameStateSubject;
     }
 
-    private timerControlsSubject = new Subject<TimerControls>();
-    get timerControls$(): Observable<TimerControls> {
-        return this.timerControlsSubject;
+    private timerStartingTimeSubject = new Subject<number>();
+    get timerStartingTimes$(): Observable<number> {
+        return this.timerStartingTimeSubject;
+    }
+
+    private timerTimeSubject = new Subject<number>();
+    get timerTimeLeft$(): Observable<number> {
+        return this.timerTimeSubject;
     }
 
     private disconnectedFromServerSubject = new Subject<void>();
@@ -51,8 +55,12 @@ export class GameSocketHandlerService {
             this.receiveGameState(gameState);
         });
 
-        this.socket.on('timerControl', (timerControl: TimerControls) => {
-            this.receiveTimerControl(timerControl);
+        this.socket.on('timerStartingTime', (timerStartingTime: number) => {
+            this.receiveTimerStartingTime(timerStartingTime);
+        });
+
+        this.socket.on('timeUpdate', (timeLeft: number) => {
+            this.receiveTimerUpdate(timeLeft);
         });
 
         this.socket.on('connect_error', () => {
@@ -95,8 +103,12 @@ export class GameSocketHandlerService {
         this.gameStateSubject.next(gameState);
     }
 
-    private receiveTimerControl(timerControl: TimerControls) {
-        this.timerControlsSubject.next(timerControl);
+    private receiveTimerStartingTime(timerStartingTime: number) {
+        this.timerStartingTimeSubject.next(timerStartingTime);
+    }
+
+    private receiveTimerUpdate(timeLeft: number) {
+        this.timerTimeSubject.next(timeLeft);
     }
 
     private receiveForfeitedGameState(forfeitedGameState: PlayerInfoForfeit) {
