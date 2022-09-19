@@ -26,11 +26,9 @@ fun LetterRack(navController: NavController) {
     val clicked: (Tile) -> Unit = { tile ->
         if (isSelected(tile)) {
             selectedLetters.remove(tile)
-            println(selectedLetters.size)
         }
         else {
             selectedLetters.add(tile)
-            println(selectedLetters.size)
         }
     }
 
