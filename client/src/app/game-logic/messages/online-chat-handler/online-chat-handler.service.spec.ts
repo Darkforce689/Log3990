@@ -16,7 +16,7 @@ describe('online chat handler', () => {
         TestBed.configureTestingModule({ providers: [{ provide: AccountService, useValue: accountService }], imports: [HttpClientTestingModule] });
         service = TestBed.inject(OnlineChatHandlerService);
         (service.socket as any) = new SocketMock();
-        service['bindRoomChannels']('1', 'bob');
+        service['bindRoomChannels']('1');
     });
 
     it('should be created', () => {
@@ -117,7 +117,7 @@ describe('online chat handler', () => {
     it('should not throw when joining two time a game', () => {
         (service.socket as unknown) = undefined;
         expect(() => {
-            service['joinChatRoom']('1', 'bob');
+            service['joinChatRoom']('1');
         }).not.toThrowError();
     });
 });
