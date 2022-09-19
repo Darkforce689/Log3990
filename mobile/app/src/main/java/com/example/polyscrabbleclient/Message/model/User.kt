@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.Message.model
+package com.example.polyscrabbleclient.message.model
 
 data class UserData(var name:String)
 

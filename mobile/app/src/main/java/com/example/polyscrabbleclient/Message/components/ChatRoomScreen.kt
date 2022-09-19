@@ -1,7 +1,5 @@
-package com.example.polyscrabbleclient.Message.components
+package com.example.polyscrabbleclient.message.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,10 +20,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
-import com.example.polyscrabbleclient.Message.model.Message
-import com.example.polyscrabbleclient.Message.model.MessageType
-import com.example.polyscrabbleclient.Message.model.User
-import com.example.polyscrabbleclient.Message.viewModel.ChatBoxViewModel
+import com.example.polyscrabbleclient.message.model.*
+import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable

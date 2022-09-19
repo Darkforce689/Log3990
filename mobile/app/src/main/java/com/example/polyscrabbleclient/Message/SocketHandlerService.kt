@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.Message
+package com.example.polyscrabbleclient.message
 
 import com.example.polyscrabbleclient.BuildConfig
 import io.socket.client.IO

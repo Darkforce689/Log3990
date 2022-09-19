@@ -1,13 +1,11 @@
-package com.example.polyscrabbleclient.Message.viewModel
+package com.example.polyscrabbleclient.message.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.polyscrabbleclient.Message.EventType
-import com.example.polyscrabbleclient.Message.SocketHandler
-import com.example.polyscrabbleclient.Message.model.Message
-import com.example.polyscrabbleclient.Message.model.MessageType
-import com.example.polyscrabbleclient.Message.model.User
+import com.example.polyscrabbleclient.message.EventType
+import com.example.polyscrabbleclient.message.SocketHandler
+import com.example.polyscrabbleclient.message.model.*
 import io.socket.emitter.Emitter
 import org.json.JSONException
 import org.json.JSONObject

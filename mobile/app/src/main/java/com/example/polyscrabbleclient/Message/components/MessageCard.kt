@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.Message.components
+package com.example.polyscrabbleclient.message.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,16 +7,12 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.polyscrabbleclient.Message.model.Message
-import com.example.polyscrabbleclient.Message.model.MessageType
+import com.example.polyscrabbleclient.message.model.*
 
 @Composable
 fun MessageCard(messageInfo: Message) {
