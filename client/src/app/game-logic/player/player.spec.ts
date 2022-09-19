@@ -19,9 +19,6 @@ describe('Player', () => {
     const commandExecuterMock = jasmine.createSpyObj('CommandExecuterService', ['execute']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
 
-    //     const obs = of(['Test1', 'Test2', 'Test3']);
-    //     mockBotHttpService.getDataInfo.and.returnValue(obs);
-
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
