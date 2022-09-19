@@ -206,7 +206,7 @@ build:mobile:
         - ./gradlew assemble
     artifacts:
         paths:
-        - app/build/outputs/    
+        - mobile/build/outputs/    
 
 test:webclient:
     stage: test
