@@ -1,7 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { DEFAULT_TIME_PER_TURN, EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
@@ -10,6 +6,7 @@ import { MockGame } from '@app/game-logic/game/games/mock-game';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
 import { ObjectiveCreator } from '@app/game-logic/game/objectives/objective-creator/objective-creator.service';
+import { Objective } from '@app/game-logic/game/objectives/objectives/objective';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
@@ -75,6 +72,10 @@ describe('GameInfoService', () => {
         expect(service.timeLeftForTurn).toBeTruthy();
     });
 
+    it('should get timeLeft percentage properly', () => {
+        expect(service.timeLeftPercentForTurn).toBeInstanceOf(Observable);
+    });
+
     it('should properly store the player', () => {
         const player = new Player('p1');
         service.receivePlayer(player);
@@ -89,9 +90,10 @@ describe('GameInfoService', () => {
     });
 
     it('should return the player points with provided index', () => {
+        const testPoints = 1000;
         service.receiveGame(game);
-        game.players[0].points = Math.floor(Math.random() * 1000);
-        game.players[1].points = Math.floor(Math.random() * 1000);
+        game.players[0].points = Math.floor(Math.random() * testPoints);
+        game.players[1].points = Math.floor(Math.random() * testPoints);
         expect(service.getPlayerScore(0)).toBe(game.players[0].points);
         expect(service.getPlayerScore(1)).toBe(game.players[1].points);
     });
@@ -101,18 +103,9 @@ describe('GameInfoService', () => {
         expect(service.numberOfPlayers).toBe(service.players.length);
     });
 
-    it('should return the end of the game flag', () => {
-        service.receiveGame(game);
-        expect(service.isEndOfGame).toBeFalsy();
-        game.hasGameEnded = true;
-        expect(service.isEndOfGame).toBeTruthy();
-    });
-
-    it('should return the winner of the game', () => {
-        service.receiveGame(game);
-        game.players[1].points = Number.MAX_SAFE_INTEGER;
-        spyOn(game, 'getWinner').and.returnValue([game.players[1]]);
-        expect(service.winner).toEqual([game.players[1]]);
+    it('should return the number of players', () => {
+        service.players = [new Player('p1'), new Player('p2')];
+        expect(service.numberOfPlayers).toBe(service.players.length);
     });
 
     it('should return the number of letters remaining', () => {
@@ -137,19 +130,25 @@ describe('GameInfoService', () => {
         expect(result).toBeFalsy();
     });
 
-    it('should test the endTurn$ arrow function', () => {
+    it('should get the gameId offline', () => {
         service.receiveGame(game);
-        game['endTurnSubject'].next();
-        const result = service.endTurn$.subscribe();
-        expect(result).toBeTruthy();
-    });
-
-    it('should get timeLeft percentage properly', () => {
-        expect(service.timeLeftPercentForTurn).toBeInstanceOf(Observable);
+        const result = service.gameId;
+        const expected = '';
+        expect(result).toEqual(expected);
     });
 
     it('should return empty array for winner when no game', () => {
         expect(service.winner).toEqual([]);
+    });
+
+    it('should return empty string for gameID when there is no game', () => {
+        expect(service.gameId).toBe(EMPTY_CHAR);
+    });
+
+    it('should return empty array for private objective when no game', () => {
+        service.players = [new Player('p1'), new Player('p2')];
+        service.receivePlayer(game.players[0]);
+        expect(service.getPrivateObjectives(service.player.name)).toEqual([]);
     });
 
     it('should return empty string for gameID when there is no game', () => {
@@ -251,7 +250,7 @@ describe('GameInfoService Online Edition', () => {
 
     it('should throw when getting opponent when no players received', () => {
         expect(() => {
-            // eslint-disable-next-line no-unused-expressions
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
             service.opponent;
         }).toThrowError();
     });
@@ -269,5 +268,34 @@ describe('GameInfoService Online Edition', () => {
     it('should get is special game properly when online', () => {
         service.receiveGame(specialOnlineGame);
         expect(service.isSpecialGame).toBeTrue();
+    });
+
+    it('should return empty array for private objective when no game', () => {
+        const user = new Player('p1');
+        service.receivePlayer(user);
+        expect(service.getPrivateObjectives(service.player.name)).toEqual([]);
+    });
+
+    it('should return private objectives properly', () => {
+        specialOnlineGame.privateObjectives = new Map<string, Objective[]>();
+        const mockObjective = {} as unknown as Objective;
+        specialOnlineGame.privateObjectives.set('p1', [mockObjective, mockObjective]);
+        service.receiveGame(specialOnlineGame);
+        const user = new Player('p1');
+        service.receivePlayer(user);
+        expect(service.getPrivateObjectives(service.player.name).length).toBe(2);
+    });
+
+    it('should return public objectives properly', () => {
+        const mockObjective = {} as unknown as Objective;
+        specialOnlineGame.publicObjectives = [mockObjective, mockObjective];
+        service.receiveGame(specialOnlineGame);
+        const user = new Player('p1');
+        service.receivePlayer(user);
+        expect(service.publicObjectives.length).toBe(2);
+    });
+
+    it('should return empty array for public objectives when no game', () => {
+        expect(service.publicObjectives).toEqual([]);
     });
 });

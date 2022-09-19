@@ -2,8 +2,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
-import { TimerControls } from '@app/game/game-logic/timer/timer-controls.enum';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { GameSocketsHandler } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
@@ -27,7 +26,8 @@ describe('GameSocketHandler', () => {
     let stubGameManager: StubbedClass<GameManagerService>;
     const mockPlayerInfo$ = new Subject<PlayerInfoToken>();
     const mockNewGameState$ = new Subject<GameStateToken>();
-    const mockTimerControl$ = new Subject<TimerGameControl>();
+    const mockTimerStartingTime$ = new Subject<TimerStartingTime>();
+    const mockTimeUpdate$ = new Subject<TimerTimeLeft>();
 
     before((done) => {
         httpServer = createServer();
@@ -37,7 +37,8 @@ describe('GameSocketHandler', () => {
             stubGameManager = createSinonStubInstance<GameManagerService>(GameManagerService);
             sinon.stub(stubGameManager, 'newGameState$').value(mockNewGameState$);
             sinon.stub(stubGameManager, 'forfeitedGameState$').value(mockPlayerInfo$);
-            sinon.stub(stubGameManager, 'timerControl$').value(mockTimerControl$);
+            sinon.stub(stubGameManager, 'timerStartingTime$').value(mockTimerStartingTime$);
+            sinon.stub(stubGameManager, 'timeUpdate$').value(mockTimeUpdate$);
             handler = new GameSocketsHandler(httpServer, stubGameManager);
             handler.handleSockets();
             handler.sio.on('connection', (socket) => {
@@ -176,13 +177,13 @@ describe('GameSocketHandler', () => {
     it('should send timer controls to client', (done) => {
         stubGameManager.addPlayerToGame.returns();
         const gameToken = 'abc';
-        const control: TimerControls = TimerControls.Start;
-        const timerGameControl: TimerGameControl = {
+        const initialTime = 300;
+        const timerGameControl: TimerStartingTime = {
             gameToken,
-            control,
+            initialTime,
         };
-        clientSocket.on('timerControl', (receivedtimerControl: GameState) => {
-            expect(receivedtimerControl).to.deep.equal(control);
+        clientSocket.on('timerStartingTime', (receivedtimerStartingTime: TimerStartingTime) => {
+            expect(receivedtimerStartingTime).to.deep.equal(initialTime);
             done();
         });
 
@@ -192,7 +193,30 @@ describe('GameSocketHandler', () => {
         };
         clientSocket.emit('joinGame', userAuth);
         serverSocket.on('joinGame', () => {
-            mockTimerControl$.next(timerGameControl);
+            mockTimerStartingTime$.next(timerGameControl);
+        });
+    });
+
+    it('should send timer new time to client', (done) => {
+        stubGameManager.addPlayerToGame.returns();
+        const gameToken = 'abc';
+        const timeLeft = 300;
+        const timerNewTime: TimerTimeLeft = {
+            gameToken,
+            timeLeft,
+        };
+        clientSocket.on('timeUpdate', (receivedTimerTimeLeft: TimerTimeLeft) => {
+            expect(receivedTimerTimeLeft).to.deep.equal(timeLeft);
+            done();
+        });
+
+        const userAuth: UserAuth = {
+            playerName: 'test',
+            gameToken,
+        };
+        clientSocket.emit('joinGame', userAuth);
+        serverSocket.on('joinGame', () => {
+            mockTimeUpdate$.next(timerNewTime);
         });
     });
 });

@@ -94,7 +94,6 @@ export class GameManagerService {
         if (!this.game) {
             throw Error('No game created yet');
         }
-        this.game.start();
     }
 
     stopGame(): void {

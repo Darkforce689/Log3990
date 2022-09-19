@@ -13,7 +13,6 @@ export abstract class Game {
         return this.isEndOfGameSubject;
     }
     abstract getNumberOfLettersRemaining(): number;
-    abstract start(): void;
     abstract getWinner(): Player[];
     abstract isEndOfGame(): boolean;
     abstract stop(): void;
