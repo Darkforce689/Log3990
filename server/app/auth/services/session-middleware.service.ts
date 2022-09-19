@@ -24,7 +24,7 @@ export class SessionMiddlewareService {
         });
     }
 
-    getSocketSessionMiddlewaresocket(enableRedisSession: boolean = true) {
+    getSocketSessionMiddleware(enableRedisSession: boolean = true) {
         const middleware = this.getSessionMiddleware(enableRedisSession);
         return (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>, next: (err?: ExtendedError | undefined) => void) => {
             return middleware(socket.request as unknown as Request, {} as unknown as Response, next as NextFunction);

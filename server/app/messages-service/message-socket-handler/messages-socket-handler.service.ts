@@ -47,7 +47,7 @@ export class MessagesSocketHandler {
 
     handleSockets(enableAuth: boolean = ENABLE_SOCKET_LOGIN, enableRedisSession: boolean = true) {
         if (enableAuth) {
-            const sessionMiddleware = this.sessionMiddleware.getSocketSessionMiddlewaresocket(enableRedisSession);
+            const sessionMiddleware = this.sessionMiddleware.getSocketSessionMiddleware(enableRedisSession);
             this.sio.use(sessionMiddleware);
             this.sio.use(this.authService.socketAuthGuard);
         }
