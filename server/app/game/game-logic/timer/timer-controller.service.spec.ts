@@ -33,16 +33,4 @@ describe('TimerController', () => {
         });
         service.startClientTimers(gameToken, timeLeft);
     });
-
-    //  it('should stop client timers', () => {
-    //      const gameToken = '1';
-    //      const control: TimerGameControl = {
-    //          gameToken,
-    //          control: TimerControls.Stop,
-    //      };
-    //      service.timerControl$.subscribe((receivedControl) => {
-    //          expect(receivedControl).to.be.deep.equal(control);
-    //      });
-    //      service.stopClientTimers(gameToken);
-    //  });
 });

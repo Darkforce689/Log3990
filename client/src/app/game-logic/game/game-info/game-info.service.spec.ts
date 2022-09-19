@@ -103,14 +103,6 @@ describe('GameInfoService', () => {
         expect(service.numberOfPlayers).toBe(service.players.length);
     });
 
-    // it('should return the end of the game flag', () => {
-    //    service.receiveGame(game);
-    //    expect(service.isEndOfGame).toBeFalsy();
-    //    game.letterBag.gameLetters = [];
-    //    service.players[0].letterRack = [];
-    //    expect(service.isEndOfGame).toBeTruthy();
-    // });
-
     it('should return the number of players', () => {
         service.players = [new Player('p1'), new Player('p2')];
         expect(service.numberOfPlayers).toBe(service.players.length);
@@ -158,13 +150,6 @@ describe('GameInfoService', () => {
         service.receivePlayer(game.players[0]);
         expect(service.getPrivateObjectives(service.player.name)).toEqual([]);
     });
-
-    // it('should test the endTurn$ arrow function', () => {
-    //     service.receiveGame(game);
-    //     game.endTurnSubject.next();
-    //     const result = service.endTurn$.subscribe();
-    //     expect(result).toBeTruthy();
-    // });
 
     it('should return empty string for gameID when there is no game', () => {
         expect(service.gameId).toBe(EMPTY_CHAR);
