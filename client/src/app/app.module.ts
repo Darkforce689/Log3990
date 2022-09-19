@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -17,6 +17,7 @@ import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.di
 import { MouseRollDirective } from '@app/directives/mouse-roll.directive';
 import { PreventContextMenuDirective } from '@app/directives/prevent-context-menu.directive';
 import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
+import { AuthInterceptor } from '@app/interceptors/auth.interceptor';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AdminBotComponent } from '@app/pages/admin-page/admin-bot-virtuel/admin-bot.component';
@@ -41,7 +42,9 @@ import { LoadingGameComponent } from './components/modals/loading-game/loading-g
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
 import { AdminDropDbComponent } from './pages/admin-page/admin-drop-db/admin-drop-db.component';
 import { ObjectivesListComponent } from './pages/game-page/objectives/objectives-list.component';
+import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
+import { RegisterPageComponent } from './pages/register-page/register-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -89,6 +92,8 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         LoadingGameComponent,
         WinnerDialogComponent,
         PrototypePageComponent,
+        LoginPageComponent,
+        RegisterPageComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -101,6 +106,11 @@ import { PrototypePageComponent } from './pages/prototype-page/prototype-page.co
         MatTableModule,
     ],
     providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        },
         {
             provide: APP_INITIALIZER,
             useFactory: () => {

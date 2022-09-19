@@ -127,10 +127,6 @@ export class GamePageComponent implements OnDestroy {
         this.inputController.pass(this.info.player);
     }
 
-    gainAPoint() {
-        this.inputController.gainAPoint(this.info.player);
-    }
-
     splitPoints() {
         this.inputController.splitPoints(this.info.player);
     }
