@@ -8,7 +8,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.game.model.Tile
@@ -17,18 +16,19 @@ import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 @Composable
 fun LetterRack(navController: NavController) {
     val viewModel: LetterRackViewModel = viewModel()
-    val selectedLetters = remember {
+    val selectedTiles = remember {
         mutableStateListOf<Tile>()
     }
 
-    val isSelected = { tile: Tile -> selectedLetters.contains(tile) }
+    val isSelected: (Tile) -> Boolean = { tile: Tile ->
+        selectedTiles.contains(tile)
+    }
 
     val clicked: (Tile) -> Unit = { tile ->
         if (isSelected(tile)) {
-            selectedLetters.remove(tile)
-        }
-        else {
-            selectedLetters.add(tile)
+            selectedTiles.remove(tile)
+        } else {
+            selectedTiles.add(tile)
         }
     }
 
@@ -37,7 +37,7 @@ fun LetterRack(navController: NavController) {
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Bottom
     ) {
         items(viewModel.tiles.size) { index ->
             val tile = viewModel.tiles[index]
