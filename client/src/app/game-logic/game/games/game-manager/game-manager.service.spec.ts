@@ -2,7 +2,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
-import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
 import { BOARD_DIMENSION, DEFAULT_DICTIONARY_TITLE, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
@@ -20,7 +19,6 @@ import { GameManagerService } from './game-manager.service';
 describe('GameManagerService Online Edition', () => {
     let service: GameManagerService;
     let gameSocketHandler: GameSocketHandlerService;
-    const commandExecuterMock = jasmine.createSpyObj('CommandExecuterService', ['execute', 'resetDebug']);
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
     const obs = of(['Test1', 'Test2', 'Test3']);
@@ -50,7 +48,6 @@ describe('GameManagerService Online Edition', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                { provide: CommandExecuterService, useValue: commandExecuterMock },
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
             ],

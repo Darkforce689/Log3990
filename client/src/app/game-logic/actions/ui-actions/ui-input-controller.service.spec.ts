@@ -3,15 +3,13 @@
 /* eslint-disable max-lines */
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
-import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIMove } from '@app/game-logic/actions/ui-actions/ui-move';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
-import { BOARD_MAX_POSITION, EMPTY_CHAR, ENTER, ESCAPE, MIDDLE_OF_BOARD, RACK_LETTER_COUNT } from '@app/game-logic/constants';
+import { BOARD_MAX_POSITION, EMPTY_CHAR, ESCAPE, RACK_LETTER_COUNT } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
+import { InputComponent, InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
 import { getRandomInt } from '@app/game-logic/utils';
 import { Observable, Subject } from 'rxjs';
@@ -299,83 +297,5 @@ describe('UIInputControllerService', () => {
         service['processInputType'](input);
         expect(service.activeAction).toBeNull();
         expect(service.activeComponent).toBe(InputComponent.Outside);
-    });
-
-    it('should create the Action following the "ENTER" Keypress', () => {
-        service.activeAction = new UIPlace(info, boardService);
-        service.activeComponent = InputComponent.Board;
-        const input1: UIInput = { type: InputType.LeftClick, from: InputComponent.Board, args: { x: MIDDLE_OF_BOARD, y: MIDDLE_OF_BOARD } };
-        service['processInput'](input1);
-        player.letterRack[0].char = 'A';
-        const input2: UIInput = { type: InputType.KeyPress, args: player.letterRack[0].char.toLowerCase() };
-        service['processInput'](input2);
-        const args = ENTER;
-        const input3: UIInput = { type: InputType.KeyPress, args };
-        const sendActionSpy = spyOn(TestBed.inject(ActionValidatorService), 'sendAction').and.callFake(() => {
-            return false;
-        });
-        service['processInputType'](input3);
-        expect(sendActionSpy).toHaveBeenCalled();
-        expect(service.activeAction).toBeNull();
-        expect(service.activeComponent).toBe(InputComponent.Outside);
-    });
-
-    it('should refer a MouseRoll to the processMouseRoll method', () => {
-        service.activeAction = new UIMove(player);
-        service.activeComponent = InputComponent.Horse;
-        const args = WheelRoll.UP;
-        const input: UIInput = { from: InputComponent.Horse, type: InputType.MouseRoll, args };
-        const receiveRightClickSpy = spyOn(service.activeAction, 'receiveRoll').and.callThrough();
-        service['processInputType'](input);
-        expect(receiveRightClickSpy).toHaveBeenCalledWith(args);
-    });
-
-    it('should call discard (remove the activeAction and set activeComponent to "Outside")', () => {
-        service.activeComponent = InputComponent.Horse;
-        service.cancel();
-        expect(service.activeComponent).toBe(InputComponent.Outside);
-        expect(service.activeAction).toBeNull();
-    });
-
-    it('should pass', () => {
-        const sendActionSpy = spyOn(TestBed.inject(ActionValidatorService), 'sendAction').and.callFake(() => {
-            return false;
-        });
-        service.confirm();
-        service.pass(player);
-        expect(sendActionSpy).toHaveBeenCalledWith(new PassTurn(player));
-    });
-
-    it('should throw error if the activeAction is null', () => {
-        service.activeAction = null;
-        const sendActionSpy = spyOn(TestBed.inject(ActionValidatorService), 'sendAction').and.callFake(() => {
-            return false;
-        });
-        service.confirm();
-        expect(sendActionSpy).toHaveBeenCalledTimes(0);
-    });
-
-    it('should throw error if a !canBeExecuted activeAction is confirmed', () => {
-        service.activeComponent = InputComponent.Horse;
-        service.activeAction = new UIExchange(player);
-        const sendActionSpy = spyOn(TestBed.inject(ActionValidatorService), 'sendAction').and.callFake(() => {
-            return false;
-        });
-        service.confirm();
-        expect(service.activeComponent).toBe(InputComponent.Horse);
-        expect(service.activeAction instanceof UIExchange).toBeTruthy();
-        expect(sendActionSpy).toHaveBeenCalledTimes(0);
-    });
-
-    it('should send the correct action to the ActionValidatorService method', () => {
-        service.activeAction = new UIExchange(player);
-        service.activeAction.concernedIndexes.add(0);
-        const sendActionSpy = spyOn(TestBed.inject(ActionValidatorService), 'sendAction').and.callFake(() => {
-            return false;
-        });
-        service.confirm();
-        expect(service.activeComponent).toBe(InputComponent.Outside);
-        expect(service.activeAction).toBeNull();
-        expect(sendActionSpy).toHaveBeenCalled();
     });
 });

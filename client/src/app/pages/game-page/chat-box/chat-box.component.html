@@ -11,7 +11,6 @@
     </mat-card>
     <mat-form-field appearance="fill">
         <input matInput #enter type="text" [(ngModel)]="messageContent" autocomplete="off" autofocus (keyup.enter)="sendMessage()" placeholder="Aa" />
-        <mat-icon matSuffix matTooltipPosition="above" matTooltip="Entrer !aide pour la liste des commandes">help</mat-icon>
         <mat-hint #red [ngClass]="{ error: isError(enter.value.length) }">{{ enter.value.length }}/{{ maxMessageLength }}</mat-hint>
     </mat-form-field>
 </div>
