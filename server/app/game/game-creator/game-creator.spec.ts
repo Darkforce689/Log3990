@@ -8,7 +8,6 @@ import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -48,7 +47,6 @@ describe('GameCreator', () => {
     botInfoServiceStub.getBotInfoList.resolves([botInfo]);
     // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
     const botManagerStub = {} as BotManager;
-    const botMessageStub = createSinonStubInstance<BotMessagesService>(BotMessagesService);
     const actionCreatorStub = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
 
     const newGameStateSubject = new Subject<GameStateToken>();
@@ -74,7 +72,6 @@ describe('GameCreator', () => {
             objectiveCreatorStub,
             botInfoServiceStub,
             botManagerStub,
-            botMessageStub,
             actionCreatorStub,
         );
     });
