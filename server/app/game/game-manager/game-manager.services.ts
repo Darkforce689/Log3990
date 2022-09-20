@@ -13,7 +13,6 @@ import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -76,7 +75,6 @@ export class GameManagerService {
         private dictionaryService: DictionaryService,
         private botInfoService: BotInfoService,
         private botManager: BotManager,
-        protected botMessage: BotMessagesService,
         protected actionCreator: ActionCreatorService,
     ) {
         this.gameCreator = new GameCreator(
@@ -89,7 +87,6 @@ export class GameManagerService {
             this.objectiveCreator,
             this.botInfoService,
             this.botManager,
-            this.botMessage,
             this.actionCreator,
         );
 
