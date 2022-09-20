@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
-import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
 import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
@@ -25,7 +24,7 @@ export class UIInputControllerService {
         return this.activeAction ? this.activeAction.canBeCreated : false;
     }
 
-    constructor(private avs: ActionValidatorService, private info: GameInfoService, private boardService: BoardService) {
+    constructor(private info: GameInfoService, private boardService: BoardService) {
         this.info.endTurn$?.subscribe(() => {
             if (this.activeAction instanceof UIPlace) {
                 this.discardAction();
@@ -54,16 +53,16 @@ export class UIInputControllerService {
             return;
         }
         this.discardAction();
-        this.avs.sendAction(newAction);
+        this.sendAction(newAction);
         this.activeComponent = InputComponent.Outside;
     }
 
     pass(player: Player) {
-        this.avs.sendAction(new PassTurn(player));
+        this.sendAction(new PassTurn(player));
     }
 
     splitPoints(player: Player) {
-        this.avs.sendAction(new SplitPoints(player));
+        this.sendAction(new SplitPoints(player));
     }
 
     private processInput(input: UIInput) {
@@ -184,6 +183,12 @@ export class UIInputControllerService {
         if (this.activeAction !== null) {
             this.activeAction.receiveRightClick(args);
             return;
+        }
+    }
+
+    private sendAction(action: Action) {
+        if (this.info.player === this.info.activePlayer) {
+            this.info.player.action$.next(action);
         }
     }
 }

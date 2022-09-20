@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { CommandParserService } from '@app/game-logic/commands/command-parser/command-parser.service';
-import { CommandType } from '@app/game-logic/commands/command.interface';
 import { ChatMessage, Message, MessageType } from '@app/game-logic/messages/message.interface';
 import { OnlineChatHandlerService } from '@app/game-logic/messages/online-chat-handler/online-chat-handler.service';
 import { BehaviorSubject } from 'rxjs';
@@ -14,15 +12,11 @@ export class MessagesService {
     messagesLog: Message[] = [];
     messages$: BehaviorSubject<Message[]> = new BehaviorSubject([] as Message[]);
 
-    constructor(private commandParser: CommandParserService, private onlineChat: OnlineChatHandlerService) {
+    constructor(private onlineChat: OnlineChatHandlerService) {
         this.onlineChat.opponentMessage$.subscribe((chatMessage: ChatMessage) => {
             const forwarder = chatMessage.from;
             const content = chatMessage.content;
             this.receiveMessageOpponent(forwarder, content);
-        });
-
-        this.commandParser.errorMessage$.subscribe((error) => {
-            this.receiveErrorMessage(error);
         });
 
         this.onlineChat.errorMessage$.subscribe((errorContent: string) => {
@@ -60,9 +54,7 @@ export class MessagesService {
         };
 
         this.addMessageToLog(message);
-        const commandType = this.commandParser.parse(content, forwarder);
-        const messageIsCommand = commandType !== undefined;
-        if (!messageIsCommand && this.onlineChat.isConnected) {
+        if (this.onlineChat.isConnected) {
             this.onlineChat.sendMessage(content);
         }
     }
@@ -74,15 +66,6 @@ export class MessagesService {
             type: MessageType.Player2,
         };
         this.addMessageToLog(message);
-        const command = this.commandParser.parse(content, forwarder);
-        if (command === CommandType.Exchange) {
-            const hiddenLetters = content.split(' ');
-            const numberOfLetters = hiddenLetters[1].length;
-            message.content = hiddenLetters[0] + ' ' + numberOfLetters + ' lettre';
-            if (numberOfLetters > 1) {
-                message.content += 's';
-            }
-        }
     }
 
     clearLog(): void {
