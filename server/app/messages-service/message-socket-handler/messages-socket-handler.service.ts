@@ -72,8 +72,8 @@ export class MessagesSocketHandler {
             });
 
             socket.on(JOIN_ROOM, async (roomID: string) => {
-                if (enableAuth) {
-                    try {
+                try {
+                    if (enableAuth) {
                         const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                         const user = await this.userService.getUser({ _id });
                         if (user === undefined) {
@@ -81,12 +81,7 @@ export class MessagesSocketHandler {
                         }
                         ServerLogger.logDebug(user);
                         this.createUser(user.name, socket.id);
-                    } catch (error) {
-                        this.sendError(socket, error);
                     }
-                }
-
-                try {
                     this.addUserToRoom(socket, roomID);
                 } catch (error) {
                     this.sendError(socket, error);
