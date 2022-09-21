@@ -9,6 +9,7 @@ import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { getRandomInt } from '@app/game/game-logic/utils';
+import { ServerLogger } from '@app/logger/logger';
 import { BehaviorSubject, takeUntil, timer } from 'rxjs';
 
 export class BotPlayer extends Player {
@@ -32,8 +33,12 @@ export class BotPlayer extends Player {
         this.startTimerAction();
         this.timesUp = false;
         timer(TIME_BUFFER_BEFORE_ACTION).subscribe(() => {
-            const action = bot.actionPicker(this, game);
-            this.chooseAction(action);
+            try {
+                const action = bot.actionPicker(this, game);
+                this.chooseAction(action);
+            } catch (error) {
+                ServerLogger.logError(error);
+            }
         });
     }
 

@@ -10,7 +10,6 @@ import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 
 @Injectable({
     providedIn: 'root',
@@ -21,36 +20,36 @@ export class ActionCompilerService {
     constructor(private gameInfo: GameInfoService, private actionFactory: ActionCreatorService) {}
 
     translate(command: Command): Action {
-        const user = this.findPlayer(command.from);
+        const player = this.findPlayer(command.from);
         const args = command.args;
         switch (command.type) {
             case CommandType.Exchange:
-                return this.createExchangeAction(user, args);
+                return this.createExchangeAction(player, args);
 
             case CommandType.Pass:
-                return this.createPassTurnAction(user);
+                return this.createPassTurnAction(player);
 
             case CommandType.Place:
-                return this.createPlaceLetterAction(user, args);
+                return this.createPlaceLetterAction(player, args);
             default:
                 throw Error('this command dont generate an action');
         }
     }
 
-    private createPassTurnAction(user: User): PassTurn {
-        return this.actionFactory.createPassTurn(user);
+    private createPassTurnAction(player: Player): PassTurn {
+        return this.actionFactory.createPassTurn(player);
     }
 
-    private createExchangeAction(user: User, args: string[] | undefined): ExchangeLetter {
+    private createExchangeAction(player: Player, args: string[] | undefined): ExchangeLetter {
         if (!args) {
             throw new Error('No argument was given for exchange letter creation');
         }
         const letters = args[0].split('');
         const lettersToExchange: Letter[] = this.letterFactory.createLetters(letters);
-        return this.actionFactory.createExchange(user, lettersToExchange);
+        return this.actionFactory.createExchange(player, lettersToExchange);
     }
 
-    private createPlaceLetterAction(user: User, args: string[] | undefined) {
+    private createPlaceLetterAction(player: Player, args: string[] | undefined) {
         if (!args) {
             throw Error('No argument was given for place letter creation');
         }
@@ -61,7 +60,7 @@ export class ActionCompilerService {
         const placementArguments = args.slice(0, args.length - 1);
         const placementSettings = this.createPlacementSettings(placementArguments);
         const word = args[args.length - 1];
-        return this.actionFactory.createPlaceLetter(user, word, placementSettings);
+        return this.actionFactory.createPlaceLetter(player, word, placementSettings);
     }
 
     private createPlacementSettings(placementArgs: string[]): PlacementSetting {

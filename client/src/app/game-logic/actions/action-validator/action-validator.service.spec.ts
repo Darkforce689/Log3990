@@ -19,13 +19,11 @@ import {
 import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { OfflineGame } from '@app/game-logic/game/games/offline-game/offline-game';
+import { MockGame } from '@app/game-logic/game/games/mock-game';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
-import { PointCalculatorService } from '@app/game-logic/point-calculator/point-calculator.service';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { BotHttpService } from '@app/services/bot-http.service';
 import { BotInfo } from '@app/services/bot-info';
@@ -33,17 +31,15 @@ import { Observable } from 'rxjs';
 
 describe('ActionValidatorService', () => {
     let service: ActionValidatorService;
-    let game: OfflineGame;
-    let p1: User;
-    let p2: User;
+    let game: MockGame;
+    let p1: Player;
+    let p2: Player;
     let currentPlayer: Player;
     let timer: TimerService;
-    let pointCalculator: PointCalculatorService;
     let board: BoardService;
     let info: GameInfoService;
     let messagesSpy: MessagesService;
     let commandExecuterSpy: CommandExecuterService;
-    const randomBonus = false;
     const centerPosition = Math.floor(BOARD_DIMENSION / 2);
 
     class UnknownAction extends Action {
@@ -80,15 +76,22 @@ describe('ActionValidatorService', () => {
         timer = TestBed.inject(TimerService);
         board = TestBed.inject(BoardService);
         info = TestBed.inject(GameInfoService);
-        pointCalculator = TestBed.inject(PointCalculatorService);
-        game = new OfflineGame(randomBonus, DEFAULT_TIME_PER_TURN, timer, pointCalculator, board, messagesSpy);
-        p1 = new User('p1');
-        p2 = new User('p2');
-        game.players.push(p1);
-        game.players.push(p2);
+        game = new MockGame(DEFAULT_TIME_PER_TURN, timer, board, messagesSpy);
+        p1 = new Player('p1');
+        p2 = new Player('p2');
+        game.players = [p1, p2];
+        game.players[0].letterRack = [
+            { char: 'a', value: 1 },
+            { char: 'a', value: 1 },
+            { char: 'a', value: 1 },
+            { char: 'd', value: 1 },
+            { char: 'e', value: 1 },
+            { char: 'e', value: 1 },
+            { char: 'e', value: 1 },
+        ];
+        game.lettersRemaining = 50;
         info.receiveGame(game);
-        game.start();
-        currentPlayer = game.getActivePlayer();
+        currentPlayer = info.activePlayer;
     });
 
     it('should be created', () => {
@@ -147,31 +150,6 @@ describe('ActionValidatorService', () => {
         const lettersToExchange = [currentPlayer.letterRack[4], currentPlayer.letterRack[6]];
         const action = new ExchangeLetter(currentPlayer, lettersToExchange);
         expect(service['checkAction'](action)).toBeTruthy();
-    });
-
-    it('should validate a valid ExchangeLetter because the game letterBag has enough letters', () => {
-        game.letterBag.drawGameLetters(game.letterBag.gameLetters.length - 10);
-        const lettersToExchange = [...currentPlayer.letterRack].splice(0, 1);
-        const action = new ExchangeLetter(currentPlayer, lettersToExchange);
-        expect(service['checkAction'](action)).toBeTruthy();
-    });
-
-    it('should invalidate an invalid ExchangeLetter because the game letterBag doesnt have letters', () => {
-        game.letterBag.drawGameLetters(game.letterBag.gameLetters.length);
-        const action = new ExchangeLetter(currentPlayer, currentPlayer.letterRack);
-        expect(service['checkAction'](action)).not.toBeTruthy();
-    });
-
-    it('should invalidate an invalid ExchangeLetter because the game letterBag doesnt have enough letters', () => {
-        game.letterBag.drawGameLetters(game.letterBag.gameLetters.length - 2);
-        const action = new ExchangeLetter(currentPlayer, currentPlayer.letterRack.splice(0, 5));
-        expect(service['checkAction'](action)).not.toBeTruthy();
-    });
-
-    it('should invalidate an invalid ExchangeLetter because the LetterBag has less than 7 letters', () => {
-        game.letterBag.drawGameLetters(game.letterBag.gameLetters.length - (RACK_LETTER_COUNT - 1));
-        const action = new ExchangeLetter(currentPlayer, currentPlayer.letterRack.splice(0, 1));
-        expect(service['checkAction'](action)).not.toBeTruthy();
     });
 
     it('should validate a valid ExchangeLetter because a player can exchange many of the same letter', () => {
@@ -484,7 +462,7 @@ describe('ActionValidatorService', () => {
 
     it('should send correct message format for ExchangeLetter action when the User plays', () => {
         const self = currentPlayer;
-        info.receiveUser(self);
+        info.receivePlayer(self);
         const action = new ExchangeLetter(currentPlayer, currentPlayer.letterRack);
         const chars = currentPlayer.letterRack.map((letter) => letter.char);
         service['sendActionArgsMessage'](action);
@@ -494,7 +472,7 @@ describe('ActionValidatorService', () => {
 
     it('should send correct message format for ExchangeLetter action when the opponent plays', () => {
         const self = p1 === currentPlayer ? p2 : p1;
-        info.receiveUser(self);
+        info.receivePlayer(self);
         const action = new ExchangeLetter(currentPlayer, currentPlayer.letterRack);
         const chars = currentPlayer.letterRack.map((letter) => letter.char);
         service['sendActionArgsMessage'](action);

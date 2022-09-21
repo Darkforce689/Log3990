@@ -75,22 +75,7 @@ export class CommandExecuterService {
     }
 
     private executeReserve() {
-        if (this.gameInfo.isOnlineGame) {
-            this.showLetterBagOnline();
-            return;
-        }
-        this.showLetterBag();
-    }
-
-    private showLetterBag() {
-        const letterOccurences = this.gameInfo.letterOccurences;
-        let stringOccurences = '';
-        for (const letterOccurence of letterOccurences) {
-            const letter = letterOccurence[0];
-            const occurence = letterOccurence[1];
-            stringOccurences = stringOccurences.concat(`${letter} : ${occurence}${END_LINE}`);
-        }
-        this.messageService.receiveSystemMessage(`Reserve:${END_LINE}${stringOccurences}`);
+        this.showLetterBagOnline();
     }
 
     private showLetterBagOnline() {

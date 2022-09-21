@@ -3,6 +3,7 @@ import { DatabaseService } from '@app/database/database.service';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { GameSocketsHandler } from '@app/game/game-socket-handler/game-socket-handler.service';
+import { ServerLogger } from '@app/logger/logger';
 import { MessagesSocketHandler } from '@app/messages-service/message-socket-handler/messages-socket-handler.service';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
@@ -39,6 +40,14 @@ export class Server {
     }
 
     async init(): Promise<void> {
+        try {
+            await this.databaseService.start();
+        } catch (e) {
+            ServerLogger.logError(e);
+            process.exit(1);
+        }
+
+        this.application.start();
         this.application.app.set('port', Server.appPort);
 
         this.server = http.createServer(this.application.app);
@@ -54,13 +63,6 @@ export class Server {
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());
-        try {
-            await this.databaseService.start();
-        } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error(e);
-            process.exit(1);
-        }
     }
 
     private onError(error: NodeJS.ErrnoException): void {
@@ -70,13 +72,11 @@ export class Server {
         const bind: string = typeof Server.appPort === 'string' ? 'Pipe ' + Server.appPort : 'Port ' + Server.appPort;
         switch (error.code) {
             case 'EACCES':
-                // eslint-disable-next-line no-console
-                console.error(`${bind} requires elevated privileges`);
+                ServerLogger.logError(`${bind} requires elevated privileges`);
                 process.exit(1);
                 break;
             case 'EADDRINUSE':
-                // eslint-disable-next-line no-console
-                console.error(`${bind} is already in use`);
+                ServerLogger.logError(`${bind} is already in use`);
                 process.exit(1);
                 break;
             default:
@@ -90,7 +90,6 @@ export class Server {
     private onListening(): void {
         const addr = this.server.address() as AddressInfo;
         const bind: string = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-        // eslint-disable-next-line no-console
-        console.log(`Listening on ${bind}`);
+        ServerLogger.logInfo(`Listening on ${bind}`);
     }
 }

@@ -9,7 +9,6 @@ import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { Game } from '@app/game-logic/game/games/game';
 import { GameState } from '@app/game-logic/game/games/online-game/game-state';
-import { TimerControls } from '@app/game-logic/game/timer/timer-controls.enum';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
 import { isCharUpperCase } from '@app/game-logic/utils';
@@ -34,7 +33,8 @@ export class OnlineGame extends Game {
     private letterCreator = new LetterCreator();
 
     private gameState$$: Subscription;
-    private timerControls$$: Subscription;
+    private timerStartingTimes$$: Subscription;
+    private timeLeft$$: Subscription;
 
     constructor(
         public gameToken: string,
@@ -52,8 +52,12 @@ export class OnlineGame extends Game {
             this.receiveState(gameState);
         });
 
-        this.timerControls$$ = this.onlineSocket.timerControls$.subscribe((timerControl: TimerControls) => {
-            this.receiveTimerControl(timerControl);
+        this.timerStartingTimes$$ = this.onlineSocket.timerStartingTimes$.subscribe((timerStartingTime: number) => {
+            this.receiveTimerStartingTime(timerStartingTime);
+        });
+
+        this.timeLeft$$ = this.onlineSocket.timerTimeLeft$.subscribe((timeLeft: number) => {
+            this.timer.timeLeftSubject.next(timeLeft);
         });
     }
 
@@ -61,23 +65,19 @@ export class OnlineGame extends Game {
         return this.lettersRemaining;
     }
 
-    start(): void {
-        return;
-    }
-
     isEndOfGame(): boolean {
         return this.hasGameEnded;
     }
 
     stop() {
-        this.timer.stop();
         this.forfeit();
         this.close();
     }
 
     close() {
         this.gameState$$.unsubscribe();
-        this.timerControls$$.unsubscribe();
+        this.timerStartingTimes$$.unsubscribe();
+        this.timeLeft$$.unsubscribe();
     }
 
     receiveState(gameState: GameState) {
@@ -89,10 +89,10 @@ export class OnlineGame extends Game {
     }
 
     handleUserActions() {
-        const user = this.players.find((player: Player) => {
-            return player.name === this.userName;
+        const player = this.players.find((playerRef: Player) => {
+            return playerRef.name === this.userName;
         });
-        (user as Player).action$.subscribe((action) => {
+        (player as Player).action$.subscribe((action) => {
             const activePlayerName = this.players[this.activePlayerIndex].name;
             if (activePlayerName !== this.userName) {
                 return;
@@ -191,14 +191,8 @@ export class OnlineGame extends Game {
         this.onlineSocket.playAction(onlineAction);
     }
 
-    private receiveTimerControl(timerControl: TimerControls) {
-        if (timerControl === TimerControls.Start) {
-            this.timer.start(this.timePerTurn);
-        }
-
-        if (timerControl === TimerControls.Stop) {
-            this.timer.stop();
-        }
+    private receiveTimerStartingTime(timerStartingTime: number) {
+        this.timer.start(timerStartingTime);
     }
 
     private updateBoard(gameState: GameState) {

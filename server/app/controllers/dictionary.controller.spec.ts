@@ -10,11 +10,11 @@ import { Container } from 'typedi';
 describe('DictionaryController', () => {
     let dictionaryServerService: sinon.SinonStubbedInstance<DictionaryServerService>;
     let expressApp: Express.Application;
+    const app = Container.get(Application);
+    app.start(false, false);
 
     beforeEach(async () => {
         dictionaryServerService = sinon.createStubInstance(DictionaryServerService);
-        const app = Container.get(Application);
-
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['dictionaryController'], 'dictionaryServerService', { value: dictionaryServerService });
         expressApp = app.app;

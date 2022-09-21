@@ -1,5 +1,6 @@
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameMode } from '@app/game/game-mode.enum';
+import { ServerLogger } from '@app/logger/logger';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
@@ -24,7 +25,8 @@ export class LeaderboardController {
                     return;
                 }
                 response.send(scores);
-            } catch (e) {
+            } catch (error) {
+                ServerLogger.logError(error);
                 response.sendStatus(StatusCodes.BAD_REQUEST);
             }
         });
@@ -39,7 +41,8 @@ export class LeaderboardController {
                     return;
                 }
                 response.sendStatus(StatusCodes.OK);
-            } catch (e) {
+            } catch (error) {
+                ServerLogger.logError(error);
                 response.sendStatus(StatusCodes.BAD_REQUEST);
             }
         });
@@ -52,7 +55,8 @@ export class LeaderboardController {
                     return;
                 }
                 response.status(StatusCodes.OK).send({ status: 'OK' });
-            } catch (e) {
+            } catch (error) {
+                ServerLogger.logError(error);
                 response.sendStatus(StatusCodes.BAD_REQUEST);
             }
         });

@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Objective } from '@app/game-logic/game/objectives/objectives/objective';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { ObjectivesListComponent } from './objectives-list.component';
 
 describe('ObjectivesListComponent', () => {
@@ -14,7 +13,7 @@ describe('ObjectivesListComponent', () => {
         mockGameInfo = jasmine.createSpyObj(
             'GameInfoService',
             ['getPrivateObjectives'],
-            ['publicObjectives', 'privateObjectives', 'opponent', 'user'],
+            ['publicObjectives', 'privateObjectives', 'opponent', 'player'],
         );
         const mockObjective = {} as unknown as Objective;
         mockGameInfo.getPrivateObjectives.and.callFake(() => {
@@ -29,8 +28,8 @@ describe('ObjectivesListComponent', () => {
             mockObjective,
             mockObjective,
         ]);
-        (Object.getOwnPropertyDescriptor(mockGameInfo, 'user')?.get as jasmine.Spy<() => Player>).and.returnValue(new User('p1'));
-        (Object.getOwnPropertyDescriptor(mockGameInfo, 'opponent')?.get as jasmine.Spy<() => Player>).and.returnValue(new User('p2'));
+        (Object.getOwnPropertyDescriptor(mockGameInfo, 'player')?.get as jasmine.Spy<() => Player>).and.returnValue(new Player('p1'));
+        (Object.getOwnPropertyDescriptor(mockGameInfo, 'opponent')?.get as jasmine.Spy<() => Player>).and.returnValue(new Player('p2'));
         await TestBed.configureTestingModule({
             providers: [{ provide: GameInfoService, useValue: mockGameInfo }],
             declarations: [ObjectivesListComponent],

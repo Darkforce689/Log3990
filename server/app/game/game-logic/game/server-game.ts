@@ -12,9 +12,10 @@ import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
 import { Timer } from '@app/game/game-logic/timer/timer.service';
+import { ServerLogger } from '@app/logger/logger';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
-import { first, mapTo, Subject } from 'rxjs';
 import { randomInt } from 'crypto';
+import { first, mapTo, Subject } from 'rxjs';
 
 export class ServerGame {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -24,7 +25,6 @@ export class ServerGame {
     consecutivePass: number = 0;
     board: Board;
     timer: Timer;
-    winnerByForfeitedIndex: number;
 
     isEnded$ = new Subject<undefined>();
     endReason: EndOfGameReason;
@@ -55,15 +55,8 @@ export class ServerGame {
     }
 
     stop() {
-        this.endReason = EndOfGameReason.Other;
-        this.isEnded$.next(undefined);
-    }
-
-    forfeit(playerName: string) {
-        this.winnerByForfeitedIndex = this.players.findIndex((player) => {
-            return player.name !== playerName;
-        });
-        this.endReason = EndOfGameReason.Forfeit;
+        ServerLogger.logDebug('Game with id ', this.gameToken, ' manually stopped');
+        this.endReason = EndOfGameReason.ManualStop;
         this.isEnded$.next(undefined);
     }
 
@@ -96,11 +89,6 @@ export class ServerGame {
     getWinner(): Player[] {
         let highestScore = Number.MIN_SAFE_INTEGER;
         let winners: Player[] = [];
-        if (this.winnerByForfeitedIndex !== undefined) {
-            const winner = this.players[this.winnerByForfeitedIndex];
-            winners = [winner];
-            return winners;
-        }
 
         for (const player of this.players) {
             if (player.points === highestScore) {
@@ -133,13 +121,19 @@ export class ServerGame {
         return topPlayers[0];
     }
 
+    forcePlay() {
+        this.startTurn();
+    }
+
+    forceEndturn() {
+        this.timer.stop();
+    }
+
     private onEndOfGame(reason: EndOfGameReason) {
         this.pointCalculator.endOfGamePointDeduction(this);
         this.displayLettersLeft();
         this.emitGameState();
-        if (reason === EndOfGameReason.GameEnded) {
-            this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
-        }
+        this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
     }
 
     private nextPlayer() {

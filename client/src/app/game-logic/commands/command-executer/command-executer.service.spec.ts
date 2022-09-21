@@ -7,7 +7,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActionCompilerService } from '@app/game-logic/commands/action-compiler/action-compiler.service';
 import { CommandParserService } from '@app/game-logic/commands/command-parser/command-parser.service';
 import { Command, CommandType } from '@app/game-logic/commands/command.interface';
-import { END_LINE, RESERVE_NOT_ACCESSIBLE } from '@app/game-logic/constants';
+import { RESERVE_NOT_ACCESSIBLE } from '@app/game-logic/constants';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
@@ -153,37 +153,6 @@ describe('CommandExecuterService', () => {
         };
         service['execute'](command);
         expect(messageServiceSpy.receiveErrorMessage).toHaveBeenCalledWith(RESERVE_NOT_ACCESSIBLE);
-    });
-
-    it('should execute reserve command', () => {
-        const debug = {
-            from: 'Tim',
-            type: CommandType.Debug,
-        };
-        service['execute'](debug);
-        messageServiceSpy.receiveSystemMessage.calls.reset();
-        const command = {
-            from: 'Tim',
-            type: CommandType.Reserve,
-        };
-        service['execute'](command);
-        expect(messageServiceSpy.receiveSystemMessage).toHaveBeenCalled();
-    });
-
-    it('should execute reserve command properly', () => {
-        const debug = {
-            from: 'Tim',
-            type: CommandType.Debug,
-        };
-        service['execute'](debug);
-        messageServiceSpy.receiveSystemMessage.calls.reset();
-        const command = {
-            from: 'Tim',
-            type: CommandType.Reserve,
-        };
-        service['execute'](command);
-        const expectedMessage = `Reserve:${END_LINE}A : 4${END_LINE}B : 3${END_LINE}C : 1${END_LINE}`;
-        expect(messageServiceSpy.receiveSystemMessage).toHaveBeenCalledOnceWith(expectedMessage);
     });
 
     it('showOnlineLetter should show correct format', () => {

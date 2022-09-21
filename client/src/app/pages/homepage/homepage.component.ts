@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
+import { AuthService } from '@app/services/auth.service';
+import { first } from 'rxjs/operators';
 
 @Component({
     selector: 'app-homepage',
@@ -8,11 +12,36 @@ import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderb
     styleUrls: ['./homepage.component.scss'],
 })
 export class HomepageComponent {
-    constructor(private matDialog: MatDialog) {}
+    constructor(private matDialog: MatDialog, private authService: AuthService, private router: Router) {}
 
     openLeaderboard() {
         this.matDialog.open(LeaderboardComponent, {
             width: '500px',
         });
+    }
+
+    logout() {
+        this.authService.logout().subscribe(
+            () => {
+                const dialogRef = this.matDialog.open(ErrorDialogComponent, {
+                    disableClose: true,
+                    autoFocus: true,
+                    data: 'Vous avez été déconnecté avec succès',
+                });
+                dialogRef
+                    .afterClosed()
+                    .pipe(first())
+                    .subscribe(() => {
+                        this.router.navigate(['/login']);
+                    });
+            },
+            () => {
+                this.matDialog.open(ErrorDialogComponent, {
+                    disableClose: true,
+                    autoFocus: true,
+                    data: "Une erreur est survenue lors de la déconnexion : Le serveur n'est pas disponible",
+                });
+            },
+        );
     }
 }

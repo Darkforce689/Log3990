@@ -101,8 +101,8 @@ describe('NewGameManagerService', () => {
         const id = 'abc';
         try {
             service.getPendingGame(id);
-        } catch (error) {
-            expect(error.message).to.equal('This game does not exist.');
+        } catch (e) {
+            expect(e.message).to.equal('This game does not exist.');
         }
     });
 });

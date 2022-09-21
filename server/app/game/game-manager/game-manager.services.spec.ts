@@ -16,14 +16,14 @@ import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { ForfeitedGameState } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService, PlayerRef } from '@app/game/game-manager/game-manager.services';
 import { GameMode } from '@app/game/game-mode.enum';
@@ -49,7 +49,7 @@ describe('GameManagerService', () => {
     let stubGameCompiler: StubbedClass<GameCompiler>;
     let stubGameActionNotifierService: GameActionNotifierService;
     let stubObjectiveCreator: ObjectiveCreator;
-    let stubLeaderboardService: LeaderboardService;
+    let stubLeaderboardService: StubbedClass<LeaderboardService>;
     let stubDictionaryService: DictionaryService;
     let stubBotInfoService: BotInfoService;
     let stubBotManager: BotManager;
@@ -430,7 +430,7 @@ describe('GameManagerService', () => {
         expect(() => {
             service.removePlayerFromGame(userId);
         }).to.not.throw(Error);
-        expect(service.activePlayers.size).to.be.equal(0);
+        expect(service.activePlayers.size).to.be.equal(1);
     });
 
     it('should delete game when unjoined for a certain time', () => {
@@ -521,9 +521,14 @@ describe('GameManagerService', () => {
         expect(service.newGameState$).to.be.instanceof(Observable);
     });
 
-    it('should get gameState$ properly', () => {
-        sinon.stub(stubTimerController, 'timerControl$').get(() => new Observable<TimerGameControl>());
-        expect(service.timerControl$).to.be.instanceOf(Observable);
+    it('should get timerStartingTime$ properly', () => {
+        sinon.stub(stubTimerController, 'timerStartingTime$').get(() => new Observable<TimerStartingTime>());
+        expect(service.timerStartingTime$).to.be.instanceOf(Observable);
+    });
+
+    it('should get timeUpdate$ properly', () => {
+        sinon.stub(stubTimerController, 'timerTimeUpdate$').get(() => new Observable<TimerTimeLeft>());
+        expect(service.timeUpdate$).to.be.instanceOf(Observable);
     });
 
     it('should do nothing when trying to notify an action when no more userlinked', async () => {
@@ -579,6 +584,28 @@ describe('GameManagerService', () => {
         expect(service.activeGames.size).to.be.equal(0);
     });
 
+    it('should update leaderboard with only real players scores', (done) => {
+        const player = new Player('realPlayer');
+        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
+        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
+        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
+        const gameToken = 'gameToken';
+
+        const game = { players: [player, bot1, bot2, bot3] } as ServerGame;
+        service.activeGames.set(gameToken, game);
+
+        service['endGame$'].subscribe(() => {
+            expect(stubLeaderboardService.updateLeaderboard.callCount).to.be.equal(1);
+            done();
+        });
+
+        service['endGame$'].next({
+            gameToken: 'gameToken',
+            reason: EndOfGameReason.GameEnded,
+            players: game.players,
+        });
+    });
+
     it('should not update leaderboard when it finishes on forfeit', async () => {
         const player = new Player('test01');
         const playerNames = [player.name, 'test3'];
@@ -596,19 +623,5 @@ describe('GameManagerService', () => {
         await service.createGame(gameToken, gameSettings);
         service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player] });
         expect(service.activeGames.size).to.be.equal(0);
-    });
-
-    it('should create appropriate transition objectives', (done) => {
-        const mockGame = {
-            activePlayerIndex: 0,
-        } as unknown as ServerGame;
-        const mockGameState = {} as unknown as ForfeitedGameState;
-        service.forfeitedGameState$.subscribe((forfeitedGameState) => {
-            expect(forfeitedGameState).to.equal(mockGameState);
-            done();
-        });
-        stubGameCompiler.compileForfeited.returns(mockGameState);
-        service['sendForfeitedGameState'](mockGame);
-        done();
     });
 });

@@ -45,7 +45,7 @@ export class UIPlace implements UIAction {
 
     receiveKey(key: string): void {
         let letterPlacement = null;
-        if (this.info.activePlayer !== this.info.user) {
+        if (this.info.activePlayer !== this.info.player) {
             return;
         }
         switch (key) {
@@ -68,7 +68,7 @@ export class UIPlace implements UIAction {
 
     create(): Action {
         const wordPlacement = this.getWordFromBoard();
-        const createdAction = new PlaceLetter(this.info.user, wordPlacement.word, {
+        const createdAction = new PlaceLetter(this.info.player, wordPlacement.word, {
             direction: this.direction,
             x: wordPlacement.x,
             y: wordPlacement.y,
@@ -144,7 +144,7 @@ export class UIPlace implements UIAction {
         this.concernedIndexes.add(letterPlacement.rackIndex);
         this.orderedIndexes.push(letterPlacement);
         const concernedTile = this.boardService.board.grid[this.pointerPosition.y][this.pointerPosition.x];
-        const usedChar = this.info.user.letterRack[letterPlacement.rackIndex].char;
+        const usedChar = this.info.player.letterRack[letterPlacement.rackIndex].char;
         if (usedChar === JOKER_CHAR) {
             concernedTile.letterObject = this.letterCreator.createBlankLetter(key);
             concernedTile.letterObject.isTemp = true;
@@ -182,8 +182,8 @@ export class UIPlace implements UIAction {
     }
 
     private getUnusedLetterIndexInRack(char: string): number | null {
-        for (let index = 0; index < this.info.user.letterRack.length; index++) {
-            const rackLetter = this.info.user.letterRack[index];
+        for (let index = 0; index < this.info.player.letterRack.length; index++) {
+            const rackLetter = this.info.player.letterRack[index];
             if (rackLetter.char.toLowerCase() === char && !this.concernedIndexes.has(index)) {
                 return index;
             }
