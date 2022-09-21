@@ -68,8 +68,6 @@ export class Application {
     }
 
     private config(enableRedisSession: boolean): void {
-        // const store = enableRedisSession ? new RedisStore({ client: this.redisClient.client, disableTouch: true }) : undefined;
-        // const sessionMiddleware = createSessionMiddleware(store);
         const sessionMiddleware = this.sessionMiddlewareService.getSessionMiddleware(enableRedisSession);
         // Middlewares configuration
         this.app.use(sessionMiddleware);
