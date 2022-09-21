@@ -68,9 +68,6 @@ export class Application {
     }
 
     private config(enableRedisSession: boolean): void {
-        // // eslint-disable-next-line @typescript-eslint/naming-convention
-        // const RedisStore = connectRedis(session);
-
         // const store = enableRedisSession ? new RedisStore({ client: this.redisClient.client, disableTouch: true }) : undefined;
         // const sessionMiddleware = createSessionMiddleware(store);
         const sessionMiddleware = this.sessionMiddlewareService.getSessionMiddleware(enableRedisSession);
