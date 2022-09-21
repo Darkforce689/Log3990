@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
-import { MagicCard } from '@app/game-logic/actions/magic-card';
-import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
-import { ExchangeALetter } from '@app/game-logic/actions/magic-card-exchange-letter';
+import { MagicCard } from '@app/game-logic/actions/magic-card/magic-card';
+import { SplitPoints } from '@app/game-logic/actions/magic-card/magic-card-split-points';
+import { ExchangeALetter } from '@app/game-logic/actions/magic-card/magic-card-exchange-letter';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';

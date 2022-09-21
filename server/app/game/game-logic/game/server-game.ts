@@ -1,6 +1,6 @@
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
-import { MagicCard } from '@app/game/game-logic/actions/magic-card';
+import { MagicCard } from '@app/game/game-logic/actions/magic-card/magic-card';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { Board } from '@app/game/game-logic/board/board';
 import { LetterBag } from '@app/game/game-logic/board/letter-bag';
