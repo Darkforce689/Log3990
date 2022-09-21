@@ -1,5 +1,5 @@
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
-import { ExchangeALetter } from '@app/game/game-logic/actions/magic-card-exchange-letter';
+import { ExchangeALetter } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-letter';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { DEFAULT_TIME_PER_TURN } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
@@ -13,7 +13,7 @@ import { createSinonStubInstance } from '@app/test.util';
 import { expect } from 'chai';
 import { Subject } from 'rxjs';
 
-describe.only('ExchangeALetter', () => {
+describe('ExchangeALetter', () => {
     let game: ServerGame;
     const player1: Player = new Player('Tim');
     const player2: Player = new Player('George');

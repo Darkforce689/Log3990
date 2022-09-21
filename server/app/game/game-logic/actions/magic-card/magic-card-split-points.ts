@@ -1,5 +1,5 @@
 import { ServerGame } from '@app/game/game-logic/game/server-game';
-import { MagicCard } from '@app/game/game-logic/actions/magic-card';
+import { MagicCard } from '@app/game/game-logic/actions/magic-card/magic-card';
 import { PERCENTAGE_OF_POINTS_TO_SPLIT } from '@app/constants';
 
 export class SplitPoints extends MagicCard {
