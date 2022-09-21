@@ -20,7 +20,6 @@ export class PrototypePageComponent implements OnInit, OnDestroy {
             }
             this.onlineChat.joinChatRoomWithUser('prototype');
         });
-        // this.onlineChat.joinChatRoomWithUser('prototype');
     }
 
     ngOnDestroy(): void {
