@@ -19,7 +19,7 @@ import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.inte
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
+import { BotRepository } from '@app/game/game-logic/player/bot/bot-repository/bot-repository.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -52,7 +52,7 @@ describe('GameManagerService', () => {
     let stubLeaderboardService: StubbedClass<LeaderboardService>;
     let stubDictionaryService: DictionaryService;
     let stubBotInfoService: BotInfoService;
-    let stubBotManager: BotManager;
+    let stubBotRepository: BotRepository;
     let stubBotMessageService: BotMessagesService;
     let stubActionCreatorService: ActionCreatorService;
     let clock: sinon.SinonFakeTimers;
@@ -67,8 +67,8 @@ describe('GameManagerService', () => {
         stubLeaderboardService = createSinonStubInstance<LeaderboardService>(LeaderboardService);
         stubDictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
         stubBotInfoService = createSinonStubInstance<BotInfoService>(BotInfoService);
-        // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
-        stubBotManager = {} as BotManager;
+        // TODO GL3A22107-35 : BotRepository has no methods. Might not be worth of a class
+        stubBotRepository = {} as BotRepository;
         stubBotMessageService = createSinonStubInstance<BotMessagesService>(BotMessagesService);
         stubActionCreatorService = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
     });
@@ -90,7 +90,7 @@ describe('GameManagerService', () => {
             stubLeaderboardService,
             stubDictionaryService,
             stubBotInfoService,
-            stubBotManager,
+            stubBotRepository,
             stubBotMessageService,
             stubActionCreatorService,
         );
@@ -586,9 +586,9 @@ describe('GameManagerService', () => {
 
     it('should update leaderboard with only real players scores', (done) => {
         const player = new Player('realPlayer');
-        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
-        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
-        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
+        const bot1 = new BotPlayer(stubBotInfoService, stubBotRepository, stubBotMessageService, stubActionCreatorService, BotDifficulty.Easy);
+        const bot2 = new BotPlayer(stubBotInfoService, stubBotRepository, stubBotMessageService, stubActionCreatorService, BotDifficulty.Easy);
+        const bot3 = new BotPlayer(stubBotInfoService, stubBotRepository, stubBotMessageService, stubActionCreatorService, BotDifficulty.Easy);
         const gameToken = 'gameToken';
 
         const game = { players: [player, bot1, bot2, bot3] } as ServerGame;

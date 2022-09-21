@@ -9,7 +9,7 @@ import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION } from '@app/game/game-log
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotLogic } from '@app/game/game-logic/player/bot/bot-logic/bot-logic';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
+import { BotRepository } from '@app/game/game-logic/player/bot/bot-repository/bot-repository.service';
 import { createSinonStubInstance } from '@app/test.util';
 import { expect } from 'chai';
 import { SinonFakeTimers, useFakeTimers } from 'sinon';
@@ -19,8 +19,8 @@ describe('BotPlayer', () => {
     const stubActionCreator = createSinonStubInstance(ActionCreatorService);
     const stubBotInfoService = createSinonStubInstance(BotInfoService);
     const stubBotMessagesService = createSinonStubInstance(BotMessagesService);
-    // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
-    const stubBotManager = {} as BotManager;
+    // TODO GL3A22107-35 : BotRepository has no methods. Might not be worth of a class
+    const stubBotRepository = {} as BotRepository;
     let clock: SinonFakeTimers;
 
     afterEach(() => {
@@ -28,7 +28,7 @@ describe('BotPlayer', () => {
     });
 
     beforeEach(() => {
-        botPlayer = new BotPlayer(stubBotInfoService, stubBotManager, stubBotMessagesService, stubActionCreator, BotDifficulty.Easy);
+        botPlayer = new BotPlayer(stubBotInfoService, stubBotRepository, stubBotMessagesService, stubActionCreator, BotDifficulty.Easy);
         clock = useFakeTimers();
     });
 

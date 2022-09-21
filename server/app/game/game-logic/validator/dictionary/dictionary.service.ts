@@ -4,10 +4,12 @@ import { MAX_WORD_LENGTH } from '@app/game/game-logic/constants';
 import { Dictionary } from '@app/game/game-logic/validator/dictionary/dictionary';
 import { Service } from 'typedi';
 
+type DictUniqueName = string;
+type GameToken = string;
 @Service()
 export class DictionaryService {
-    liveDictMap: Map<string, LiveDict> = new Map();
-    liveGamesMap: Map<string, string> = new Map();
+    liveDictMap: Map<DictUniqueName, LiveDict> = new Map();
+    liveGamesMap: Map<GameToken, DictUniqueName> = new Map();
 
     constructor(private dictionaryServer: DictionaryServerService) {}
 

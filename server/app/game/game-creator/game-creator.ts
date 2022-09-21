@@ -9,7 +9,7 @@ import { GameStateToken } from '@app/game/game-logic/interface/game-state.interf
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
+import { BotRepository } from '@app/game/game-logic/player/bot/bot-repository/bot-repository.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -30,7 +30,7 @@ export class GameCreator {
         private timerController: TimerController,
         private objectiveCreator: ObjectiveCreator,
         private botInfoService: BotInfoService,
-        private botManager: BotManager,
+        private botRepository: BotRepository,
         protected botMessage: BotMessagesService,
         protected actionCreator: ActionCreatorService,
     ) {}
@@ -47,7 +47,7 @@ export class GameCreator {
     }
 
     async createBotPlayer(botDifficulty: BotDifficulty, playerNames: string[]) {
-        const botPlayer = new BotPlayer(this.botInfoService, this.botManager, botDifficulty, this.botMessage, this.actionCreator);
+        const botPlayer = new BotPlayer(this.botInfoService, this.botRepository, this.botMessage, this.actionCreator, botDifficulty);
         await botPlayer.updateBotName(playerNames);
         return botPlayer;
     }
@@ -102,7 +102,8 @@ export class GameCreator {
         const players = playerNames.map((name) => new Player(name));
         const numberOfBots = numberOfPlayers - players.length;
         for (let i = 0; i < numberOfBots; i++) {
-            const newBot = await this.createBotPlayer(botDifficulty, playerNames);
+            const newBot = new BotPlayer(this.botInfoService, this.botRepository, this.botMessage, this.actionCreator, botDifficulty);
+            await newBot.updateBotName(playerNames);
             players.push(newBot);
             playerNames.push(newBot.name);
         }

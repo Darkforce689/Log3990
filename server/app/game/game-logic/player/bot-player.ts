@@ -6,7 +6,7 @@ import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { ValidWord } from '@app/game/game-logic/interface/valid-word';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
+import { BotRepository } from '@app/game/game-logic/player/bot/bot-repository/bot-repository.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { getRandomInt } from '@app/game/game-logic/utils';
 import { ServerLogger } from '@app/logger/logger';
@@ -20,7 +20,7 @@ export class BotPlayer extends Player {
     constructor(
         // protected botMessage: BotMessagesService,
         protected botInfoService: BotInfoService,
-        protected botManager: BotManager,
+        protected botRepository: BotRepository,
         protected botMessage: BotMessagesService,
         protected actionCreator: ActionCreatorService,
         protected botDifficulty: BotDifficulty,
@@ -29,7 +29,7 @@ export class BotPlayer extends Player {
     }
 
     generateAction(game: ServerGame): void {
-        const bot = this.botDifficulty === BotDifficulty.Easy ? this.botManager.easyBot : this.botManager.hardBot;
+        const bot = this.botDifficulty === BotDifficulty.Easy ? this.botRepository.easyBot : this.botRepository.hardBot;
         this.startTimerAction();
         this.timesUp = false;
         timer(TIME_BUFFER_BEFORE_ACTION).subscribe(() => {

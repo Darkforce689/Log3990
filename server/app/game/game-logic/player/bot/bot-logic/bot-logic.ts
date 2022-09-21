@@ -21,7 +21,7 @@ export abstract class BotLogic {
         protected botCalculatorService: BotCalculatorService,
         protected wordValidator: WordSearcher,
         protected actionCreator: ActionCreatorService,
-        protected botType: BotDifficulty,
+        protected botDifficulty: BotDifficulty,
     ) {
         this.botCrawler = new BotCrawler(this.botDictionaryService, this.botCalculatorService, this.wordValidator);
     }

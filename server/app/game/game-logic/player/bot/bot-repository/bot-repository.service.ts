@@ -8,7 +8,7 @@ import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-se
 import { Service } from 'typedi';
 
 @Service()
-export class BotManager {
+export class BotRepository {
     hardBot: HardBotLogic;
     easyBot: EasyBotLogic;
 

@@ -9,7 +9,7 @@ import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface'
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
+import { BotRepository } from '@app/game/game-logic/player/bot/bot-repository/bot-repository.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -46,8 +46,8 @@ describe('GameCreator', () => {
     const objectiveCreatorStub = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
     const botInfoServiceStub = createSinonStubInstance<BotInfoService>(BotInfoService);
     botInfoServiceStub.getBotInfoList.resolves([botInfo]);
-    // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
-    const botManagerStub = {} as BotManager;
+    // TODO GL3A22107-35 : BotRepository has no methods. Might not be worth of a class
+    const botRepositoryStub = {} as BotRepository;
     const botMessageStub = createSinonStubInstance<BotMessagesService>(BotMessagesService);
     const actionCreatorStub = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
 
@@ -73,7 +73,7 @@ describe('GameCreator', () => {
             timerControllerStub,
             objectiveCreatorStub,
             botInfoServiceStub,
-            botManagerStub,
+            botRepositoryStub,
             botMessageStub,
             actionCreatorStub,
         );
