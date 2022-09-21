@@ -3,6 +3,7 @@ import { Action } from '@app/game-logic/actions/action';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
 import { MagicCard } from '@app/game-logic/actions/magic-card';
 import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
+import { ExchangeALetter } from '@app/game-logic/actions/magic-card-exchange-letter';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
@@ -65,7 +66,20 @@ export class OnlineActionCompilerService {
         if (action instanceof SplitPoints) {
             return this.compileSplitPointsOnline(action);
         }
+
+        if (action instanceof ExchangeALetter) {
+            return this.compileExchangeALetterOnline(action);
+        }
         return undefined;
+    }
+
+    private compileExchangeALetterOnline(action: ExchangeALetter): OnlineAction {
+        const exchangeALetter: OnlineAction = {
+            type: OnlineMagicCardActionType.ExchangeALetter,
+            letterRack: action.player.letterRack,
+            letters: `${action.letterToExchange.char}`,
+        };
+        return exchangeALetter;
     }
 
     private compileSplitPointsOnline(action: SplitPoints): OnlineAction {
