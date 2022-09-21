@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
 import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
+import { ExchangeALetter } from '@app/game-logic/actions/magic-card-exchange-letter';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
@@ -63,6 +64,20 @@ export class UIInputControllerService {
 
     splitPoints(player: Player) {
         this.sendAction(new SplitPoints(player));
+    }
+
+    exchangeLetter(player: Player) {
+        if (!this.activeAction || !this.canBeExecuted) {
+            return;
+        }
+        const newAction: Action | null = this.activeAction.create();
+        if (!newAction) {
+            return;
+        }
+        const concernedIndex: number = this.activeAction.concernedIndexes.values().next().value;
+        this.discardAction();
+        this.sendAction(new ExchangeALetter(player, player.letterRack[concernedIndex]));
+        this.activeComponent = InputComponent.Outside;
     }
 
     private processInput(input: UIInput) {
