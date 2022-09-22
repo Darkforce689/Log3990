@@ -1,11 +1,17 @@
 package com.example.polyscrabbleclient
 
 import android.os.Bundle
+import android.webkit.WebView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,11 +23,80 @@ import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.message.SocketHandler
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.model.User
-import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
+import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.google.gson.Gson
+import java.io.BufferedInputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.*
+import java.nio.charset.Charset
+
+data class Credentials(val email: String, val password: String)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val url = URL(BuildConfig.COMMUNICATION_URL + "/auth/login")
+//        val cookieManager = CookieManager()
+//        cookieManager.setAcceptCookie(true)
+//        cookieManager.
+//        cookieManager.acceptThirdPartyCookies(WebView(url))
+        val cookieManager = CookieManager()
+        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL)
+        CookieHandler.setDefault(cookieManager);
+
+        val thread = Thread {
+            fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
+                return this.bufferedReader(charset).use { it.readText() }
+            }
+            try {
+                val creds = Credentials("olivier1@gmail.com", "password")
+                val authBody = Gson().toJson(creds)
+                val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
+
+                // POST
+                urlConnection.setRequestMethod("POST")
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+                urlConnection.setRequestProperty("Accept", "application/json");
+
+                urlConnection.setDoOutput(true)
+                val os: OutputStream = urlConnection.getOutputStream()
+                os.write(authBody.toByteArray())
+                os.flush()
+                os.close()
+
+                try {
+                    val inputStream: InputStream = BufferedInputStream(urlConnection.inputStream)
+                    inputStream.readTextAndClose()
+                } finally {
+                    urlConnection.disconnect()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            val cookieStr = cookieManager.cookieStore.get(URI(BuildConfig.COMMUNICATION_URL))
+            println("cookie " + cookieStr)
+
+//            val url2 = URL(BuildConfig.API_URL + "/scores/classic")
+//            val urlConnection: HttpURLConnection = url2.openConnection() as HttpURLConnection
+//            try {
+//                val inputStream: InputStream = BufferedInputStream(urlConnection.inputStream)
+//                val out: String = inputStream.readTextAndClose()
+//                println("api auth test: " + out)
+//            } finally {
+//                urlConnection.disconnect()
+//            }
+//
+            SocketHandler.setSocket(cookieManager)
+
+        }
+
+        thread.start();
+
+
+
         super.onCreate(savedInstanceState)
         setContent {
             App {
@@ -33,6 +108,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun readStream(inputStream: InputStream) {
+
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         SocketHandler.closeConnection()
@@ -41,7 +120,7 @@ class MainActivity : ComponentActivity() {
 // Main Component
 @Composable
 fun NavGraph() {
-    SocketHandler.setSocket()
+
     val chatView : ChatBoxViewModel = viewModel()
     val navController = rememberNavController() // 1
     NavHost(navController, startDestination = "startPage") {
