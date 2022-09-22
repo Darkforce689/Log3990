@@ -9,13 +9,13 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class AccountService {
-    private accountBehaviorSubject = new BehaviorSubject<User | undefined>(undefined);
+    private accountSubject = new BehaviorSubject<User | undefined>(undefined);
     get account$(): Observable<User | undefined> {
-        return this.accountBehaviorSubject;
+        return this.accountSubject;
     }
 
     get account() {
-        return this.accountBehaviorSubject.value;
+        return this.accountSubject.value;
     }
 
     constructor(private http: HttpClient, private authService: AuthService) {
@@ -42,6 +42,6 @@ export class AccountService {
     }
 
     private updateAccount(user: User | undefined) {
-        this.accountBehaviorSubject.next(user);
+        this.accountSubject.next(user);
     }
 }
