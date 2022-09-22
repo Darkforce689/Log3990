@@ -14,6 +14,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.polyscrabbleclient.auth.components.AuthScreen
+import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.message.SocketHandler
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.model.User
@@ -23,6 +25,7 @@ import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SocketHandler.setSocket()
         setContent {
             App {
                 Column {
@@ -39,21 +42,27 @@ class MainActivity : ComponentActivity() {
     }
 }
 // Main Component
+@Preview(showBackground = true)
 @Composable
 fun NavGraph() {
-    SocketHandler.setSocket()
     val chatView : ChatBoxViewModel = viewModel()
+    val loginViewModel : AuthenticationViewModel = viewModel()
+
     val navController = rememberNavController() // 1
     NavHost(navController, startDestination = "startPage") {
         composable("startPage") { // 2
-            Column() {
+            Column {
                 Prototype(navController)
+                Login(navController)
             }
         }
         composable("messageList") {
             // To place in other function somewhere else
             chatView.joinRoom("prototype", User)
             ChatRoomScreen(navController, chatView)
+        }
+        composable("loginPage"){
+            AuthScreen(navController, loginViewModel)
         }
     }
 
@@ -70,6 +79,20 @@ fun Prototype(navController: NavController) {
             }
         }) {
         Text(text = "Prototype")
+    }
+}
+
+@Composable
+fun Login(navController: NavController) {
+    Button(modifier = Modifier.padding(20.dp),
+        onClick = {
+            navController.navigate("loginPage") {
+                popUpTo("startPage") {
+                    inclusive = true
+                }
+            }
+        }) {
+        Text(text = "Login")
     }
 }
 

@@ -5,7 +5,6 @@ plugins {
 
 android {
     signingConfigs {
-        developpment {}
         production {}
     }
     compileSdk 32
@@ -33,10 +32,10 @@ android {
             buildConfigField("String",  "API_URL", "\"https://d2niwfi3hp97su.cloudfront.net/api\"")
 
         }
-        developpment {
-            buildConfigField("String", "COMMUNICATION_URL", "\"http://10.0.2.2:3000\"")
-            buildConfigField("String", "API_URL", "\"http://10.0.2.2:3000/api\"")
-        }
+//        developpment {
+//            buildConfigField("String", "COMMUNICATION_URL", "\"http://10.0.2.2:3000\"")
+//            buildConfigField("String", "API_URL", "\"http://10.0.2.2:3000/api\"")
+//        }
         debug{
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -71,6 +70,7 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
 
     implementation ('io.socket:socket.io-client:2.0.0') {
         exclude group: 'org.json', module: 'json'

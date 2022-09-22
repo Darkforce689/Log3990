@@ -18,6 +18,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.message.model.*
@@ -28,8 +30,9 @@ import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val messages by chatBoxViewModel.messages.observeAsState()
+
     CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme){
-        Column() {
+        Column {
             Button(modifier = Modifier.padding(20.dp),
                 onClick = {
                     navController.navigate("startPage") {
@@ -75,7 +78,7 @@ fun MessageList(messages : List<Message>) {
 fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
     var input by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val inputFocusRequester = FocusRequester()
     fun sendMessage() {
         if(input.isNotBlank()) {
             viewModel.sendMessage(Message(input, User.name, MessageType.ME ))
@@ -84,7 +87,7 @@ fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
         keyboardController?.hide()
     }
 
-    Row(modifier = Modifier.padding(20.dp), horizontalArrangement = Arrangement.SpaceAround){
+    Row(modifier = Modifier.padding(20.dp).focusRequester(inputFocusRequester), horizontalArrangement = Arrangement.SpaceAround){
         OutlinedTextField(modifier = Modifier
             .weight(1f),
             value = input ,
