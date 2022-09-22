@@ -10,9 +10,9 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class AuthService {
-    private isAuthBehaviorSub = new BehaviorSubject(false);
+    private isAuthSubject = new BehaviorSubject(false);
     get isAuthenticated$(): Observable<boolean> {
-        return this.isAuthBehaviorSub;
+        return this.isAuthSubject;
     }
 
     constructor(private http: HttpClient) {}
@@ -76,9 +76,9 @@ export class AuthService {
     }
 
     private setIsAuth(value: boolean) {
-        if (this.isAuthBehaviorSub.value === value) {
+        if (this.isAuthSubject.value === value) {
             return;
         }
-        this.isAuthBehaviorSub.next(value);
+        this.isAuthSubject.next(value);
     }
 }
