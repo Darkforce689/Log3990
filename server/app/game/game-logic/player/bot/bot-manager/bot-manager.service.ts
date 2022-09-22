@@ -16,14 +16,12 @@ export class BotManager {
         private botDictionaryService: BotDictionaryService,
         private botCalculatorService: BotCalculatorService,
         private wordSearcher: WordSearcher,
-        // private botMessage: BotMessagesService,
         private actionFactory: ActionCreatorService,
     ) {
         this.hardBot = new HardBotLogic(
             this.botDictionaryService,
             this.botCalculatorService,
             this.wordSearcher,
-            // this.botMessage,
             this.actionFactory,
             BotDifficulty.Expert,
         );
@@ -31,7 +29,6 @@ export class BotManager {
             this.botDictionaryService,
             this.botCalculatorService,
             this.wordSearcher,
-            // this.botMessage,
             this.actionFactory,
             BotDifficulty.Easy,
         );

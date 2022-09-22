@@ -1,6 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
 import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
@@ -17,16 +16,11 @@ describe('Player', () => {
     let messagesService: MessagesService;
     let gameInfo: GameInfoService;
     let player: Player;
-    const commandExecuterMock = jasmine.createSpyObj('CommandExecuterService', ['execute']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                { provide: CommandExecuterService, useValue: commandExecuterMock },
-                { provide: BotHttpService, useValue: mockBotHttpService },
-            ],
-            imports: [HttpClientTestingModule],
+            providers: [{ provide: BotHttpService, useValue: mockBotHttpService }],
         });
         boardService = TestBed.inject(BoardService);
         timer = TestBed.inject(TimerService);

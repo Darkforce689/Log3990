@@ -5,7 +5,6 @@ import { ActionCreatorService } from '@app/game/game-logic/actions/action-creato
 import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { ValidWord } from '@app/game/game-logic/interface/valid-word';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { getRandomInt } from '@app/game/game-logic/utils';
@@ -18,11 +17,9 @@ export class BotPlayer extends Player {
     private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
     constructor(
-        // protected botMessage: BotMessagesService,
         protected botInfoService: BotInfoService,
         protected botManager: BotManager,
         protected botDifficulty: BotDifficulty,
-        protected botMessage: BotMessagesService,
         protected actionCreator: ActionCreatorService,
     ) {
         super('BotPlaceholderName');
@@ -51,18 +48,15 @@ export class BotPlayer extends Player {
         const timerPass = timer(TIME_BEFORE_PASS);
         timerPass.pipe(takeUntil(this.action$)).subscribe(() => {
             this.timesUp = true;
-            this.botMessage.sendAction(this.actionCreator.createPassTurn(this));
         });
         timer(TIME_BEFORE_PICKING_ACTION).subscribe(() => {
             const action = this.chosenAction$.value;
             if (action) {
-                // this.botMessage.sendAction(action);
                 this.action$.next(action);
                 return;
             }
             this.chosenAction$.pipe(takeUntil(timerPass)).subscribe((chosenAction) => {
                 if (chosenAction !== undefined) {
-                    // this.botMessage.sendAction(chosenAction);
                     this.action$.next(chosenAction);
                 }
             });
