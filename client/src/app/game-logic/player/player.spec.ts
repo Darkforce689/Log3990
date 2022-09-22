@@ -20,7 +20,7 @@ describe('Player', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: BotHttpService, useValue: mockBotHttpService }],
+            providers: [{ provide: BotHttpService, useValue: mockBotHttpService }], imports: [HttpClientTestingModule],
         });
         boardService = TestBed.inject(BoardService);
         timer = TestBed.inject(TimerService);
