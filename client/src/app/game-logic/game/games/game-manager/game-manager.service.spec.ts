@@ -3,7 +3,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { BOARD_DIMENSION, DEFAULT_DICTIONARY_TITLE, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
+import { BOARD_DIMENSION, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { Player } from '@app/game-logic/player/player';
@@ -41,7 +41,6 @@ describe('GameManagerService Online Edition', () => {
         playerNames: ['p1', 'p2'],
         randomBonus: false,
         id: '0',
-        dictTitle: DEFAULT_DICTIONARY_TITLE,
         gameMode: GameMode.Classic,
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
@@ -100,7 +99,6 @@ describe('GameManagerService Online Edition', () => {
             playerNames: [],
             randomBonus: false,
             id: '0',
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,

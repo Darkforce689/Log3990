@@ -19,9 +19,6 @@ import { PreventContextMenuDirective } from '@app/directives/prevent-context-men
 import { AuthInterceptor } from '@app/interceptors/auth.interceptor';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { AdminBotComponent } from '@app/pages/admin-page/admin-bot-virtuel/admin-bot.component';
-import { AdminDictComponent } from '@app/pages/admin-page/admin-dict/admin-dict.component';
-import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { AppComponent } from '@app/pages/app/app.component';
 import { BoardComponent } from '@app/pages/game-page/board/board.component';
 import { ChatBoxComponent } from '@app/pages/game-page/chat-box/chat-box.component';
@@ -33,13 +30,9 @@ import { PlayerInfoComponent } from '@app/pages/game-page/player-info/player-inf
 import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
-import { AddDictDialogComponent } from './components/modals/add-dict-dialog/add-dict-dialog.component';
 import { AlertDialogComponent } from './components/modals/alert-dialog/alert-dialog.component';
-import { EditBotDialogComponent } from './components/modals/edit-bot-dialog/edit-bot-dialog.component';
-import { EditDictDialogComponent } from './components/modals/edit-dict/edit-dict.component';
 import { LoadingGameComponent } from './components/modals/loading-game/loading-game.component';
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
-import { AdminDropDbComponent } from './pages/admin-page/admin-drop-db/admin-drop-db.component';
 import { ObjectivesListComponent } from './pages/game-page/objectives/objectives-list.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
@@ -54,7 +47,6 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 @NgModule({
     declarations: [
         AppComponent,
-        AdminDictComponent,
         GamePageComponent,
         PlayerInfoComponent,
         InfoBoxComponent,
@@ -78,15 +70,9 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         PreventContextMenuDirective,
         ClickAndClickoutDirective,
         MouseRollDirective,
-        AdminPageComponent,
-        EditDictDialogComponent,
         AlertDialogComponent,
-        AdminBotComponent,
-        EditBotDialogComponent,
-        AdminDropDbComponent,
         ObjectivesListComponent,
         ObjectiveComponent,
-        AddDictDialogComponent,
         AbandonDialogComponent,
         LoadingGameComponent,
         WinnerDialogComponent,

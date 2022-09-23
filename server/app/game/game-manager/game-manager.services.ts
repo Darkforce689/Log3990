@@ -1,6 +1,5 @@
 import { NEW_GAME_TIMEOUT } from '@app/constants';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -73,7 +72,6 @@ export class GameManagerService {
         private objectiveCreator: ObjectiveCreator,
         private leaderboardService: LeaderboardService,
         private dictionaryService: DictionaryService,
-        private botInfoService: BotInfoService,
         private botManager: BotManager,
         protected actionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
@@ -86,7 +84,6 @@ export class GameManagerService {
             this.endGame$,
             this.timerController,
             this.objectiveCreator,
-            this.botInfoService,
             this.botManager,
             this.actionNotifier,
             this.actionCreator,
