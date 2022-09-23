@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
@@ -30,6 +31,7 @@ describe('ObjectiveComponent', () => {
         const mockInfoService = jasmine.createSpyObj('GameInfoService', ['getObjective']);
         mockInfoService.player = new Player('test');
         await TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
             providers: [{ provide: GameInfoService, useValue: mockInfoService }],
             declarations: [ObjectiveComponent],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],

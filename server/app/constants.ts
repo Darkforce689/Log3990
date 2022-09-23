@@ -38,3 +38,4 @@ export const REDIS_PWD = '45nWN3tcOm2boSIiI1RWtQmsU3X9rTyu';
 
 // TODO set this to enable api access only for logged in user
 export const ENABLE_API_LOGIN = false;
+export const ENABLE_SOCKET_LOGIN = false;

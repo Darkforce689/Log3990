@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable max-lines */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
@@ -37,6 +38,7 @@ describe('UIInputControllerService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [{ provide: GameInfoService, useClass: MockGameInfoService }],
+            imports: [HttpClientTestingModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
         boardService = TestBed.inject(BoardService);
