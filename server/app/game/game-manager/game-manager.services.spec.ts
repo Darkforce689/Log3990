@@ -54,6 +54,7 @@ describe('GameManagerService', () => {
     let stubBotManager: BotManager;
     let stubActionCreatorService: ActionCreatorService;
     let clock: sinon.SinonFakeTimers;
+    let stubActionNotifier: GameActionNotifierService;
     before(() => {
         stubPointCalculator = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
         stubMessageService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
@@ -68,6 +69,7 @@ describe('GameManagerService', () => {
         // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
         stubBotManager = {} as BotManager;
         stubActionCreatorService = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
+        stubActionNotifier = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
     });
 
     afterEach(() => {
@@ -88,6 +90,7 @@ describe('GameManagerService', () => {
             stubDictionaryService,
             stubBotInfoService,
             stubBotManager,
+            stubActionNotifier,
             stubActionCreatorService,
         );
     });
@@ -582,9 +585,9 @@ describe('GameManagerService', () => {
 
     it('should update leaderboard with only real players scores', (done) => {
         const player = new Player('realPlayer');
-        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionCreatorService);
-        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionCreatorService);
-        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionCreatorService);
+        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
         const gameToken = 'gameToken';
 
         const game = { players: [player, bot1, bot2, bot3] } as ServerGame;
