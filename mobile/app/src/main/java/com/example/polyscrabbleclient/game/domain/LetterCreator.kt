@@ -1,16 +1,16 @@
 package com.example.polyscrabbleclient.game.domain
 
-import com.example.polyscrabbleclient.game.model.Tile
+import com.example.polyscrabbleclient.game.model.TileModel
 
 
 class LetterCreator {
-    fun createTileFromLetter(letter: Char): Tile {
+    fun createTileFromLetter(letter: Char): TileModel {
         var points = 0;
         val letterIndex = letter.uppercaseChar().code - 'A'.code;
         if(letterIndex >= 0 && letterIndex < letterValues.size) {
             points = letterValues[letterIndex]
         }
-        return Tile(letter, points)
+        return TileModel(letter, points)
     }
 
     companion object{

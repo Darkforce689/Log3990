@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.game.components
+package com.example.polyscrabbleclient.game.view
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -18,7 +18,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.polyscrabbleclient.game.model.Tile
+import com.example.polyscrabbleclient.game.model.TileModel
 
 val subscript = SpanStyle(
     baselineShift = BaselineShift.Subscript,
@@ -28,13 +28,11 @@ val subscript = SpanStyle(
 
 @Composable
 fun Tile(
-    tile: Tile,
-    isSelected: Boolean,
-    onClick: () -> Unit
+    tileModel: TileModel,
 ) {
     val targetColor by animateColorAsState(
         targetValue =
-            if (isSelected)
+            if (tileModel.isSelected.value)
                 MaterialTheme.colors.primary
             else
                 Color.Transparent,
@@ -44,15 +42,38 @@ fun Tile(
         color = targetColor,
         modifier = Modifier.border(width = 8.dp, MaterialTheme.colors.secondary)
     ) {
+        val a:() -> Unit = {
+            tileModel.isSelected.value = !tileModel.isSelected.value
+            println(tileModel.isSelected)
+        }
+
         Text(modifier = Modifier
-            .selectable(selected = isSelected, onClick = onClick)
+            .selectable(
+                selected = tileModel.isSelected.value,
+                onClick = a
+            )
             .padding(32.dp),
             text = buildAnnotatedString {
-                append(tile.letter)
+                append(tileModel.letter)
                 withStyle(subscript) {
-                    append(tile.points.toString())
+                    append(tileModel.points.toString())
                 }
             }
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Preview1 () {
+    Tile(
+        tileModel = TileModel('A', 1),
+    )
+}
+@Preview(showBackground = true)
+@Composable
+fun Preview2 () {
+    Tile(
+        tileModel = TileModel('B', 3),
+    )
 }

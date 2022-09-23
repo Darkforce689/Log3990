@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.game.components
+package com.example.polyscrabbleclient.game.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,25 +10,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.polyscrabbleclient.game.model.Tile
 import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 
 @Composable
-fun LetterRack(navController: NavController) {
+fun LetterRackView(navController: NavController) {
     val viewModel: LetterRackViewModel = viewModel()
-    val selectedTiles = remember {
-        mutableStateMapOf<Tile, Boolean>()
-    }
+//    val selectedTiles = remember {
+//        mutableStateMapOf<TileModel, Boolean>()
+//    }
 
-    viewModel.tiles.forEach { selectedTiles[it] = false }
+//    viewModel.tiles.forEach { selectedTiles[it] = false }
 
-    val isSelected: (Tile) -> Boolean = { tile: Tile -> selectedTiles[tile] == true }
+//    val isSelected: (TileModel) -> Boolean = { tileModel: TileModel -> selectedTiles[tileModel] == true }
 
-    val clicked: (Tile) -> Unit = { tile ->
-        if(selectedTiles.contains(tile)) {
-            selectedTiles[tile] = !selectedTiles[tile]!!
-        }
-    }
+//    val clicked: (TileModel) -> Unit = { tile ->
+//        if(selectedTiles.contains(tile)) {
+//            selectedTiles[tile] = !selectedTiles[tile]!!
+//        }
+//    }
 
     LazyRow(
         modifier = Modifier
@@ -38,14 +37,7 @@ fun LetterRack(navController: NavController) {
         verticalAlignment = Alignment.Bottom
     ) {
         items(viewModel.tiles.size) { index ->
-            val tile = viewModel.tiles[index]
-            val onClick = { clicked(tile) }
-
-            Tile(
-                tile,
-                isSelected(tile),
-                onClick
-            )
+            Tile(viewModel.tiles[index])
         }
     }
 }

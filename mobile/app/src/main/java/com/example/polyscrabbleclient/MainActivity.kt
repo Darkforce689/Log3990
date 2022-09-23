@@ -10,7 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.polyscrabbleclient.game.components.LetterRack
+import com.example.polyscrabbleclient.game.view.LetterRackView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -59,7 +59,7 @@ fun NavGraph() {
             ChatRoomScreen(navController, chatView)
         }
         composable("gamePage") {
-            LetterRack(navController)
+            LetterRackView(navController)
         }
     }
 
