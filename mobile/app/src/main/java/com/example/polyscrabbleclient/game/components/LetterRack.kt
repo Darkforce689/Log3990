@@ -17,18 +17,16 @@ import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 fun LetterRack(navController: NavController) {
     val viewModel: LetterRackViewModel = viewModel()
     val selectedTiles = remember {
-        mutableStateListOf<Tile>()
+        mutableStateMapOf<Tile, Boolean>()
     }
 
-    val isSelected: (Tile) -> Boolean = { tile: Tile ->
-        selectedTiles.contains(tile)
-    }
+    viewModel.tiles.forEach { selectedTiles[it] = false }
+
+    val isSelected: (Tile) -> Boolean = { tile: Tile -> selectedTiles[tile] == true }
 
     val clicked: (Tile) -> Unit = { tile ->
-        if (isSelected(tile)) {
-            selectedTiles.remove(tile)
-        } else {
-            selectedTiles.add(tile)
+        if(selectedTiles.contains(tile)) {
+            selectedTiles[tile] = !selectedTiles[tile]!!
         }
     }
 
