@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
 
         val thread = Thread {
 
-            val creds = Credentials("olivier1@gmail.com", "password2")
+            val creds = Credentials("olivier1@gmail.com", "password")
             data class AuthRes(val errors: List<String>?, val message: String?)
             val authRes = ScrabbleHttpClient.post(url, creds, AuthRes::class.java)
 
