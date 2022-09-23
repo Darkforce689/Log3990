@@ -25,6 +25,7 @@ import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.model.User
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import com.google.gson.Gson
 import java.io.BufferedInputStream
 import java.io.InputStream
@@ -33,63 +34,26 @@ import java.net.*
 import java.nio.charset.Charset
 
 data class Credentials(val email: String, val password: String)
+data class Score(val _id: String, val score: Int, val name: String)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val url = URL(BuildConfig.COMMUNICATION_URL + "/auth/login")
-//        val cookieManager = CookieManager()
-//        cookieManager.setAcceptCookie(true)
-//        cookieManager.
-//        cookieManager.acceptThirdPartyCookies(WebView(url))
-        val cookieManager = CookieManager()
-        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL)
-        CookieHandler.setDefault(cookieManager);
+        val scoreUrl = URL(BuildConfig.API_URL + "/scores/classic")
 
         val thread = Thread {
-            fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
-                return this.bufferedReader(charset).use { it.readText() }
-            }
-            try {
-                val creds = Credentials("olivier1@gmail.com", "password")
-                val authBody = Gson().toJson(creds)
-                val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
 
-                // POST
-                urlConnection.setRequestMethod("POST")
-                urlConnection.setRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestProperty("Accept", "application/json");
+            val creds = Credentials("olivier1@gmail.com", "password2")
+            data class AuthRes(val errors: List<String>?, val message: String?)
+            val authRes = ScrabbleHttpClient.post(url, creds, AuthRes::class.java)
 
-                urlConnection.setDoOutput(true)
-                val os: OutputStream = urlConnection.getOutputStream()
-                os.write(authBody.toByteArray())
-                os.flush()
-                os.close()
+            println("auth res" + authRes.toString())
 
-                try {
-                    val inputStream: InputStream = BufferedInputStream(urlConnection.inputStream)
-                    inputStream.readTextAndClose()
-                } finally {
-                    urlConnection.disconnect()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            val scores: Array<Score>? = ScrabbleHttpClient.get(scoreUrl, Array<Score>::class.java)
+            println(scores.toString())
 
-            val cookieStr = cookieManager.cookieStore.get(URI(BuildConfig.COMMUNICATION_URL))
-            println("cookie " + cookieStr)
-
-//            val url2 = URL(BuildConfig.API_URL + "/scores/classic")
-//            val urlConnection: HttpURLConnection = url2.openConnection() as HttpURLConnection
-//            try {
-//                val inputStream: InputStream = BufferedInputStream(urlConnection.inputStream)
-//                val out: String = inputStream.readTextAndClose()
-//                println("api auth test: " + out)
-//            } finally {
-//                urlConnection.disconnect()
-//            }
-//
-            SocketHandler.setSocket(cookieManager)
+            SocketHandler.setSocket()
 
         }
 
@@ -106,10 +70,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun readStream(inputStream: InputStream) {
-
     }
 
     override fun onDestroy() {
@@ -131,7 +91,7 @@ fun NavGraph() {
         }
         composable("messageList") {
             // To place in other function somewhere else
-            chatView.joinRoom("prototype", User)
+            chatView.joinRoom("prototype")
             ChatRoomScreen(navController, chatView)
         }
     }

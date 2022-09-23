@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.message
 
 import android.webkit.CookieManager
 import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -26,10 +27,10 @@ private const val URL = BuildConfig.COMMUNICATION_URL
     private lateinit var webSocket: Socket
 
     @Synchronized
-    fun setSocket(cookieManager: java.net.CookieManager) {
+    fun setSocket() {
         val opts = IO.Options()
         opts.path = "/messages"
-        val cookie = cookieManager.cookieStore.get(URI(URL)).get(0)
+        val cookie = ScrabbleHttpClient.getAuthCookie()
 
         println("cookie 2: " + cookie)
 
@@ -57,8 +58,7 @@ private const val URL = BuildConfig.COMMUNICATION_URL
     }
 
     @Synchronized
-    fun joinRoom(roomID: String, userName: String) {
-        webSocket.emit(EventType.USER_NAME.event, userName)
+    fun joinRoom(roomID: String) {
         webSocket.emit(EventType.JOIN_ROOM.event, roomID)
     }
 
