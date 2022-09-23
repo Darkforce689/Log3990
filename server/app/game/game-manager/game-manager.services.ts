@@ -75,6 +75,7 @@ export class GameManagerService {
         private dictionaryService: DictionaryService,
         private botInfoService: BotInfoService,
         private botManager: BotManager,
+        protected actionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
     ) {
         this.gameCreator = new GameCreator(
@@ -87,6 +88,7 @@ export class GameManagerService {
             this.objectiveCreator,
             this.botInfoService,
             this.botManager,
+            this.actionNotifier,
             this.actionCreator,
         );
 
@@ -217,7 +219,8 @@ export class GameManagerService {
         if (!clientsInGame) {
             throw Error(`GameToken ${gameToken} is not in active game`);
         }
-        this.gameActionNotifier.notify(action, clientsInGame, gameToken);
+        const clientNames = clientsInGame.map((linkedClient) => linkedClient.name);
+        this.gameActionNotifier.notify(action, clientNames, gameToken);
     }
 
     private endGame(game: ServerGame) {

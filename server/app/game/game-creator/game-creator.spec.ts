@@ -1,5 +1,6 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { BotInfoService } from '@app/database/bot-info/bot-info.service';
+import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { GameCreator } from '@app/game/game-creator/game-creator';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
@@ -47,6 +48,7 @@ describe('GameCreator', () => {
     botInfoServiceStub.getBotInfoList.resolves([botInfo]);
     // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
     const botManagerStub = {} as BotManager;
+    const actionNotifierStub = createSinonStubInstance(GameActionNotifierService);
     const actionCreatorStub = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
 
     const newGameStateSubject = new Subject<GameStateToken>();
@@ -72,6 +74,7 @@ describe('GameCreator', () => {
             objectiveCreatorStub,
             botInfoServiceStub,
             botManagerStub,
+            actionNotifierStub,
             actionCreatorStub,
         );
     });
