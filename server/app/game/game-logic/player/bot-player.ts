@@ -1,5 +1,5 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
+import { DEFAULT_BOT } from '@app/database/bot-info/default-bot-names';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
@@ -18,7 +18,6 @@ export class BotPlayer extends Player {
     private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
     constructor(
-        protected botInfoService: BotInfoService,
         protected botManager: BotManager,
         protected botDifficulty: BotDifficulty,
         protected gameActionNotifier: GameActionNotifierService,
@@ -77,7 +76,7 @@ export class BotPlayer extends Player {
     }
 
     private async getBotNames(): Promise<string[]> {
-        const botInfos = await this.botInfoService.getBotInfoList();
+        const botInfos = DEFAULT_BOT;
         const filteredBotInfos = botInfos.filter((bot) => bot.type === this.botDifficulty);
         const filteredBotInfosNames = filteredBotInfos.map((bot) => bot.name);
         return filteredBotInfosNames;

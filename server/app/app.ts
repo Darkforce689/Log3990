@@ -4,9 +4,7 @@ import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { HttpException } from '@app/classes/http.exception';
 import { ENABLE_API_LOGIN } from '@app/constants';
-import { BotInfoController } from '@app/controllers/bot-info.controller';
 import { DebugController } from '@app/controllers/debug.controller';
-import { DictionaryController } from '@app/controllers/dictionary.controller';
 import { LeaderboardController } from '@app/controllers/leaderboard-controller/leaderboard.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
@@ -35,8 +33,6 @@ export class Application {
     constructor(
         private readonly debugController: DebugController,
         private readonly leaderboardController: LeaderboardController,
-        private readonly botInfoController: BotInfoController,
-        private readonly dictionaryController: DictionaryController,
         private readonly authController: AuthController,
         private readonly authService: AuthService,
         private readonly sessionMiddlewareService: SessionMiddlewareService,
@@ -60,8 +56,6 @@ export class Application {
         // All users need to be logged in to access routes bellow if ENABLE_API_LOGIN feature flag is enabled
         this.app.use('/api/servergame', this.debugController.router);
         this.app.use('/api/scores', this.leaderboardController.router);
-        this.app.use('/api/botinfo', this.botInfoController.router);
-        this.app.use('/api/dictionary', this.dictionaryController.router);
         this.app.use('/api/account', this.accountController.router);
 
         this.errorHandling();

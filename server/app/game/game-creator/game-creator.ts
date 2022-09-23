@@ -1,5 +1,4 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
@@ -29,7 +28,6 @@ export class GameCreator {
         private endGameSubject: Subject<EndOfGame>,
         private timerController: TimerController,
         private objectiveCreator: ObjectiveCreator,
-        private botInfoService: BotInfoService,
         private botManager: BotManager,
         protected gameActionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
@@ -47,7 +45,7 @@ export class GameCreator {
     }
 
     async createBotPlayer(botDifficulty: BotDifficulty, playerNames: string[]) {
-        const botPlayer = new BotPlayer(this.botInfoService, this.botManager, botDifficulty, this.gameActionNotifier, this.actionCreator);
+        const botPlayer = new BotPlayer(this.botManager, botDifficulty, this.gameActionNotifier, this.actionCreator);
         await botPlayer.updateBotName(playerNames);
         return botPlayer;
     }

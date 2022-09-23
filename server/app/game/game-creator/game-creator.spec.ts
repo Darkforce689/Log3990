@@ -1,10 +1,8 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { GameCreator } from '@app/game/game-creator/game-creator';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
@@ -30,22 +28,14 @@ describe('GameCreator', () => {
     let randomBonus: boolean;
     let gameMode: GameMode;
     let gameToken: string;
-    let dictTitle: string;
     let botDifficulty: BotDifficulty;
     let numberOfPlayers: number;
-    const botInfo = {
-        name: 'BotA',
-        type: BotDifficulty.Easy,
-        canEdit: true,
-    };
 
     const pointCalculatorStub = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompilerStub = createSinonStubInstance<GameCompiler>(GameCompiler);
     const systemMessagesServiceStub = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const timerControllerStub = createSinonStubInstance<TimerController>(TimerController);
     const objectiveCreatorStub = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
-    const botInfoServiceStub = createSinonStubInstance<BotInfoService>(BotInfoService);
-    botInfoServiceStub.getBotInfoList.resolves([botInfo]);
     // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
     const botManagerStub = {} as BotManager;
     const actionNotifierStub = createSinonStubInstance(GameActionNotifierService);
@@ -59,11 +49,10 @@ describe('GameCreator', () => {
         timePerTurn = getRandomInt(Number.MAX_SAFE_INTEGER);
         playerNames = ['p1', 'p2'];
         randomBonus = getRandomInt(1) === 0;
-        dictTitle = DEFAULT_DICTIONARY_TITLE;
         botDifficulty = BotDifficulty.Easy;
         gameMode = GameMode.Classic;
         numberOfPlayers = playerNames.length;
-        onlineGameSettings = { id, playerNames, randomBonus, timePerTurn, gameMode, dictTitle, botDifficulty, numberOfPlayers };
+        onlineGameSettings = { id, playerNames, randomBonus, timePerTurn, gameMode, botDifficulty, numberOfPlayers };
         gameCreator = new GameCreator(
             pointCalculatorStub,
             gameCompilerStub,
@@ -72,7 +61,6 @@ describe('GameCreator', () => {
             endGameSubject,
             timerControllerStub,
             objectiveCreatorStub,
-            botInfoServiceStub,
             botManagerStub,
             actionNotifierStub,
             actionCreatorStub,
@@ -92,7 +80,6 @@ describe('GameCreator', () => {
         singlePlayerOnlineGameSettings.playerNames = ['p1'];
         const createdGame = await gameCreator.createGame(singlePlayerOnlineGameSettings, gameToken);
         expect(createdGame.gameToken).to.be.equal(gameToken);
-        expect(createdGame.players.map((p) => p.name)).to.be.deep.equal([singlePlayerOnlineGameSettings.playerNames[0], botInfo.name]);
         expect(createdGame.timePerTurn).to.be.equal(timePerTurn);
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
     });
@@ -103,7 +90,6 @@ describe('GameCreator', () => {
         specialSinglePlayerOnlineGameSettings.playerNames = ['p1'];
         const createdGame = await gameCreator.createGame(specialSinglePlayerOnlineGameSettings, gameToken);
         expect(createdGame.gameToken).to.be.equal(gameToken);
-        expect(createdGame.players.map((p) => p.name)).to.be.deep.equal([specialSinglePlayerOnlineGameSettings.playerNames[0], botInfo.name]);
         expect(createdGame.timePerTurn).to.be.equal(timePerTurn);
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
         expect(createdGame as SpecialServerGame).instanceof(SpecialServerGame);

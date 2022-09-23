@@ -6,8 +6,6 @@ export interface OnlineGameSettingsUI {
     timePerTurn: number;
     playerNames: string[];
     randomBonus: boolean;
-    dictTitle: string;
-    dictDesc?: string;
     botDifficulty: BotDifficulty;
     numberOfPlayers: number;
 }

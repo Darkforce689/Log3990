@@ -5,7 +5,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { NEW_GAME_TIMEOUT } from '@app/constants';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -13,7 +12,6 @@ import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCompilerService } from '@app/game/game-logic/actions/action-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
@@ -50,7 +48,6 @@ describe('GameManagerService', () => {
     let stubObjectiveCreator: ObjectiveCreator;
     let stubLeaderboardService: StubbedClass<LeaderboardService>;
     let stubDictionaryService: DictionaryService;
-    let stubBotInfoService: BotInfoService;
     let stubBotManager: BotManager;
     let stubActionCreatorService: ActionCreatorService;
     let clock: sinon.SinonFakeTimers;
@@ -65,7 +62,6 @@ describe('GameManagerService', () => {
         stubObjectiveCreator = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
         stubLeaderboardService = createSinonStubInstance<LeaderboardService>(LeaderboardService);
         stubDictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
-        stubBotInfoService = createSinonStubInstance<BotInfoService>(BotInfoService);
         // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
         stubBotManager = {} as BotManager;
         stubActionCreatorService = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
@@ -88,7 +84,6 @@ describe('GameManagerService', () => {
             stubObjectiveCreator,
             stubLeaderboardService,
             stubDictionaryService,
-            stubBotInfoService,
             stubBotManager,
             stubActionNotifier,
             stubActionCreatorService,
@@ -106,7 +101,6 @@ describe('GameManagerService', () => {
             timePerTurn,
             playerNames,
             randomBonus,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -131,7 +125,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -168,7 +161,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -194,7 +186,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -220,7 +211,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -248,7 +238,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -275,7 +264,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -306,7 +294,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -332,7 +319,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -364,7 +350,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -390,7 +375,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -412,7 +396,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -438,7 +421,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -455,7 +437,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -475,7 +456,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -504,7 +484,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -538,7 +517,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -573,7 +551,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -585,9 +562,9 @@ describe('GameManagerService', () => {
 
     it('should update leaderboard with only real players scores', (done) => {
         const player = new Player('realPlayer');
-        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
-        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
-        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot1 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot2 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot3 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
         const gameToken = 'gameToken';
 
         const game = { players: [player, bot1, bot2, bot3] } as ServerGame;
@@ -615,7 +592,6 @@ describe('GameManagerService', () => {
             timePerTurn: 60000,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty,
             numberOfPlayers,
         };
