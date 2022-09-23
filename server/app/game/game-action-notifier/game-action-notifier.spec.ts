@@ -19,10 +19,9 @@ describe('GameActionNotifier', () => {
         { char: 'm', value: 3 },
         { char: 'a', value: 1 },
     ];
-    const linkedPlayers = [
-        { socketID: 'aaa', name: 'Joueur1' },
-        { socketID: 'bbb', name: 'Joueur2' },
-    ];
+
+    const playerNames = ['Joueur1', 'Joueur2'];
+
     beforeEach(() => {
         gameActionNotifierService = new GameActionNotifierService();
         pointCalculatorService = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
@@ -32,7 +31,7 @@ describe('GameActionNotifier', () => {
     it('should send notification with exchangeLetter action', () => {
         const exchangeAction = new ExchangeLetter(new Player('allo'), lettersToExchange);
         const gameToken = '1';
-        gameActionNotifierService.notify(exchangeAction, linkedPlayers, gameToken);
+        gameActionNotifierService.notify(exchangeAction, playerNames, gameToken);
         gameActionNotifierService.notification$.subscribe((message) => {
             expect(message.gameToken).to.equal(gameToken);
             expect(message.content).to.equal('allo échange 2 lettres');
@@ -40,14 +39,10 @@ describe('GameActionNotifier', () => {
     });
 
     it('should throw Error if notification with exchangeLetter action', () => {
-        const linkedClients = [
-            { socketID: 'aaa', name: 'Joueur1' },
-            { socketID: 'aaa', name: 'Joueur1' },
-        ];
         const exchangeAction = new ExchangeLetter(new Player('Joueur1'), lettersToExchange);
         const gameToken = '1';
         try {
-            gameActionNotifierService.notify(exchangeAction, linkedClients, gameToken);
+            gameActionNotifierService.notify(exchangeAction, playerNames, gameToken);
             gameActionNotifierService.notification$.subscribe((message) => {
                 expect(message).to.be.undefined;
             });
@@ -59,7 +54,7 @@ describe('GameActionNotifier', () => {
     it('should send notification with passTurn action', () => {
         const passTurn = new PassTurn(new Player('allo'));
         const gameToken = '1';
-        gameActionNotifierService.notify(passTurn, linkedPlayers, gameToken);
+        gameActionNotifierService.notify(passTurn, playerNames, gameToken);
         gameActionNotifierService.notification$.subscribe((message) => {
             expect(message.gameToken).to.equal(gameToken);
             expect(message.content).to.equal('allo passe son tour');
@@ -75,7 +70,7 @@ describe('GameActionNotifier', () => {
             wordSearcher,
         );
         const gameToken = '1';
-        gameActionNotifierService.notify(placeLetter, linkedPlayers, gameToken);
+        gameActionNotifierService.notify(placeLetter, playerNames, gameToken);
         gameActionNotifierService.notification$.subscribe((message) => {
             expect(message.gameToken).to.equal(gameToken);
             expect(message.content).to.equal('allo place le mot bonjour en a1h');
