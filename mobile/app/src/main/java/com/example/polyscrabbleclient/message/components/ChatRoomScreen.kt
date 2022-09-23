@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.message.model.*
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
+import com.example.polyscrabbleclient.navPage
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -35,8 +36,8 @@ fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewMod
         Column {
             Button(modifier = Modifier.padding(20.dp),
                 onClick = {
-                    navController.navigate("startPage") {
-                        popUpTo("messageList") {
+                    navController.navigate(navPage.Start.label) {
+                        popUpTo(navPage.Room.label) {
                             inclusive = true
                         }
                     }
