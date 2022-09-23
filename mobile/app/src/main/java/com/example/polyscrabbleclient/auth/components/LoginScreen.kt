@@ -1,7 +1,7 @@
 package com.example.polyscrabbleclient.auth.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -11,25 +11,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.auth.model.AuthMode
-import com.example.polyscrabbleclient.auth.model.AuthState
+import com.example.polyscrabbleclient.auth.model.AuthLoginSate
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
+import com.example.polyscrabbleclient.navPage
+import com.example.polyscrabbleclient.ui.theme.connect
+import com.example.polyscrabbleclient.ui.theme.connection
 import com.example.polyscrabbleclient.ui.theme.email_string
 import com.example.polyscrabbleclient.ui.theme.password_string
 @Composable
-fun AuthScreen(navController: NavController, viewModel: AuthenticationViewModel) {
+fun SignInScreen(navController: NavController, viewModel: AuthenticationViewModel) {
     Column() {
         Button(modifier = Modifier.padding(20.dp),
             onClick = {
-                navController.navigate("startPage") {
-                    popUpTo("loginPage") {
+                navController.navigate(navPage.Start.label) {
+                    popUpTo(navPage.Login.label) {
                         inclusive = true
                     }
                 }
@@ -39,8 +44,12 @@ fun AuthScreen(navController: NavController, viewModel: AuthenticationViewModel)
         }
         AuthContent(
             modifier = Modifier.fillMaxWidth(),
-            authState = viewModel.state.collectAsState().value,
-            handleEvent = viewModel::handleEvent
+            authState = viewModel.logInState.collectAsState().value,
+            handleEvent = viewModel::handleEvent,
+            onSignUp = { navController.navigate(navPage.SignUp.label){
+                popUpTo(navPage.Login.label)
+                }
+            }
         )
     }
 }
@@ -48,8 +57,9 @@ fun AuthScreen(navController: NavController, viewModel: AuthenticationViewModel)
 @Composable
 fun AuthContent(
     modifier: Modifier=Modifier,
-    authState: AuthState,
-    handleEvent: (event: AuthenticationViewModel.AuthEvent)-> Unit
+    authState: AuthLoginSate,
+    handleEvent: (event: AuthenticationViewModel.AuthEvent)-> Unit,
+    onSignUp: () -> Unit
 ){
     AuthForm(email = authState.email,
              password = authState.password ,
@@ -64,24 +74,29 @@ fun AuthContent(
                  )},
             onAuthenticate = {
                 handleEvent(AuthenticationViewModel.AuthEvent.Authenticate)
-            }
+            },
+            onSignUp = onSignUp
     )
 
 }
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun AuthForm(modifier: Modifier = Modifier,
-             email: String? = "",
-             password: String = "",
+             email: String?,
+             password: String,
              authMode: AuthMode = AuthMode.LOG_IN,
-             onEmailChanged: (email: String) -> Unit = {},
-             onPasswordChanged: (email: String) -> Unit = {},
-             onAuthenticate: () -> Unit = {}
+             onEmailChanged: (email: String) -> Unit,
+             onPasswordChanged: (password: String) -> Unit,
+             onAuthenticate: () -> Unit,
+             onSignUp: ()-> Unit
 ) {
-    Box(Modifier.fillMaxWidth().padding(10.dp), contentAlignment = Alignment.Center) {
-        Card {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(10.dp), contentAlignment = Alignment.Center) {
+        Card(Modifier.padding(15.dp)) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Connexion")
+                Text(connection)
                 Spacer(modifier = Modifier.height(20.dp))
                 Column {
                     EmailInput(email = email, onEmailChanged = onEmailChanged)
@@ -90,8 +105,9 @@ fun AuthForm(modifier: Modifier = Modifier,
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(onClick = onAuthenticate ) {
-                    Text("Connexion")
+                    Text(connect)
                 }
+                ClickableText(text = AnnotatedString("Vous n'avez pas de compte?", SpanStyle(color = Color.Cyan, textDecoration = TextDecoration.Underline)), onClick = {onSignUp()})
 
             }
         }

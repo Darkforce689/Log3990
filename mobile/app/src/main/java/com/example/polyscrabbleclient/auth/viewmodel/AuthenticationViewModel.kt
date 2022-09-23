@@ -3,16 +3,21 @@ package com.example.polyscrabbleclient.auth.viewmodel
 import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.auth.model.AuthMode
 import kotlinx.coroutines.flow.MutableStateFlow
-import com.example.polyscrabbleclient.auth.model.AuthState
+import com.example.polyscrabbleclient.auth.model.AuthLoginSate
+import com.example.polyscrabbleclient.auth.model.AuthSignUpSate
+import com.example.polyscrabbleclient.ui.theme.signUp
 
 class AuthenticationViewModel : ViewModel() {
-    val state = MutableStateFlow(AuthState())
+    val logInState = MutableStateFlow(AuthLoginSate())
+    val signUpSate = MutableStateFlow(AuthSignUpSate())
 
     sealed class AuthEvent {
         object UpdateAuthMode : AuthEvent()
         class EmailChanged(val email: String) : AuthEvent()
         class PasswordChanged(val password: String) : AuthEvent()
+        class UsernameChanged(val username: String) : AuthEvent()
         object Authenticate : AuthEvent()
+        object CreateAccount : AuthEvent()
     }
 
     fun handleEvent(authEvent: AuthEvent) {
@@ -26,31 +31,45 @@ class AuthenticationViewModel : ViewModel() {
             is AuthEvent.PasswordChanged -> {
                 updatePassword(authEvent.password)
             }
+            is AuthEvent.UsernameChanged ->{
+                updateUsername(authEvent.username)
+            }
             is AuthEvent.Authenticate -> {
                 authenticate()
+            }
+            is AuthEvent.CreateAccount -> {
+                createAccount()
             }
         }
     }
 
     private fun authenticate() {
-        println(state.value)
+        println(logInState.value)
+    }
+
+    private fun createAccount() {
+        println(signUpSate.value)
     }
 
     private fun updateEmail(email:String) {
-        state.value = state.value.copy(email = email)
+        logInState.value = logInState.value.copy(email = email)
     }
 
     private fun updatePassword(password: String) {
-        state.value = state.value.copy(password = password)
+        logInState.value = logInState.value.copy(password = password)
+    }
+
+    private fun updateUsername(username: String) {
+        logInState.value = logInState.value.copy(password = username)
     }
 
     private fun updateAuthMode() {
-        val updatedMode = if (state.value.mode == AuthMode.LOG_IN) {
+        val updatedMode = if (logInState.value.mode == AuthMode.LOG_IN) {
             AuthMode.SIGN_UP
         } else {
             AuthMode.LOG_IN
         }
-        state.value =  state.value.copy(mode = updatedMode)
+        logInState.value =  logInState.value.copy(mode = updatedMode)
     }
 
 }
