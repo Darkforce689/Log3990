@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
 import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
@@ -12,6 +13,9 @@ describe('ExchangeLetter', () => {
     let game: MockGame;
     const player: Player = new Player('Tim');
     beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         const messageService = TestBed.inject(MessagesService);
         const timerService = TestBed.inject(TimerService);
         const boardService = TestBed.inject(BoardService);

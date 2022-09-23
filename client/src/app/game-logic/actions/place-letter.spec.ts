@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { BOARD_DIMENSION, DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
@@ -15,6 +16,9 @@ describe('PlaceLetter', () => {
     const centerPosition = Math.floor(BOARD_DIMENSION / 2);
 
     beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         const messageService = TestBed.inject(MessagesService);
         const timerService = TestBed.inject(TimerService);
         const boardService = TestBed.inject(BoardService);

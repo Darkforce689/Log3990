@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
@@ -20,6 +21,7 @@ describe('Player', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [{ provide: BotHttpService, useValue: mockBotHttpService }],
+            imports: [HttpClientTestingModule],
         });
         boardService = TestBed.inject(BoardService);
         timer = TestBed.inject(TimerService);

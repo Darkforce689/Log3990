@@ -1,11 +1,12 @@
-import { UserCreation } from '@app/user/interfaces/user-creation.interface';
-import { User } from '@app/user/interfaces/user.interface';
 import { USER_COLLECTION } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
-import { Service } from 'typedi';
-import { UserQuery } from '@app/user/user-query.interface';
 import { ServerLogger } from '@app/logger/logger';
+import { UserCreation } from '@app/user/interfaces/user-creation.interface';
+import { User } from '@app/user/interfaces/user.interface';
+import { UserQuery } from '@app/user/user-query.interface';
+import { ObjectId } from 'mongodb';
+import { Service } from 'typedi';
 
 export enum UserCreationError {
     NameAlreadyTaken = 'NAME_ALREADY_TAKEN',
@@ -52,7 +53,16 @@ export class UserService {
     }
 
     async getUser(query: UserQuery): Promise<User | undefined> {
-        const result = await this.collection.findOne(query);
+        // To prevent error when reusing queries multiple times
+        const queryClone = {
+            ...query,
+        };
+        const { _id: userId } = queryClone;
+        if (!(userId instanceof ObjectId) && userId !== undefined) {
+            // eslint-disable-next-line no-underscore-dangle
+            queryClone._id = new ObjectId(userId);
+        }
+        const result = await this.collection.findOne(queryClone);
         const user = (result ?? undefined) as User | undefined;
         return user;
     }

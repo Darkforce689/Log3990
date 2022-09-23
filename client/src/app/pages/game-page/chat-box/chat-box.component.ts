@@ -1,11 +1,11 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NOT_ONLY_SPACE_RGX } from '@app/game-logic/constants';
-import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
 import { Message } from '@app/game-logic/messages/message.interface';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
 import { NewlinePipe } from '@app/pipes/newline-pipe/newline.pipe';
+import { AccountService } from '@app/services/account.service';
 import { Observable } from 'rxjs';
 
 const MAX_MESSAGE_LENGTH = 512;
@@ -26,7 +26,7 @@ export class ChatBoxComponent implements AfterViewInit {
     private boldPipe = new BoldPipe();
     private newlinePipe = new NewlinePipe();
 
-    constructor(private messageService: MessagesService, private cdRef: ChangeDetectorRef, private gameInfo: GameInfoService) {}
+    constructor(private messageService: MessagesService, private cdRef: ChangeDetectorRef, private accountService: AccountService) {}
 
     ngAfterViewInit(): void {
         this.cdRef.detectChanges();
@@ -46,7 +46,8 @@ export class ChatBoxComponent implements AfterViewInit {
         if (!this.isMessageValid(content)) {
             return;
         }
-        const playerName = this.gameInfo.player.name;
+
+        const playerName = this.accountService.account?.name as string;
         this.messageService.receiveMessagePlayer(playerName, content);
 
         this.resetMessageContent();

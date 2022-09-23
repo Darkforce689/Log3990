@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BOARD_DIMENSION, DEFAULT_DICTIONARY_TITLE, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { Player } from '@app/game-logic/player/player';
 import { LeaderboardService } from '@app/leaderboard/leaderboard.service';
+import { AccountService } from '@app/services/account.service';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { BotHttpService } from '@app/services/bot-http.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
@@ -45,12 +47,15 @@ describe('GameManagerService Online Edition', () => {
         numberOfPlayers: 2,
     };
 
+    const accountService = { account: { name: 'Tim' } };
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
+                { provide: AccountService, useValue: accountService },
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
             ],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(GameManagerService);
         gameSocketHandler = TestBed.inject(GameSocketHandlerService);
