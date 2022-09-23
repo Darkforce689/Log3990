@@ -11,14 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.polyscrabbleclient.auth.components.AuthScreen
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.message.SocketHandler
-import com.example.polyscrabbleclient.message.components.ChatRoomScreen
-import com.example.polyscrabbleclient.message.model.User
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 
@@ -27,10 +21,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         SocketHandler.setSocket()
         setContent {
+            val chatView : ChatBoxViewModel = viewModel()
+            val loginViewModel : AuthenticationViewModel = viewModel()
             App {
                 Column {
-                    NavGraph()
-//                    LetterRack()
+                    NavGraph(chatView, loginViewModel)
                 }
             }
         }
@@ -40,32 +35,6 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         SocketHandler.closeConnection()
     }
-}
-// Main Component
-@Preview(showBackground = true)
-@Composable
-fun NavGraph() {
-    val chatView : ChatBoxViewModel = viewModel()
-    val loginViewModel : AuthenticationViewModel = viewModel()
-
-    val navController = rememberNavController() // 1
-    NavHost(navController, startDestination = "startPage") {
-        composable("startPage") { // 2
-            Column {
-                Prototype(navController)
-                Login(navController)
-            }
-        }
-        composable("messageList") {
-            // To place in other function somewhere else
-            chatView.joinRoom("prototype", User)
-            ChatRoomScreen(navController, chatView)
-        }
-        composable("loginPage"){
-            AuthScreen(navController, loginViewModel)
-        }
-    }
-
 }
 
 @Composable
