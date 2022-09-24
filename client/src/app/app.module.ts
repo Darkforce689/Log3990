@@ -25,7 +25,6 @@ import { ChatBoxComponent } from '@app/pages/game-page/chat-box/chat-box.compone
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HorseComponent } from '@app/pages/game-page/horse/horse.component';
 import { InfoBoxComponent } from '@app/pages/game-page/info-box/info-box.component';
-import { ObjectiveComponent } from '@app/pages/game-page/objectives/objective-component/objective.component';
 import { PlayerInfoComponent } from '@app/pages/game-page/player-info/player-info.component';
 import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
@@ -33,7 +32,6 @@ import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
 import { AlertDialogComponent } from './components/modals/alert-dialog/alert-dialog.component';
 import { LoadingGameComponent } from './components/modals/loading-game/loading-game.component';
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
-import { ObjectivesListComponent } from './pages/game-page/objectives/objectives-list.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
@@ -71,8 +69,6 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         ClickAndClickoutDirective,
         MouseRollDirective,
         AlertDialogComponent,
-        ObjectivesListComponent,
-        ObjectiveComponent,
         AbandonDialogComponent,
         LoadingGameComponent,
         WinnerDialogComponent,

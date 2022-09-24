@@ -3,10 +3,9 @@ import { GameActionNotifierService } from '@app/game/game-action-notifier/game-a
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
-import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -27,7 +26,6 @@ export class GameCreator {
         private newGameStateSubject: Subject<GameStateToken>,
         private endGameSubject: Subject<EndOfGame>,
         private timerController: TimerController,
-        private objectiveCreator: ObjectiveCreator,
         private botManager: BotManager,
         protected gameActionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
@@ -52,8 +50,8 @@ export class GameCreator {
 
     private createNewGame(gameSettings: OnlineGameSettings, gameToken: string) {
         const gameMode = gameSettings.gameMode;
-        if (gameMode === GameMode.Special) {
-            return this.createSpecialServerGame(gameSettings, gameToken);
+        if (gameMode === GameMode.Magic) {
+            return this.createMagicServerGame(gameSettings, gameToken);
         }
         return this.createClassicServerGame(gameSettings, gameToken);
     }
@@ -72,8 +70,8 @@ export class GameCreator {
         );
     }
 
-    private createSpecialServerGame(gameSettings: OnlineGameSettings, gameToken: string): ServerGame {
-        return new SpecialServerGame(
+    private createMagicServerGame(gameSettings: OnlineGameSettings, gameToken: string): ServerGame {
+        return new MagicServerGame(
             this.timerController,
             gameSettings.randomBonus,
             gameSettings.timePerTurn,
@@ -83,7 +81,6 @@ export class GameCreator {
             this.messagesService,
             this.newGameStateSubject,
             this.endGameSubject,
-            this.objectiveCreator,
         );
     }
 

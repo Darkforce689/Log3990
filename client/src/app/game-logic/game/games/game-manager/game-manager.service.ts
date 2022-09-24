@@ -125,6 +125,6 @@ export class GameManagerService {
         if (mode === GameMode.Classic) {
             return this.gameCreator.createOnlineGame(gameCreationParams);
         }
-        return this.gameCreator.createSpecialOnlineGame(gameCreationParams);
+        return this.gameCreator.createMagicOnlineGame(gameCreationParams);
     }
 }

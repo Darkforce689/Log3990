@@ -71,17 +71,6 @@ describe('GameManagerService Online Edition', () => {
         expect(result).toBeInstanceOf(OnlineGame);
     });
 
-    it('should join a special online game', () => {
-        const userAuth: UserAuth = {
-            playerName: 'p1',
-            gameToken: '0',
-        };
-
-        service.joinOnlineGame(userAuth, onlineGameSettings);
-        const result = service['game'];
-        expect(result).toBeInstanceOf(OnlineGame);
-    });
-
     it('should stop game if online game exist on join an online game', () => {
         const userAuth: UserAuth = {
             playerName: 'p1',

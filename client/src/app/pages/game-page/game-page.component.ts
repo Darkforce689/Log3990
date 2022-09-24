@@ -130,7 +130,11 @@ export class GamePageComponent implements OnDestroy {
     }
 
     get canUseMagicCards(): boolean {
-        return this.isItMyTurn;
+        return this.isItMyTurn && this.isMagicGame;
+    }
+
+    get isMagicGame() {
+        return this.info.isMagicGame;
     }
 
     pass() {

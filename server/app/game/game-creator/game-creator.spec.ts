@@ -3,10 +3,9 @@ import { GameActionNotifierService } from '@app/game/game-action-notifier/game-a
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { GameCreator } from '@app/game/game-creator/game-creator';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
-import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -35,7 +34,6 @@ describe('GameCreator', () => {
     const gameCompilerStub = createSinonStubInstance<GameCompiler>(GameCompiler);
     const systemMessagesServiceStub = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const timerControllerStub = createSinonStubInstance<TimerController>(TimerController);
-    const objectiveCreatorStub = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
     // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
     const botManagerStub = {} as BotManager;
     const actionNotifierStub = createSinonStubInstance(GameActionNotifierService);
@@ -60,7 +58,6 @@ describe('GameCreator', () => {
             newGameStateSubject,
             endGameSubject,
             timerControllerStub,
-            objectiveCreatorStub,
             botManagerStub,
             actionNotifierStub,
             actionCreatorStub,
@@ -84,14 +81,14 @@ describe('GameCreator', () => {
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
     });
 
-    it('should create a special server game with requested parameters and default opponent name', async () => {
-        const specialSinglePlayerOnlineGameSettings = { ...onlineGameSettings };
-        specialSinglePlayerOnlineGameSettings.gameMode = GameMode.Special;
-        specialSinglePlayerOnlineGameSettings.playerNames = ['p1'];
-        const createdGame = await gameCreator.createGame(specialSinglePlayerOnlineGameSettings, gameToken);
+    it('should create a magic server game with requested parameters and default opponent name', async () => {
+        const magicSinglePlayerOnlineGameSettings = { ...onlineGameSettings };
+        magicSinglePlayerOnlineGameSettings.gameMode = GameMode.Magic;
+        magicSinglePlayerOnlineGameSettings.playerNames = ['p1'];
+        const createdGame = await gameCreator.createGame(magicSinglePlayerOnlineGameSettings, gameToken);
         expect(createdGame.gameToken).to.be.equal(gameToken);
         expect(createdGame.timePerTurn).to.be.equal(timePerTurn);
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
-        expect(createdGame as SpecialServerGame).instanceof(SpecialServerGame);
+        expect(createdGame as MagicServerGame).instanceof(MagicServerGame);
     });
 });
