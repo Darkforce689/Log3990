@@ -14,9 +14,11 @@ export class MessagesService {
 
     constructor(private onlineChat: OnlineChatHandlerService) {
         this.onlineChat.opponentMessage$.subscribe((chatMessage: ChatMessage) => {
-            const forwarder = chatMessage.from;
-            const content = chatMessage.content;
-            this.receiveMessageOpponent(forwarder, content);
+            this.receiveOpponentMessage(chatMessage);
+        });
+
+        this.onlineChat.playerMessage$.subscribe((chatMessage: ChatMessage) => {
+            this.receivePlayerMessage(chatMessage);
         });
 
         this.onlineChat.errorMessage$.subscribe((errorContent: string) => {
@@ -46,23 +48,31 @@ export class MessagesService {
         this.addMessageToLog(errorMessage);
     }
 
-    receiveMessagePlayer(forwarder: string, content: string) {
-        const message = {
+    receivePlayerMessage(chatMessage: ChatMessage) {
+        const { content, from, date } = chatMessage;
+        const message: Message = {
             content,
-            from: forwarder,
+            from,
+            date,
             type: MessageType.Player1,
         };
-
         this.addMessageToLog(message);
+    }
+
+    receiveNonDistributedPlayerMessage(content: string) {
+        // TODO add to not distributed message
+        // this.addMessageToLog(message);
         if (this.onlineChat.isConnected) {
             this.onlineChat.sendMessage(content);
         }
     }
 
-    receiveMessageOpponent(forwarder: string, content: string) {
-        const message = {
+    receiveOpponentMessage(chatMessage: ChatMessage) {
+        const { content, from, date } = chatMessage;
+        const message: Message = {
             content,
-            from: forwarder,
+            from,
+            date,
             type: MessageType.Player2,
         };
         this.addMessageToLog(message);

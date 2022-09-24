@@ -1,6 +1,7 @@
 export interface Message {
     content: string;
     from: string;
+    date?: Date;
     type: MessageType;
 }
 
@@ -13,4 +14,5 @@ export enum MessageType {
 export interface ChatMessage {
     from: string;
     content: string;
+    date: Date;
 }
