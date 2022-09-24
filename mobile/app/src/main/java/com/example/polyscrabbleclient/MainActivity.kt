@@ -16,6 +16,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.polyscrabbleclient.game.sources.Player
+import com.example.polyscrabbleclient.game.view.GameScreen
+import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.message.SocketHandler
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
@@ -45,6 +48,7 @@ class MainActivity : ComponentActivity() {
 fun NavGraph() {
     SocketHandler.setSocket()
     val chatView : ChatBoxViewModel = viewModel()
+    val gameViewModel : GameViewModel = viewModel()
     val navController = rememberNavController() // 1
     NavHost(navController, startDestination = "startPage") {
         composable("startPage") { // 2
@@ -59,7 +63,9 @@ fun NavGraph() {
             ChatRoomScreen(navController, chatView)
         }
         composable("gamePage") {
-            LetterRackView(navController)
+            val p = Player()
+            gameViewModel.addPlayer(p)
+            GameScreen(navController, gameViewModel)
         }
     }
 
