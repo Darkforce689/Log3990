@@ -1,11 +1,17 @@
 package com.example.polyscrabbleclient
 
 import android.os.Bundle
+import android.webkit.WebView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -13,11 +19,46 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.message.SocketHandler
-import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.example.polyscrabbleclient.message.components.ChatRoomScreen
+import com.example.polyscrabbleclient.message.model.User
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
+import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
+import com.google.gson.Gson
+import java.io.BufferedInputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.*
+import java.nio.charset.Charset
+
+data class Credentials(val email: String, val password: String)
+data class Score(val _id: String, val score: Int, val name: String)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val url = URL(BuildConfig.COMMUNICATION_URL + "/auth/login")
+        val scoreUrl = URL(BuildConfig.API_URL + "/scores/classic")
+
+        val thread = Thread {
+
+            val creds = Credentials("olivier1@gmail.com", "password")
+            data class AuthRes(val errors: List<String>?, val message: String?)
+            val authRes = ScrabbleHttpClient.post(url, creds, AuthRes::class.java)
+
+            println("auth res" + authRes.toString())
+
+            val scores: Array<Score>? = ScrabbleHttpClient.get(scoreUrl, Array<Score>::class.java)
+            println(scores.toString())
+
+            SocketHandler.setSocket()
+
+        }
+
+        thread.start();
+
+
+
         super.onCreate(savedInstanceState)
         SocketHandler.setSocket()
         setContent {

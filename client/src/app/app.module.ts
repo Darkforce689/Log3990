@@ -1,5 +1,5 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
@@ -16,7 +16,6 @@ import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { MouseRollDirective } from '@app/directives/mouse-roll.directive';
 import { PreventContextMenuDirective } from '@app/directives/prevent-context-menu.directive';
-import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
 import { AuthInterceptor } from '@app/interceptors/auth.interceptor';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -109,16 +108,6 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
-            multi: true,
-        },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: () => {
-                return () => {
-                    return;
-                };
-            },
-            deps: [CommandExecuterService],
             multi: true,
         },
     ],

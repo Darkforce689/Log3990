@@ -1,4 +1,4 @@
-import { MagicCard } from '@app/game-logic/actions/magic-card';
+import { MagicCard } from '@app/game-logic/actions/magic-card/magic-card';
 
 export class SplitPoints extends MagicCard {
     protected perform() {

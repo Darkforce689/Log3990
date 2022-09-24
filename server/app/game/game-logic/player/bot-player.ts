@@ -1,11 +1,11 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { BotInfoService } from '@app/database/bot-info/bot-info.service';
+import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { ValidWord } from '@app/game/game-logic/interface/valid-word';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { getRandomInt } from '@app/game/game-logic/utils';
@@ -18,11 +18,10 @@ export class BotPlayer extends Player {
     private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
     constructor(
-        // protected botMessage: BotMessagesService,
         protected botInfoService: BotInfoService,
         protected botManager: BotManager,
         protected botDifficulty: BotDifficulty,
-        protected botMessage: BotMessagesService,
+        protected gameActionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
     ) {
         super('BotPlaceholderName');
@@ -30,7 +29,7 @@ export class BotPlayer extends Player {
 
     generateAction(game: ServerGame): void {
         const bot = this.botDifficulty === BotDifficulty.Easy ? this.botManager.easyBot : this.botManager.hardBot;
-        this.startTimerAction();
+        this.startTimerAction(game);
         this.timesUp = false;
         timer(TIME_BUFFER_BEFORE_ACTION).subscribe(() => {
             try {
@@ -47,23 +46,22 @@ export class BotPlayer extends Player {
         this.chosenAction$.complete();
     }
 
-    startTimerAction() {
+    startTimerAction(game: ServerGame) {
         const timerPass = timer(TIME_BEFORE_PASS);
         timerPass.pipe(takeUntil(this.action$)).subscribe(() => {
             this.timesUp = true;
-            this.botMessage.sendAction(this.actionCreator.createPassTurn(this));
+            const action = this.actionCreator.createPassTurn(this);
+            this.playAction(action, game);
         });
         timer(TIME_BEFORE_PICKING_ACTION).subscribe(() => {
             const action = this.chosenAction$.value;
             if (action) {
-                // this.botMessage.sendAction(action);
-                this.action$.next(action);
+                this.playAction(action, game);
                 return;
             }
             this.chosenAction$.pipe(takeUntil(timerPass)).subscribe((chosenAction) => {
                 if (chosenAction !== undefined) {
-                    // this.botMessage.sendAction(chosenAction);
-                    this.action$.next(chosenAction);
+                    this.playAction(chosenAction, game);
                 }
             });
         });
@@ -83,5 +81,11 @@ export class BotPlayer extends Player {
         const filteredBotInfos = botInfos.filter((bot) => bot.type === this.botDifficulty);
         const filteredBotInfosNames = filteredBotInfos.map((bot) => bot.name);
         return filteredBotInfosNames;
+    }
+
+    private playAction(action: Action, game: ServerGame) {
+        const playerNames = game.players.map((player) => player.name);
+        this.gameActionNotifier.notify(action, playerNames, game.gameToken);
+        this.action$.next(action);
     }
 }

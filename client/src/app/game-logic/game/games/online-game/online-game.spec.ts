@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
@@ -24,6 +25,7 @@ describe('OnlineGame', () => {
     let player2: Player;
 
     beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
         boardService = TestBed.inject(BoardService);
         gameSocketHandlerService = TestBed.inject(GameSocketHandlerService);
         timer = TestBed.inject(TimerService);

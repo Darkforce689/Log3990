@@ -17,7 +17,6 @@ import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -53,9 +52,9 @@ describe('GameManagerService', () => {
     let stubDictionaryService: DictionaryService;
     let stubBotInfoService: BotInfoService;
     let stubBotManager: BotManager;
-    let stubBotMessageService: BotMessagesService;
     let stubActionCreatorService: ActionCreatorService;
     let clock: sinon.SinonFakeTimers;
+    let stubActionNotifier: GameActionNotifierService;
     before(() => {
         stubPointCalculator = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
         stubMessageService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
@@ -69,8 +68,8 @@ describe('GameManagerService', () => {
         stubBotInfoService = createSinonStubInstance<BotInfoService>(BotInfoService);
         // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
         stubBotManager = {} as BotManager;
-        stubBotMessageService = createSinonStubInstance<BotMessagesService>(BotMessagesService);
         stubActionCreatorService = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
+        stubActionNotifier = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
     });
 
     afterEach(() => {
@@ -91,7 +90,7 @@ describe('GameManagerService', () => {
             stubDictionaryService,
             stubBotInfoService,
             stubBotManager,
-            stubBotMessageService,
+            stubActionNotifier,
             stubActionCreatorService,
         );
     });
@@ -586,9 +585,9 @@ describe('GameManagerService', () => {
 
     it('should update leaderboard with only real players scores', (done) => {
         const player = new Player('realPlayer');
-        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
-        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
-        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
+        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
         const gameToken = 'gameToken';
 
         const game = { players: [player, bot1, bot2, bot3] } as ServerGame;

@@ -9,7 +9,8 @@ import { PointCalculatorService } from '@app/game/game-logic/point-calculator/po
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/game/online-action.interface';
 import { Service } from 'typedi';
-import { SplitPoints } from '@app/game/game-logic/actions/magic-card-split-points';
+import { ExchangeALetter } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-letter';
+import { SplitPoints } from '@app/game/game-logic/actions/magic-card/magic-card-split-points';
 
 @Service()
 export class ActionCompilerService {
@@ -44,6 +45,16 @@ export class ActionCompilerService {
                 }
                 this.letterRackUpdateValidator(command, player);
                 return new PlaceLetter(player, letters, settings, this.pointCalculator, this.wordSearcher);
+            }
+
+            case OnlineMagicCardActionType.ExchangeALetter: {
+                const letters = command.letters;
+                if (!letters || letters.length !== 1) {
+                    throw Error('Argument of Action Invalid. Cant compile.');
+                }
+                const letterToExchange: Letter = this.letterFactory.createLetter(letters[0]);
+                this.letterRackUpdateValidator(command, player);
+                return new ExchangeALetter(player, letterToExchange);
             }
 
             case OnlineMagicCardActionType.SplitPoints: {

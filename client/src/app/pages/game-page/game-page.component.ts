@@ -111,6 +111,16 @@ export class GamePageComponent implements OnDestroy {
         );
     }
 
+    get canExchangeMagicCard(): boolean {
+        return (
+            this.isItMyTurn &&
+            this.inputController.activeAction instanceof UIExchange &&
+            this.inputController.activeAction.concernedIndexes.size === 1 &&
+            this.inputController.canBeExecuted &&
+            this.info.numberOfLettersRemaining >= 1
+        );
+    }
+
     get canPass(): boolean {
         return this.isItMyTurn;
     }
@@ -129,6 +139,10 @@ export class GamePageComponent implements OnDestroy {
 
     splitPoints() {
         this.inputController.splitPoints(this.info.player);
+    }
+
+    exchangeLetter() {
+        this.inputController.exchangeLetter(this.info.player);
     }
 
     confirm() {
