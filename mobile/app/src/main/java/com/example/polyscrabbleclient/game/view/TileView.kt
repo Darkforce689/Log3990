@@ -62,14 +62,19 @@ fun Tile(
 @Preview(showBackground = true)
 @Composable
 fun Preview1 () {
+    val tileModel = TileModel('A', 1)
     Tile(
-        tileModel = TileModel('A', 1),
+        tileModel,
+        select = { tileModel.isSelected.value = !tileModel.isSelected.value }
     )
 }
 @Preview(showBackground = true)
 @Composable
 fun Preview2 () {
+    val tileModel = TileModel('B', 2)
+    tileModel.isSelected.value = true
     Tile(
-        tileModel = TileModel('B', 3),
+        tileModel,
+        select = { tileModel.isSelected.value = !tileModel.isSelected.value }
     )
 }
