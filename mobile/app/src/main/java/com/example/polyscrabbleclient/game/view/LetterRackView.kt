@@ -37,7 +37,12 @@ fun LetterRackView(navController: NavController) {
         verticalAlignment = Alignment.Bottom
     ) {
         items(viewModel.tiles.size) { index ->
-            Tile(viewModel.tiles[index])
+            val tile = viewModel.tiles[index];
+            val select = { tile.isSelected.value = !tile.isSelected.value }
+            Tile(
+                tile,
+                select
+            )
         }
     }
 }

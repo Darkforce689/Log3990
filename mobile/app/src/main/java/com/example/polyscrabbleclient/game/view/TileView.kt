@@ -29,6 +29,7 @@ val subscript = SpanStyle(
 @Composable
 fun Tile(
     tileModel: TileModel,
+    select: () -> Unit,
 ) {
     val targetColor by animateColorAsState(
         targetValue =
@@ -42,15 +43,10 @@ fun Tile(
         color = targetColor,
         modifier = Modifier.border(width = 8.dp, MaterialTheme.colors.secondary)
     ) {
-        val a:() -> Unit = {
-            tileModel.isSelected.value = !tileModel.isSelected.value
-            println(tileModel.isSelected)
-        }
-
         Text(modifier = Modifier
             .selectable(
                 selected = tileModel.isSelected.value,
-                onClick = a
+                onClick = select
             )
             .padding(32.dp),
             text = buildAnnotatedString {
