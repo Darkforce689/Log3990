@@ -14,7 +14,6 @@ import { ActionCreatorService } from '@app/game/game-logic/actions/action-creato
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -45,7 +44,6 @@ describe('GameManagerService', () => {
     let stubTimerController: TimerController;
     let stubGameCompiler: StubbedClass<GameCompiler>;
     let stubGameActionNotifierService: GameActionNotifierService;
-    let stubObjectiveCreator: ObjectiveCreator;
     let stubLeaderboardService: StubbedClass<LeaderboardService>;
     let stubDictionaryService: DictionaryService;
     let stubBotManager: BotManager;
@@ -59,7 +57,6 @@ describe('GameManagerService', () => {
         stubGameCompiler = createSinonStubInstance<GameCompiler>(GameCompiler);
         stubTimerController = createSinonStubInstance<TimerController>(TimerController);
         stubGameActionNotifierService = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
-        stubObjectiveCreator = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
         stubLeaderboardService = createSinonStubInstance<LeaderboardService>(LeaderboardService);
         stubDictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
         // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
@@ -81,7 +78,6 @@ describe('GameManagerService', () => {
             stubGameCompiler,
             stubTimerController,
             stubGameActionNotifierService,
-            stubObjectiveCreator,
             stubLeaderboardService,
             stubDictionaryService,
             stubBotManager,
@@ -587,7 +583,7 @@ describe('GameManagerService', () => {
         const playerNames = [player.name, 'test3'];
         const gameToken = '1';
         const gameSettings: OnlineGameSettings = {
-            gameMode: GameMode.Special,
+            gameMode: GameMode.Magic,
             id: gameToken,
             timePerTurn: 60000,
             randomBonus: false,
