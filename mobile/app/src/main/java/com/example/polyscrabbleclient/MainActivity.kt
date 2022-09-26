@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.polyscrabbleclient.game.model.GameModel
 import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.game.view.GameScreen
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
@@ -63,8 +64,6 @@ fun NavGraph() {
             ChatRoomScreen(navController, chatView)
         }
         composable("gamePage") {
-            val p = Player()
-            gameViewModel.addPlayer(p)
             GameScreen(navController, gameViewModel)
         }
     }
