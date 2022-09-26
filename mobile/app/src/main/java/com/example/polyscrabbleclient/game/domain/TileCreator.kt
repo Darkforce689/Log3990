@@ -3,7 +3,7 @@ package com.example.polyscrabbleclient.game.domain
 import com.example.polyscrabbleclient.game.model.TileModel
 
 
-class LetterCreator {
+class TileCreator {
     fun createTileFromLetter(letter: Char): TileModel {
         var points = 0;
         val letterIndex = letter.uppercaseChar().code - 'A'.code;
