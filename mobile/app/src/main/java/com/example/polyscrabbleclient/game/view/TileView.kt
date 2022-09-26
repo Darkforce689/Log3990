@@ -41,14 +41,14 @@ fun Tile(
     )
     Surface(
         color = targetColor,
-        modifier = Modifier.border(width = 8.dp, MaterialTheme.colors.secondary)
+        modifier = Modifier.border(width = 4.dp, MaterialTheme.colors.secondary)
     ) {
         Text(modifier = Modifier
             .selectable(
                 selected = tileModel.isSelected.value,
                 onClick = select
             )
-            .padding(32.dp),
+            .padding(16.dp),
             text = buildAnnotatedString {
                 append(tileModel.letter)
                 withStyle(subscript) {

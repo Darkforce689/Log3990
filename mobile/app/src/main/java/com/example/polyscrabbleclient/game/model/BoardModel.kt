@@ -9,10 +9,11 @@ typealias TileContainerRow = Array<TileContainer>
 typealias TileGrid = Array<TileContainerRow>
 
 const val BoardDimension = 16
-val BoardRange = 0 until BoardDimension
+val BoardRange = 1..BoardDimension
+enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 
 class BoardModel(
-    private var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { mutableStateOf(null) } }
+    var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { mutableStateOf(null) } }
 ) {
     fun debugPrint() {
         for(row in tileGrid) {
@@ -25,12 +26,20 @@ class BoardModel(
 
     operator fun get(column: Int, row: Int): Tile {
         requireBoardIndexes(column, row)
-        return tileGrid[column][row].value
+        return tileGrid[column-1][row-1].value
+    }
+
+    operator fun get(column: Int, row: RowChar): Tile {
+        return get(column, row.ordinal + 1)
     }
 
     operator fun set(column: Int, row: Int, tile: Tile) {
         requireBoardIndexes(column, row)
-        tileGrid[column][row].value = tile
+        tileGrid[column-1][row-1].value = tile
+    }
+
+    operator fun set(column: Int, row: RowChar, tile: Tile) {
+        set(column, row.ordinal + 1, tile)
     }
 
     private fun requireBoardIndexes(column: Int, row: Int) {
