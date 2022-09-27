@@ -45,9 +45,9 @@ class ChatBoxViewModel : ViewModel() {
 
     }
 
-    fun joinRoom(roomId: String, user:User) {
+    fun joinRoom(roomId: String) {
         SocketHandler.socketConnection()
-        SocketHandler.joinRoom(roomId, userName = user.name)
+        SocketHandler.joinRoom(roomId)
         SocketHandler.on(EventType.ROOM_MESSAGES, onNewMessage)
     }
 }
