@@ -1,12 +1,16 @@
 <div class="chatContainer" appClickAndClickout [inputComponent]="self" (click)="click()">
     <mat-card #chat class="sharedChat">
-        <div
-            *ngFor="let message of messages$ | async"
-            class="message"
-            [ngClass]="{ system: message.type === 'System', player1: message.type === 'Player1', player2: message.type === 'Player2' }"
-        >
-            <b>{{ message.from }} : </b>
-            <span [innerHTML]="generateMessageContentHTML(message.content)"></span>
+        <div class="message">
+            <div
+                [ngClass]="{ system: message.type === 'System', player1: message.type === 'Player1', player2: message.type === 'Player2' }"
+                *ngFor="let message of messages$ | async"
+            >
+                <div class="message-header">{{ message.date | date: 'hh:mm:ss' }}</div>
+                <div class="message-content">
+                    <b>{{ message.from }} : </b>
+                    <span [innerHTML]="generateMessageContentHTML(message.content)"></span>
+                </div>
+            </div>
         </div>
     </mat-card>
     <mat-form-field appearance="fill">

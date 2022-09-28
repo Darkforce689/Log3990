@@ -61,7 +61,7 @@ export class AuthController {
             };
 
             await this.authService.addCredentialsToUser(userId, userCreds);
-            return res.send(newUser);
+            return res.send({ user: newUser });
         });
 
         this.router.post('/login', async (req, res) => {

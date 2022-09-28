@@ -107,6 +107,7 @@ export class MessagesSocketHandler {
         const userName = user.name;
         const message: Message = {
             from: userName,
+            date: new Date(),
             content,
         };
 
