@@ -5,7 +5,6 @@ import { Message } from '@app/game-logic/messages/message.interface';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
 import { NewlinePipe } from '@app/pipes/newline-pipe/newline.pipe';
-import { AccountService } from '@app/services/account.service';
 import { Observable } from 'rxjs';
 
 const MAX_MESSAGE_LENGTH = 512;
@@ -26,7 +25,7 @@ export class ChatBoxComponent implements AfterViewInit {
     private boldPipe = new BoldPipe();
     private newlinePipe = new NewlinePipe();
 
-    constructor(private messageService: MessagesService, private cdRef: ChangeDetectorRef, private accountService: AccountService) {}
+    constructor(private messageService: MessagesService, private cdRef: ChangeDetectorRef) {}
 
     ngAfterViewInit(): void {
         this.cdRef.detectChanges();
@@ -47,8 +46,7 @@ export class ChatBoxComponent implements AfterViewInit {
             return;
         }
 
-        const playerName = this.accountService.account?.name as string;
-        this.messageService.receiveMessagePlayer(playerName, content);
+        this.messageService.receiveNonDistributedPlayerMessage(content);
 
         this.resetMessageContent();
         this.cdRef.detectChanges();

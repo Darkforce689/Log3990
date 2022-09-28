@@ -10,21 +10,27 @@ describe('Service: Messages', () => {
     let mockOpponentMessage$: Subject<ChatMessage>;
     let mockErrorMessage$: Subject<string>;
     let mockSystemMessage$: Subject<string>;
+    let mockPlayerMessage$: Subject<ChatMessage>;
 
     beforeEach(() => {
         mockOpponentMessage$ = new Subject<ChatMessage>();
         mockErrorMessage$ = new Subject<string>();
         mockSystemMessage$ = new Subject<string>();
+        mockPlayerMessage$ = new Subject<ChatMessage>();
 
         onlineChatSpy = jasmine.createSpyObj(
             'OnlineChatHandler',
             ['sendMessage'],
-            ['isConnected', 'opponentMessage$', 'errorMessage$', 'systemMessage$'],
+            ['isConnected', 'opponentMessage$', 'errorMessage$', 'systemMessage$', 'playerMessage$'],
         );
 
         (Object.getOwnPropertyDescriptor(onlineChatSpy, 'opponentMessage$')?.get as jasmine.Spy<() => Observable<ChatMessage>>).and.returnValue(
             mockOpponentMessage$,
         );
+        (Object.getOwnPropertyDescriptor(onlineChatSpy, 'playerMessage$')?.get as jasmine.Spy<() => Observable<ChatMessage>>).and.returnValue(
+            mockPlayerMessage$,
+        );
+
         (Object.getOwnPropertyDescriptor(onlineChatSpy, 'errorMessage$')?.get as jasmine.Spy<() => Observable<string>>).and.returnValue(
             mockErrorMessage$,
         );
@@ -40,20 +46,6 @@ describe('Service: Messages', () => {
 
     it('should create message', () => {
         expect(service).toBeTruthy();
-    });
-
-    it('should receive message', () => {
-        const from = 'paul';
-        const content = 'allo';
-        service.receiveMessagePlayer(from, content);
-        const logs = service.messagesLog;
-        const lastMessage = logs[logs.length - 1];
-        const expectedMesssage: Message = {
-            from,
-            content,
-            type: MessageType.Player1,
-        };
-        expect(lastMessage).toEqual(expectedMesssage);
     });
 
     it('should receive system message', () => {
@@ -96,11 +88,14 @@ describe('Service: Messages', () => {
     });
 
     it('should clear log', () => {
-        service.receiveMessagePlayer('tim', 'to be');
-        service.receiveMessagePlayer('cook', 'or');
-        service.receiveMessagePlayer('apple', 'not to be');
+        const message = {
+            from: 'paul',
+            content: 'test',
+            date: new Date(),
+        };
+        service.receiveOpponentMessage(message);
         const prevNLogs = service.messagesLog.length;
-        expect(prevNLogs).toBe(3);
+        expect(prevNLogs).toBe(1);
         service.clearLog();
         const nLogs = service.messagesLog.length;
         expect(nLogs).toBe(0);
@@ -109,10 +104,10 @@ describe('Service: Messages', () => {
     it('should receive opponent message from chat server', () => {
         const from = 'Paul';
         const content = 'Hi';
-        const chatMessage = { from, content };
-        const spy = spyOn(service, 'receiveMessageOpponent');
+        const chatMessage = { from, content, date: new Date() };
+        const spy = spyOn(service, 'receiveOpponentMessage');
         mockOpponentMessage$.next(chatMessage);
-        expect(spy).toHaveBeenCalledOnceWith(from, content);
+        expect(spy).toHaveBeenCalledOnceWith(chatMessage);
     });
 
     it('should receive error message from chat server', () => {

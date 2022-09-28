@@ -93,12 +93,14 @@ describe('MessagesService', () => {
         clientSocket2.emit('joinRoom', roomID);
 
         const messageContent = 'Hi!';
-        const expectedMessage: Message = {
+        const expectedMessage = {
             from: userName2,
+            date: new Date().toISOString(),
             content: messageContent,
         };
         clientSocket.on('roomMessages', (message: Message) => {
-            expect(message).to.deep.equal(expectedMessage);
+            expect(message.content).equal(expectedMessage.content);
+            expect(message.from).equal(expectedMessage.from);
             done();
         });
         clientSocket2.emit('newMessage', messageContent);

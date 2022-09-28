@@ -31,7 +31,7 @@ describe('online chat handler', () => {
 
     it('should call receiveServerMessage when servit emit roomMessage', () => {
         const spy = spyOn<any>(service, 'receiveServerMessage');
-        const message: ChatMessage = { content: 'hello there', from: 'General Kenoby' };
+        const message: ChatMessage = { content: 'hello there', from: 'General Kenoby', date: new Date() };
         (service.socket as any).peerSideEmit('roomMessages', message);
         expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -69,11 +69,11 @@ describe('online chat handler', () => {
     });
 
     it('receiveServerMessage should set roomMessage', () => {
-        let test: ChatMessage = { content: '', from: '' };
+        let test: ChatMessage = { content: '', from: '', date: new Date() };
         service.newRoomMessages$.pipe(take(1)).subscribe((value) => {
             test = value;
         });
-        const message: ChatMessage = { content: 'Hello There', from: 'General Kenobi' };
+        const message: ChatMessage = { content: 'Hello There', from: 'General Kenobi', date: new Date() };
         service['receiveServerMessage'](message);
         expect(test).toEqual(message);
     });
@@ -89,9 +89,9 @@ describe('online chat handler', () => {
     });
 
     it('opponent message should only return message from opponent', () => {
-        let getter: ChatMessage = { content: '', from: '' };
-        const messageOpponent: ChatMessage = { content: 'Hello There', from: 'General Kenobi' };
-        const messageMe: ChatMessage = { content: 'Ho ho', from: 'Tim' };
+        let getter: ChatMessage = { content: '', from: '', date: new Date() };
+        const messageOpponent: ChatMessage = { content: 'Hello There', from: 'General Kenobi', date: new Date() };
+        const messageMe: ChatMessage = { content: 'Ho ho', from: 'Tim', date: new Date() };
         service.opponentMessage$.subscribe((value) => {
             getter = value;
         });

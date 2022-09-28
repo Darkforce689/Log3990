@@ -94,6 +94,19 @@ export class OnlineChatHandlerService {
         return isSocketConnected(this.socket);
     }
 
+    get playerMessage$(): Observable<ChatMessage> {
+        return this.newRoomMessageSubject.pipe(
+            filter((chatMessage: ChatMessage) => {
+                const name = chatMessage.from;
+                const account = this.accountService.account;
+                if (!account) {
+                    throw Error('No account defined');
+                }
+                return name === account.name;
+            }),
+        );
+    }
+
     get opponentMessage$(): Observable<ChatMessage> {
         return this.newRoomMessageSubject.pipe(
             filter((chatMessage: ChatMessage) => {

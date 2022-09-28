@@ -60,6 +60,7 @@ object ScrabbleHttpClient {
             val responseBody = inputStream.readTextAndClose()
             Gson().fromJson(responseBody, returnType)
         } catch (e: Exception) {
+            e.printStackTrace()
             null
         } finally {
             urlConnection.disconnect()
