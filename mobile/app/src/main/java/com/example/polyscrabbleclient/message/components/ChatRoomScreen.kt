@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.example.polyscrabbleclient.message.model.*
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.NavPage
+import com.example.polyscrabbleclient.message.SocketHandler
 import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
@@ -37,6 +38,7 @@ fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewMod
         Column {
             Button(modifier = Modifier.padding(20.dp),
                 onClick = {
+                    SocketHandler.closeConnection()
                     chatBoxViewModel.reset()
                     navController.navigate(NavPage.MainPage.label) {
                         popUpTo(NavPage.Room.label) {
