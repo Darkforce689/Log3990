@@ -30,13 +30,17 @@ app.on('ready', () => {
     session.defaultSession.webRequest.onHeadersReceived(
         { urls: ['http://localhost:3000/*', 'https://d2niwfi3hp97su.cloudfront.net/*'] },
         (details, callback) => {
+            if (details.responseHeaders && details.responseHeaders['set-cookie'] && details.responseHeaders['set-cookie'].length) {
+                details.responseHeaders['set-cookie'][0] = details.responseHeaders['set-cookie'][0] + '; SameSite=none; Secure';
+            }
+
             if (
                 details.responseHeaders &&
-                details.responseHeaders['Set-Cookie'] &&
-                details.responseHeaders['Set-Cookie'].length &&
+                details.responseHeaders['Set-cookie'] &&
+                details.responseHeaders['Set-cookie'].length &&
                 !details.responseHeaders['Set-Cookie'][0].includes('SameSite=none')
             ) {
-                details.responseHeaders['Set-Cookie'][0] = details.responseHeaders['Set-Cookie'][0] + '; SameSite=none; Secure';
+                details.responseHeaders['Set-cookie'][0] = details.responseHeaders['Set-cookie'][0] + '; SameSite=none; Secure';
             }
             callback({ cancel: false, responseHeaders: details.responseHeaders });
         },
