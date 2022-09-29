@@ -1,4 +1,5 @@
 import { Application } from '@app/app';
+import { AppSocketHandler } from '@app/auth/app-socket-handler.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { DatabaseService } from '@app/database/database.service';
@@ -23,6 +24,7 @@ export class Server {
     private onlineGameManager: NewGameSocketHandler;
     private gameSocketsHandler: GameSocketsHandler;
     private messageHandler: MessagesSocketHandler;
+    private appSocketHandler: AppSocketHandler;
     constructor(
         private readonly application: Application,
         private onlineGameService: NewGameManagerService,
@@ -72,6 +74,10 @@ export class Server {
             this.userService,
         );
         this.messageHandler.handleSockets();
+
+        this.appSocketHandler = new AppSocketHandler(this.server, this.sessionMiddlewareService, this.authService);
+        this.appSocketHandler.handleSockets();
+
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());

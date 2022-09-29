@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient
 
 import android.os.Bundle
+import android.webkit.WebView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -56,8 +57,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val chatView: ChatBoxViewModel = viewModel()
             val loginViewModel: AuthenticationViewModel = viewModel()
-            PolyScrabbleClientTheme {
-                NavGraph(chatView, loginViewModel, startPage)
+            val startViewModel: StartViewModel = viewModel()
+            PolyScrabbleClientTheme() {
+                NavGraph(chatView, loginViewModel, startPage, startViewModel)
             }
         }
     }

@@ -64,6 +64,10 @@ export class UserService {
         }
         const result = await this.collection.findOne(queryClone);
         const user = (result ?? undefined) as User | undefined;
+        if (user !== undefined) {
+            // eslint-disable-next-line no-underscore-dangle
+            user._id = user._id.toString();
+        }
         return user;
     }
 

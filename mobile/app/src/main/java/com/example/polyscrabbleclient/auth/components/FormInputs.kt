@@ -171,7 +171,7 @@ fun PasswordInput(
     }
 
     if (serverError != null) {
-        errorMessage.value = invalid_password
+        errorMessage.value = if (AuthServerError.InvalidPassword.label === serverError.label) invalid_password else already_auth
     }
 
     if(missingFieldError){

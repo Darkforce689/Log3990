@@ -33,13 +33,13 @@ enum class NavPage (val label : String){
 }
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun NavGraph(chatBoxViewModel: ChatBoxViewModel, loginViewModel: AuthenticationViewModel, startPage : NavPage) {
+fun NavGraph(chatBoxViewModel: ChatBoxViewModel, loginViewModel: AuthenticationViewModel, startPage : NavPage, startViewModel: StartViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController, startDestination = startPage.label) {
 
         composable(NavPage.MainPage.label) {
-            StartView(navController)
+            StartView(navController, startViewModel)
         }
         composable(NavPage.Room.label) {
             // Todo : place in other function somewhere else with room id
