@@ -16,7 +16,8 @@ enum class AuthServerError(val label : String) {
     EmailNotFound("EMAIL_NOT_FOUND"),
     InvalidPassword("INVALID_PASSWORD"),
     NameAlreadyTaken("NAME_ALREADY_TAKEN"),
-    EmailAlreadyTaken("EMAIL_ALREADY_TAKEN");
+    EmailAlreadyTaken("EMAIL_ALREADY_TAKEN"),
+    AlreadyAuth("ALREADY_AUTH");
 
     companion object {
         fun find(value : String): AuthServerError? = values().find{it.label == value}

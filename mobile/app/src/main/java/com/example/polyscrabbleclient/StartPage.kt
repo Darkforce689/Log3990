@@ -15,11 +15,12 @@ import kotlinx.coroutines.*
 import java.net.URL
 
 @Composable
-fun StartView(navController: NavController){
+fun StartView(navController: NavController, startViewModel: StartViewModel){
+    startViewModel.connectAppSocket()
     Column() {
         Text(text = "Page d'accueil")
         Prototype(navController = navController)
-        Disconnection(navController = navController)
+        Disconnection(navController = navController, startViewModel = startViewModel)
     }
 }
 
@@ -45,7 +46,7 @@ fun Prototype(navController: NavController) {
 }
 
 @Composable
-fun Disconnection(navController: NavController) {
+fun Disconnection(navController: NavController, startViewModel: StartViewModel) {
     Button(modifier = Modifier.padding(20.dp),
         onClick = {
             val thread = Thread {
@@ -53,6 +54,7 @@ fun Disconnection(navController: NavController) {
             }
             thread.start()
             thread.join()
+            startViewModel.disconnectAppSocket()
             ScrabbleHttpClient.cookieManager.cookieStore.removeAll()
             navController.navigate(NavPage.Login.label) {
                 launchSingleTop = true

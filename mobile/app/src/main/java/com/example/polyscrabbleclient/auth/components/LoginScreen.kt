@@ -135,7 +135,7 @@ fun AuthForm(
                     PasswordInput(
                         password = password,
                         onPasswordChanged = { onPasswordChanged(it); missingPasswordError.value = false },
-                        serverError = serverError?.find { error -> error.label == AuthServerError.InvalidPassword.label },
+                        serverError = serverError?.find { error -> error.label == AuthServerError.InvalidPassword.label || error.label == AuthServerError.AlreadyAuth.label },
                         missingFieldError = missingPasswordError.value,
                         onCreation = false
                     )

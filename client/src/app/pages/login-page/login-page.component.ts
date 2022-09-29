@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { AuthErrors } from '@app/pages/login-page/auth-errors';
 import { AuthService } from '@app/services/auth.service';
 import { first } from 'rxjs/operators';
@@ -14,13 +16,12 @@ export class LoginPageComponent {
         email: new FormControl('', [Validators.required, Validators.email]),
         password: new FormControl('', [Validators.required]),
     });
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(private authService: AuthService, private router: Router, private matDialog: MatDialog) {}
 
     login() {
         if (!this.isEmailFormValid || !this.isPasswordFormValid) {
             return;
         }
-
         const result = this.authService.login(this.loginForm.value);
         result.pipe(first()).subscribe(
             () => {
@@ -40,6 +41,14 @@ export class LoginPageComponent {
 
                     if (error === AuthErrors.InvalidPassword) {
                         this.loginForm.controls.password.setErrors({ invalid: true });
+                    }
+
+                    if (error === AuthErrors.AlreadyAuth) {
+                        this.matDialog.open(ErrorDialogComponent, {
+                            disableClose: true,
+                            autoFocus: true,
+                            data: 'Vous êtes déjà connecté sur un autre client.',
+                        });
                     }
                 });
             },
