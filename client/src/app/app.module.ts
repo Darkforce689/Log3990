@@ -1,5 +1,5 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
@@ -29,6 +29,7 @@ import { PlayerInfoComponent } from '@app/pages/game-page/player-info/player-inf
 import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
+import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.service';
 import { AlertDialogComponent } from './components/modals/alert-dialog/alert-dialog.component';
 import { LoadingGameComponent } from './components/modals/loading-game/loading-game.component';
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
@@ -87,6 +88,16 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         MatTableModule,
     ],
     providers: [
+        {
+            provide: APP_INITIALIZER,
+            useFactory: () => {
+                return () => {
+                    return;
+                };
+            },
+            deps: [AppSocketHandlerService],
+            multi: true,
+        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

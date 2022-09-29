@@ -20,3 +20,4 @@ class Invalid_username_creation(minPasswordLength : Int, maxPasswordLength: Int)
 const val userName_not_unique = "Un compte utilise déjà ce pseudonyme"
 const val email_not_unique = "Un compte utilise déjà cet e-mail."
 class Invalid_password_creation(minPasswordLength : Int, maxPasswordLength: Int){ val message = "Veuillez saisir un mot de passe entre $minPasswordLength et $maxPasswordLength caractères"}
+const val already_auth = "Vous êtes déjà connecté sur un autre client"
