@@ -1,11 +1,19 @@
 package com.example.polyscrabbleclient.auth.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -16,37 +24,48 @@ import com.example.polyscrabbleclient.auth.viewmodel.AuthValidation
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.ui.theme.create_account
 import com.example.polyscrabbleclient.ui.theme.signUp
+import org.intellij.lang.annotations.JdkConstants
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel) {
-    Column() {
-        Button(modifier = Modifier.padding(20.dp),
-            onClick = {
-                viewModel.reset()
-                navController.navigate(NavPage.Login.label) {
-                    popUpTo(NavPage.SignUp.label) {
-                        inclusive = true
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val inputFocusRequester = LocalFocusManager.current
+
+    Box(Modifier.clickable { keyboardController?.hide() ; inputFocusRequester.clearFocus() }) {
+        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.Start) {
+            Icon(imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .clickable {
+                        viewModel.reset()
+                        navController.navigate(NavPage.Login.label) {
+                            popUpTo(NavPage.SignUp.label) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    })
+            SignUpContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                authState = viewModel.signUp.collectAsState().value,
+                handleEvent = viewModel::handleSignUpEvent,
+                serverError = viewModel.errors.observeAsState().value,
+                isCreated = viewModel.isCreated.collectAsState().value,
+                isInProcess = viewModel.isInProcess.collectAsState().value,
+                onLogin = {
+                    navController.navigate(NavPage.Login.label) {
+                        popUpTo(NavPage.SignUp.label) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
                     }
-                    launchSingleTop = true
                 }
-            })
-        {
-            Text("Page d'accueil")
+            )
         }
-        SignUpContent(
-            modifier = Modifier.fillMaxWidth(),
-            authState = viewModel.signUp.collectAsState().value,
-            handleEvent = viewModel::handleSignUpEvent,
-            serverError = viewModel.errors.observeAsState().value,
-            isCreated = viewModel.isCreated.collectAsState().value,
-            isInProcess = viewModel.isInProcess.collectAsState().value,
-            onLogin = { navController.navigate(NavPage.Login.label) {
-                popUpTo(NavPage.SignUp.label) {
-                    inclusive = true
-                }
-                launchSingleTop = true
-            }}
-        )
     }
 }
 
@@ -125,13 +144,13 @@ fun SignUpForm(
             Modifier.width(350.dp)
         ) {
             Column(
-                Modifier.padding(30.dp),
+                Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(create_account, fontSize = 30.sp)
-                Spacer(modifier = Modifier.height(20.dp))
+                Text(create_account, fontSize = 25.sp)
+                Spacer(modifier = Modifier.height(15.dp))
 
-                Column {
+                Column() {
                     UserNameInput(name = username,
                         onUsernameChanged = {
                             onUsernameChanged(it); missingNameError.value = false
@@ -156,7 +175,8 @@ fun SignUpForm(
                     )
                 }
 
-                Button(enabled= !isInProcess, onClick = {
+                Button(
+                    enabled= !isInProcess, onClick = {
                     if (!hasEmptySpace()) {
                         onCreate()
                         if (isCreated) {
