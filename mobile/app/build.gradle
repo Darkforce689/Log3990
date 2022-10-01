@@ -11,8 +11,6 @@ android {
 
     defaultConfig {
         applicationId "com.example.polyscrabbleclient"
-        minSdk 28
-        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -27,14 +25,35 @@ android {
     }
 
     buildTypes {
-        production {
+        release {
             buildConfigField("String", "COMMUNICATION_URL", "\"https://d2niwfi3hp97su.cloudfront.net\"")
             buildConfigField("String",  "API_URL", "\"https://d2niwfi3hp97su.cloudfront.net/api\"")
-
         }
+
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            getIsDefault().set(true)
+        }
+    }
+
+    flavorDimensions += "api"
+    productFlavors {
+        pie {
+            dimension = "api"
+            applicationIdSuffix = ".pie"
+            versionNameSuffix = "-pie"
+            minSdk 28
+            targetSdk 32
+            getIsDefault().set(true)
+        }
+
+        oreo {
+            dimension = "api"
+            applicationIdSuffix = ".oreo"
+            versionNameSuffix = "-oreo"
+            minSdk 26
+            targetSdk 26
         }
     }
 
