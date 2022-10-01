@@ -155,7 +155,7 @@ lint:mobile:
         - set -o pipefail
         - cd ../../
         - chmod +x ./gradlew
-        - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
+        - ./gradlew -Pci --console=plain :app:lintPieDebug -PbuildDir=lint
         
 build:webclient:
     stage: build
