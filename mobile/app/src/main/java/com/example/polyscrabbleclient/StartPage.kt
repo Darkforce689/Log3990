@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.message.model.User
 import com.example.polyscrabbleclient.ui.theme.disconnection
+import com.example.polyscrabbleclient.ui.theme.gamePage
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.*
 import java.net.URL
@@ -20,6 +21,7 @@ fun StartView(navController: NavController, startViewModel: StartViewModel){
     Column() {
         Text(text = "Page d'accueil")
         Prototype(navController = navController)
+        GamePage(navController = navController)
         Disconnection(navController = navController, startViewModel = startViewModel)
     }
 }
@@ -61,5 +63,20 @@ fun Disconnection(navController: NavController, startViewModel: StartViewModel) 
             }
         }) {
         Text(text = disconnection)
+    }
+}
+
+@Composable
+fun GamePage(navController: NavController) {
+    Button(
+        modifier = Modifier.padding(20.dp),
+        onClick = {
+            navController.navigate(NavPage.GamePage.label) {
+                launchSingleTop = true
+            }
+        }
+    )
+    {
+        Text(text = gamePage)
     }
 }
