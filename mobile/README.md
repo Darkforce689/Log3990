@@ -68,3 +68,17 @@
 -   [Android and Kotlin](https://developer.android.com/kotlin)
 -   [Jetpack Compose](https://developer.android.com/jetpack/compose)
 -   [Android Basics with Compose](https://developer.android.com/courses/android-basics-compose/course)
+
+# Troubleshoot
+
+## Missing SDK Error
+
+### Issue
+
+![missingSDK1](..\mobile\docs\missingSDK1.png)
+
+### Fix
+
+![missingSDK2](..\mobile\docs\missingSDK2.png)
+
+![missingSDK3](..\mobile\docs\missingSDK3.png)

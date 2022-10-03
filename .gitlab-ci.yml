@@ -203,7 +203,7 @@ build:mobile:
         - set -o pipefail
         - cd ../../
         - chmod +x ./gradlew
-        - ./gradlew assemble
+        - ./gradlew assemblePie
     artifacts:
         paths:
         - mobile/build/outputs/    

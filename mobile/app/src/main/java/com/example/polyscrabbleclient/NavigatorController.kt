@@ -15,6 +15,8 @@ import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.auth.viewmodel.LoginRes
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpRes
+import com.example.polyscrabbleclient.game.view.LetterRackView
+import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.model.User
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
@@ -28,6 +30,7 @@ enum class NavPage (val label : String){
     Login("loginPage"),
     SignUp("signUpPage"),
     MainPage("mainPage"),
+    GamePage("gamePage"),
     Prototype("prototype"),
     Room("messageList")
 }
@@ -52,6 +55,9 @@ fun NavGraph(chatBoxViewModel: ChatBoxViewModel, loginViewModel: AuthenticationV
         }
         composable(NavPage.SignUp.label) {
             SignUpScreen(navController, SignUpViewModel())
+        }
+        composable(NavPage.GamePage.label) {
+            LetterRackView(navController)
         }
     }
 }
