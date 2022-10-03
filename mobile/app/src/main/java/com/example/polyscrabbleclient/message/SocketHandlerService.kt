@@ -1,12 +1,16 @@
 package com.example.polyscrabbleclient.message
 
+import android.webkit.CookieManager
 import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
-import java.lang.Exception
+import java.net.URI
 import java.net.URISyntaxException
+import java.util.*
+import kotlin.collections.HashMap
 
 
 enum class EventType (val event: String){
@@ -26,8 +30,17 @@ private const val URL = BuildConfig.COMMUNICATION_URL
     fun setSocket() {
         val opts = IO.Options()
         opts.path = "/messages"
+        val cookie = ScrabbleHttpClient.getAuthCookie()
+
+        println("cookie 2: " + cookie)
+
+        val headers: MutableMap<String, List<String>> = mutableMapOf()
+        headers["Cookie"] = listOf(cookie.toString())
+
+        opts.extraHeaders = headers
         try {
             opts.transports = arrayOf(WebSocket.NAME)
+            opts.auth
             webSocket = IO.socket(URL, opts)
             webSocket.on(Socket.EVENT_CONNECT) { println("Connected") }
             webSocket.on(Socket.EVENT_DISCONNECT) { println("Disconnected") }
@@ -45,8 +58,7 @@ private const val URL = BuildConfig.COMMUNICATION_URL
     }
 
     @Synchronized
-    fun joinRoom(roomID: String, userName: String) {
-        webSocket.emit(EventType.USER_NAME.event, userName)
+    fun joinRoom(roomID: String) {
         webSocket.emit(EventType.JOIN_ROOM.event, roomID)
     }
 

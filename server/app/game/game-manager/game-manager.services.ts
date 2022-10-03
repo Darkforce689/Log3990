@@ -1,6 +1,5 @@
 import { NEW_GAME_TIMEOUT } from '@app/constants';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -9,11 +8,9 @@ import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCompilerService } from '@app/game/game-logic/actions/action-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
-import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -71,12 +68,10 @@ export class GameManagerService {
         private gameCompiler: GameCompiler,
         private timerController: TimerController,
         private gameActionNotifier: GameActionNotifierService,
-        private objectiveCreator: ObjectiveCreator,
         private leaderboardService: LeaderboardService,
         private dictionaryService: DictionaryService,
-        private botInfoService: BotInfoService,
         private botManager: BotManager,
-        protected botMessage: BotMessagesService,
+        protected actionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
     ) {
         this.gameCreator = new GameCreator(
@@ -86,10 +81,8 @@ export class GameManagerService {
             this.newGameStateSubject,
             this.endGame$,
             this.timerController,
-            this.objectiveCreator,
-            this.botInfoService,
             this.botManager,
-            this.botMessage,
+            this.actionNotifier,
             this.actionCreator,
         );
 
@@ -220,7 +213,8 @@ export class GameManagerService {
         if (!clientsInGame) {
             throw Error(`GameToken ${gameToken} is not in active game`);
         }
-        this.gameActionNotifier.notify(action, clientsInGame, gameToken);
+        const clientNames = clientsInGame.map((linkedClient) => linkedClient.name);
+        this.gameActionNotifier.notify(action, clientNames, gameToken);
     }
 
     private endGame(game: ServerGame) {
@@ -250,8 +244,8 @@ export class GameManagerService {
     }
 
     private updateLeaderboard(players: Player[], gameToken: string) {
-        const isSpecial = this.activeGames.get(gameToken) instanceof SpecialServerGame;
-        const gameMode = isSpecial ? GameMode.Special : GameMode.Classic;
+        const isMagic = this.activeGames.get(gameToken) instanceof MagicServerGame;
+        const gameMode = isMagic ? GameMode.Magic : GameMode.Classic;
         players
             .filter((player) => !(player instanceof BotPlayer))
             .forEach((player) => {

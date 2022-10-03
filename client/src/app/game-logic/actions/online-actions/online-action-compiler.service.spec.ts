@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { Action } from '@app/game-logic/actions/action';
-import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
@@ -32,7 +31,6 @@ class UnknownAction extends Action {
 describe('Service: OnlineActionCompiler', () => {
     let service: OnlineActionCompilerService;
     let placement: PlacementSetting;
-    let actionValidatorSpy: ActionValidatorService;
     let game: MockGame;
     let p1: Player;
     let p2: Player;
@@ -43,18 +41,8 @@ describe('Service: OnlineActionCompiler', () => {
     let letters: Letter[];
 
     beforeEach(() => {
-        actionValidatorSpy = jasmine.createSpyObj(ActionValidatorService, [
-            'validateAction',
-            'validateExchangeLetter',
-            'validatePlaceLetter',
-            'validatePassTurn',
-        ]);
-
         TestBed.configureTestingModule({
-            providers: [
-                { provide: MessagesService, useValue: messagesSpy },
-                { provide: ActionValidatorService, useValue: actionValidatorSpy },
-            ],
+            providers: [{ provide: MessagesService, useValue: messagesSpy }],
         });
         service = TestBed.inject(OnlineActionCompilerService);
         timer = TestBed.inject(TimerService);

@@ -1,17 +1,14 @@
+import { AccountController } from '@app/account/account.controller';
 import { AuthController } from '@app/auth/controllers/auth.controller';
 import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { HttpException } from '@app/classes/http.exception';
-import { ENABLE_API_LOGIN, EXPRESS_SESSION_SECRET, SESSION_MAX_AGE } from '@app/constants';
-import { BotInfoController } from '@app/controllers/bot-info.controller';
+import { ENABLE_API_LOGIN } from '@app/constants';
 import { DebugController } from '@app/controllers/debug.controller';
-import { DictionaryController } from '@app/controllers/dictionary.controller';
 import { LeaderboardController } from '@app/controllers/leaderboard-controller/leaderboard.controller';
-import { RedisClientService } from '@app/database/redis-client.service';
-import * as connectRedis from 'connect-redis';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
-import * as session from 'express-session';
 import { StatusCodes } from 'http-status-codes';
 import * as logger from 'morgan';
 import * as swaggerJSDoc from 'swagger-jsdoc';
@@ -36,11 +33,10 @@ export class Application {
     constructor(
         private readonly debugController: DebugController,
         private readonly leaderboardController: LeaderboardController,
-        private readonly botInfoController: BotInfoController,
-        private readonly dictionaryController: DictionaryController,
         private readonly authController: AuthController,
         private readonly authService: AuthService,
-        private readonly redisClient: RedisClientService,
+        private readonly sessionMiddlewareService: SessionMiddlewareService,
+        private readonly accountController: AccountController,
     ) {}
 
     start(enableRedisSession = true, enableApiLogin = ENABLE_API_LOGIN): void {
@@ -60,28 +56,15 @@ export class Application {
         // All users need to be logged in to access routes bellow if ENABLE_API_LOGIN feature flag is enabled
         this.app.use('/api/servergame', this.debugController.router);
         this.app.use('/api/scores', this.leaderboardController.router);
-        this.app.use('/api/botinfo', this.botInfoController.router);
-        this.app.use('/api/dictionary', this.dictionaryController.router);
+        this.app.use('/api/account', this.accountController.router);
 
         this.errorHandling();
     }
 
     private config(enableRedisSession: boolean): void {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        const RedisStore = connectRedis(session);
-
-        const store = enableRedisSession ? new RedisStore({ client: this.redisClient.client, disableTouch: true }) : undefined;
+        const sessionMiddleware = this.sessionMiddlewareService.getSessionMiddleware(enableRedisSession);
         // Middlewares configuration
-        this.app.use(
-            session({
-                store,
-                name: 'session-id',
-                secret: EXPRESS_SESSION_SECRET,
-                saveUninitialized: false,
-                resave: false,
-                cookie: { maxAge: SESSION_MAX_AGE },
-            }),
-        );
+        this.app.use(sessionMiddleware);
 
         this.app.use(logger('dev'));
         this.app.use(express.json({ limit: '50mb' }));

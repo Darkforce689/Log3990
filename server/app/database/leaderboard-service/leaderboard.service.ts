@@ -24,9 +24,9 @@ export class LeaderboardService {
     async deleteScores(): Promise<boolean> {
         try {
             await this.getLeaderboardCollection(GameMode.Classic).deleteMany({});
-            await this.getLeaderboardCollection(GameMode.Special).deleteMany({});
+            await this.getLeaderboardCollection(GameMode.Magic).deleteMany({});
             await this.populateCollection(GameMode.Classic);
-            await this.populateCollection(GameMode.Special);
+            await this.populateCollection(GameMode.Magic);
             return true;
         } catch (error) {
             ServerLogger.logError(error);

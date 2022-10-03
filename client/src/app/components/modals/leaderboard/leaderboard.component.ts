@@ -51,7 +51,7 @@ export class LeaderboardComponent implements AfterContentChecked, OnInit {
 
     private getAllHighScores() {
         this.getHighScores(GameMode.Classic);
-        this.getHighScores(GameMode.Special);
+        this.getHighScores(GameMode.Magic);
     }
 
     private getHighScores(gameMode: GameMode) {

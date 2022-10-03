@@ -18,7 +18,6 @@ describe('NewOnlineGameSocketHandler', () => {
         playerNames: ['allo1'],
         randomBonus: false,
         gameMode: GameMode.Classic,
-        dictTitle: 'dictTitle',
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
     } as OnlineGameSettingsUI;

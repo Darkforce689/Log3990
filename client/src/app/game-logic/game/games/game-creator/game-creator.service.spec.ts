@@ -1,7 +1,8 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
-import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
+import { MagicOnlineGame } from '@app/game-logic/game/games/magic-game/magic-game';
 import { GameCreatorService } from './game-creator.service';
 
 describe('GameCreatorService', () => {
@@ -11,7 +12,9 @@ describe('GameCreatorService', () => {
     const username = 'p1';
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         service = TestBed.inject(GameCreatorService);
     });
 
@@ -25,9 +28,9 @@ describe('GameCreatorService', () => {
         expect(newGame).toBeInstanceOf(OnlineGame);
     });
 
-    it('should create special online game', () => {
+    it('should create magic game', () => {
         const gameCreationParams: OnlineGameCreationParams = { id, timePerTurn, username };
-        const newGame = service.createSpecialOnlineGame(gameCreationParams);
-        expect(newGame).toBeInstanceOf(SpecialOnlineGame);
+        const newGame = service.createMagicOnlineGame(gameCreationParams);
+        expect(newGame).toBeInstanceOf(MagicOnlineGame);
     });
 });

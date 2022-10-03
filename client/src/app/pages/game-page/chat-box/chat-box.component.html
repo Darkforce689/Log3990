@@ -1,17 +1,20 @@
 <div class="chatContainer" appClickAndClickout [inputComponent]="self" (click)="click()">
     <mat-card #chat class="sharedChat">
-        <div
-            *ngFor="let message of messages$ | async"
-            class="message"
-            [ngClass]="{ system: message.type === 'System', player1: message.type === 'Player1', player2: message.type === 'Player2' }"
-        >
-            <b>{{ message.from }} : </b>
-            <span [innerHTML]="generateMessageContentHTML(message.content)"></span>
+        <div class="message">
+            <div
+                [ngClass]="{ system: message.type === 'System', player1: message.type === 'Player1', player2: message.type === 'Player2' }"
+                *ngFor="let message of messages$ | async"
+            >
+                <div class="message-header">{{ message.date | date: 'hh:mm:ss' }}</div>
+                <div class="message-content">
+                    <b>{{ message.from }} : </b>
+                    <span [innerHTML]="generateMessageContentHTML(message.content)"></span>
+                </div>
+            </div>
         </div>
     </mat-card>
     <mat-form-field appearance="fill">
         <input matInput #enter type="text" [(ngModel)]="messageContent" autocomplete="off" autofocus (keyup.enter)="sendMessage()" placeholder="Aa" />
-        <mat-icon matSuffix matTooltipPosition="above" matTooltip="Entrer !aide pour la liste des commandes">help</mat-icon>
         <mat-hint #red [ngClass]="{ error: isError(enter.value.length) }">{{ enter.value.length }}/{{ maxMessageLength }}</mat-hint>
     </mat-form-field>
 </div>

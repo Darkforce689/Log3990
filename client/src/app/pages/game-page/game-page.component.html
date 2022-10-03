@@ -4,7 +4,6 @@
         <app-player-info></app-player-info>
         <app-info-box></app-info-box>
         <div class="container-objectives-and-chat">
-            <app-objectives-list class="indigo-pink-theme"></app-objectives-list>
             <app-chat-box (clickChatbox)="receiveInput($event)"></app-chat-box>
         </div>
         <app-board (clickTile)="receiveInput($event)"></app-board>
@@ -18,8 +17,9 @@
                 <button mat-raised-button color="accent" [disabled]="!canPlace" (click)="confirm()">Placer</button>
                 <button mat-raised-button color="accent" [disabled]="!canCancel" (click)="cancel()">Annuler</button>
             </div>
-            <div>
+            <div *ngIf="isMagicGame">
                 <button mat-raised-button color="accent" [disabled]="!canUseMagicCards" (click)="splitPoints()">Communisme</button>
+                <button mat-raised-button color="accent" [disabled]="!canExchangeMagicCard" (click)="exchangeLetter()">Exchange A letter</button>
             </div>
         </div>
         <div class="abandonner">
