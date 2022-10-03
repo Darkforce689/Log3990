@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
-import { BOARD_DIMENSION, DEFAULT_DICTIONARY_TITLE, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
+import { BOARD_DIMENSION, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { Player } from '@app/game-logic/player/player';
 import { LeaderboardService } from '@app/leaderboard/leaderboard.service';
+import { AccountService } from '@app/services/account.service';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { BotHttpService } from '@app/services/bot-http.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
@@ -20,7 +21,6 @@ import { GameManagerService } from './game-manager.service';
 describe('GameManagerService Online Edition', () => {
     let service: GameManagerService;
     let gameSocketHandler: GameSocketHandlerService;
-    const commandExecuterMock = jasmine.createSpyObj('CommandExecuterService', ['execute', 'resetDebug']);
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
     const obs = of(['Test1', 'Test2', 'Test3']);
@@ -41,36 +41,26 @@ describe('GameManagerService Online Edition', () => {
         playerNames: ['p1', 'p2'],
         randomBonus: false,
         id: '0',
-        dictTitle: DEFAULT_DICTIONARY_TITLE,
         gameMode: GameMode.Classic,
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
     };
 
+    const accountService = { account: { name: 'Tim' } };
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
-                { provide: CommandExecuterService, useValue: commandExecuterMock },
+                { provide: AccountService, useValue: accountService },
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
             ],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(GameManagerService);
         gameSocketHandler = TestBed.inject(GameSocketHandlerService);
     });
 
     it('should join an online game', () => {
-        const userAuth: UserAuth = {
-            playerName: 'p1',
-            gameToken: '0',
-        };
-
-        service.joinOnlineGame(userAuth, onlineGameSettings);
-        const result = service['game'];
-        expect(result).toBeInstanceOf(OnlineGame);
-    });
-
-    it('should join a special online game', () => {
         const userAuth: UserAuth = {
             playerName: 'p1',
             gameToken: '0',
@@ -98,7 +88,6 @@ describe('GameManagerService Online Edition', () => {
             playerNames: [],
             randomBonus: false,
             id: '0',
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,

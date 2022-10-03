@@ -16,19 +16,6 @@ import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 fun LetterRackView(navController: NavController, user: Player) {
     val viewModel: LetterRackViewModel = viewModel()
     viewModel.updateLetters(user.letters)
-//    val selectedTiles = remember {
-//        mutableStateMapOf<TileModel, Boolean>()
-//    }
-
-//    viewModel.tiles.forEach { selectedTiles[it] = false }
-
-//    val isSelected: (TileModel) -> Boolean = { tileModel: TileModel -> selectedTiles[tileModel] == true }
-
-//    val clicked: (TileModel) -> Unit = { tile ->
-//        if(selectedTiles.contains(tile)) {
-//            selectedTiles[tile] = !selectedTiles[tile]!!
-//        }
-//    }
 
     LazyRow(
         modifier = Modifier

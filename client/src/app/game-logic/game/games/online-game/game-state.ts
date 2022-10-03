@@ -1,3 +1,4 @@
+import { MagicCard } from '@app/game-logic/actions/magic-card/magic-card';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { Tile } from '@app/game-logic/game/board/tile';
 
@@ -5,19 +6,6 @@ export interface LightPlayer {
     name: string;
     points: number;
     letterRack: Letter[];
-}
-
-export interface LightObjective {
-    name: string;
-    description: string;
-    points: number;
-    owner: string | undefined;
-    progressions: PlayerProgression[];
-}
-
-export interface PlayerProgression {
-    playerName: string;
-    progression: number;
 }
 
 export interface GameState {
@@ -34,12 +22,6 @@ export interface PlayerInfoForfeit {
     previousPlayerName: string;
 }
 
-export interface SpecialGameState extends GameState {
-    publicObjectives: LightObjective[];
-    privateObjectives: PrivateLightObjectives[];
-}
-
-export interface PrivateLightObjectives {
-    playerName: string;
-    privateObjectives: LightObjective[];
+export interface MagicGameState extends GameState {
+    drawableMagicCards: MagicCard[];
 }

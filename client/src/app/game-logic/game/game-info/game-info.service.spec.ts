@@ -1,12 +1,14 @@
+/* eslint-disable max-lines */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { DEFAULT_TIME_PER_TURN, EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { MockGame } from '@app/game-logic/game/games/mock-game';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
-import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
-import { ObjectiveCreator } from '@app/game-logic/game/objectives/objective-creator/objective-creator.service';
-import { Objective } from '@app/game-logic/game/objectives/objectives/objective';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
@@ -23,6 +25,9 @@ describe('GameInfoService', () => {
     let messages: MessagesService;
 
     beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+        });
         service = TestBed.inject(GameInfoService);
         timer = TestBed.inject(TimerService);
         board = TestBed.inject(BoardService);
@@ -145,12 +150,6 @@ describe('GameInfoService', () => {
         expect(service.gameId).toBe(EMPTY_CHAR);
     });
 
-    it('should return empty array for private objective when no game', () => {
-        service.players = [new Player('p1'), new Player('p2')];
-        service.receivePlayer(game.players[0]);
-        expect(service.getPrivateObjectives(service.player.name)).toEqual([]);
-    });
-
     it('should return empty string for gameID when there is no game', () => {
         expect(service.gameId).toBe(EMPTY_CHAR);
     });
@@ -161,9 +160,7 @@ describe('GameInfoService Online Edition', () => {
     let onlineGame: OnlineGame;
     let timer: TimerService;
     let board: BoardService;
-    let specialOnlineGame: SpecialOnlineGame;
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
-    const objectiveCreatorMock = jasmine.createSpyObj(ObjectiveCreator, ['createObjective']);
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [{ provide: LeaderboardService, useValue: leaderboardServiceMock }],
@@ -180,17 +177,6 @@ describe('GameInfoService Online Edition', () => {
             new GameSocketHandlerService(),
             board,
             TestBed.inject(OnlineActionCompilerService),
-        );
-
-        specialOnlineGame = new SpecialOnlineGame(
-            '0',
-            DEFAULT_TIME_PER_TURN,
-            'QWERTY',
-            timer,
-            new GameSocketHandlerService(),
-            board,
-            TestBed.inject(OnlineActionCompilerService),
-            objectiveCreatorMock,
         );
         onlineGame.players = [new Player('p1'), new Player('p2')];
     });
@@ -244,8 +230,8 @@ describe('GameInfoService Online Edition', () => {
         expect(service.isEndOfGame).toBeFalsy();
     });
 
-    it('#is special game should return false when there is no game', () => {
-        expect(service.isSpecialGame).toBeFalse();
+    it('#is magic game should return false when there is no game', () => {
+        expect(service.isMagicGame).toBeFalse();
     });
 
     it('should throw when getting opponent when no players received', () => {
@@ -263,39 +249,5 @@ describe('GameInfoService Online Edition', () => {
         expect(service.opponent).toBe(p2);
         service.receivePlayer(p2);
         expect(service.opponent).toBe(p1);
-    });
-
-    it('should get is special game properly when online', () => {
-        service.receiveGame(specialOnlineGame);
-        expect(service.isSpecialGame).toBeTrue();
-    });
-
-    it('should return empty array for private objective when no game', () => {
-        const user = new Player('p1');
-        service.receivePlayer(user);
-        expect(service.getPrivateObjectives(service.player.name)).toEqual([]);
-    });
-
-    it('should return private objectives properly', () => {
-        specialOnlineGame.privateObjectives = new Map<string, Objective[]>();
-        const mockObjective = {} as unknown as Objective;
-        specialOnlineGame.privateObjectives.set('p1', [mockObjective, mockObjective]);
-        service.receiveGame(specialOnlineGame);
-        const user = new Player('p1');
-        service.receivePlayer(user);
-        expect(service.getPrivateObjectives(service.player.name).length).toBe(2);
-    });
-
-    it('should return public objectives properly', () => {
-        const mockObjective = {} as unknown as Objective;
-        specialOnlineGame.publicObjectives = [mockObjective, mockObjective];
-        service.receiveGame(specialOnlineGame);
-        const user = new Player('p1');
-        service.receivePlayer(user);
-        expect(service.publicObjectives.length).toBe(2);
-    });
-
-    it('should return empty array for public objectives when no game', () => {
-        expect(service.publicObjectives).toEqual([]);
     });
 });

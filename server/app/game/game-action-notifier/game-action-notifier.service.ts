@@ -3,7 +3,6 @@ import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game/game-logic/actions/place-letter';
 import { placementSettingsToString } from '@app/game/game-logic/utils';
-import { BindedSocket } from '@app/game/game-manager/binded-client.interface';
 import { Observable, Subject } from 'rxjs';
 import { Service } from 'typedi';
 
@@ -20,50 +19,42 @@ export class GameActionNotifierService {
         return this.notificationSubject;
     }
 
-    notify(action: Action, linkedClients: BindedSocket[], gameToken: string): void {
+    notify(action: Action, playerNames: string[], gameToken: string): void {
         if (action instanceof ExchangeLetter) {
-            this.notifyExchangeLetter(action, linkedClients, gameToken);
+            this.notifyExchangeLetter(action, playerNames, gameToken);
         }
 
         if (action instanceof PlaceLetter) {
-            this.notifyPlaceLetter(action, linkedClients, gameToken);
+            this.notifyPlaceLetter(action, playerNames, gameToken);
         }
 
         if (action instanceof PassTurn) {
-            this.notifyPassTurn(action, linkedClients, gameToken);
+            this.notifyPassTurn(action, playerNames, gameToken);
         }
     }
 
-    private findOpponentNames(playerName: string, linkedClients: BindedSocket[]): string[] {
-        const opponentClients = linkedClients.filter((client) => client.name !== playerName);
-        return opponentClients.map((client) => client.name);
-    }
-
-    private notifyExchangeLetter(exchangeLetter: ExchangeLetter, linkedClients: BindedSocket[], gameToken: string) {
+    private notifyExchangeLetter(exchangeLetter: ExchangeLetter, playerNames: string[], gameToken: string) {
         const player = exchangeLetter.player;
         const lettersToExchange = exchangeLetter.lettersToExchange;
         const content = `${player.name} échange ${lettersToExchange.length} lettres`;
-        const to = this.findOpponentNames(player.name, linkedClients);
-        const notification: GameActionNotification = { gameToken, content, to };
+        const notification: GameActionNotification = { gameToken, content, to: playerNames };
         this.notificationSubject.next(notification);
     }
 
-    private notifyPlaceLetter(placeLetter: PlaceLetter, linkedClients: BindedSocket[], gameToken: string) {
+    private notifyPlaceLetter(placeLetter: PlaceLetter, playerNames: string[], gameToken: string) {
         const player = placeLetter.player;
         const word = placeLetter.word;
         const placement = placeLetter.placement;
         const placementString = placementSettingsToString(placement);
         const content = `${player.name} place le mot ${word} en ${placementString}`;
-        const to = this.findOpponentNames(player.name, linkedClients);
-        const notification: GameActionNotification = { gameToken, content, to };
+        const notification: GameActionNotification = { gameToken, content, to: playerNames };
         this.notificationSubject.next(notification);
     }
 
-    private notifyPassTurn(passTurn: PassTurn, linkedClients: BindedSocket[], gameToken: string) {
+    private notifyPassTurn(passTurn: PassTurn, playerNames: string[], gameToken: string) {
         const player = passTurn.player;
         const content = `${player.name} passe son tour`;
-        const to = this.findOpponentNames(player.name, linkedClients);
-        const notification: GameActionNotification = { gameToken, content, to };
+        const notification: GameActionNotification = { gameToken, content, to: playerNames };
         this.notificationSubject.next(notification);
     }
 }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { CommandExecuterService } from '@app/game-logic/commands/command-executer/command-executer.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
 import { GameCreatorService } from '@app/game-logic/game/games/game-creator/game-creator.service';
@@ -36,7 +35,6 @@ export class GameManagerService {
     constructor(
         private messageService: MessagesService,
         private info: GameInfoService,
-        private commandExecuter: CommandExecuterService,
         private gameSocketHandler: GameSocketHandlerService,
         private onlineChat: OnlineChatHandlerService,
         private gameCreator: GameCreatorService,
@@ -105,7 +103,6 @@ export class GameManagerService {
 
     private resetServices() {
         this.messageService.clearLog();
-        this.commandExecuter.resetDebug();
     }
 
     private createOnlinePlayers(userName: string, allPlayerNames: string[]): Player[] {
@@ -128,6 +125,6 @@ export class GameManagerService {
         if (mode === GameMode.Classic) {
             return this.gameCreator.createOnlineGame(gameCreationParams);
         }
-        return this.gameCreator.createSpecialOnlineGame(gameCreationParams);
+        return this.gameCreator.createMagicOnlineGame(gameCreationParams);
     }
 }

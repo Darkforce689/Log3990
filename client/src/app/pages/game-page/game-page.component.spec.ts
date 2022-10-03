@@ -7,7 +7,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
-import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
@@ -32,11 +31,6 @@ describe('GamePageComponent', () => {
     let mockEndOfGame$: Subject<void>;
     let mockClosedModal$: Subject<void>;
     let mockInfo: jasmine.SpyObj<GameInfoService>;
-    class ActionValidatorServiceMock {
-        sendAction() {
-            return;
-        }
-    }
     class UIInputControllerServiceMock {
         receive() {
             return;
@@ -52,6 +46,9 @@ describe('GamePageComponent', () => {
         }
         get canBeExecuted() {
             return true;
+        }
+        sendAction() {
+            return;
         }
     }
 
@@ -83,7 +80,6 @@ describe('GamePageComponent', () => {
             imports: [RouterTestingModule.withRoutes(routes), AppMaterialModule, CommonModule, HttpClientTestingModule],
             providers: [
                 { provide: GameManagerService, useValue: gameManagerServiceSpy },
-                { provide: ActionValidatorService, useClass: ActionValidatorServiceMock },
                 { provide: ChangeDetectorRef, useValue: cdRefSpy },
                 { provide: MatDialog, useClass: MatDialogMock },
                 { provide: UIInputControllerService, useClass: UIInputControllerServiceMock },

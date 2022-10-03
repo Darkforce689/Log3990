@@ -11,6 +11,7 @@ describe('Room', () => {
     it('should add message to messages', () => {
         const message: Message = {
             from: 'Test',
+            date: new Date(),
             content: 'Allo',
         };
         room.addMessage(message);

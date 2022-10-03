@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
@@ -12,6 +13,7 @@ describe('PassTurn', () => {
     const player1: Player = new Player('Tim');
     const player2: Player = new Player('George');
     beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
         const messageService = TestBed.inject(MessagesService);
         const timerService = TestBed.inject(TimerService);
         const boardService = TestBed.inject(BoardService);

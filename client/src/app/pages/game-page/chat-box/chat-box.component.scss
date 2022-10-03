@@ -39,27 +39,40 @@ mat-hint {
 }
 
 .message {
-    color: var(--white);
-    border-radius: 5px;
-    margin-bottom: 2%;
-    margin-top: 2%;
-    padding: 3%;
+    .system {
+        .message-content {
+            background-color: grey;
+        }
+
+        align-self: flex-start;
+        margin-right: 10%;
+    }
+
+    .player1 {
+        .message-content {
+            background-color: royalblue;
+        }
+        align-self: flex-end;
+        margin-left: 10%;
+    }
+
+    .player2 {
+        .message-content {
+            background-color: #9d26ff;
+        }
+
+        align-self: flex-start;
+        margin-right: 10%;
+    }
+
+    .message-content {
+        color: var(--white);
+        border-radius: 5px;
+        margin-bottom: 2%;
+        padding: 3%;
+    }
 }
 
-.system {
-    background-color: grey;
-    align-self: flex-start;
-    margin-right: 10%;
-}
-
-.player1 {
-    background-color: royalblue;
-    align-self: flex-end;
-    margin-left: 10%;
-}
-
-.player2 {
-    background-color: #9d26ff;
-    align-self: flex-start;
-    margin-right: 10%;
+.message-header {
+    color: grey;
 }

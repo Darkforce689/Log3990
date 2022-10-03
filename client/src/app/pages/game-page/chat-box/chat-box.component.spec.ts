@@ -24,7 +24,7 @@ describe('ChatBoxComponent', () => {
     const httpClient = jasmine.createSpyObj('HttpClient', ['get']);
 
     beforeEach(() => {
-        messageServiceSpy = jasmine.createSpyObj('MessagesService', ['receiveMessagePlayer']);
+        messageServiceSpy = jasmine.createSpyObj('MessagesService', ['receiveNonDistributedPlayerMessage']);
         messageServiceSpy.messages$ = new BehaviorSubject<Message[]>([{ content: 'Test', from: 'test from', type: MessageType.Player1 }]);
         gameInfoServiceSpy = jasmine.createSpyObj('GameInfoService', ['getPlayer']);
         cdRefSpy = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
@@ -52,12 +52,12 @@ describe('ChatBoxComponent', () => {
     it('should send message to message service if message valid', () => {
         component.messageContent = 'Test message';
         component.sendMessage();
-        expect(messageServiceSpy.receiveMessagePlayer).toHaveBeenCalled();
+        expect(messageServiceSpy.receiveNonDistributedPlayerMessage).toHaveBeenCalled();
     });
 
     it('should not send a message if message is not valid', () => {
         component.sendMessage();
-        expect(messageServiceSpy.receiveMessagePlayer.calls.count()).toBe(0);
+        expect(messageServiceSpy.receiveNonDistributedPlayerMessage.calls.count()).toBe(0);
     });
 
     it('should change color of number of character if it exceeds limit', () => {

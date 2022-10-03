@@ -106,11 +106,11 @@ export class NewGamePageComponent {
         return loadingGameDialog;
     }
 
-    get isSpecialGame() {
-        return this.gameMode === GameMode.Special;
+    get isMagicGame() {
+        return this.gameMode === GameMode.Magic;
     }
 
-    set isSpecialGame(value: boolean) {
-        this.gameMode = value ? GameMode.Special : GameMode.Classic;
+    set isMagicGame(value: boolean) {
+        this.gameMode = value ? GameMode.Magic : GameMode.Classic;
     }
 }

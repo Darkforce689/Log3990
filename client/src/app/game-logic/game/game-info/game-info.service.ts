@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
 import { Game } from '@app/game-logic/game/games/game';
+import { MagicOnlineGame } from '@app/game-logic/game/games/magic-game/magic-game';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
-import { SpecialGame } from '@app/game-logic/game/games/special-games/special-game';
-import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
-import { Objective } from '@app/game-logic/game/objectives/objectives/objective';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -67,15 +65,6 @@ export class GameInfoService {
         return this.players[index].points;
     }
 
-    getPrivateObjectives(playerName: string): Objective[] {
-        if (!this.game || !this.player) {
-            return [];
-        }
-        const specialGame = this.game as SpecialGame;
-        const privateObjectives = specialGame.privateObjectives.get(playerName);
-        return privateObjectives ? privateObjectives : [];
-    }
-
     get opponent(): Player {
         if (!this.players) {
             throw new Error('No Players in GameInfo');
@@ -126,11 +115,7 @@ export class GameInfoService {
         return (this.game as OnlineGame).gameToken;
     }
 
-    get isSpecialGame(): boolean {
-        return this.game ? this.game instanceof SpecialOnlineGame : false;
-    }
-
-    get publicObjectives(): Objective[] {
-        return this.game ? (this.game as SpecialGame).publicObjectives : [];
+    get isMagicGame(): boolean {
+        return this.game ? this.game instanceof MagicOnlineGame : false;
     }
 }

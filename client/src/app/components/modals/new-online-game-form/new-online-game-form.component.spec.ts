@@ -2,17 +2,13 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DEFAULT_DICTIONARY_TITLE, DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
+import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { DictHttpService } from '@app/services/dict-http.service';
-import { of } from 'rxjs';
 import { NewOnlineGameFormComponent } from './new-online-game-form.component';
 
 describe('NewOnlineGameFormComponent', () => {
     let component: NewOnlineGameFormComponent;
     let fixture: ComponentFixture<NewOnlineGameFormComponent>;
-    const dictHttpServiceSpy = jasmine.createSpyObj('DictHttpService', ['getDictInfoList']);
-    dictHttpServiceSpy.getDictInfoList.and.returnValue(of([{ title: 'testTitle', description: 'testDescription' }]));
 
     const mockDialog = {
         close: () => {
@@ -27,7 +23,6 @@ describe('NewOnlineGameFormComponent', () => {
                 providers: [
                     { provide: MAT_DIALOG_DATA, useValue: {} },
                     { provide: MatDialogRef, useValue: mockDialog },
-                    { provide: DictHttpService, useValue: dictHttpServiceSpy },
                 ],
                 declarations: [NewOnlineGameFormComponent],
             }).compileComponents();
@@ -68,8 +63,6 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-            dictDesc: '',
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -84,8 +77,6 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-            dictDesc: '',
         };
         component.onlineGameSettingsUIForm.setValue(settings);
         expect(component.onlineGameSettingsUIForm.value).toEqual(settings);
@@ -97,8 +88,6 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
-            dictTitle: 'testTitle',
-            dictDesc: '',
         });
         component.playGame();
         expect(mockDialog.close).toHaveBeenCalled();
@@ -109,8 +98,6 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-            dictDesc: '',
         };
         component.onlineGameSettingsUIForm.setValue(setting);
         spyOn(mockDialog, 'close');
@@ -120,33 +107,6 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-            dictDesc: '',
         });
-    });
-
-    it('should return the description', () => {
-        component.dictList = [{ title: 'testTitle', description: 'testDesc', canEdit: true }];
-        expect(component.getDescription('testTitle')).toEqual('testDesc');
-    });
-
-    it('should return empty string if not found', () => {
-        component.dictList = [{ title: 'testTitle', description: 'testDesc', canEdit: true }];
-        expect(component.getDescription('testTitle2')).toEqual('');
-    });
-
-    it('playGame should not close dialog if error with server', () => {
-        const setting = {
-            playerName: 'samuel',
-            timePerTurn: 60000,
-            randomBonus: true,
-            dictTitle: 'deletedTitle',
-            dictDesc: '',
-        };
-        component.onlineGameSettingsUIForm.setValue(setting);
-
-        component.playGame();
-        const spy = spyOn(mockDialog, 'close');
-        expect(spy).not.toHaveBeenCalled();
     });
 });
