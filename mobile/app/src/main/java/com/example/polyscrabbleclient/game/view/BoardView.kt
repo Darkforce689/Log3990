@@ -227,10 +227,3 @@ fun BoardView() {
         }
     }
 }
-
-
-@Preview(showBackground = true, device = Devices.PIXEL_C)
-@Composable
-fun BoardPreview() {
-    BoardView()
-}
