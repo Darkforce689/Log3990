@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,10 +23,11 @@ import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.RowChar
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 
-// TODO : CHANGE DP <-> Float
 const val GridDimension = BoardDimension + 1
-const val GridSize = 820f
-const val GridDivisionSize = GridSize / GridDimension
+val BoardSize = 300.dp
+val GridPadding = 4.dp
+val GridSize = BoardSize - GridPadding.times(2)
+val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
 
 @Composable
@@ -38,8 +40,6 @@ fun BoardView () {
     val rowChars = RowChar.values();
     val rowCharsColor = MaterialTheme.colors.primary;
 
-    val divisionCenterOffset = 0.25f * GridDivisionSize;
-
     fun DrawScope.drawColumnDivider(
         currentDivisionOffset: Float,
         strokeWidth: Float
@@ -47,7 +47,7 @@ fun BoardView () {
         drawLine(
             brush = Brush.linearGradient(colors = themeColors),
             start = Offset(currentDivisionOffset, 0f),
-            end = Offset(currentDivisionOffset, GridSize),
+            end = Offset(currentDivisionOffset, GridSize.toPx()),
             strokeWidth = strokeWidth
         )
     }
@@ -59,7 +59,7 @@ fun BoardView () {
         drawLine(
             brush = Brush.linearGradient(colors = themeColors),
             start = Offset(0f, currentDivisionOffset),
-            end = Offset(GridSize, currentDivisionOffset),
+            end = Offset(GridSize.toPx(), currentDivisionOffset),
             strokeWidth = strokeWidth
         )
     }
@@ -67,7 +67,8 @@ fun BoardView () {
     fun DrawScope.drawColumnHeader(
         gridDivisionIndex: Int,
         currentDivisionOffset: Float,
-        textPaint: NativePaint
+        textPaint: NativePaint,
+        divisionCenterOffset: Float
     ) {
         drawIntoCanvas {
             it.nativeCanvas.drawText(
@@ -82,7 +83,8 @@ fun BoardView () {
     fun DrawScope.drawRowHeader(
         gridDivisionIndex: Int,
         currentDivisionOffset: Float,
-        textPaint: NativePaint
+        textPaint: NativePaint,
+        divisionCenterOffset: Float
     ) {
         val rowCharIndex = gridDivisionIndex - 2
         val rowHeaderChar = rowChars[rowCharIndex].toString()
@@ -100,12 +102,12 @@ fun BoardView () {
         drawRect(
             brush = Brush.linearGradient(colors = themeColors),
             topLeft = Offset(0f, 0f),
-            size = Size(GridSize, GridSize),
+            size = Size(GridSize.toPx(), GridSize.toPx()),
             alpha = 0.1f
         )
     }
 
-    fun DrawScope.drawGrid(textPaint: NativePaint) {
+    fun DrawScope.drawGrid(textPaint: NativePaint, divisionCenterOffset: Float) {
         drawBackground()
         for (gridDivisionIndex in 0..GridDimension) {
             val strokeWidth =
@@ -113,25 +115,26 @@ fun BoardView () {
                     Stroke.DefaultMiter
                 else
                     Stroke.HairlineWidth
-            val currentDivisionOffset = gridDivisionIndex * GridDivisionSize
+            val currentDivisionOffset = gridDivisionIndex * GridDivisionSize.toPx()
 
             drawColumnDivider(currentDivisionOffset, strokeWidth)
             drawRowDivider(currentDivisionOffset, strokeWidth)
             if (gridDivisionIndex in BoardRange) {
-                drawColumnHeader(gridDivisionIndex, currentDivisionOffset, textPaint)
+                drawColumnHeader(gridDivisionIndex, currentDivisionOffset, textPaint, divisionCenterOffset)
             }
             if (gridDivisionIndex in HeaderRange) {
-                drawRowHeader(gridDivisionIndex, currentDivisionOffset, textPaint)
+                drawRowHeader(gridDivisionIndex, currentDivisionOffset, textPaint, divisionCenterOffset)
             }
         }
     }
 
     Canvas(
         modifier = Modifier
-            // TODO : CHANGE DP <-> Float
-            .size(350.dp)
-            .padding(20.dp)
+            .size(BoardSize)
+            .padding(GridPadding)
     ) {
+
+
         val textPaint = Paint().asFrameworkPaint().apply {
             isAntiAlias = true
             textSize = 10.sp.toPx()
@@ -139,7 +142,9 @@ fun BoardView () {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
         }
 
-        drawGrid(textPaint)
+        // TODO : TWEAK
+        val divisionCenterOffset = 0.25f * GridDivisionSize.toPx();
+        drawGrid(textPaint, divisionCenterOffset)
     }
 }
 
