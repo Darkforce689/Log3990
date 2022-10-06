@@ -27,6 +27,8 @@ import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import kotlinx.coroutines.delay
 
 const val GridDimension = BoardDimension + 1
+val BoardSize = 550.dp
+val GridPadding = 10.dp
 val GridSize = BoardSize - GridPadding.times(2)
 val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
@@ -217,7 +219,13 @@ fun BoardView() {
         drawGridLayout(headerTextPaint)
     }
 
-    viewModel.updateBoard()
+    // TODO : REMOVE LATER
+    LaunchedEffect(Unit) {
+        while(true) {
+            delay(10000)
+            viewModel.updateBoard()
+        }
+    }
 }
 
 
