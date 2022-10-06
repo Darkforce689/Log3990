@@ -5,6 +5,7 @@ import { MagicOnlineGame } from '@app/game-logic/game/games/magic-game/magic-gam
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
+import { IMagicCard } from '@app/game-logic/game/games/online-game/game-state';
 import { Observable, Subject, Subscription } from 'rxjs';
 
 @Injectable({
@@ -51,6 +52,10 @@ export class GameInfoService {
         this.player = player;
     }
 
+    getDrawnMagicCard(index: number): IMagicCard[] {
+        return (this.game as MagicOnlineGame).drawnMagicCards[index];
+    }
+
     getPlayer(index: number): Player {
         if (!this.players) {
             throw new Error('No Players in GameInfo');
@@ -63,6 +68,11 @@ export class GameInfoService {
             throw new Error('No Players in GameInfo');
         }
         return this.players[index].points;
+    }
+
+    get playerIndex(): number {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return (this.game as OnlineGame).playersWithIndex.get(this.player.name)!.index!;
     }
 
     get opponent(): Player {

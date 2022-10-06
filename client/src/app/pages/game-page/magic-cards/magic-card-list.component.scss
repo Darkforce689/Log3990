@@ -1,0 +1,11 @@
+.magic-cards {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    align-items: flex-start;
+
+    app-magic-card {
+        padding: 1%;
+        margin: 1%;
+    }
+}

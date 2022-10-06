@@ -36,6 +36,8 @@ import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { MagicCardListComponent } from './pages/game-page/magic-cards/magic-card-list.component';
+import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/magic-card.component';
 
 /**
  * Main module that is used in main.ts.
@@ -76,6 +78,8 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         PrototypePageComponent,
         LoginPageComponent,
         RegisterPageComponent,
+        MagicCardListComponent,
+        MagicCardComponent,
     ],
     imports: [
         AppMaterialModule,
