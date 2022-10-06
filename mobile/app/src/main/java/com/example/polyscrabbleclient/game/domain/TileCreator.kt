@@ -7,7 +7,7 @@ class TileCreator {
     fun createTileFromLetter(letter: Char): TileModel {
         var points = 0;
         val letterIndex = letter.uppercaseChar().code - 'A'.code;
-        if(letterIndex >= 0 && letterIndex < letterValues.size) {
+        if (letterIndex >= 0 && letterIndex < letterValues.size) {
             points = letterValues[letterIndex]
         }
         return TileModel(letter, points)

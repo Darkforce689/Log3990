@@ -16,7 +16,7 @@ class BoardModel(
     var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { mutableStateOf(null) } }
 ) {
     fun debugPrint() {
-        for(row in tileGrid) {
+        for (row in tileGrid) {
             for(tile in row) {
                 print(tile.toString())
             }

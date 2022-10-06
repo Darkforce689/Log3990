@@ -79,7 +79,7 @@ fun BoardView() {
             currentDivisionOffset +
             divisionCenterOffset -
             // TODO : WARNING -> TWEAK
-            (gridDivisionIndex / 10) * (HeaderTextSize.toPx()/4)
+            (gridDivisionIndex / 10) * (HeaderTextSize.toPx() / 4)
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 gridDivisionIndex.toString(),
