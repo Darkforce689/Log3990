@@ -1,6 +1,5 @@
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { Tile } from '@app/game/game-logic/board/tile';
-import { MagicCard } from '@app/game/game-logic/actions/magic-card/magic-card';
 
 export interface LightPlayer {
     name: string;
@@ -32,6 +31,11 @@ export interface PlayerInfoToken {
     gameToken: string;
 }
 
+export interface IMagicCard {
+    id: string;
+}
+
 export interface MagicGameState extends GameState {
-    drawableMagicCards: MagicCard[];
+    drawableMagicCards: IMagicCard[];
+    drawnMagicCards: IMagicCard[][];
 }

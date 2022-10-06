@@ -1,4 +1,4 @@
-<div class="chatContainer" appClickAndClickout [inputComponent]="self" (click)="click()">
+<mat-card class="chatContainer" appClickAndClickout [inputComponent]="self" (click)="click()">
     <mat-card #chat class="sharedChat">
         <div class="message">
             <div
@@ -14,7 +14,17 @@
         </div>
     </mat-card>
     <mat-form-field appearance="fill">
-        <input matInput #enter type="text" [(ngModel)]="messageContent" autocomplete="off" autofocus (keyup.enter)="sendMessage()" placeholder="Aa" />
-        <mat-hint #red [ngClass]="{ error: isError(enter.value.length) }">{{ enter.value.length }}/{{ maxMessageLength }}</mat-hint>
+        <input
+            matInput
+            #enter
+            type="text"
+            [(ngModel)]="messageContent"
+            autocomplete="off"
+            autofocus
+            (keyup.enter)="sendMessage()"
+            placeholder="Aa"
+            [maxlength]="maxMessageLength"
+        />
+        <mat-hint>{{ enter.value.length }}/{{ maxMessageLength }}</mat-hint>
     </mat-form-field>
-</div>
+</mat-card>

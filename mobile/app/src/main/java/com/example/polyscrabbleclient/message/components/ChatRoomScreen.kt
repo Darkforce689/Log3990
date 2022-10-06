@@ -1,5 +1,7 @@
 package com.example.polyscrabbleclient.message.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,6 +9,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,8 +20,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavController
@@ -34,38 +37,39 @@ fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewMod
     val messages by chatBoxViewModel.messages.observeAsState()
     val inputFocusRequester = LocalFocusManager.current
 
-    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme){
-        Column {
-            Button(modifier = Modifier.padding(20.dp),
-                onClick = {
-                    SocketHandler.closeConnection()
-                    chatBoxViewModel.reset()
-                    navController.navigate(NavPage.MainPage.label) {
-                        popUpTo(NavPage.Room.label) {
-                            inclusive = true
+    Box {
+        Column() {
+            Icon(imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(6.dp)
+                    .clickable {
+                        SocketHandler.closeConnection()
+                        chatBoxViewModel.reset()
+                        navController.navigate(NavPage.MainPage.label) {
+                            popUpTo(NavPage.Room.label) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
                         }
-                        launchSingleTop = true
-                    }
                     })
-            {
-                Text("Page d'accueil")
-            }
-            Card(modifier= Modifier.padding(25.dp, 0.dp, 25.dp, 25.dp),
+            Card(modifier = Modifier
+                .padding(25.dp, 0.dp, 25.dp, 10.dp),
                 elevation = 2.dp,
-                onClick = { keyboardController?.hide(); inputFocusRequester.clearFocus()}) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.Bottom
-                ) {
-                    MessageList(messages as List<Message>)
-                    MessageInput()
+                onClick = { keyboardController?.hide(); inputFocusRequester.clearFocus() }) {
+                Column {
+                    Box(Modifier.weight(5f)) {
+                        MessageList(messages as List<Message>)
+                    }
+                    Box(Modifier.weight(1f)) {
+                        MessageInput()
+                    }
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun MessageList(messages : List<Message>) {
@@ -76,7 +80,8 @@ fun MessageList(messages : List<Message>) {
     LazyColumn(
         modifier = Modifier
             .padding(vertical = 4.dp, horizontal = 2.dp)
-            .fillMaxHeight(0.9f),
+            .fillMaxHeight()
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Bottom,
         state = scrollState
     ) {
@@ -86,29 +91,26 @@ fun MessageList(messages : List<Message>) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
     var input by remember { mutableStateOf("") }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val inputFocusRequester = FocusRequester()
-
     fun sendMessage() {
         if (input.isNotBlank()) {
             viewModel.sendMessage(Message(input, User.name, MessageType.ME, null))
         }
         input = ""
-        keyboardController?.hide()
+//        keyboardController?.hide()
     }
 
-
-    Row(modifier = Modifier.padding(10.dp, 10.dp),
-        horizontalArrangement = Arrangement.SpaceAround
+    Row(
+        Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
             modifier = Modifier
-                .focusRequester(inputFocusRequester)
-                .weight(1f),
+                .fillMaxWidth(0.9f)
+                .height(65.dp),
             value = input,
             onValueChange = { input = it },
             keyboardOptions = KeyboardOptions(keyboardType= KeyboardType.Password, imeAction = ImeAction.Send),
@@ -117,10 +119,12 @@ fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
             ),
             placeholder = { Text(text = "Aa") },
             singleLine = true,
+
         )
         Button(
             modifier = Modifier
-                .padding(3.dp),
+                .fillMaxWidth(0.7f)
+                .height(55.dp),
             onClick = { sendMessage() },
             enabled = input.isNotBlank()
         ) {

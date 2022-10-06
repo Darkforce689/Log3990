@@ -1,4 +1,3 @@
-import { MagicCard } from '@app/game-logic/actions/magic-card/magic-card';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { Tile } from '@app/game-logic/game/board/tile';
 
@@ -22,6 +21,11 @@ export interface PlayerInfoForfeit {
     previousPlayerName: string;
 }
 
+export interface IMagicCard {
+    id: string;
+}
+
 export interface MagicGameState extends GameState {
-    drawableMagicCards: MagicCard[];
+    drawableMagicCards: IMagicCard[];
+    drawnMagicCards: IMagicCard[][];
 }

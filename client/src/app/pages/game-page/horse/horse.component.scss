@@ -9,6 +9,7 @@ mat-grid-list {
 mat-grid-tile {
     font-weight: 700;
     border-radius: 10%;
+    // TODO GL3A22107-104
     background-color: rgb(240, 231, 216);
     box-shadow: 2px 2px 2px 0.2;
     background-image: url('^assets/img/tuile.png');
@@ -17,7 +18,6 @@ mat-grid-tile {
 
 mat-grid-tile:hover {
     cursor: pointer;
-    color: #050801;
     box-shadow: 0 0 5px white, 0 0 25px white, 0 0 50px white, 0 0 200px white;
 }
 
@@ -29,18 +29,21 @@ sub {
 .rackContainer {
     width: 40%;
     min-height: 50%;
+    // TODO GL3A22107-104
     background-color: rgb(47, 37, 51);
     border: 3px solid rgb(37, 37, 37);
     border-radius: 2%;
 }
 
 .selectedForMove {
+    // TODO GL3A22107-104
     background: #cc0a61; /* fallback for old browsers */
     background: -webkit-radial-gradient(#ffffff -40%, #cc0a61 140%); /* Chrome 10-25, Safari 5.1-6 */
     background: radial-gradient(#ffffff -40%, #cc0a61 140%); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .selectedForExchange {
+    // TODO GL3A22107-104
     background: #3994c9; /* fallback for old browsers */
     background: -webkit-radial-gradient(#ffffff -40%, #3994c9 140%); /* Chrome 10-25, Safari 5.1-6 */
     background: radial-gradient(#ffffff -40%, #3994c9 140%); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */

@@ -13,7 +13,7 @@
         'Img Img Img Img'
         'Player Board Board Objectives-Chat'
         'Info Board Board Objectives-Chat'
-        'Actions Board Board Objectives-Chat'
+        'Actions MagicCards MagicCards Objectives-Chat'
         'Quitter Horse Horse Objectives-Chat';
 }
 
@@ -78,6 +78,17 @@ app-chat-box {
     }
 }
 
+.magic-cards {
+    grid-area: MagicCards;
+    display: flex;
+    justify-content: center;
+    align-self: center;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
 .abandonner {
     grid-area: Quitter;
     display: flex;
@@ -87,6 +98,5 @@ app-chat-box {
     padding-left: 2%;
     button {
         width: 60%;
-        background-color: var(--red);
     }
 }

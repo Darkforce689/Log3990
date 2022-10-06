@@ -1,92 +1,84 @@
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use '~@angular/material' as mat;
-// Plus imports for other components in your app.
 @import '~@angular/material/theming';
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
 @include mat.core();
 
-$my-primary: mat-palette($mat-blue-grey, 50);
-$my-accent: mat-palette($mat-indigo, 700);
-$my-warn: mat-palette($mat-red);
+//     stylesheet           Theme          P               A         W
+// deeppurple-amber.css 	Light   	deep-purple,    amber,      red
+// indigo-pink.css 	        Light 	    indigo,         pink,       red
+// pink-bluegrey.css 	    Dark 	    pink,           bluegrey,   red
+// purple-green.css 	    Dark 	    purple,         green,      red
 
-$my-theme: mat.define-dark-theme(
+$light-primary: mat.define-palette(mat.$deep-purple-palette, 500, 100, 900);
+$light-accent: mat.define-palette(mat.$teal-palette, 500, 100, 900);
+$light-warn: mat.define-palette(mat.$red-palette);
+
+$light-theme: mat.define-light-theme(
     (
         color: (
-            primary: $my-primary,
-            accent: $my-accent,
-            warn: $my-warn,
+            primary: $light-primary,
+            accent: $light-accent,
+            warn: $light-warn,
         ),
     )
 );
 
-// Emit theme-dependent styles for common features used across multiple components.
-@include mat.all-component-colors($my-theme);
+.light-theme {
+    @include mat.all-component-themes($light-theme);
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
+    $primary: mat-color($light-primary);
+    $accent: mat-color($light-accent);
+    $warn: mat-color($light-warn);
+    $fg_palette: map-get($light-theme, foreground);
+    $bg_palette: map-get($light-theme, background);
+    $fg: map-get($fg_palette, text);
+    $bg: map-get($bg_palette, background);
 
-.indigo-pink-theme {
-    // Nothing to do. This is the default theme
-    $indigo-pink-theme: mat.define-light-theme(
-        (
-            color: (
-                primary: mat.define-palette(mat.$indigo-palette),
-                accent: mat.define-palette(mat.$pink-palette, A200, A100, A400),
-                warn: mat.define-palette(mat.$red-palette),
-            ),
-        )
-    );
-
-    @include mat.all-component-themes($indigo-pink-theme);
-}
-.deeppurple-amber-theme {
-    $deeppurple-amber-theme: mat.define-light-theme(
-        (
-            color: (
-                primary: mat.define-palette(mat.$deep-purple-palette),
-                accent: mat.define-palette(mat.$amber-palette, A200, A100, A400),
-            ),
-        )
-    );
-    @include mat.all-component-colors($deeppurple-amber-theme);
+    --primary: #{$primary};
+    --accent: #{$accent};
+    --warn: #{$warn};
+    --fg: #{$fg};
+    --bg: #{$bg};
 }
 
-.pink-bluegrey-theme {
-    $pink-bluegrey-theme: mat.define-dark-theme(
-        (
-            color: (
-                primary: mat.define-palette(mat.$pink-palette, 700, 500, 900),
-                accent: mat.define-palette(mat.$blue-grey-palette, A200, A100, A400),
-            ),
-        )
-    );
-    @include mat.all-component-colors($pink-bluegrey-theme);
+$dark-primary: mat.define-palette(mat.$purple-palette, 500, 100, 900);
+$dark-accent: mat.define-palette(mat.$blue-palette, 500, 100, 900);
+$dark-warn: mat.define-palette(mat.$red-palette);
+
+$dark-theme: mat.define-dark-theme(
+    (
+        color: (
+            primary: $dark-primary,
+            accent: $dark-accent,
+            warn: $dark-warn,
+        ),
+    )
+);
+
+.dark-theme {
+    @include mat.all-component-themes($dark-theme);
+
+    $primary: mat-color($dark-primary);
+    $accent: mat-color($dark-accent);
+    $warn: mat-color($dark-warn);
+    $fg_palette: map-get($dark-theme, foreground);
+    $bg_palette: map-get($dark-theme, background);
+    $fg: map-get($fg_palette, text);
+    $bg: map-get($bg_palette, background);
+
+    --primary: #{$primary};
+    --accent: #{$accent};
+    --warn: #{$warn};
+    --fg: #{$fg};
+    --bg: #{$bg};
 }
 
-.purple-green-theme {
-    $purple-green-theme: mat.define-dark-theme(
-        (
-            color: (
-                primary: mat.define-palette(mat.$purple-palette, 700, 500, 800),
-                accent: mat.define-palette(mat.$green-palette, A200, A100, A400),
-            ),
-        )
-    );
-    @include mat.all-component-colors($purple-green-theme);
-}
-
-/* You can add global styles to this file, and also import other style files */
-
+// TODO GL3A22107-104
 :root {
     --lightblue: rgb(152, 222, 255);
     --darkgray: rgb(119, 119, 119);
     --brown: rgb(129, 82, 63);
 
-    // Board color:
+    // Board color
     --blue-munsell: rgb(50, 87, 187);
     --melon: rgb(248, 142, 142);
     --salmon: rgb(209, 0, 45);
@@ -109,6 +101,7 @@ body {
 body {
     margin: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
+    // TODO GL3A22107-104
     background: #20262c;
 }
 
@@ -120,11 +113,14 @@ body {
     -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
+mat-card {
+    opacity: 0.95;
+}
+
 h1 {
     @extend .disable-select;
     display: flex;
     justify-content: center;
-    color: rgb(233, 231, 231);
     margin-bottom: 0px !important;
 }
 
@@ -133,7 +129,6 @@ h2 {
     margin-bottom: 0px !important;
     display: flex;
     justify-content: center;
-    color: rgb(233, 231, 231);
 }
 
 // Font
@@ -142,7 +137,8 @@ h2 {
     src: url('https://fonts.googleapis.com/css2?family=Overpass&display=swap') format('opentype');
 }
 
-body, html{
+body,
+html {
     height: 100%;
     margin: 0;
-  }
+}

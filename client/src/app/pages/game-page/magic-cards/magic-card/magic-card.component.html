@@ -1,0 +1,5 @@
+<div matTooltip="{{ hasMinCard ? description : '' }}" [matTooltipPosition]="'below'">
+    <button mat-raised-button color="accent" [disabled]="!(hasMinCard && canUse)" (click)="execute()">
+        {{ hasMinCard ? name : '' }}
+    </button>
+</div>

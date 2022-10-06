@@ -1,9 +1,5 @@
 <div *ngFor="let player of players; index as i">
-    <mat-card
-        class="playerInfo"
-        id="{{ i }}"
-        [ngClass]="{ active: player.name === activePlayerName, inactive: player.name !== activePlayerName }"
-    >
+    <mat-card class="playerInfo" id="{{ i }}" [ngClass]="{ active: isActivePlayer(player) }">
         <mat-card-header>
             <span class="name">{{ player.name }} </span>
         </mat-card-header>

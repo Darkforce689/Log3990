@@ -59,13 +59,6 @@ export class ChatBoxComponent implements AfterViewInit {
         return transformedContent;
     }
 
-    isError(length: number) {
-        if (length > this.maxMessageLength) {
-            return true;
-        }
-        return false;
-    }
-
     private resetMessageContent() {
         this.messageContent = '';
     }
