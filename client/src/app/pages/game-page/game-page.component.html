@@ -17,10 +17,9 @@
                 <button mat-raised-button color="accent" [disabled]="!canPlace" (click)="confirm()">Placer</button>
                 <button mat-raised-button color="accent" [disabled]="!canCancel" (click)="cancel()">Annuler</button>
             </div>
-            <div *ngIf="isMagicGame">
-                <button mat-raised-button color="accent" [disabled]="!canUseMagicCards" (click)="splitPoints()">Communisme</button>
-                <button mat-raised-button color="accent" [disabled]="!canExchangeMagicCard" (click)="exchangeLetter()">Exchange A letter</button>
-            </div>
+        </div>
+        <div *ngIf="isMagicGame" class="magic-cards">
+            <app-magic-card-list></app-magic-card-list>
         </div>
         <div class="abandonner">
             <button mat-raised-button (click)="abandon()" *ngIf="!isEndOfGame">Abandonner la partie</button>
