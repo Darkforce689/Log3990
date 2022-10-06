@@ -8,7 +8,7 @@ typealias TileContainer = MutableState<Tile>
 typealias TileContainerRow = Array<TileContainer>
 typealias TileGrid = Array<TileContainerRow>
 
-const val BoardDimension = 16
+const val BoardDimension = 15
 val BoardRange = 1..BoardDimension
 enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 
