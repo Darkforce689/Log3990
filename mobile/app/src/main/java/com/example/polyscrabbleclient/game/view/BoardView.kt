@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -17,14 +15,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.domain.MultiplierType
 import com.example.polyscrabbleclient.game.domain.Multipliers
 import com.example.polyscrabbleclient.game.model.*
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
-import kotlinx.coroutines.delay
 
 const val GridDimension = BoardDimension + 1
 val BoardSize = 550.dp
@@ -33,6 +29,8 @@ val GridSize = BoardSize - GridPadding.times(2)
 val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
 val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
+val DivisionCenterOffset = GridDivisionSize.times(0.3f);
+
 
 @Composable
 fun BoardView() {
@@ -43,7 +41,8 @@ fun BoardView() {
 
     val rowChars = RowChar.values();
     val rowCharsColor = MaterialTheme.colors.primary;
-    val tileBackground = Color(0xFFD7C096)
+    val tileTextColor = MaterialTheme.colors.onBackground;
+    val tileBackgroundColor = Color(0xFFD7C096)
 
     fun DrawScope.drawColumnDivider(
         currentDivisionOffset: Float,
@@ -73,19 +72,18 @@ fun BoardView() {
         gridDivisionIndex: Int,
         currentDivisionOffset: Float,
         headerTextPaint: NativePaint,
-        divisionCenterOffset: Float
     ) {
         val horizontalTextOffset =
             currentDivisionOffset +
-            divisionCenterOffset -
+            DivisionCenterOffset.toPx() -
             // TODO : WARNING -> TWEAK
-            (gridDivisionIndex / 10) * (HeaderTextSize.toPx() / 4)
+            (gridDivisionIndex / 10) * (HeaderTextSize.toPx() / 3)
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 gridDivisionIndex.toString(),
                 horizontalTextOffset,
                 // TODO : WARNING -> TWEAK
-                2.4f * divisionCenterOffset,
+                2.4f * DivisionCenterOffset.toPx(),
                 headerTextPaint
             )
         }
@@ -95,15 +93,14 @@ fun BoardView() {
         gridDivisionIndex: Int,
         currentDivisionOffset: Float,
         headerTextPaint: NativePaint,
-        divisionCenterOffset: Float
     ) {
         val rowCharIndex = gridDivisionIndex - 2
         val rowHeaderChar = rowChars[rowCharIndex].toString()
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 rowHeaderChar,
-                divisionCenterOffset,
-                currentDivisionOffset - divisionCenterOffset,
+                DivisionCenterOffset.toPx(),
+                currentDivisionOffset - DivisionCenterOffset.toPx(),
                 headerTextPaint
             )
         }
@@ -118,9 +115,13 @@ fun BoardView() {
         )
     }
 
-    fun DrawScope.drawGridLayout(headerTextPaint: NativePaint) {
-        // TODO : WARNING -> TWEAK
-        val divisionCenterOffset = 0.3f * GridDivisionSize.toPx();
+    fun DrawScope.drawGridLayout() {
+        val headerTextPaint = Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            textSize = HeaderTextSize.toPx()
+            color = rowCharsColor.toArgb()
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+        }
 
         drawGridBackground()
 
@@ -135,10 +136,10 @@ fun BoardView() {
             drawColumnDivider(currentDivisionOffset, strokeWidth)
             drawRowDivider(currentDivisionOffset, strokeWidth)
             if (gridDivisionIndex in BoardRange) {
-                drawColumnHeader(gridDivisionIndex, currentDivisionOffset, headerTextPaint, divisionCenterOffset)
+                drawColumnHeader(gridDivisionIndex, currentDivisionOffset, headerTextPaint)
             }
             if (gridDivisionIndex in HeaderRange) {
-                drawRowHeader(gridDivisionIndex, currentDivisionOffset, headerTextPaint, divisionCenterOffset)
+                drawRowHeader(gridDivisionIndex, currentDivisionOffset, headerTextPaint)
             }
         }
     }
@@ -163,31 +164,53 @@ fun BoardView() {
         tile: TileContainer,
         columnIndex: Int,
         rowIndex: Int,
-        headerTextPaint: NativePaint
     ) {
         if (tile.value === null) {
             return
         }
+
+        val lettersPaint = Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            textSize = HeaderTextSize.toPx()
+            color = tileTextColor.toArgb()
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+        }
+
+        val pointsPaint = Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            textSize = HeaderTextSize.toPx() * 0.5f
+            color = tileTextColor.toArgb()
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+        }
+
         val column = columnIndex + 1
         val row = rowIndex + 1
 
-        drawTileBackground(tileBackground, column, row)
+        drawTileBackground(tileBackgroundColor, column, row)
         val horizontalOffset = column * GridDivisionSize.toPx();
         val verticalOffset = (row + 1) * GridDivisionSize.toPx();
         drawIntoCanvas {
             it.nativeCanvas.drawText(
-                tile.value?.letter.toString() + tile.value?.points.toString(),
-                horizontalOffset,
-                verticalOffset,
-                headerTextPaint
+                tile.value?.letter.toString(),
+                horizontalOffset + DivisionCenterOffset.toPx(),
+                verticalOffset - DivisionCenterOffset.toPx(),
+                lettersPaint
+            )
+        }
+        drawIntoCanvas {
+            it.nativeCanvas.drawText(
+                tile.value?.points.toString(),
+                horizontalOffset + 2.2f * DivisionCenterOffset.toPx(),
+                verticalOffset - 0.5f * DivisionCenterOffset.toPx(),
+                pointsPaint
             )
         }
     }
 
-    fun DrawScope.drawTiles(headerTextPaint: NativePaint) {
+    fun DrawScope.drawTiles() {
         viewModel.board.tileGrid.forEachIndexed { rowIndex, row ->
             row.forEachIndexed { columnIndex, tile ->
-                drawTileContent(tile, columnIndex, rowIndex, headerTextPaint)
+                drawTileContent(tile, columnIndex, rowIndex)
             }
         }
     }
@@ -206,24 +229,12 @@ fun BoardView() {
             .size(BoardSize)
             .padding(GridPadding)
     ) {
-        val headerTextPaint = Paint().asFrameworkPaint().apply {
-            isAntiAlias = true
-            textSize = HeaderTextSize.toPx()
-            color = rowCharsColor.toArgb()
-            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
-        }
-
         drawMultipliers()
-        drawTiles(headerTextPaint)
+        drawTiles()
         // WARNING -> drawGrid should be called after all others
-        drawGridLayout(headerTextPaint)
+        drawGridLayout()
     }
 
-    // TODO : REMOVE LATER
-    LaunchedEffect(Unit) {
-        while(true) {
-            delay(10000)
-            viewModel.updateBoard()
-        }
-    }
+    viewModel.updateBoard()
+}
 }
