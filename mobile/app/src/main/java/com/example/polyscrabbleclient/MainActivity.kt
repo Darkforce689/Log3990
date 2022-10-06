@@ -25,22 +25,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        ScrabbleHttpClient.setCookieManager(this)
         var startPage: NavPage = NavPage.Login
-        if (ScrabbleHttpClient.getAuthCookie() == null) {
-            println(ScrabbleHttpClient.getAuthCookie())
-            // TODO: Verify when persistent cookies is made
-        } else {
+        if (ScrabbleHttpClient.getAuthCookie() != null) {
             try {
-            val thread = Thread {
-                    val response = ScrabbleHttpClient.post(
-                        URL(BuildConfig.COMMUNICATION_URL + "/auth/login"),
-                        Credentials("", ""),
-                        LoginRes::class.java
+                val thread = Thread {
+                    val response = ScrabbleHttpClient.get(
+                        URL(BuildConfig.COMMUNICATION_URL + "/auth/validatesession")
                     )
                     if (response != null) {
-                        if (response.errors == null) {
-                            startPage = NavPage.MainPage
-                        }
+                        startPage = NavPage.MainPage
+                    } else {
+                        ScrabbleHttpClient.clearCookies()
                     }
                 }
                 thread.start()

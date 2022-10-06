@@ -57,7 +57,7 @@ fun Disconnection(navController: NavController, startViewModel: StartViewModel) 
             thread.start()
             thread.join()
             startViewModel.disconnectAppSocket()
-            ScrabbleHttpClient.cookieManager.cookieStore.removeAll()
+            ScrabbleHttpClient.clearCookies()
             navController.navigate(NavPage.Login.label) {
                 launchSingleTop = true
             }

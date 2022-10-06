@@ -1,7 +1,7 @@
 package com.example.polyscrabbleclient.utils.httprequests
 
+import android.app.Activity
 import com.example.polyscrabbleclient.BuildConfig
-import com.example.polyscrabbleclient.Score
 import com.google.gson.Gson
 import java.io.BufferedInputStream
 import java.io.InputStream
@@ -10,10 +10,14 @@ import java.net.*
 import java.nio.charset.Charset
 
 object ScrabbleHttpClient {
-    val cookieManager = CookieManager()
-    init {
-        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL)
+    lateinit var cookieManager: CookieManager
+    fun setCookieManager(activity: Activity) {
+        cookieManager = CookieManager(PersistentCookieStore(activity), CookiePolicy.ACCEPT_ALL)
         CookieHandler.setDefault(cookieManager)
+    }
+
+    fun clearCookies() {
+        cookieManager.cookieStore.removeAll()
     }
 
     private fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
@@ -29,12 +33,20 @@ object ScrabbleHttpClient {
     }
 
     fun <T: Any> get(url: URL, returnType: Class<T>): T? {
+        val body = get(url)
+        return try {
+            Gson().fromJson(body, returnType)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun get(url: URL): String? {
         val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
         return try {
             val urlConnectionBodyStream = if (urlConnection.responseCode == 200) urlConnection.inputStream else urlConnection.errorStream
             val inputStream: InputStream = BufferedInputStream(urlConnectionBodyStream)
-            val body: String = inputStream.readTextAndClose()
-            Gson().fromJson(body, returnType)
+            inputStream.readTextAndClose()
         } catch (e: Exception) {
             null
         } finally {
@@ -60,7 +72,6 @@ object ScrabbleHttpClient {
             val responseBody = inputStream.readTextAndClose()
             Gson().fromJson(responseBody, returnType)
         } catch (e: Exception) {
-            e.printStackTrace()
             null
         } finally {
             urlConnection.disconnect()
