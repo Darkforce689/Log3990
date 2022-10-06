@@ -11,6 +11,7 @@ class BoardViewModel : ViewModel() {
     var tileCreator = TileCreator()
 
     fun updateBoard() {
+        // TODO : REMOVE + UPDATE LATER
         board[4, 5] = tileCreator.createTileFromLetter('A')
     }
 }

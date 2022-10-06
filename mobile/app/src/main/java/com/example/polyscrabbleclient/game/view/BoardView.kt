@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -14,17 +15,18 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.domain.MultiplierType
 import com.example.polyscrabbleclient.game.domain.Multipliers
 import com.example.polyscrabbleclient.game.model.*
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
+import kotlinx.coroutines.delay
 
 const val GridDimension = BoardDimension + 1
-val BoardSize = 300.dp
-val GridPadding = 4.dp
 val GridSize = BoardSize - GridPadding.times(2)
 val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
@@ -219,7 +221,7 @@ fun BoardView() {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun BoardPreview() {
     BoardView()

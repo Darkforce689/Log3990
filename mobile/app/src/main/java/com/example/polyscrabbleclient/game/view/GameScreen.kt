@@ -14,10 +14,10 @@ import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 @Composable
 fun GameScreen(navController: NavController, gameViewModel: GameViewModel) {
     Column {
-        Box (Modifier.background(MaterialTheme.colors.primaryVariant)) {
+        Box {
             BoardView()
         }
-        Box (Modifier.background(MaterialTheme.colors.primary)) {
+        Box {
             LetterRackView(navController, gameViewModel.user)
         }
     }
