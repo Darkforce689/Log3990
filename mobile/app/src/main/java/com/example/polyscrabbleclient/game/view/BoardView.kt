@@ -29,6 +29,7 @@ val GridPadding = 4.dp
 val GridSize = BoardSize - GridPadding.times(2)
 val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
+val HeaderTextSize = BoardSize.div(30)
 
 @Composable
 fun BoardView () {
@@ -70,11 +71,17 @@ fun BoardView () {
         textPaint: NativePaint,
         divisionCenterOffset: Float
     ) {
+        val horizontalTextOffset =
+            currentDivisionOffset +
+            divisionCenterOffset - 
+            // TODO : WARNING -> TWEAK
+            (gridDivisionIndex / 10) * (HeaderTextSize.toPx()/4)
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 gridDivisionIndex.toString(),
-                currentDivisionOffset + divisionCenterOffset,
-                3 * divisionCenterOffset,
+                horizontalTextOffset,
+                // TODO : WARNING -> TWEAK
+                2.4f * divisionCenterOffset,
                 textPaint
             )
         }
@@ -137,13 +144,13 @@ fun BoardView () {
 
         val textPaint = Paint().asFrameworkPaint().apply {
             isAntiAlias = true
-            textSize = 10.sp.toPx()
+            textSize = HeaderTextSize.toPx()
             color = rowCharsColor.toArgb()
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
         }
 
-        // TODO : TWEAK
-        val divisionCenterOffset = 0.25f * GridDivisionSize.toPx();
+        // TODO : WARNING -> TWEAK
+        val divisionCenterOffset = 0.3f * GridDivisionSize.toPx();
         drawGrid(textPaint, divisionCenterOffset)
     }
 }
