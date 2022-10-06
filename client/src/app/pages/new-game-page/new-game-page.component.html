@@ -7,7 +7,7 @@
                 <h2 class="game-mode-title">Mode de jeu : {{ isMagicGame ? 'Carte de pouvoir' : 'Classique' }}</h2>
                 <mat-slide-toggle [(ngModel)]="isMagicGame" (click)="triggerRipple()" color="warn">Changer de mode</mat-slide-toggle>
             </div>
-            <button mat-flat-button color="accent" class="selection-button" (click)="openMultiGameForm()">Créer une partie multijoueur</button>
+            <button mat-flat-button color="primary" class="selection-button" (click)="openMultiGameForm()">Créer une partie multijoueur</button>
             <button mat-flat-button color="accent" class="selection-button" (click)="openPendingGames()">Joindre une partie multijoueur</button>
         </mat-card>
     </div>

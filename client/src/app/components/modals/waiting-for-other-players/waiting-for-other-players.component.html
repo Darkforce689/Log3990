@@ -8,6 +8,6 @@
     </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button color="primary" [mat-dialog-close] (click)="cancel()">Annuler</button>
-    <button mat-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>
+    <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
+    <button mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>
 </mat-dialog-actions>

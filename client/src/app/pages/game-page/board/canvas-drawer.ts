@@ -218,6 +218,7 @@ export class CanvasDrawer {
 
     private drawIndicator() {
         const pos = this.tilePositionToCoord(this.indicatorPos.x, this.indicatorPos.y);
+        // TODO GL3A22107-104
         this.canvas.fillStyle = 'rgba(0.5, 0, 0, 0.25)';
         this.canvas.fillRect(pos.x + this.canvas.lineWidth, pos.y + this.canvas.lineWidth, this.tileSize, this.tileSize);
 
@@ -239,6 +240,7 @@ export class CanvasDrawer {
 
     private drawHighlight(i: number, j: number) {
         const pos = this.tilePositionToCoord(i, j);
+        // TODO GL3A22107-104
         this.canvas.fillStyle = 'rgba(0.5, 0, 0.5, 0.25)';
         this.canvas.fillRect(
             pos.x + 2 * this.canvas.lineWidth,

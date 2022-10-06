@@ -3,7 +3,6 @@ mat-card {
 }
 
 .playerInfo {
-    background-color: var(--lightgray);
     justify-self: center;
 }
 
@@ -11,20 +10,14 @@ mat-card {
     justify-self: center;
     font-size: 150%;
     font-weight: 900;
-    color: var(--black-chocolate);
 }
 
 .score {
     justify-self: end;
     font-size: 85%;
-    color: black;
 }
 
 .active {
-    box-shadow: 1px 1px 5px 5px var(--active);
-    background-color: var(--white);
-}
-
-.inactive {
-    box-shadow: 0px 0px 0px 0px;
+    box-shadow: 1px 1px 5px 5px var(--fg) !important;
+    background-color: var(--accent);
 }

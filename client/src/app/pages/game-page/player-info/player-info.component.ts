@@ -21,4 +21,8 @@ export class PlayerInfoComponent {
     get lettersRemaining(): number {
         return this.info.numberOfLettersRemaining;
     }
+
+    isActivePlayer(player: Player) {
+        return player.name === this.activePlayerName;
+    }
 }

@@ -23,6 +23,7 @@
 
 .mat-icon {
     vertical-align: middle;
+    // TODO GL3A22107-104
     color: #ffffff;
 }
 
@@ -57,9 +58,11 @@ table {
 }
 
 .header-classic {
+    // TODO GL3A22107-104
     border-bottom: 3px solid rgba($color: royalblue, $alpha: 1);
 }
 
 .header-log {
+    // TODO GL3A22107-104
     border-bottom: 3px solid rgba($color: #b61fdbd3, $alpha: 1);
 }
