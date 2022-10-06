@@ -40,9 +40,7 @@ button {
     color: var(--darkgray) !important;
 
     button {
-        background-color: #e0115f;
         border: 2px linear !important;
-        color: var(--white);
     }
 }
 
@@ -58,7 +56,6 @@ button {
     display: flex;
     align-items: center;
     flex-direction: column;
-    color: white !important;
     justify-content: center;
     margin-top: 3%;
     margin-bottom: 4%;

@@ -23,6 +23,6 @@
 </mat-dialog-content>
 <br />
 <mat-dialog-actions>
-    <button mat-button (click)="cancel()">Annuler</button>
-    <button mat-button (click)="playGame()" [disabled]="!formValid">Créer une partie</button>
+    <button mat-button color="accent" (click)="cancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="playGame()" [disabled]="!formValid">Créer une partie</button>
 </mat-dialog-actions>

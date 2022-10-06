@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
@@ -58,15 +57,6 @@ describe('ChatBoxComponent', () => {
     it('should not send a message if message is not valid', () => {
         component.sendMessage();
         expect(messageServiceSpy.receiveNonDistributedPlayerMessage.calls.count()).toBe(0);
-    });
-
-    it('should change color of number of character if it exceeds limit', () => {
-        const maxCharPlusOne = 514;
-
-        expect(fixture.debugElement.query(By.css('#red'))).toBeNull();
-        component.isError(maxCharPlusOne);
-        fixture.detectChanges();
-        expect(fixture.debugElement.query(By.css('#red'))).toBeDefined();
     });
 
     it('should emit when it has been clicked', (done) => {

@@ -13,6 +13,7 @@ import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderb
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
+import { ThemeSelectorComponent } from '@app/components/theme-selector/theme-selector.component';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { MouseRollDirective } from '@app/directives/mouse-roll.directive';
 import { PreventContextMenuDirective } from '@app/directives/prevent-context-menu.directive';
@@ -33,11 +34,11 @@ import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.
 import { AlertDialogComponent } from './components/modals/alert-dialog/alert-dialog.component';
 import { LoadingGameComponent } from './components/modals/loading-game/loading-game.component';
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
+import { MagicCardListComponent } from './pages/game-page/magic-cards/magic-card-list.component';
+import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/magic-card.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
-import { MagicCardListComponent } from './pages/game-page/magic-cards/magic-card-list.component';
-import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/magic-card.component';
 
 /**
  * Main module that is used in main.ts.
@@ -78,6 +79,7 @@ import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/mag
         PrototypePageComponent,
         LoginPageComponent,
         RegisterPageComponent,
+        ThemeSelectorComponent,
         MagicCardListComponent,
         MagicCardComponent,
     ],
