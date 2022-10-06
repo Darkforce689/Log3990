@@ -13,7 +13,7 @@ import androidx.navigation.NavController
 import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 
 @Composable
-fun LetterRackView(navController: NavController) {
+fun LetterRackView() {
     val viewModel: LetterRackViewModel = viewModel()
 
     LazyRow(

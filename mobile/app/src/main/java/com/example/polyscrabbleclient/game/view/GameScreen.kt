@@ -18,8 +18,7 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel) {
             BoardView()
         }
         Box {
-            LetterRackView(navController, gameViewModel.user)
+            LetterRackView()
         }
     }
-
 }
