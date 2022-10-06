@@ -66,7 +66,7 @@ fun UserNameInput(
             .focusRequester(focusRequester)
             .onFocusChanged { focusState -> if (!focusState.isFocused && name.isNotBlank()) validateInput() },
         isError = errorMessage.value.isNotEmpty(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.None),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() } ),
 
         label = {Text(userName_string)}, singleLine = true, leadingIcon = { Icon(
@@ -129,7 +129,7 @@ fun EmailInput(
             },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.None
         ),
         keyboardActions = KeyboardActions(
             onDone = { keyboardController?.hide() }
@@ -191,7 +191,7 @@ fun PasswordInput(
         label = { Text(password_string) },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.None
         ),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         singleLine = true,

@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.auth.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
@@ -10,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -24,25 +26,31 @@ import com.example.polyscrabbleclient.auth.viewmodel.AuthServerError
 import com.example.polyscrabbleclient.auth.viewmodel.AuthValidation
 import com.example.polyscrabbleclient.ui.theme.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LogInScreen(navController: NavController, viewModel: AuthenticationViewModel) {
     val isAuthenticate = viewModel.isAuthenticate.collectAsState().value
-    AuthContent(
-        modifier = Modifier.fillMaxWidth(),
-        authState = viewModel.logInState.collectAsState().value,
-        errors = viewModel.errors.observeAsState().value,
-        handleEvent = viewModel::handleLoginEvent,
-        isInProcess = viewModel.isInProcess.collectAsState().value,
-        onSignUp = {
-            viewModel.reset()
-            navController.navigate(NavPage.SignUp.label) {
-                popUpTo(NavPage.Login.label) {
-                    inclusive = true
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val inputFocusRequester = LocalFocusManager.current
+
+    Box(Modifier.clickable {keyboardController?.hide(); inputFocusRequester.clearFocus() }) {
+        AuthContent(
+            modifier = Modifier.fillMaxWidth(),
+            authState = viewModel.logInState.collectAsState().value,
+            errors = viewModel.errors.observeAsState().value,
+            handleEvent = viewModel::handleLoginEvent,
+            isInProcess = viewModel.isInProcess.collectAsState().value,
+            onSignUp = {
+                viewModel.reset()
+                navController.navigate(NavPage.SignUp.label) {
+                    popUpTo(NavPage.Login.label) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
                 }
-                launchSingleTop = true
             }
-        }
-    )
+        )
+    }
     if (isAuthenticate) {
         viewModel.reset()
         navController.navigate(NavPage.MainPage.label) {
@@ -120,11 +128,11 @@ fun AuthForm(
             backgroundColor = MaterialTheme.colors.background
         ) {
             Column(
-                modifier = Modifier.padding(15.dp),
+                modifier = Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = connection, fontSize = 30.sp)
-                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = connection, fontSize = 25.sp)
+                Spacer(modifier = Modifier.height(15.dp))
                 Column() {
                     EmailInput(
                         email = email,
@@ -158,12 +166,12 @@ fun AuthForm(
                 ) {
                     Text(connect)
                 }
-                Spacer(modifier = Modifier.height(25.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 ClickableText(
                     text = AnnotatedString(
                         no_Account,
                         SpanStyle(color = MaterialTheme.colors.secondaryVariant, textDecoration = TextDecoration.Underline)
-                    ), onClick = { onSignUp() })
+                    ), onClick = { keyboardController?.hide(); onSignUp() })
             }
         }
     }
