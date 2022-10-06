@@ -39,6 +39,7 @@ fun BoardView() {
 
     val rowChars = RowChar.values();
     val rowCharsColor = MaterialTheme.colors.primary;
+    val tileBackground = Color(0xFFD7C096)
 
     fun DrawScope.drawColumnDivider(
         currentDivisionOffset: Float,
@@ -133,7 +134,56 @@ fun BoardView() {
                 drawColumnHeader(gridDivisionIndex, currentDivisionOffset, headerTextPaint, divisionCenterOffset)
             }
             if (gridDivisionIndex in HeaderRange) {
-                drawRowHeader(gridDivisionIndex, currentDivisionOffset, textPaint, divisionCenterOffset)
+                drawRowHeader(gridDivisionIndex, currentDivisionOffset, headerTextPaint, divisionCenterOffset)
+            }
+        }
+    }
+
+    fun DrawScope.drawTileBackground(
+        color: Color,
+        column: Int,
+        row: Int,
+        alpha: Float = 1f
+    ) {
+        val rowOffset = row * GridDivisionSize.toPx()
+        val columnOffset = column * GridDivisionSize.toPx()
+        drawRect(
+            color = color,
+            topLeft = Offset(columnOffset, rowOffset),
+            size = Size(GridDivisionSize.toPx(), GridDivisionSize.toPx()),
+            alpha = alpha
+        )
+    }
+
+    fun DrawScope.drawTileContent(
+        tile: TileContainer,
+        columnIndex: Int,
+        rowIndex: Int,
+        headerTextPaint: NativePaint
+    ) {
+        if (tile.value === null) {
+            return
+        }
+        val column = columnIndex + 1
+        val row = rowIndex + 1
+
+        drawTileBackground(tileBackground, column, row)
+        val horizontalOffset = column * GridDivisionSize.toPx();
+        val verticalOffset = (row + 1) * GridDivisionSize.toPx();
+        drawIntoCanvas {
+            it.nativeCanvas.drawText(
+                tile.value?.letter.toString() + tile.value?.points.toString(),
+                horizontalOffset,
+                verticalOffset,
+                headerTextPaint
+            )
+        }
+    }
+
+    fun DrawScope.drawTiles(headerTextPaint: NativePaint) {
+        viewModel.board.tileGrid.forEachIndexed { rowIndex, row ->
+            row.forEachIndexed { columnIndex, tile ->
+                drawTileContent(tile, columnIndex, rowIndex, headerTextPaint)
             }
         }
     }
@@ -160,9 +210,12 @@ fun BoardView() {
         }
 
         drawMultipliers()
+        drawTiles(headerTextPaint)
         // WARNING -> drawGrid should be called after all others
         drawGridLayout(headerTextPaint)
     }
+
+    viewModel.updateBoard()
 }
 
 
