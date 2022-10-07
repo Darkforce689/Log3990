@@ -31,7 +31,13 @@ val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
 val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
 val DivisionCenterOffset = GridDivisionSize.times(0.3f);
+val ThickDividerWidth = Stroke.DefaultMiter
 
+data class LocalDimensions (
+    val boardSize: Float,
+    val boardPadding: Float,
+    val gridDivisionSize: Float
+)
 
 @Composable
 fun BoardView() {
