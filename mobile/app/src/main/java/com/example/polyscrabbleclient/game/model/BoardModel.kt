@@ -19,6 +19,17 @@ class BoardModel(
         }
     }
 
+    fun toggleTileHover(column: Int, row: Int) {
+        requireBoardIndexes(column, row)
+        val isHovering = tileGrid[column-1][row-1].isHovered.value;
+        tileGrid[column-1][row-1].isHovered.value = !isHovering;
+    }
+
+    fun setTileHover(column: Int, row: Int, isHovering: Boolean) {
+        requireBoardIndexes(column, row)
+        tileGrid[column-1][row-1].isHovered.value = isHovering
+    }
+
     operator fun get(column: Int, row: Int): TileModel? {
         requireBoardIndexes(column, row)
         return tileGrid[column-1][row-1].content.value
