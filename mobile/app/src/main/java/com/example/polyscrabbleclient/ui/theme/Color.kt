@@ -7,3 +7,5 @@ val Purple500 = Color(0xFF720FFF)
 val Purple700 = Color(0xFF3700B3)
 val Teal200 = Color(0xFF03DAC5)
 val Blue200 = Color(0xE2214FE0)
+val TileBackgroundColor = Color(0xFFD7C096)
+

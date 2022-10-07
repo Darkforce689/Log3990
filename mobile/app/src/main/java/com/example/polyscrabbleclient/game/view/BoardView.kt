@@ -21,6 +21,7 @@ import com.example.polyscrabbleclient.game.domain.MultiplierType
 import com.example.polyscrabbleclient.game.domain.Multipliers
 import com.example.polyscrabbleclient.game.model.*
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
+import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
 
 const val GridDimension = BoardDimension + 1
 val BoardSize = 550.dp
@@ -42,7 +43,6 @@ fun BoardView() {
     val rowChars = RowChar.values();
     val rowCharsColor = MaterialTheme.colors.primary;
     val tileTextColor = MaterialTheme.colors.onBackground;
-    val tileBackgroundColor = Color(0xFFD7C096)
 
     fun DrawScope.drawColumnDivider(
         currentDivisionOffset: Float,
@@ -186,7 +186,7 @@ fun BoardView() {
         val column = columnIndex + 1
         val row = rowIndex + 1
 
-        drawTileBackground(tileBackgroundColor, column, row)
+        drawTileBackground(TileBackgroundColor, column, row)
         val horizontalOffset = column * GridDivisionSize.toPx();
         val verticalOffset = (row + 1) * GridDivisionSize.toPx();
         drawIntoCanvas {
