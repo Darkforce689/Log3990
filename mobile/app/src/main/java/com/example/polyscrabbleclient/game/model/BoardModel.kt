@@ -1,5 +1,8 @@
 package com.example.polyscrabbleclient.game.model
 
+import androidx.compose.ui.geometry.Offset
+import com.example.polyscrabbleclient.game.view.LocalDimensions
+
 typealias TileContainerRow = Array<GridTileModel>
 typealias TileGrid = Array<TileContainerRow>
 
@@ -21,18 +24,18 @@ class BoardModel(
 
     fun toggleTileHover(column: Int, row: Int) {
         requireBoardIndexes(column, row)
-        val isHovering = tileGrid[column-1][row-1].isHovered.value;
-        tileGrid[column-1][row-1].isHovered.value = !isHovering;
+        val isHighlighted = tileGrid[row-1][column-1].isHighlighted;
+        isHighlighted.value = !isHighlighted.value;
     }
 
-    fun setTileHover(column: Int, row: Int, isHovering: Boolean) {
+    fun setTileHover(column: Int, row: Int, isHighlighted: Boolean) {
         requireBoardIndexes(column, row)
-        tileGrid[column-1][row-1].isHovered.value = isHovering
+        tileGrid[row-1][column-1].isHighlighted.value = isHighlighted
     }
 
     operator fun get(column: Int, row: Int): TileModel? {
         requireBoardIndexes(column, row)
-        return tileGrid[column-1][row-1].content.value
+        return tileGrid[row-1][column-1].content.value
     }
 
     operator fun get(column: Int, row: RowChar): TileModel? {
@@ -41,7 +44,7 @@ class BoardModel(
 
     operator fun set(column: Int, row: Int, tile: TileModel?) {
         requireBoardIndexes(column, row)
-        tileGrid[column-1][row-1].content.value = tile
+        tileGrid[row-1][column-1].content.value = tile
     }
 
     operator fun set(column: Int, row: RowChar, tile: TileModel?) {

@@ -128,7 +128,7 @@ fun BoardView() {
         for (gridDivisionIndex in 0..GridDimension) {
             val strokeWidth =
                 if (gridDivisionIndex in thickDividerIndexes)
-                    Stroke.DefaultMiter
+                    ThickDividerWidth
                 else
                     Stroke.HairlineWidth
             val currentDivisionOffset = gridDivisionIndex * GridDivisionSize.toPx()
@@ -212,7 +212,7 @@ fun BoardView() {
         columnIndex: Int,
         rowIndex: Int,
     ) {
-        if (!tile.isHovered.value) {
+        if (!tile.isHighlighted.value) {
             return
         }
         val column = columnIndex + 1
@@ -238,11 +238,21 @@ fun BoardView() {
         }
     }
 
+    lateinit var localDimensions: LocalDimensions
+
     Canvas(
         modifier = Modifier
             .size(BoardSize)
-            .padding(GridPadding)
+            .padding(BoardPadding)
+            .pointerInput(Unit) {
+                detectTapGestures (
+                    onTap = { tapOffset ->
+                        viewModel.touchBoard(localDimensions, tapOffset)
+                    }
+                )
+            }
     ) {
+        localDimensions = LocalDimensions(BoardSize.toPx(), BoardPadding.toPx(), GridDivisionSize.toPx())
         drawMultipliers()
         drawTiles()
         // WARNING -> drawGrid should be called after all others

@@ -11,5 +11,5 @@ data class TileModel (
 
 data class GridTileModel (
     val content: MutableState<TileModel?> = mutableStateOf(null),
-    var isHovered: MutableState<Boolean> = mutableStateOf(false)
+    var isHighlighted: MutableState<Boolean> = mutableStateOf(false)
 )
