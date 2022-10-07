@@ -25,8 +25,8 @@ import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
 
 const val GridDimension = BoardDimension + 1
 val BoardSize = 550.dp
-val GridPadding = 10.dp
-val GridSize = BoardSize - GridPadding.times(2)
+val BoardPadding = 0.dp
+val GridSize = BoardSize - BoardPadding.times(2)
 val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
 val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
