@@ -207,10 +207,24 @@ fun BoardView() {
         }
     }
 
+    fun DrawScope.drawTileHighlight(
+        tile: GridTileModel,
+        columnIndex: Int,
+        rowIndex: Int,
+    ) {
+        if (!tile.isHovered.value) {
+            return
+        }
+        val column = columnIndex + 1
+        val row = rowIndex + 1
+        drawTileBackground(Color.Green, column, row, 0.7f)
+    }
+
     fun DrawScope.drawTiles() {
         viewModel.board.tileGrid.forEachIndexed { rowIndex, row ->
             row.forEachIndexed { columnIndex, tile ->
                 drawTileContent(tile, columnIndex, rowIndex)
+                drawTileHighlight(tile, columnIndex, rowIndex)
             }
         }
     }

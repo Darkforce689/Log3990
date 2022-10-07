@@ -11,6 +11,7 @@ class BoardViewModel : ViewModel() {
     fun updateBoard() {
         // TODO : REMOVE + UPDATE LATER
         board[4, 5] = tileCreator.createTileFromLetter('A')
+        board.toggleTileHover(2,2)
         board.toggleTileHover(4,5)
         board.toggleTileHover(4,6)
     }
