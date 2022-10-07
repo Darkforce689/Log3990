@@ -1,8 +1,5 @@
 package com.example.polyscrabbleclient.game.model
 
-import androidx.compose.ui.geometry.Offset
-import com.example.polyscrabbleclient.game.view.LocalDimensions
-
 typealias TileContainerRow = Array<GridTileModel>
 typealias TileGrid = Array<TileContainerRow>
 

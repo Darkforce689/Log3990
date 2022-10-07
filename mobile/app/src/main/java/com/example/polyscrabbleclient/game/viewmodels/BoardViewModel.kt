@@ -1,39 +1,28 @@
 package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.game.domain.TileCreator
-import com.example.polyscrabbleclient.game.model.BoardDimension
 import com.example.polyscrabbleclient.game.model.BoardModel
-import com.example.polyscrabbleclient.game.view.LocalDimensions
+import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.view.ThickDividerWidth
-import kotlin.math.roundToInt
 
 class BoardViewModel : ViewModel() {
     var board: BoardModel = BoardModel()
-    var tileCreator = TileCreator()
+    private var tileCreator = TileCreator()
 
-    fun touchBoard(localDimensions: LocalDimensions, tapOffset: Offset) {
-        val rawX = tapOffset.x
-        val rawY = tapOffset.y
-
-        val paddedX = rawX + localDimensions.boardPadding
-        val paddedY = rawY + localDimensions.boardPadding
-
+    fun touchBoard(gridDivisionSize: Float, tapOffset: Offset) {
         // Dividers 0 and 1 are larger than the rest of the Grid
-        val gridX = paddedX + 2 * ThickDividerWidth //- localDimensions.gridDivisionSize
-        val gridY = paddedY + 2 * ThickDividerWidth //- localDimensions.gridDivisionSize
-
+        val gridX = tapOffset.x + ThickDividerWidth
+        val gridY = tapOffset.y + ThickDividerWidth
         if (gridX < 0 || gridY < 0) {
             return
         }
-
-        val column = gridX / localDimensions.gridDivisionSize
-        val row = gridY / localDimensions.gridDivisionSize
-        println("x:$rawX, y:$rawY")
-        println("row:$row, column:$column")
-        board.toggleTileHover(column.toInt(), row.toInt())
+        val column = (gridX / gridDivisionSize).toInt()
+        val row = (gridY / gridDivisionSize).toInt()
+        if (row in BoardRange && column in BoardRange) {
+            board.toggleTileHover(column, row)
+        }
     }
 
     fun updateBoard() {

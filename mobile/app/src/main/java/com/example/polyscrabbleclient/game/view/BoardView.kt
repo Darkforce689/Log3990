@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.game.view
 
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
@@ -13,6 +14,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,22 +24,17 @@ import com.example.polyscrabbleclient.game.domain.Multipliers
 import com.example.polyscrabbleclient.game.model.*
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
+import kotlin.properties.Delegates
 
+const val ThickDividerWidth = Stroke.DefaultMiter
 const val GridDimension = BoardDimension + 1
 val BoardSize = 550.dp
-val BoardPadding = 0.dp
+val BoardPadding = 10.dp
 val GridSize = BoardSize - BoardPadding.times(2)
 val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
 val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
 val DivisionCenterOffset = GridDivisionSize.times(0.3f);
-val ThickDividerWidth = Stroke.DefaultMiter
-
-data class LocalDimensions (
-    val boardSize: Float,
-    val boardPadding: Float,
-    val gridDivisionSize: Float
-)
 
 @Composable
 fun BoardView() {
@@ -244,21 +241,21 @@ fun BoardView() {
         }
     }
 
-    lateinit var localDimensions: LocalDimensions
+    var gridDivisionSize by Delegates.notNull<Float>()
 
     Canvas(
         modifier = Modifier
             .size(BoardSize)
             .padding(BoardPadding)
-            .pointerInput(Unit) {
+            .pointerInput (Unit) {
                 detectTapGestures (
                     onTap = { tapOffset ->
-                        viewModel.touchBoard(localDimensions, tapOffset)
+                        viewModel.touchBoard(gridDivisionSize, tapOffset)
                     }
                 )
             }
     ) {
-        localDimensions = LocalDimensions(BoardSize.toPx(), BoardPadding.toPx(), GridDivisionSize.toPx())
+        gridDivisionSize = GridDivisionSize.toPx()
         drawMultipliers()
         drawTiles()
         // WARNING -> drawGrid should be called after all others
