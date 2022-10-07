@@ -191,7 +191,7 @@ fun BoardView() {
         val verticalOffset = (row + 1) * GridDivisionSize.toPx();
         drawIntoCanvas {
             it.nativeCanvas.drawText(
-                tile.value?.letter.toString(),
+                tile.content.value?.letter.toString(),
                 horizontalOffset + DivisionCenterOffset.toPx(),
                 verticalOffset - DivisionCenterOffset.toPx(),
                 lettersPaint
