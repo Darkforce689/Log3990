@@ -8,3 +8,8 @@ data class TileModel (
     val points: Int,
     var isSelected: MutableState<Boolean> = mutableStateOf(false)
 )
+
+data class GridTileModel (
+    val content: MutableState<TileModel?> = mutableStateOf(null),
+    var isHovered: MutableState<Boolean> = mutableStateOf(false)
+)

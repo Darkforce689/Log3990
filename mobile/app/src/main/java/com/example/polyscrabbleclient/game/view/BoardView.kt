@@ -161,11 +161,11 @@ fun BoardView() {
     }
 
     fun DrawScope.drawTileContent(
-        tile: TileContainer,
+        tile: GridTileModel,
         columnIndex: Int,
         rowIndex: Int,
     ) {
-        if (tile.value === null) {
+        if (tile.content.value === null) {
             return
         }
 
@@ -199,7 +199,7 @@ fun BoardView() {
         }
         drawIntoCanvas {
             it.nativeCanvas.drawText(
-                tile.value?.points.toString(),
+                tile.content.value?.points.toString(),
                 horizontalOffset + 2.2f * DivisionCenterOffset.toPx(),
                 verticalOffset - 0.5f * DivisionCenterOffset.toPx(),
                 pointsPaint

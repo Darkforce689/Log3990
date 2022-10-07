@@ -1,11 +1,6 @@
 package com.example.polyscrabbleclient.game.model
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-
-typealias Tile = TileModel?
-typealias TileContainer = MutableState<Tile>
-typealias TileContainerRow = Array<TileContainer>
+typealias TileContainerRow = Array<GridTileModel>
 typealias TileGrid = Array<TileContainerRow>
 
 const val BoardDimension = 15
@@ -13,7 +8,7 @@ val BoardRange = 1..BoardDimension
 enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 
 class BoardModel(
-    var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { mutableStateOf(null) } }
+    var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { GridTileModel() } }
 ) {
     fun debugPrint() {
         for (row in tileGrid) {
@@ -24,21 +19,21 @@ class BoardModel(
         }
     }
 
-    operator fun get(column: Int, row: Int): Tile {
+    operator fun get(column: Int, row: Int): TileModel? {
         requireBoardIndexes(column, row)
-        return tileGrid[column-1][row-1].value
+        return tileGrid[column-1][row-1].content.value
     }
 
-    operator fun get(column: Int, row: RowChar): Tile {
+    operator fun get(column: Int, row: RowChar): TileModel? {
         return get(column, row.ordinal + 1)
     }
 
-    operator fun set(column: Int, row: Int, tile: Tile) {
+    operator fun set(column: Int, row: Int, tile: TileModel?) {
         requireBoardIndexes(column, row)
-        tileGrid[column-1][row-1].value = tile
+        tileGrid[column-1][row-1].content.value = tile
     }
 
-    operator fun set(column: Int, row: RowChar, tile: Tile) {
+    operator fun set(column: Int, row: RowChar, tile: TileModel?) {
         set(column, row.ordinal + 1, tile)
     }
 
