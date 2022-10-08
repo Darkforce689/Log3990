@@ -8,14 +8,15 @@ import { IMagicCard } from '@app/game-logic/game/games/online-game/game-state';
     styleUrls: ['./magic-card-list.component.scss'],
 })
 export class MagicCardListComponent implements AfterContentChecked {
-    playerIndex: number;
     magicCards: IMagicCard[];
 
-    constructor(private info: GameInfoService) {
-        this.playerIndex = this.info.playerIndex;
-    }
+    constructor(private info: GameInfoService) {}
 
     ngAfterContentChecked(): void {
-        this.magicCards = this.info.getDrawnMagicCard(this.playerIndex);
+        try {
+            this.magicCards = this.info.getDrawnMagicCard();
+        } catch (e) {
+            return;
+        }
     }
 }

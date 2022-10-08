@@ -11,15 +11,12 @@ import { EXCHANGEALETTER_ID, NO_CARD_ID, SPLITPOINTS_ID, UI_MAGIC_CARD_MAP } fro
 })
 export class MagicCardComponent implements AfterContentChecked {
     @Input() index: number;
-    playerIndex: number;
     magicCardId: string;
 
-    constructor(private info: GameInfoService, private inputController: UIInputControllerService) {
-        this.playerIndex = this.info.playerIndex;
-    }
+    constructor(private info: GameInfoService, private inputController: UIInputControllerService) {}
 
     ngAfterContentChecked(): void {
-        this.magicCardId = this.hasMinCard ? this.info.getDrawnMagicCard(this.playerIndex)[this.index].id : NO_CARD_ID;
+        this.magicCardId = this.hasMinCard ? this.info.getDrawnMagicCard()[this.index].id : NO_CARD_ID;
     }
 
     get isItMyTurn(): boolean {
@@ -58,7 +55,7 @@ export class MagicCardComponent implements AfterContentChecked {
     }
 
     get hasMinCard(): boolean {
-        return this.info.getDrawnMagicCard(this.playerIndex).length > this.index;
+        return this.info.getDrawnMagicCard().length > this.index;
     }
 
     get name(): string | undefined {
