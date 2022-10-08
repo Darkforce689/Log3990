@@ -1,5 +1,6 @@
 package com.example.polyscrabbleclient.game.model
 
+typealias TileContent = TileModel?
 typealias TileContainerRow = Array<GridTileModel>
 typealias TileGrid = Array<TileContainerRow>
 
@@ -30,21 +31,21 @@ class BoardModel(
         tileGrid[row-1][column-1].isHighlighted.value = isHighlighted
     }
 
-    operator fun get(column: Int, row: Int): TileModel? {
+    operator fun get(column: Int, row: Int): TileContent {
         requireBoardIndexes(column, row)
         return tileGrid[row-1][column-1].content.value
     }
 
-    operator fun get(column: Int, row: RowChar): TileModel? {
+    operator fun get(column: Int, row: RowChar): TileContent {
         return get(column, row.ordinal + 1)
     }
 
-    operator fun set(column: Int, row: Int, tile: TileModel?) {
+    operator fun set(column: Int, row: Int, tile: TileContent) {
         requireBoardIndexes(column, row)
         tileGrid[row-1][column-1].content.value = tile
     }
 
-    operator fun set(column: Int, row: RowChar, tile: TileModel?) {
+    operator fun set(column: Int, row: RowChar, tile: TileContent) {
         set(column, row.ordinal + 1, tile)
     }
 
