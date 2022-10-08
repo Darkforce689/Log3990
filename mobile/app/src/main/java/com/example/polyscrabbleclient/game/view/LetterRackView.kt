@@ -9,11 +9,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import com.example.polyscrabbleclient.game.view.draganddrop.DraggableView
 import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 
 @Composable
-fun LetterRackView() {
+fun LetterRackView(
+    dragData: DragData,
+    dragState: DragState
+) {
     val viewModel: LetterRackViewModel = viewModel()
 
     LazyRow(
@@ -26,10 +29,18 @@ fun LetterRackView() {
         items(viewModel.tiles.size) { index ->
             val tile = viewModel.tiles[index];
             val select = { tile.isSelected.value = !tile.isSelected.value }
-            Tile(
-                tile,
-                select
-            )
+            DraggableView(
+                dragData,
+                dragState
+            ) {
+                TileView(tile, select)
+            }
         }
     }
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun LetterRackPreview() {
+//    LetterRackView()
+//}
