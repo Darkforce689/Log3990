@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.game.model.*
+import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DroppableView
 
 const val ThickDividerWidth = Stroke.DefaultMiter

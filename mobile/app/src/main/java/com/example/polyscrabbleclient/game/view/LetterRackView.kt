@@ -9,12 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableView
 import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 
 @Composable
 fun LetterRackView(
-    dragData: DragData,
     dragState: DragState
 ) {
     val viewModel: LetterRackViewModel = viewModel()
@@ -30,7 +30,6 @@ fun LetterRackView(
             val tile = viewModel.tiles[index];
             val select = { tile.isSelected.value = !tile.isSelected.value }
             DraggableView(
-                dragData,
                 dragState
             ) {
                 TileView(tile, select)
