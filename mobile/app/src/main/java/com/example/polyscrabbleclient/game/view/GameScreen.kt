@@ -13,6 +13,7 @@ import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 @Composable
 fun GameScreen(navController: NavController?, gameViewModel: GameViewModel?) {
     val dragState = DragState()
+
     var isDroppingItem by remember { mutableStateOf(false) }
     var isItemInBounds by remember { mutableStateOf(false) }
 

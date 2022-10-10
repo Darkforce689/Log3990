@@ -27,6 +27,6 @@ fun BoardView(
         dragState = dragState,
     )
     {
-        BoardCanvasView()
+        BoardCanvasView(dragState)
     }
 }

@@ -16,7 +16,7 @@ fun DragShadow(
     alpha: Float = 0.5f,
     dragState: DragState
 ) {
-    val offset = dragState.dragPosition
+    val offset = dragState.dragGlobalPosition
     Box(
         modifier = Modifier
             .alpha(alpha)

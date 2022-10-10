@@ -23,12 +23,13 @@ import com.example.polyscrabbleclient.game.domain.Multipliers
 import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.GridTileModel
 import com.example.polyscrabbleclient.game.model.RowChar
+import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
 import kotlin.properties.Delegates
 
 @Composable
-fun BoardCanvasView() {
+fun BoardCanvasView(dragState: DragState) {
     val viewModel: BoardViewModel = viewModel()
 
     val themeColors = listOf(MaterialTheme.colors.primary, MaterialTheme.colors.secondary, MaterialTheme.colors.secondary)
@@ -251,6 +252,7 @@ fun BoardCanvasView() {
         drawTiles()
         // WARNING -> drawGrid should be called after all others
         drawGridLayout()
+        viewModel.hoverBoard(gridDivisionSize, dragState.dragLocalPosition)
     }
 
     viewModel.updateBoard()
@@ -259,5 +261,6 @@ fun BoardCanvasView() {
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun BoardPreview() {
-    BoardCanvasView()
+    val d = DragState()
+    BoardCanvasView(d)
 }

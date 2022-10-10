@@ -9,7 +9,7 @@ import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 
-// FROM https://github.com/microsoft/surface-duo-compose-sdk/blob/main/DragAndDrop/library/src/main/java/com/microsoft/device/dualscreen/draganddrop/DragContainer.kt
+// ADAPTED FROM https://github.com/microsoft/surface-duo-compose-sdk/blob/main/DragAndDrop/library/src/main/java/com/microsoft/device/dualscreen/draganddrop/DragContainer.kt
 @Composable
 fun DraggableView(
     dragState: DragState,
@@ -24,27 +24,14 @@ fun DraggableView(
             .pointerInput(Unit) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = {
-                        println("onDragStart")
-                        dragState.isDragging = true
-                        dragState.dragPosition = currentPosition + it
-                        dragState.draggableContent = content
-                        println(dragState.draggableContent.toString())
+                        dragState.onDragStart(true, currentPosition + it, content)
                     },
                     onDrag = { change, dragAmount ->
-                        println("onDrag")
                         change.consumeAllChanges()
-                        dragState.dragOffset += Offset(dragAmount.x, dragAmount.y)
+                        dragState.onDrag(dragAmount)
                     },
-                    onDragEnd = {
-                        println("onDragEnd")
-                        dragState.dragOffset = Offset.Zero
-                        dragState.isDragging = false
-                    },
-                    onDragCancel = {
-                        println("onDragCancel")
-                        dragState.dragOffset = Offset.Zero
-                        dragState.isDragging = false
-                    }
+                    onDragEnd = { dragState.onDragEnd() },
+                    onDragCancel = { dragState.onDragCancel() },
                 )
             }
     ) {

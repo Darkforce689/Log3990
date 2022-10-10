@@ -1,5 +1,7 @@
 package com.example.polyscrabbleclient.game.model
 
+import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
+
 typealias TileContent = TileModel?
 typealias TileContainerRow = Array<GridTileModel>
 typealias TileGrid = Array<TileContainerRow>
@@ -26,9 +28,17 @@ class BoardModel(
         isHighlighted.value = !isHighlighted.value;
     }
 
+    fun toggleTileHover(coordinates: TileCoordinates) {
+        toggleTileHover(coordinates.column, coordinates.row)
+    }
+
     fun setTileHover(column: Int, row: Int, isHighlighted: Boolean) {
         requireBoardIndexes(column, row)
         tileGrid[row-1][column-1].isHighlighted.value = isHighlighted
+    }
+
+    fun setTileHover(coordinates: TileCoordinates, isHighlighted: Boolean) {
+        setTileHover(coordinates.column, coordinates.row, isHighlighted)
     }
 
     operator fun get(column: Int, row: Int): TileContent {
