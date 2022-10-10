@@ -12,7 +12,7 @@ class GameViewModel : ViewModel() {
     }
 
     var remainingLettersCount = mutableStateOf(88)
-    var turnRemainingTime = mutableStateOf(2)
+    var turnRemainingTime = mutableStateOf(14)
     var turnTotalTime = mutableStateOf(60)
 
     val user = game.getPlayer(0)

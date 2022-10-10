@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
@@ -20,13 +23,16 @@ import com.example.polyscrabbleclient.ui.theme.lettersRemainingFR
 
 @Composable
 fun GameInfoView(viewModel: GameViewModel) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Box(
             modifier = Modifier.padding(30.dp),
             contentAlignment = Alignment.Center
         ) {
             val remainingTimeFraction =
                 viewModel.turnRemainingTime.value.toFloat() / viewModel.turnTotalTime.value
+            println(remainingTimeFraction)
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(100.dp)

@@ -11,6 +11,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
+import kotlinx.coroutines.delay
+
+
 
 @Composable
 fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/) {
@@ -47,6 +50,14 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
                 // TODO : RIGHT PANEL
                 Text("RIGHT PANEL")
             }
+        }
+    }
+
+    // TODO : REMOVE
+    LaunchedEffect(Unit) {
+        while(true) {
+            delay(1000)
+            viewModel.turnRemainingTime.value = viewModel.turnRemainingTime.value - 1
         }
     }
 }
