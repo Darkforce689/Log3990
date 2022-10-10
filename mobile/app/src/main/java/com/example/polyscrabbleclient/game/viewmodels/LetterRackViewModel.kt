@@ -1,8 +1,8 @@
 package com.example.polyscrabbleclient.game.viewmodels
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.game.domain.LetterCreator
-import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType

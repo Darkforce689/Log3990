@@ -17,7 +17,6 @@ data class TileCoordinates (
 
 class BoardViewModel : ViewModel() {
     var board: BoardModel = BoardModel()
-    private var tileCreator = TileCreator()
     var hoveredTileCoordinates:TileCoordinates? = null
 
     fun hoverBoard(gridDivisionSize: Float, hoverOffset: Offset) {

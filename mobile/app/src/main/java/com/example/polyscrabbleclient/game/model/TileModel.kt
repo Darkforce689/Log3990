@@ -4,7 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
-import java.util.*
 
 data class TileModel (
     val letter: Char,
