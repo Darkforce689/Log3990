@@ -268,7 +268,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         val boardHoverOffset = boardPadding
         viewModel.hoverBoard(
             gridDivisionSize,
-            dragState.dragLocalPosition.minus(
+            dragState.currentLocalPosition.minus(
                 Offset(boardHoverOffset, boardHoverOffset)
             )
         )

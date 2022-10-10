@@ -26,7 +26,6 @@ fun DraggableView(
                 detectDragGesturesAfterLongPress(
                     onDragStart = {
                         dragState.onDragStart(
-                            true,
                             currentPosition + it,
                             contentView,
                             content
