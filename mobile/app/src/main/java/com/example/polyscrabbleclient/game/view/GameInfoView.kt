@@ -1,6 +1,8 @@
 package com.example.polyscrabbleclient.game.view
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -18,37 +20,39 @@ import com.example.polyscrabbleclient.ui.theme.lettersRemainingFR
 
 @Composable
 fun GameInfoView(viewModel: GameViewModel) {
-    Box(
-        //                   Modifier.padding(40.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        val remainingTimeFraction =
-            viewModel.turnRemainingTime.value.toFloat() / viewModel.turnTotalTime.value
-        CircularProgressIndicator(
-            modifier = Modifier
-                .size(100.dp)
-                .alpha(0.4f),
-            progress = 1f,
-            strokeWidth = 5.dp
-        )
-        CircularProgressIndicator(
-            modifier = Modifier.size(100.dp),
-            progress = remainingTimeFraction,
-            strokeWidth = 5.dp
-        )
-        Box(contentAlignment = Alignment.Center) {
-            val time = viewModel.turnRemainingTime.value
-            Text(
-                text = time.toString(),
-                color = if (time < 5)
-                    MaterialTheme.colors.error
-                else
-                    Color.Unspecified,
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier.padding(30.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val remainingTimeFraction =
+                viewModel.turnRemainingTime.value.toFloat() / viewModel.turnTotalTime.value
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(100.dp)
+                    .alpha(0.4f),
+                progress = 1f,
+                strokeWidth = 5.dp
+            )
+            CircularProgressIndicator(
+                modifier = Modifier.size(100.dp),
+                progress = remainingTimeFraction,
+                strokeWidth = 5.dp
+            )
+            Box(contentAlignment = Alignment.Center) {
+                val time = viewModel.turnRemainingTime.value
+                Text(
+                    text = time.toString(),
+                    color = if (time < 5)
+                        MaterialTheme.colors.error
+                    else
+                        Color.Unspecified,
 
-                )
+                    )
+            }
         }
+        Text(lettersRemainingFR(viewModel.remainingLettersCount.value))
     }
-    Text(lettersRemainingFR(viewModel.remainingLettersCount.value))
 }
 
 @Preview(showBackground = true)
