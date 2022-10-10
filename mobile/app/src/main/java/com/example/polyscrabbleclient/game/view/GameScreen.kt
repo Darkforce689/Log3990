@@ -26,8 +26,7 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
     EvenlySpacedRowContainer {
         EvenlySpacedSubColumn {
             Box {
-                // TODO : PLAYER INFOS
-                Text("PLAYERS INFOS")
+                PlayersInfoView(viewModel)
             }
             Box {
                 GameInfoView(viewModel)

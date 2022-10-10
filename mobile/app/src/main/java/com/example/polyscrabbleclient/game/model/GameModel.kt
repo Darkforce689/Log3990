@@ -3,13 +3,24 @@ package com.example.polyscrabbleclient.game.model
 import com.example.polyscrabbleclient.game.sources.Player
 
 class GameModel {
-    private val _players = mutableListOf<Player>()
+    val players = mutableListOf<Player>()
 
     fun addPlayer(p: Player) {
-        _players.add(p)
+        players.add(p)
     }
 
     fun getPlayer(position: Int): Player {
-        return _players[position]
+        return players[position]
+    }
+
+    init {
+        addPlayer(Player("playername1"))
+        addPlayer(Player("playername2"))
+        addPlayer(Player("playername3"))
+        addPlayer(Player("playername4"))
+    }
+
+    fun getActivePlayer(): Player {
+        return players[2]
     }
 }
