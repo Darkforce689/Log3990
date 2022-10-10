@@ -17,9 +17,11 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.domain.MultiplierType
 import com.example.polyscrabbleclient.game.domain.Multipliers
+import com.example.polyscrabbleclient.game.model.BoardDimension
 import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.GridTileModel
 import com.example.polyscrabbleclient.game.model.RowChar
@@ -27,6 +29,16 @@ import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
 import kotlin.properties.Delegates
+
+const val ThickDividerWidth = Stroke.DefaultMiter
+const val GridDimension = BoardDimension + 1
+val BoardSize = 550.dp
+val BoardPadding = 10.dp
+val GridSize = BoardSize - BoardPadding.times(2)
+val GridDivisionSize = GridSize / GridDimension
+val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
+val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
+val DivisionCenterOffset = GridDivisionSize.times(0.3f)
 
 @Composable
 fun BoardCanvasView(dragState: DragState) {
@@ -234,6 +246,7 @@ fun BoardCanvasView(dragState: DragState) {
     }
 
     var gridDivisionSize by Delegates.notNull<Float>()
+    var boardPadding by Delegates.notNull<Float>()
 
     Canvas(
         modifier = Modifier
@@ -248,11 +261,19 @@ fun BoardCanvasView(dragState: DragState) {
             }
     ) {
         gridDivisionSize = GridDivisionSize.toPx()
+        boardPadding = BoardPadding.toPx()
         drawMultipliers()
         drawTiles()
         // WARNING -> drawGrid should be called after all others
         drawGridLayout()
-        viewModel.hoverBoard(gridDivisionSize, dragState.dragLocalPosition)
+
+        val boardHoverOffset = boardPadding
+        viewModel.hoverBoard(
+            gridDivisionSize,
+            dragState.dragLocalPosition.minus(
+                Offset(boardHoverOffset, boardHoverOffset)
+            )
+        )
     }
 
     viewModel.updateBoard()
