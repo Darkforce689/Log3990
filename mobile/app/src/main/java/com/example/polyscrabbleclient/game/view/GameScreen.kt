@@ -6,7 +6,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import com.example.polyscrabbleclient.game.view.draganddrop.DragShadow
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 
@@ -17,9 +16,6 @@ fun GameScreen(navController: NavController?, gameViewModel: GameViewModel?) {
     val dragState = DragState()
 
     Column {
-        Box {
-            DragShadow(dragState)
-        }
         Box {
             BoardView(dragState)
         }
