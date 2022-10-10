@@ -55,8 +55,12 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
     // TODO : REMOVE
     LaunchedEffect(Unit) {
         while(true) {
-            delay(1000)
-            viewModel.turnRemainingTime.value = viewModel.turnRemainingTime.value - 1
+            delay(2000)
+            viewModel.turnRemainingTime.value = viewModel.turnRemainingTime.value - 2
+            viewModel.game.getActivePlayer()?.let {
+                p -> p.points.value = p.points.value + 10
+            }
+            viewModel.game.setNextActivePlayer()
         }
     }
 }
