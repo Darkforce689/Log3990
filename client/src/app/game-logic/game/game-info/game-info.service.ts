@@ -52,8 +52,10 @@ export class GameInfoService {
         this.player = player;
     }
 
-    getDrawnMagicCard(index: number): IMagicCard[] {
-        return (this.game as MagicOnlineGame).drawnMagicCards[index];
+    getDrawnMagicCard(): IMagicCard[] {
+        const index = this.playerIndex;
+        if (index === NOT_FOUND) return [];
+        return (this.game as MagicOnlineGame).drawnMagicCards[this.playerIndex];
     }
 
     getPlayer(index: number): Player {
@@ -71,8 +73,11 @@ export class GameInfoService {
     }
 
     get playerIndex(): number {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return (this.game as OnlineGame).playersWithIndex.get(this.player.name)!.index!;
+        const playerWithIndex = (this.game as OnlineGame).playersWithIndex.get(this.player.name);
+        if (!playerWithIndex) {
+            return NOT_FOUND;
+        }
+        return playerWithIndex.index;
     }
 
     get opponent(): Player {
