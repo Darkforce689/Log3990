@@ -7,13 +7,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 
 @Composable
-fun GameScreen(navController: NavController?, gameViewModel: GameViewModel?) {
+fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/) {
+    val viewModel: GameViewModel = viewModel()
+
     // TODO : USE CompositionLocalProvider ?
     // (https://developer.android.com/jetpack/compose/compositionlocal)
     val dragState = DragState()
@@ -25,8 +27,7 @@ fun GameScreen(navController: NavController?, gameViewModel: GameViewModel?) {
                 Text("PLAYERS INFOS")
             }
             Box {
-                // TODO : GAME INFOS
-                Text("GAME INFOS")
+                GameInfoView(viewModel)
             }
             Box {
                 // TODO : GAME ACTIONS
@@ -75,5 +76,5 @@ fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun GameScreenPreview() {
-    GameScreen(null, null)
+    GameScreen(null)
 }

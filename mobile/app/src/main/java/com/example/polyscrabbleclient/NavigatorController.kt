@@ -45,7 +45,7 @@ fun NavGraph(chatBoxViewModel: ChatBoxViewModel, loginViewModel: AuthenticationV
             SignUpScreen(navController, SignUpViewModel())
         }
         composable(NavPage.GamePage.label) {
-            GameScreen(navController, GameViewModel())
+            GameScreen(navController)
         }
     }
 }
