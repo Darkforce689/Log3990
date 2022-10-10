@@ -1,22 +1,20 @@
 package com.example.polyscrabbleclient.game.view
 
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.unit.dp
-import com.example.polyscrabbleclient.game.model.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DroppableView
+import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 
 @Composable
 fun BoardView(
-    onDrag: (inBounds: Boolean, isDragging: Boolean) -> Unit,
     dragState: DragState,
 ) {
-    DroppableView(
-        onDrag = onDrag,
-        dragState = dragState,
-    )
+    val viewModel: BoardViewModel = viewModel()
+    dragState.onDropCallbacks.add { viewModel.drop(dragState.draggableContent) }
+
+    DroppableView(dragState = dragState)
     {
-        BoardCanvasView(dragState)
+        BoardCanvasView(dragState, viewModel)
     }
 }

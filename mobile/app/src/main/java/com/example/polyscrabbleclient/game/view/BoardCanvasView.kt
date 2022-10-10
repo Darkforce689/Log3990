@@ -41,15 +41,13 @@ val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
 val DivisionCenterOffset = GridDivisionSize.times(0.3f)
 
 @Composable
-fun BoardCanvasView(dragState: DragState) {
-    val viewModel: BoardViewModel = viewModel()
-
+fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     val themeColors = listOf(MaterialTheme.colors.primary, MaterialTheme.colors.secondary, MaterialTheme.colors.secondary)
-    val thickDividerIndexes = listOf(0,1,GridDimension);
+    val thickDividerIndexes = listOf(0,1,GridDimension)
 
-    val rowChars = RowChar.values();
-    val rowCharsColor = MaterialTheme.colors.primary;
-    val tileTextColor = MaterialTheme.colors.onBackground;
+    val rowChars = RowChar.values()
+    val rowCharsColor = MaterialTheme.colors.primary
+    val tileTextColor = MaterialTheme.colors.onBackground
 
     fun DrawScope.drawColumnDivider(
         currentDivisionOffset: Float,
@@ -194,8 +192,8 @@ fun BoardCanvasView(dragState: DragState) {
         val row = rowIndex + 1
 
         drawTileBackground(TileBackgroundColor, column, row)
-        val horizontalOffset = column * GridDivisionSize.toPx();
-        val verticalOffset = (row + 1) * GridDivisionSize.toPx();
+        val horizontalOffset = column * GridDivisionSize.toPx()
+        val verticalOffset = (row + 1) * GridDivisionSize.toPx()
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 tile.content.value?.letter.toString(),
@@ -275,13 +273,12 @@ fun BoardCanvasView(dragState: DragState) {
             )
         )
     }
-
-    viewModel.updateBoard()
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun BoardPreview() {
+    val v: BoardViewModel = viewModel()
     val d = DragState()
-    BoardCanvasView(d)
+    BoardCanvasView(d, v)
 }

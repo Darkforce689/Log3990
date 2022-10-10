@@ -8,12 +8,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import com.example.polyscrabbleclient.game.domain.LetterCreator
 
 // ADAPTED FROM https://github.com/microsoft/surface-duo-compose-sdk/blob/main/DragAndDrop/library/src/main/java/com/microsoft/device/dualscreen/draganddrop/DragContainer.kt
 @Composable
 fun DraggableView(
     dragState: DragState,
-    content: @Composable () -> Unit,
+    content: DraggableContent,
+    contentView: @Composable () -> Unit,
 ) {
     var currentPosition by remember { mutableStateOf(Offset.Zero) }
     Box(
@@ -24,7 +26,12 @@ fun DraggableView(
             .pointerInput(Unit) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = {
-                        dragState.onDragStart(true, currentPosition + it, content)
+                        dragState.onDragStart(
+                            true,
+                            currentPosition + it,
+                            contentView,
+                            content
+                        )
                     },
                     onDrag = { change, dragAmount ->
                         change.consumeAllChanges()
@@ -35,6 +42,6 @@ fun DraggableView(
                 )
             }
     ) {
-        content()
+        contentView()
     }
 }

@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.model.BoardModel
 import com.example.polyscrabbleclient.game.model.BoardRange
+import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.view.ThickDividerWidth
+import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
+import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 
 data class TileCoordinates (
     val row: Int,
@@ -74,11 +77,15 @@ class BoardViewModel : ViewModel() {
         return null
     }
 
-    fun updateBoard() {
-        // TODO : REMOVE + UPDATE LATER
-        board[4, 5] = tileCreator.createTileFromLetter('A')
-        board.toggleTileHover(2,2)
-        board.toggleTileHover(4,5)
-        board.toggleTileHover(4,6)
+    fun drop(draggableContent: DraggableContent?) {
+        val column = hoveredTileCoordinates?.column
+        val row = hoveredTileCoordinates?.row
+        if (draggableContent == null || column == null || row == null) {
+            return
+        }
+        if (draggableContent.type !== DraggableContentType.TileModel) {
+            return
+        }
+        board[column, row] = draggableContent as TileModel
     }
 }

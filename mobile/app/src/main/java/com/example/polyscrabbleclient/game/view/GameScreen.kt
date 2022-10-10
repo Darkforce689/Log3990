@@ -12,25 +12,16 @@ import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 
 @Composable
 fun GameScreen(navController: NavController?, gameViewModel: GameViewModel?) {
+    // TODO : USE CompositionLocalProvider ?
+    // (https://developer.android.com/jetpack/compose/compositionlocal)
     val dragState = DragState()
-
-    var isDroppingItem by remember { mutableStateOf(false) }
-    var isItemInBounds by remember { mutableStateOf(false) }
 
     Column {
         Box {
-            DragShadow(
-                dragState = dragState
-            )
+            DragShadow(dragState)
         }
         Box {
-            BoardView(
-                dragState = dragState,
-                onDrag = { inBounds, isDragging ->
-                    isDroppingItem = isDragging
-                    isItemInBounds = inBounds
-                },
-            )
+            BoardView(dragState)
         }
         Box {
             LetterRackView(dragState)

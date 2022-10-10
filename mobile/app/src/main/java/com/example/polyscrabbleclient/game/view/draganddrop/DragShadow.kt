@@ -13,10 +13,10 @@ import kotlin.math.roundToInt
 
 @Composable
 fun DragShadow(
+    dragState: DragState,
     alpha: Float = 0.5f,
-    dragState: DragState
 ) {
-    val offset = dragState.dragGlobalPosition
+    val offset = dragState.dragLocalPosition
     Box(
         modifier = Modifier
             .alpha(alpha)
@@ -25,7 +25,7 @@ fun DragShadow(
                 IntOffset(offset.x.roundToInt(), offset.y.roundToInt())
             }
     ) {
-        dragState.draggableContent?.let {
+        dragState.draggableView?.let {
             println(it.toString())
             it()
         }
@@ -40,7 +40,7 @@ fun DragShadow(
 @Composable
 fun PreviewDragShadow() {
     val d = DragState()
-    d.draggableContent = {
+    d.draggableView = {
         TileView(
             tileModel = TileCreator().createTileFromLetter('A')
         )

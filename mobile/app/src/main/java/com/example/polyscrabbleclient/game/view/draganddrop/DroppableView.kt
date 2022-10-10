@@ -12,13 +12,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 @Composable
 fun DroppableView(
     modifier: Modifier = Modifier,
-    onDrag: (inBounds: Boolean, isDragging: Boolean) -> Unit,
     dragState: DragState,
-    content: @Composable (BoxScope.() -> Unit),
+    content: @Composable() (BoxScope.() -> Unit),
 ) {
     val dragPosition = dragState.dragGlobalPosition
     val dragOffset = dragState.dragOffset
-    var inBounds by remember { mutableStateOf(false) }
+    var isInBounds by remember { mutableStateOf(false) }
     var dragGlobalPosition by remember { mutableStateOf(Offset.Zero) }
 
     Box(modifier = modifier.onGloballyPositioned {
@@ -26,12 +25,19 @@ fun DroppableView(
             val canvasZero = rect.topLeft
             dragGlobalPosition = dragPosition + dragOffset
             dragState.dragLocalPosition = dragGlobalPosition - canvasZero
-            inBounds = rect.contains(dragGlobalPosition)
+            isInBounds = rect.contains(dragGlobalPosition)
         }
     }
     ) {
-        println("in:$inBounds pos:$dragPosition off:$dragOffset")
-        onDrag(inBounds, dragState.isDragging)
+        // TODO : REMOVE
+        println("in:$isInBounds pos:$dragPosition off:$dragOffset")
+        val canBeDropped =
+            dragState.draggableContent !== null &&
+            !dragState.isDragging &&
+            isInBounds
+        if (canBeDropped) {
+            dragState.onDrop()
+        }
         content()
     }
 }
