@@ -250,6 +250,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         modifier = Modifier
             .size(BoardSize)
             .padding(BoardPadding)
+            // TODO : REMOVE
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
