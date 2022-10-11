@@ -13,6 +13,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 fun DroppableView(
     modifier: Modifier = Modifier,
     dragState: DragState,
+    canViewReceiveDrop: () -> Boolean,
     content: @Composable() (BoxScope.() -> Unit),
 ) {
     var isInBounds by remember { mutableStateOf(false) }
@@ -32,7 +33,8 @@ fun DroppableView(
         val canBeDropped =
             dragState.draggableContent !== null &&
             !dragState.isDragging &&
-            isInBounds
+            isInBounds &&
+            canViewReceiveDrop()
         if (canBeDropped) {
             dragState.onDrop()
         }

@@ -222,7 +222,8 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         }
         val column = columnIndex + 1
         val row = rowIndex + 1
-        drawTileBackground(Color.Green, column, row, 0.7f)
+        val color = if (tile.content.value === null) Color.Green else Color.Red
+        drawTileBackground(color, column, row, 0.7f)
     }
 
     fun DrawScope.drawTiles() {
