@@ -1,40 +1,29 @@
 package com.example.polyscrabbleclient.auth.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.polyscrabbleclient.BuildConfig
-import com.example.polyscrabbleclient.auth.model.AuthLoginSate
+import com.example.polyscrabbleclient.auth.model.AuthError
+import com.example.polyscrabbleclient.auth.model.LoginSate
+import com.example.polyscrabbleclient.auth.model.serverResponse.LoginRes
+import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
 
-enum class AuthServerError(val label : String) {
-    EmailNotFound("EMAIL_NOT_FOUND"),
-    InvalidPassword("INVALID_PASSWORD"),
-    NameAlreadyTaken("NAME_ALREADY_TAKEN"),
-    EmailAlreadyTaken("EMAIL_ALREADY_TAKEN"),
-    AlreadyAuth("ALREADY_AUTH");
-
-    companion object {
-        fun find(value : String): AuthServerError? = values().find{it.label == value}
-    }
-}
-
-data class LoginRes(val errors: List<String>?, val message: String?)
 
 class AuthenticationViewModel : ViewModel() {
-    val logInState = MutableStateFlow(AuthLoginSate())
-    val isAuthenticate = MutableStateFlow(false)
-    var isInProcess = MutableStateFlow(false)
-    val errors : MutableLiveData<List<AuthServerError>> = MutableLiveData(null)
+    val logInState = mutableStateOf(LoginSate())
+    val isAuthenticate = mutableStateOf(false)
+    var isInProcess = mutableStateOf(false)
 
     sealed class AuthEvent {
         class EmailChanged(val email: String) : AuthEvent()
         class PasswordChanged(val password: String) : AuthEvent()
+        class ValidateEmail(val email: String) : AuthEvent()
         object Authenticate : AuthEvent()
     }
 
@@ -46,6 +35,9 @@ class AuthenticationViewModel : ViewModel() {
             is AuthEvent.PasswordChanged -> {
                 updatePassword(authEvent.password)
             }
+            is AuthEvent.ValidateEmail -> {
+                validateEmail(authEvent.email)
+            }
             is AuthEvent.Authenticate -> {
                 authenticateRequest()
             }
@@ -55,28 +47,61 @@ class AuthenticationViewModel : ViewModel() {
     fun reset() {
         isAuthenticate.value = false
         isInProcess.value = false
-        errors.value = null
         logInState.value.email = ""
-        logInState.value.password=""
+        logInState.value.password = ""
+        logInState.value.emailError = mutableStateOf("")
+        logInState.value.passwordError = mutableStateOf("")
     }
 
-    private fun updateEmail(email:String) {
+    private fun updateEmail(email: String) {
+        logInState.value.emailError.value = ""
         logInState.value = logInState.value.copy(email = email)
     }
 
     private fun updatePassword(password: String) {
+        logInState.value.passwordError.value = ""
         logInState.value = logInState.value.copy(password = password)
+    }
+
+    private fun validateEmail(email: String) {
+        if (!AuthValidation.isValidEmail(email)) {
+            logInState.value.emailError.value = wrong_form_email
+        }
+    }
+
+    private fun isFormValid(): Boolean {
+        validateEmail(logInState.value.email)
+        return logInState.value.emailError.value.isEmpty() &&
+            logInState.value.passwordError.value.isEmpty()
+    }
+
+    private fun hasAtLeastOneEmptyField(): Boolean {
+        val hasEmail = logInState.value.email.isNotEmpty()
+        val hasPassword = logInState.value.password.isNotEmpty()
+        if (!hasEmail) {
+            logInState.value.emailError.value = missing_field
+        }
+        if (!hasPassword) {
+            logInState.value.passwordError.value = missing_field
+        }
+        return !hasEmail || !hasPassword
     }
 
     private fun authenticateRequest() {
         // TODO: notify user when server is down
+        if (hasAtLeastOneEmptyField()) {
+            return
+        }
+        if (!isFormValid()) {
+            return
+        }
         isInProcess.value = true
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                var response: LoginRes?
+                val response: LoginRes?
                 try {
                     response = ScrabbleHttpClient.post(
-                        URL(BuildConfig.COMMUNICATION_URL+"/auth/login"),
+                        URL(BuildConfig.COMMUNICATION_URL + "/auth/login"),
                         logInState.value,
                         LoginRes::class.java
                     )
@@ -85,11 +110,11 @@ class AuthenticationViewModel : ViewModel() {
                         // add notification here
                         return@withContext
                     }
-                    if(response.message != null) {
+                    if (response.message != null) {
                         isAuthenticate.value = true
                         return@withContext
                     }
-                    errors.postValue(getServerErrors(response.errors))
+                    setServerErrors(response.errors)
                     return@withContext
                 } catch (e: Exception) {
                     // or add notification here
@@ -101,8 +126,19 @@ class AuthenticationViewModel : ViewModel() {
         }
     }
 
-    private fun getServerErrors(serverErrors : List<String>?) :List<AuthServerError> {
-        return serverErrors?.map{content->AuthServerError.find(content)} as List<AuthServerError>
+    private fun setServerErrors(serverErrors: List<String>?) {
+        fun setError(error: String) {
+            if (error == AuthError.EmailNotFound.label) {
+                logInState.value.emailError.value = invalid_email
+            }
+            if (error == AuthError.InvalidPassword.label) {
+                logInState.value.passwordError.value = invalid_password
+            }
+            if (error == AuthError.AlreadyAuth.label) {
+                logInState.value.passwordError.value = already_auth
+            }
+        }
+        serverErrors?.map { content -> setError(content) } as List<AuthError>
     }
 }
 

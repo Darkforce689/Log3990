@@ -32,7 +32,7 @@ object AppSocketHandler {
 
     @Synchronized
     fun connect() {
-        if (socket.connected()){
+        if (socket.connected()) {
             return
         }
         socket.connect()
@@ -41,7 +41,7 @@ object AppSocketHandler {
     @Synchronized
     fun disconnect() {
         if (!socket.connected()) {
-            return;
+            return
         }
         socket.disconnect()
     }

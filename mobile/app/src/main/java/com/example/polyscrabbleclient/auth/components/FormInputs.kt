@@ -6,12 +6,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.*
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -20,61 +24,49 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.polyscrabbleclient.auth.viewmodel.AuthServerError
-import com.example.polyscrabbleclient.auth.viewmodel.AuthValidation
-import com.example.polyscrabbleclient.ui.theme.*
-import com.example.polyscrabbleclient.utils.constants.MAX_NAME_LENGTH
-import com.example.polyscrabbleclient.utils.constants.MAX_PASSWORD_LENGTH
-import com.example.polyscrabbleclient.utils.constants.MIN_NAME_LENGTH
-import com.example.polyscrabbleclient.utils.constants.MIN_PASSWORD_LENGTH
+import com.example.polyscrabbleclient.ui.theme.email_string
+import com.example.polyscrabbleclient.ui.theme.password_string
+import com.example.polyscrabbleclient.ui.theme.userName_string
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun UserNameInput(
     modifier: Modifier = Modifier.fillMaxWidth(),
     name: String,
-    serverError: AuthServerError?,
+    error: String,
     onUsernameChanged: (username: String) -> Unit,
-    missingFieldError: Boolean
-){
+    validateUsername: (username: String) -> Unit
+) {
     val focusRequester = FocusRequester()
-    val errorMessage = remember { mutableStateOf("") }
-
-    var displayErrorModifier = Modifier.alpha(0f)
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    fun validateInput() {
-        if( !AuthValidation.isValidUsername(name)) {
-            errorMessage.value = Invalid_username_creation(MIN_NAME_LENGTH, MAX_NAME_LENGTH).message
-        } else {
-            errorMessage.value = ""
-        }
-    }
-    if(missingFieldError){
-        errorMessage.value = missing_field
-    }
-    if(serverError != null) {
-        errorMessage.value = userName_not_unique
-    }
-    if(errorMessage.value.isNotEmpty()) {
-        displayErrorModifier = Modifier.alpha(1f)
-    }
+    val displayErrorModifier = if (error.isNotEmpty()) Modifier.alpha(1f) else Modifier.alpha(0f)
 
     TextField(
-        value = name, onValueChange = {onUsernameChanged(it.filter { char -> !char.isWhitespace()})},
+        value = name,
+        onValueChange = { onUsernameChanged(it.filter { char -> !char.isWhitespace() }) },
         modifier = Modifier
             .focusRequester(focusRequester)
-            .onFocusChanged { focusState -> if (!focusState.isFocused && name.isNotBlank()) validateInput() },
-        isError = errorMessage.value.isNotEmpty(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.None),
-        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() } ),
-
-        label = {Text(userName_string)}, singleLine = true, leadingIcon = { Icon(
-            imageVector = Icons.Default.Edit,
-            contentDescription = null
-        )}
+            .onFocusChanged { focusState ->
+                if (!focusState.isFocused && name.isNotBlank()) validateUsername(
+                    name
+                )
+            },
+        isError = error.isNotEmpty(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.None
+        ),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+        label = { Text(userName_string) },
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = null
+            )
+        }
     )
-    Requirement(modifier = displayErrorModifier, message = errorMessage.value)
+    Requirement(modifier = displayErrorModifier, message = error)
 
 }
 
@@ -83,39 +75,13 @@ fun UserNameInput(
 fun EmailInput(
     modifier: Modifier = Modifier.fillMaxWidth(),
     email: String,
-    onEmailChanged: (email: String)->Unit,
-    serverError: AuthServerError?,
-    missingFieldError : Boolean,
-
+    onEmailChanged: (email: String) -> Unit,
+    validateEmail: (username: String) -> Unit,
+    error: String,
 ) {
-    val errorMessage = remember { mutableStateOf("") }
     val focusRequester = FocusRequester()
-    var displayErrorModifier = Modifier.alpha(0f)
+    val displayErrorModifier = if (error.isNotEmpty()) Modifier.alpha(1f) else Modifier.alpha(0f)
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    fun validateInput() {
-        if(!AuthValidation.isValidEmail(email)){
-            errorMessage.value = wrong_form_email
-        } else {
-            errorMessage.value = ""
-        }
-    }
-
-    if (serverError != null) {
-        if (serverError == AuthServerError.EmailAlreadyTaken) {
-            errorMessage.value = email_not_unique
-        }
-        else if (serverError == AuthServerError.EmailNotFound) {
-            errorMessage.value = invalid_email
-        }
-    }
-    if(missingFieldError){
-        errorMessage.value = missing_field
-    }
-
-    if (errorMessage.value.isNotEmpty()) {
-        displayErrorModifier = Modifier.alpha(1f)
-    }
 
     TextField(
         value = email,
@@ -124,7 +90,7 @@ fun EmailInput(
             .focusRequester(focusRequester)
             .onFocusChanged { focusState ->
                 if (!focusState.isFocused && email.isNotEmpty()) {
-                    validateInput()
+                    validateEmail(email)
                 }
             },
         keyboardOptions = KeyboardOptions(
@@ -136,12 +102,12 @@ fun EmailInput(
         ),
         label = { Text(email_string) },
         singleLine = true,
-        isError = errorMessage.value.isNotEmpty(),
+        isError = error.isNotEmpty(),
         leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) }
     )
     Requirement(
         modifier = displayErrorModifier,
-        message = errorMessage.value
+        message = error
     )
 }
 
@@ -149,45 +115,23 @@ fun EmailInput(
 @Composable
 fun PasswordInput(
     modifier: Modifier = Modifier.fillMaxWidth(),
-    password : String,
-    onPasswordChanged : (email: String)->Unit,
-    serverError: AuthServerError?,
-    missingFieldError : Boolean,
-    onCreation : Boolean
+    password: String,
+    onPasswordChanged: (email: String) -> Unit,
+    validatePassword: (password: String) -> Unit,
+    error: String,
 ) {
-    val focusRequester = FocusRequester()
     val showPassword = remember { mutableStateOf(false) }
-    val errorMessage = remember { mutableStateOf("") }
-
-    var displayErrorModifier = Modifier.alpha(0f)
+    val displayErrorModifier = if (error.isNotEmpty()) Modifier.alpha(1f) else Modifier.alpha(0f)
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    fun validateInput() {
-        if(!AuthValidation.isValidPassword(password)){
-            errorMessage.value = Invalid_password_creation(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH).message
-        } else {
-            errorMessage.value = ""
-        }
-    }
-
-    if (serverError != null) {
-        errorMessage.value = if (AuthServerError.InvalidPassword.label === serverError.label) invalid_password else already_auth
-    }
-
-    if(missingFieldError){
-        errorMessage.value = missing_field
-    }
-
-
-    if (errorMessage.value.isNotEmpty()) {
-        displayErrorModifier = Modifier.alpha(1f)
-    }
+    val focusRequester = FocusRequester()
 
     TextField(value = password,
         onValueChange = { onPasswordChanged(it) },
         modifier = Modifier
             .focusRequester(focusRequester)
-            .onFocusChanged { focusState -> if (!focusState.isFocused && password.isNotBlank() && onCreation) validateInput() },
+            .onFocusChanged { focusState ->
+                if (!focusState.isFocused && password.isNotBlank()) validatePassword(password)
+            },
         label = { Text(password_string) },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
@@ -195,7 +139,7 @@ fun PasswordInput(
         ),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         singleLine = true,
-        isError = errorMessage.value.isNotEmpty(),
+        isError = error.isNotEmpty(),
         visualTransformation = if (showPassword.value) VisualTransformation.None
         else PasswordVisualTransformation(),
         leadingIcon = {
@@ -215,15 +159,15 @@ fun PasswordInput(
     )
     Requirement(
         modifier = displayErrorModifier,
-        message = errorMessage.value
+        message = error
     )
 }
 
 @Composable
 fun Requirement(
     modifier: Modifier = Modifier,
-    message : String,
-){
+    message: String,
+) {
     Row(
         modifier = modifier.padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
