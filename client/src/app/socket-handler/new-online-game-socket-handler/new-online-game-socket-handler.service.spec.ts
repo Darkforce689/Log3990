@@ -19,7 +19,6 @@ describe('NewOnlineGameSocketHandler', () => {
         privateGame: false,
         randomBonus: false,
         gameMode: GameMode.Classic,
-        dictTitle: 'dictTitle',
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
     } as OnlineGameSettingsUI;

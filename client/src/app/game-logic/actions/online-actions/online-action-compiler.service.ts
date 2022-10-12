@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
 import { ExchangeLetter } from '@app/game-logic/actions/exchange-letter';
+import { MagicCard } from '@app/game-logic/actions/magic-card/magic-card';
+import { SplitPoints } from '@app/game-logic/actions/magic-card/magic-card-split-points';
+import { ExchangeALetter } from '@app/game-logic/actions/magic-card/magic-card-exchange-letter';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
-import { MagicCard } from '@app/game-logic/actions/magic-card';
-import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
-import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
 
 @Injectable({
     providedIn: 'root',
@@ -63,22 +63,23 @@ export class OnlineActionCompilerService {
     }
 
     private compileMagicCardOnline(action: MagicCard): OnlineAction | undefined {
-        if (action instanceof GainAPoint) {
-            return this.compileGainAPointOnline(action);
-        }
-
         if (action instanceof SplitPoints) {
             return this.compileSplitPointsOnline(action);
+        }
+
+        if (action instanceof ExchangeALetter) {
+            return this.compileExchangeALetterOnline(action);
         }
         return undefined;
     }
 
-    private compileGainAPointOnline(action: GainAPoint): OnlineAction {
-        const passTurn: OnlineAction = {
-            type: OnlineMagicCardActionType.GainAPoint,
+    private compileExchangeALetterOnline(action: ExchangeALetter): OnlineAction {
+        const exchangeALetter: OnlineAction = {
+            type: OnlineMagicCardActionType.ExchangeALetter,
             letterRack: action.player.letterRack,
+            letters: `${action.letterToExchange.char}`,
         };
-        return passTurn;
+        return exchangeALetter;
     }
 
     private compileSplitPointsOnline(action: SplitPoints): OnlineAction {

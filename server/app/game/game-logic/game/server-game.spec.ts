@@ -150,30 +150,12 @@ describe('ServerGame', () => {
         expect(isSamePlayer).to.be.equal(false);
     });
 
-    it('should update the winnerByForfeitedIndex when a player forfeits', () => {
-        game.forfeit(p1.name);
-        expect(game.players[game.winnerByForfeitedIndex]).to.be.deep.equal(p2);
-    });
-
-    it('should get the correct winner when a player has forfeited', () => {
-        game.forfeit(p1.name);
-        expect(game.getWinner().length).to.be.equal(1);
-        expect(game.getWinner()[0]).to.be.deep.equal(p2);
-    });
-
     it('endOfTurn should return true and call onEndOfGame if the endReason is defined', () => {
         game.stop();
         expect(game.endReason).to.be.equal(EndOfGameReason.ManualStop);
         const gameSpy = spy(game, 'onEndOfGame' as any);
         game['startTurn']();
         expect(gameSpy.called).to.be.equal(true);
-    });
-
-    it('forfeit should return reason forfeit and isEndOFgame should return false', () => {
-        game.forfeit('blabla');
-        expect(game.endReason).to.be.equal(EndOfGameReason.Forfeit);
-        const result = game['isEndOfGame']();
-        expect(result).to.be.equal(false);
     });
 
     it('endOfTurn should return and call onEndOfGame if the endReason is defined', () => {

@@ -19,7 +19,7 @@ export const DELAY = 100;
 })
 export class PendingGamesComponent implements AfterContentChecked, OnInit, AfterViewInit {
     @ViewChild(MatSort) tableSort: MatSort;
-    columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn', 'dictionary', 'privateGame'];
+    columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn', 'privateGame'];
     selectedRow: OnlineGameSettings | undefined;
     dataSource = new MatTableDataSource<OnlineGameSettings>();
     columns: {
@@ -56,12 +56,6 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
                 columnDef: 'randomBonus',
                 header: 'Bonus Aléatoire',
                 cell: (form: OnlineGameSettings) => (form.randomBonus ? 'activé' : 'désactivé'),
-                tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
-            },
-            {
-                columnDef: 'dictionary',
-                header: 'Dictionnaire utilisé',
-                cell: (form: OnlineGameSettings) => `${form.dictTitle}`,
                 tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
             {
@@ -154,8 +148,9 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
     }
 
     private getToolTip(form: OnlineGameSettings, columnDef: string): string {
-        if (columnDef === 'dictionary') {
-            return form.dictDesc as string;
+        // TODO Remove or keep for future tooltips, was only used for legacy dictionary
+        if (columnDef === 'nothing') {
+            return form.gameMode as string;
         }
         return '';
     }

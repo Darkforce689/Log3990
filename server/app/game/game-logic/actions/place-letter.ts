@@ -5,12 +5,11 @@ import { LetterCreator } from '@app/game/game-logic/board/letter-creator';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { EMPTY_CHAR, JOKER_CHAR, TIME_FOR_REVERT } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
-import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
-import { ObjectiveUpdateParams } from '@app/game/game-logic/objectives/objectives/objective-update-params.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
-import { copyGrid, isCharUpperCase } from '@app/game/game-logic/utils';
+import { isCharUpperCase } from '@app/game/game-logic/utils';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
 import { timer } from 'rxjs';
 
@@ -30,11 +29,9 @@ export class PlaceLetter extends Action {
     }
 
     protected perform(game: ServerGame) {
-        const previousGrid = copyGrid(game.board.grid);
         const validWordList = this.wordSearcher.getListOfValidWords({ word: this.word, placement: this.placement }, game.board.grid, game.gameToken);
         const formedWords = validWordList.map((validWord) => validWord.letters);
         this.putLettersOnBoard(game);
-        const currentGrid = game.board.grid;
         this.player.removeLetterFromRack(this.lettersToRemoveInRack);
         const wordValid = validWordList.length !== 0;
         if (!wordValid) {
@@ -44,18 +41,11 @@ export class PlaceLetter extends Action {
             });
             return;
         }
+        if (game instanceof MagicServerGame) {
+            game.addWordCount(validWordList.length);
+        }
         this.pointCalculator.placeLetterCalculation(this, formedWords, game.board.grid);
         this.drawLettersForPlayer(game);
-        if (game instanceof SpecialServerGame) {
-            const updateObjectiveParams: ObjectiveUpdateParams = {
-                previousGrid,
-                currentGrid,
-                lettersToPlace: this.lettersToRemoveInRack,
-                formedWords,
-                affectedCoords: this.affectedCoords,
-            };
-            (game as SpecialServerGame).updateObjectives(this, updateObjectiveParams);
-        }
         this.end();
     }
 

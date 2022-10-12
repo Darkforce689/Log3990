@@ -12,6 +12,7 @@ const NO_WHITE_SPACE_RGX = /^\S*$/;
     templateUrl: './join-online-game.component.html',
     styleUrls: ['./join-online-game.component.scss'],
 })
+// TODO GL3A22107-32 : No form needed
 export class JoinOnlineGameComponent implements AfterContentChecked, OnInit {
     myName: FormControl;
     private playerNames: string[];
@@ -59,7 +60,7 @@ export class JoinOnlineGameComponent implements AfterContentChecked, OnInit {
 
     private forbiddenNameValidator(): ValidatorFn {
         return (control: AbstractControl): { [key: string]: unknown } | null =>
-            // TODO GL3A22107-5 : FIX NAME VALIDATOR (next line is faulty)
+            // TODO GL3A22107-32 : FIX NAME VALIDATOR (next line is faulty)
             control.value !== this.playerNames ? null : { forbidden: control.value };
     }
 

@@ -1,10 +1,14 @@
-import { MAX_MESSAGE_LENGTH } from '@app/constants';
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
+import { Session } from '@app/auth/services/session.interface';
+import { ENABLE_SOCKET_LOGIN, MAX_MESSAGE_LENGTH } from '@app/constants';
 import { ServerLogger } from '@app/logger/logger';
 import { ChatUser } from '@app/messages-service/chat-user.interface';
 import { Message } from '@app/messages-service/message.interface';
 import { Room } from '@app/messages-service/room/room';
 import { GlobalSystemMessage, IndividualSystemMessage } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
+import { UserService } from '@app/user/user.service';
 import * as http from 'http';
 import * as io from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -20,7 +24,13 @@ export class MessagesSocketHandler {
     users = new Map<string, ChatUser>();
     readonly sio: io.Server;
 
-    constructor(server: http.Server, private systemMessagesService: SystemMessagesService) {
+    constructor(
+        server: http.Server,
+        private systemMessagesService: SystemMessagesService,
+        private sessionMiddleware: SessionMiddlewareService,
+        private authService: AuthService,
+        private userService: UserService,
+    ) {
         this.sio = new io.Server(server, {
             path: '/messages',
             cors: { origin: '*', methods: ['GET', 'POST'] },
@@ -35,15 +45,23 @@ export class MessagesSocketHandler {
         });
     }
 
-    handleSockets() {
-        this.sio.on('connection', (socket) => {
-            socket.on(NEW_USER_NAME, (userName: string) => {
-                try {
-                    this.createUser(userName, socket.id);
-                } catch (error) {
-                    this.sendError(socket, error);
-                }
-            });
+    handleSockets(enableAuth: boolean = ENABLE_SOCKET_LOGIN, enableRedisSession: boolean = true) {
+        if (enableAuth) {
+            const sessionMiddleware = this.sessionMiddleware.getSocketSessionMiddleware(enableRedisSession);
+            this.sio.use(sessionMiddleware);
+            this.sio.use(this.authService.socketAuthGuard);
+        }
+
+        this.sio.on('connection', async (socket) => {
+            if (!enableAuth) {
+                socket.on(NEW_USER_NAME, (userName: string) => {
+                    try {
+                        this.createUser(userName, socket.id);
+                    } catch (error) {
+                        this.sendError(socket, error);
+                    }
+                });
+            }
 
             socket.on(NEW_MESSAGE, (content: string) => {
                 try {
@@ -53,8 +71,17 @@ export class MessagesSocketHandler {
                 }
             });
 
-            socket.on(JOIN_ROOM, (roomID: string) => {
+            socket.on(JOIN_ROOM, async (roomID: string) => {
                 try {
+                    if (enableAuth) {
+                        const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+                        const user = await this.userService.getUser({ _id });
+                        if (user === undefined) {
+                            throw Error(`No user found with userId ${_id}`);
+                        }
+                        ServerLogger.logDebug(user);
+                        this.createUser(user.name, socket.id);
+                    }
                     this.addUserToRoom(socket, roomID);
                 } catch (error) {
                     this.sendError(socket, error);
@@ -80,6 +107,7 @@ export class MessagesSocketHandler {
         const userName = user.name;
         const message: Message = {
             from: userName,
+            date: new Date(),
             content,
         };
 

@@ -7,8 +7,6 @@ export interface OnlineGameSettingsUI {
     playerNames: string[];
     privateGame: boolean;
     randomBonus: boolean;
-    dictTitle: string;
-    dictDesc?: string;
     botDifficulty: BotDifficulty;
     numberOfPlayers: number;
 }

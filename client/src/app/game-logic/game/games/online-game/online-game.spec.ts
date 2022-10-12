@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
@@ -9,10 +10,8 @@ import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { GameState, LightPlayer } from '@app/game-logic/game/games/online-game/game-state';
-import { TimerControls } from '@app/game-logic/game/timer/timer-controls.enum';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { Socket } from 'socket.io-client';
 import { OnlineGame } from './online-game';
@@ -26,6 +25,7 @@ describe('OnlineGame', () => {
     let player2: Player;
 
     beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
         boardService = TestBed.inject(BoardService);
         gameSocketHandlerService = TestBed.inject(GameSocketHandlerService);
         timer = TestBed.inject(TimerService);
@@ -39,8 +39,8 @@ describe('OnlineGame', () => {
             boardService,
             TestBed.inject(OnlineActionCompilerService),
         );
-        player1 = new User('p1');
-        player2 = new User('p2');
+        player1 = new Player('p1');
+        player2 = new Player('p2');
         onlineGame.players = [player1, player2];
     });
 
@@ -89,15 +89,10 @@ describe('OnlineGame', () => {
         expect(result).toEqual(expected);
     });
 
-    it('should receive a timerControl start from gameSocketHandlerService', () => {
+    it('should receive a timerStartingTime start from gameSocketHandlerService', () => {
         const timerSpy = spyOn(timer, 'start').and.callThrough();
-        gameSocketHandlerService['timerControlsSubject'].next(TimerControls.Start);
-        expect(timerSpy).toHaveBeenCalled();
-    });
 
-    it('should receive a timerControl stop from gameSocketHandlerService', () => {
-        const timerSpy = spyOn(timer, 'stop').and.callThrough();
-        gameSocketHandlerService['timerControlsSubject'].next(TimerControls.Stop);
+        gameSocketHandlerService['timerStartingTimeSubject'].next();
         expect(timerSpy).toHaveBeenCalled();
     });
 
@@ -440,7 +435,7 @@ describe('OnlineGame', () => {
             { char: 'B', value: 1 },
             { char: 'C', value: 1 },
         ];
-        const player = new User('QWERTY');
+        const player = new Player('QWERTY');
         player.letterRack = [
             { char: 'A', value: 1 },
             { char: 'A', value: 1 },
@@ -466,7 +461,7 @@ describe('OnlineGame', () => {
             { char: 'E', value: 1 },
         ];
 
-        const player = new User('QWERTY');
+        const player = new Player('QWERTY');
         player.letterRack = [
             { char: 'A', value: 1 },
             { char: 'A', value: 1 },

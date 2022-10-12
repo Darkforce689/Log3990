@@ -1,6 +1,5 @@
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
-import { MagicCard } from '@app/game/game-logic/actions/magic-card';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { Board } from '@app/game/game-logic/board/board';
 import { LetterBag } from '@app/game/game-logic/board/letter-bag';
@@ -25,7 +24,6 @@ export class ServerGame {
     consecutivePass: number = 0;
     board: Board;
     timer: Timer;
-    winnerByForfeitedIndex: number;
 
     isEnded$ = new Subject<undefined>();
     endReason: EndOfGameReason;
@@ -61,14 +59,6 @@ export class ServerGame {
         this.isEnded$.next(undefined);
     }
 
-    forfeit(playerName: string) {
-        this.winnerByForfeitedIndex = this.players.findIndex((player) => {
-            return player.name !== playerName;
-        });
-        this.endReason = EndOfGameReason.Forfeit;
-        this.isEnded$.next(undefined);
-    }
-
     isEndOfGame() {
         if (this.letterBag.isEmpty) {
             for (const player of this.players) {
@@ -98,11 +88,6 @@ export class ServerGame {
     getWinner(): Player[] {
         let highestScore = Number.MIN_SAFE_INTEGER;
         let winners: Player[] = [];
-        if (this.winnerByForfeitedIndex !== undefined) {
-            const winner = this.players[this.winnerByForfeitedIndex];
-            winners = [winner];
-            return winners;
-        }
 
         for (const player of this.players) {
             if (player.points === highestScore) {
@@ -135,13 +120,60 @@ export class ServerGame {
         return topPlayers[0];
     }
 
+    forcePlay() {
+        this.startTurn();
+    }
+
+    forceEndturn() {
+        this.timer.stop();
+    }
+
+    protected setPlayerActive(player: Player = this.getActivePlayer()): Player {
+        player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
+        return player;
+    }
+
+    protected takeAction(action: Action) {
+        this.endOfTurn(action);
+        return;
+    }
+
+    protected endOfTurn(action: Action | undefined) {
+        this.timer.stop();
+        if (!action) {
+            this.onEndOfGame(EndOfGameReason.Forfeit);
+            return;
+        }
+
+        if (this.endReason) {
+            this.onEndOfGame(this.endReason);
+            return;
+        }
+
+        action.end$.subscribe(() => {
+            if (this.isEndOfGame()) {
+                this.onEndOfGame(EndOfGameReason.GameEnded);
+                return;
+            }
+            this.nextPlayer();
+            this.emitGameState();
+            this.startTurn();
+        });
+
+        action.execute(this);
+    }
+
+    protected emitGameState() {
+        const gameState = this.gameCompiler.compile(this);
+        const gameStateToken: GameStateToken = { gameState, gameToken: this.gameToken };
+        this.newGameStateSubject.next(gameStateToken);
+    }
+
     private onEndOfGame(reason: EndOfGameReason) {
         this.pointCalculator.endOfGamePointDeduction(this);
         this.displayLettersLeft();
         this.emitGameState();
-        if (reason === EndOfGameReason.GameEnded) {
-            this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
-        }
+        this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
     }
 
     private nextPlayer() {
@@ -171,54 +203,6 @@ export class ServerGame {
         }
         const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
         timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
-    }
-
-    private setPlayerActive(player: Player = this.getActivePlayer()): Player {
-        player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
-        return player;
-    }
-
-    private takeAction(action: Action) {
-        if (!(action instanceof MagicCard)) {
-            // If it isn't a magic cards, it is the last action of the turn
-            this.endOfTurn(action);
-            return;
-        }
-        // If it is a magic card, can take more action(s)
-        action.execute(this);
-        this.emitGameState();
-        this.setPlayerActive();
-    }
-
-    private endOfTurn(action: Action | undefined) {
-        this.timer.stop();
-        if (!action) {
-            this.onEndOfGame(EndOfGameReason.Forfeit);
-            return;
-        }
-
-        if (this.endReason) {
-            this.onEndOfGame(this.endReason);
-            return;
-        }
-
-        action.end$.subscribe(() => {
-            if (this.isEndOfGame()) {
-                this.onEndOfGame(EndOfGameReason.GameEnded);
-                return;
-            }
-            this.nextPlayer();
-            this.emitGameState();
-            this.startTurn();
-        });
-
-        action.execute(this);
-    }
-
-    private emitGameState() {
-        const gameState = this.gameCompiler.compile(this);
-        const gameStateToken: GameStateToken = { gameState, gameToken: this.gameToken };
-        this.newGameStateSubject.next(gameStateToken);
     }
 
     private displayLettersLeft() {

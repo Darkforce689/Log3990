@@ -1,14 +1,11 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
+import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { GameCreator } from '@app/game/game-creator/game-creator';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
-import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -31,25 +28,16 @@ describe('GameCreator', () => {
     let randomBonus: boolean;
     let gameMode: GameMode;
     let gameToken: string;
-    let dictTitle: string;
     let botDifficulty: BotDifficulty;
     let numberOfPlayers: number;
-    const botInfo = {
-        name: 'BotA',
-        type: BotDifficulty.Easy,
-        canEdit: true,
-    };
 
     const pointCalculatorStub = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompilerStub = createSinonStubInstance<GameCompiler>(GameCompiler);
     const systemMessagesServiceStub = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const timerControllerStub = createSinonStubInstance<TimerController>(TimerController);
-    const objectiveCreatorStub = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
-    const botInfoServiceStub = createSinonStubInstance<BotInfoService>(BotInfoService);
-    botInfoServiceStub.getBotInfoList.resolves([botInfo]);
     // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
     const botManagerStub = {} as BotManager;
-    const botMessageStub = createSinonStubInstance<BotMessagesService>(BotMessagesService);
+    const actionNotifierStub = createSinonStubInstance(GameActionNotifierService);
     const actionCreatorStub = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
 
     const newGameStateSubject = new Subject<GameStateToken>();
@@ -61,11 +49,10 @@ describe('GameCreator', () => {
         playerNames = ['p1', 'p2'];
         privateGame = false;
         randomBonus = getRandomInt(1) === 0;
-        dictTitle = DEFAULT_DICTIONARY_TITLE;
         botDifficulty = BotDifficulty.Easy;
         gameMode = GameMode.Classic;
         numberOfPlayers = playerNames.length;
-        onlineGameSettings = { id, playerNames, privateGame, randomBonus, timePerTurn, gameMode, dictTitle, botDifficulty, numberOfPlayers };
+        onlineGameSettings = { id, playerNames, privateGame, randomBonus, timePerTurn, gameMode, botDifficulty, numberOfPlayers };
         gameCreator = new GameCreator(
             pointCalculatorStub,
             gameCompilerStub,
@@ -73,10 +60,8 @@ describe('GameCreator', () => {
             newGameStateSubject,
             endGameSubject,
             timerControllerStub,
-            objectiveCreatorStub,
-            botInfoServiceStub,
             botManagerStub,
-            botMessageStub,
+            actionNotifierStub,
             actionCreatorStub,
         );
     });
@@ -94,20 +79,18 @@ describe('GameCreator', () => {
         singlePlayerOnlineGameSettings.playerNames = ['p1'];
         const createdGame = await gameCreator.createGame(singlePlayerOnlineGameSettings, gameToken);
         expect(createdGame.gameToken).to.be.equal(gameToken);
-        expect(createdGame.players.map((p) => p.name)).to.be.deep.equal([singlePlayerOnlineGameSettings.playerNames[0], botInfo.name]);
         expect(createdGame.timePerTurn).to.be.equal(timePerTurn);
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
     });
 
-    it('should create a special server game with requested parameters and default opponent name', async () => {
-        const specialSinglePlayerOnlineGameSettings = { ...onlineGameSettings };
-        specialSinglePlayerOnlineGameSettings.gameMode = GameMode.Special;
-        specialSinglePlayerOnlineGameSettings.playerNames = ['p1'];
-        const createdGame = await gameCreator.createGame(specialSinglePlayerOnlineGameSettings, gameToken);
+    it('should create a magic server game with requested parameters and default opponent name', async () => {
+        const magicSinglePlayerOnlineGameSettings = { ...onlineGameSettings };
+        magicSinglePlayerOnlineGameSettings.gameMode = GameMode.Magic;
+        magicSinglePlayerOnlineGameSettings.playerNames = ['p1'];
+        const createdGame = await gameCreator.createGame(magicSinglePlayerOnlineGameSettings, gameToken);
         expect(createdGame.gameToken).to.be.equal(gameToken);
-        expect(createdGame.players.map((p) => p.name)).to.be.deep.equal([specialSinglePlayerOnlineGameSettings.playerNames[0], botInfo.name]);
         expect(createdGame.timePerTurn).to.be.equal(timePerTurn);
         expect(createdGame.randomBonus).to.be.equal(randomBonus);
-        expect(createdGame as SpecialServerGame).instanceof(SpecialServerGame);
+        expect(createdGame as MagicServerGame).instanceof(MagicServerGame);
     });
 });

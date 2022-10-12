@@ -18,17 +18,7 @@
         <input matInput [disabled]="true" [value]="randomBonusType" />
     </mat-form-field>
 
-    <mat-form-field>
-        <mat-label #bonus>Type de partie </mat-label>
-        <input matInput [disabled]="true" [value]="privateGameType" />
-    </mat-form-field>
-    
     <br />
-    <mat-form-field>
-        <mat-label>Dictionnaire de la partie</mat-label>
-        <input matInput [disabled]="true" [value]="data.dictTitle" [matTooltip]="data.dictTitle" matTooltipPosition="right" />
-    </mat-form-field>
-    
     <mat-form-field>
         <mat-label>Temps par tour </mat-label>
         <input matInput [disabled]="true" value="{{ data.timePerTurn | date: 'm:ss' }} min" />

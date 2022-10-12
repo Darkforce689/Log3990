@@ -1,11 +1,19 @@
-import { UserCreation } from '@app/user/interfaces/user-creation.interface';
-import { UserCredentials } from '@app/auth/user-credentials.interface';
 import { AuthService } from '@app/auth/services/auth.service';
+import { UserCredentials } from '@app/auth/user-credentials.interface';
+import { ServerLogger } from '@app/logger/logger';
+import { UserCreation } from '@app/user/interfaces/user-creation.interface';
+import { User } from '@app/user/interfaces/user.interface';
 import { UserService } from '@app/user/user.service';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { User } from '@app/user/interfaces/user.interface';
+
+export enum AuthErrors {
+    EmailNotFound = 'EMAIL_NOT_FOUND',
+    InvalidPassword = 'INVALID_PASSWORD',
+    NotAuth = 'NOT_AUTH',
+    AlreadyAuth = 'ALREADY_AUTH',
+}
 
 @Service()
 export class AuthController {
@@ -16,6 +24,28 @@ export class AuthController {
 
     private configureRouter() {
         this.router = Router();
+
+        this.router.get('/logout', async (req, res) => {
+            return new Promise((resolve) => {
+                const session = req.session as unknown as { userId: string };
+                if (session.userId === undefined) {
+                    res.sendStatus(StatusCodes.BAD_REQUEST);
+                    resolve();
+                    return;
+                }
+
+                req.session.destroy((error) => {
+                    if (error) {
+                        ServerLogger.logError(error);
+                        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+                        resolve();
+                        return;
+                    }
+                    res.sendStatus(StatusCodes.OK);
+                    resolve();
+                });
+            });
+        });
 
         this.router.post('/register', async (req, res) => {
             const { email, name, password } = req.body;
@@ -39,23 +69,59 @@ export class AuthController {
             };
 
             await this.authService.addCredentialsToUser(userId, userCreds);
-            return res.send(newUser);
+            return res.send({ user: newUser });
         });
 
         this.router.post('/login', async (req, res) => {
+            // User already that already have session
             const { email, password } = req.body;
             if (!email || !password) {
-                return res.sendStatus(StatusCodes.BAD_REQUEST);
+                return res.status(StatusCodes.BAD_REQUEST).send({ errors: ['There is one or more missing field'] });
             }
+
+            const user = await this.userService.getUser({ email });
+            if (!user) {
+                return res.status(StatusCodes.BAD_REQUEST).send({
+                    errors: [AuthErrors.EmailNotFound],
+                });
+            }
+
             const userCredentials: UserCredentials = {
                 email,
                 password,
             };
             const valid = await this.authService.validateCredentials(userCredentials);
-            if (valid) {
-                return res.sendStatus(StatusCodes.OK);
+            if (!valid) {
+                return res.status(StatusCodes.BAD_REQUEST).send({
+                    errors: [AuthErrors.InvalidPassword],
+                });
             }
-            return res.sendStatus(StatusCodes.BAD_REQUEST);
+            const session = req.session as unknown as { userId: string; loggedIn: boolean };
+            const { _id: userId } = user;
+
+            if (this.authService.isUserActive(userId)) {
+                return res.status(StatusCodes.CONFLICT).send({ errors: [AuthErrors.AlreadyAuth] });
+            }
+            session.userId = userId;
+            session.loggedIn = true;
+            return res.status(StatusCodes.OK).send({ message: 'OK' });
+        });
+
+        this.router.get('/validatesession', async (req, res) => {
+            const { userId } = req.session as unknown as { userId: string };
+            if (userId === undefined) {
+                return res.status(StatusCodes.UNAUTHORIZED).send({ errors: [AuthErrors.NotAuth] });
+            }
+
+            const activeSessionId = this.authService.getAssignedUserSession(userId);
+            if (!activeSessionId) {
+                return res.status(StatusCodes.OK).send({ message: 'OK' });
+            }
+
+            if (activeSessionId !== req.sessionID) {
+                return res.status(StatusCodes.UNAUTHORIZED).send({ errors: [AuthErrors.AlreadyAuth] });
+            }
+            return res.status(StatusCodes.OK).send({ message: 'OK' });
         });
     }
 }

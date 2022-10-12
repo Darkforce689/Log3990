@@ -42,19 +42,15 @@ export class GamePageComponent implements OnDestroy {
             this.openDisconnected();
         });
 
-        this.forfeited$$ = this.gameManager.forfeitGameState$.subscribe((forfeitedGameState) => {
+        this.forfeited$$ = this.gameManager.forfeitGameState$.subscribe(() => {
             const data = 'Votre adversaire a abandonné la partie et sera remplacé par un joueur virtuel';
-            const forfeitedDialogRef = this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data });
-            this.gameManager.instanciateGameFromForfeitedState(forfeitedGameState);
-            forfeitedDialogRef.afterClosed().subscribe(() => {
-                this.gameManager.startConvertedGame(forfeitedGameState);
-            });
+            this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data });
         });
 
         this.endOfGame$$ = this.info.isEndOfGame$.subscribe(() => {
             const winnerNames = this.info.winner.map((player) => player.name);
-            const userName = this.info.user.name;
-            const isWinner = winnerNames.includes(userName);
+            const playerName = this.info.player.name;
+            const isWinner = winnerNames.includes(playerName);
             const data: WinnerDialogData = { winnerNames, isWinner };
             this.dialog.open(WinnerDialogComponent, { disableClose: true, autoFocus: true, data });
         });
@@ -92,7 +88,7 @@ export class GamePageComponent implements OnDestroy {
             if (this.isEndOfGame) {
                 return false;
             }
-            return this.info.user === this.info.activePlayer;
+            return this.info.player === this.info.activePlayer;
         } catch (e) {
             return false;
         }
@@ -123,20 +119,12 @@ export class GamePageComponent implements OnDestroy {
         return this.canPlace || this.canExchange;
     }
 
-    get canUseMagicCards(): boolean {
-        return this.isItMyTurn;
+    get isMagicGame() {
+        return this.info.isMagicGame;
     }
 
     pass() {
-        this.inputController.pass(this.info.user);
-    }
-
-    gainAPoint() {
-        this.inputController.gainAPoint(this.info.user);
-    }
-
-    splitPoints() {
-        this.inputController.splitPoints(this.info.user);
+        this.inputController.pass(this.info.player);
     }
 
     confirm() {

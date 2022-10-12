@@ -1,13 +1,11 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
+import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
-import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -28,10 +26,8 @@ export class GameCreator {
         private newGameStateSubject: Subject<GameStateToken>,
         private endGameSubject: Subject<EndOfGame>,
         private timerController: TimerController,
-        private objectiveCreator: ObjectiveCreator,
-        private botInfoService: BotInfoService,
         private botManager: BotManager,
-        protected botMessage: BotMessagesService,
+        protected gameActionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
     ) {}
 
@@ -46,10 +42,16 @@ export class GameCreator {
         return newServerGame;
     }
 
+    async createBotPlayer(botDifficulty: BotDifficulty, playerNames: string[]) {
+        const botPlayer = new BotPlayer(this.botManager, botDifficulty, this.gameActionNotifier, this.actionCreator);
+        await botPlayer.updateBotName(playerNames);
+        return botPlayer;
+    }
+
     private createNewGame(gameSettings: OnlineGameSettings, gameToken: string) {
         const gameMode = gameSettings.gameMode;
-        if (gameMode === GameMode.Special) {
-            return this.createSpecialServerGame(gameSettings, gameToken);
+        if (gameMode === GameMode.Magic) {
+            return this.createMagicServerGame(gameSettings, gameToken);
         }
         return this.createClassicServerGame(gameSettings, gameToken);
     }
@@ -68,8 +70,8 @@ export class GameCreator {
         );
     }
 
-    private createSpecialServerGame(gameSettings: OnlineGameSettings, gameToken: string): ServerGame {
-        return new SpecialServerGame(
+    private createMagicServerGame(gameSettings: OnlineGameSettings, gameToken: string): ServerGame {
+        return new MagicServerGame(
             this.timerController,
             gameSettings.randomBonus,
             gameSettings.timePerTurn,
@@ -79,7 +81,6 @@ export class GameCreator {
             this.messagesService,
             this.newGameStateSubject,
             this.endGameSubject,
-            this.objectiveCreator,
         );
     }
 
@@ -96,8 +97,7 @@ export class GameCreator {
         const players = playerNames.map((name) => new Player(name));
         const numberOfBots = numberOfPlayers - players.length;
         for (let i = 0; i < numberOfBots; i++) {
-            const newBot = new BotPlayer(this.botInfoService, this.botManager, botDifficulty, this.botMessage, this.actionCreator);
-            await newBot.updateBotName(playerNames);
+            const newBot = await this.createBotPlayer(botDifficulty, playerNames);
             players.push(newBot);
             playerNames.push(newBot.name);
         }

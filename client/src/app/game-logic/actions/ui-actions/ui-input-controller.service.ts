@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
-import { ActionValidatorService } from '@app/game-logic/actions/action-validator/action-validator.service';
-import { GainAPoint } from '@app/game-logic/actions/magic-card-gain-1pt';
-import { SplitPoints } from '@app/game-logic/actions/magic-card-split-points';
+import { SplitPoints } from '@app/game-logic/actions/magic-card/magic-card-split-points';
+import { ExchangeALetter } from '@app/game-logic/actions/magic-card/magic-card-exchange-letter';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
@@ -12,7 +11,7 @@ import { ENTER, ESCAPE } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
-import { User } from '@app/game-logic/player/user';
+import { Player } from '@app/game-logic/player/player';
 
 @Injectable({
     providedIn: 'root',
@@ -26,7 +25,7 @@ export class UIInputControllerService {
         return this.activeAction ? this.activeAction.canBeCreated : false;
     }
 
-    constructor(private avs: ActionValidatorService, private info: GameInfoService, private boardService: BoardService) {
+    constructor(private info: GameInfoService, private boardService: BoardService) {
         this.info.endTurn$?.subscribe(() => {
             if (this.activeAction instanceof UIPlace) {
                 this.discardAction();
@@ -55,20 +54,30 @@ export class UIInputControllerService {
             return;
         }
         this.discardAction();
-        this.avs.sendAction(newAction);
+        this.sendAction(newAction);
         this.activeComponent = InputComponent.Outside;
     }
 
-    pass(user: User) {
-        this.avs.sendAction(new PassTurn(user));
+    pass(player: Player) {
+        this.sendAction(new PassTurn(player));
     }
 
-    gainAPoint(user: User) {
-        this.avs.sendAction(new GainAPoint(user));
+    splitPoints(player: Player) {
+        this.sendAction(new SplitPoints(player));
     }
 
-    splitPoints(user: User) {
-        this.avs.sendAction(new SplitPoints(user));
+    exchangeLetter(player: Player) {
+        if (!this.activeAction || !this.canBeExecuted) {
+            return;
+        }
+        const newAction: Action | null = this.activeAction.create();
+        if (!newAction) {
+            return;
+        }
+        const concernedIndex: number = this.activeAction.concernedIndexes.values().next().value;
+        this.discardAction();
+        this.sendAction(new ExchangeALetter(player, player.letterRack[concernedIndex]));
+        this.activeComponent = InputComponent.Outside;
     }
 
     private processInput(input: UIInput) {
@@ -100,13 +109,13 @@ export class UIInputControllerService {
                 if (inputType === InputType.RightClick) {
                     if (!(this.activeAction instanceof UIExchange)) {
                         this.discardAction();
-                        this.activeAction = new UIExchange(this.info.user);
+                        this.activeAction = new UIExchange(this.info.player);
                         return;
                     }
                 } else {
                     if (!(this.activeAction instanceof UIMove)) {
                         this.discardAction();
-                        this.activeAction = new UIMove(this.info.user);
+                        this.activeAction = new UIMove(this.info.player);
                         return;
                     }
                 }
@@ -189,6 +198,12 @@ export class UIInputControllerService {
         if (this.activeAction !== null) {
             this.activeAction.receiveRightClick(args);
             return;
+        }
+    }
+
+    private sendAction(action: Action) {
+        if (this.info.player === this.info.activePlayer) {
+            this.info.player.action$.next(action);
         }
     }
 }

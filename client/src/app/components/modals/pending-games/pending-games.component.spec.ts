@@ -5,7 +5,6 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { Sort } from '@angular/material/sort';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
@@ -39,7 +38,6 @@ describe('PendingGamesComponent', () => {
             privateGame: false,
             timePerTurn: 65000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Expert,
             numberOfPlayers: 2,
         },
@@ -50,7 +48,6 @@ describe('PendingGamesComponent', () => {
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         },
@@ -158,7 +155,7 @@ describe('PendingGamesComponent', () => {
         const tables = dom.querySelectorAll('tr');
         expect(tables.length).toBe(2);
 
-        const numberHeaders = 6;
+        const numberHeaders = 4;
         const tableGames = tables[0];
         expect(tableGames.cells.length).toBe(numberHeaders);
 

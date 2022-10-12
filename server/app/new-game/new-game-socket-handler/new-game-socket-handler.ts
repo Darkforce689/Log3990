@@ -1,3 +1,4 @@
+import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { isGameSettings } from '@app/game/game-logic/utils';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { ServerLogger } from '@app/logger/logger';
@@ -34,7 +35,7 @@ export class NewGameSocketHandler {
             socket.on(createGame, (gameSettings: OnlineGameSettingsUI) => {
                 try {
                     gameId = this.createGame(gameSettings, socket);
-                    this.dictionaryService.makeGameDictionary(gameId, gameSettings.dictTitle);
+                    this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.emitPendingGamesToAll();
                 } catch (error) {
                     ServerLogger.logError(error);

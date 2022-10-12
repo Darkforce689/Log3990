@@ -3,14 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType } from '@app/game-logic/interfaces/ui-input';
 import { Message, MessageType } from '@app/game-logic/messages/message.interface';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
-import { User } from '@app/game-logic/player/user';
+import { Player } from '@app/game-logic/player/player';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BehaviorSubject } from 'rxjs';
 import { ChatBoxComponent } from './chat-box.component';
@@ -24,7 +23,7 @@ describe('ChatBoxComponent', () => {
     const httpClient = jasmine.createSpyObj('HttpClient', ['get']);
 
     beforeEach(() => {
-        messageServiceSpy = jasmine.createSpyObj('MessagesService', ['receiveMessagePlayer']);
+        messageServiceSpy = jasmine.createSpyObj('MessagesService', ['receiveNonDistributedPlayerMessage']);
         messageServiceSpy.messages$ = new BehaviorSubject<Message[]>([{ content: 'Test', from: 'test from', type: MessageType.Player1 }]);
         gameInfoServiceSpy = jasmine.createSpyObj('GameInfoService', ['getPlayer']);
         cdRefSpy = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
@@ -39,7 +38,7 @@ describe('ChatBoxComponent', () => {
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
-        gameInfoServiceSpy.user = new User('SAMUEL');
+        gameInfoServiceSpy.player = new Player('SAMUEL');
         fixture = TestBed.createComponent(ChatBoxComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -52,21 +51,12 @@ describe('ChatBoxComponent', () => {
     it('should send message to message service if message valid', () => {
         component.messageContent = 'Test message';
         component.sendMessage();
-        expect(messageServiceSpy.receiveMessagePlayer).toHaveBeenCalled();
+        expect(messageServiceSpy.receiveNonDistributedPlayerMessage).toHaveBeenCalled();
     });
 
     it('should not send a message if message is not valid', () => {
         component.sendMessage();
-        expect(messageServiceSpy.receiveMessagePlayer.calls.count()).toBe(0);
-    });
-
-    it('should change color of number of character if it exceeds limit', () => {
-        const maxCharPlusOne = 514;
-
-        expect(fixture.debugElement.query(By.css('#red'))).toBeNull();
-        component.isError(maxCharPlusOne);
-        fixture.detectChanges();
-        expect(fixture.debugElement.query(By.css('#red'))).toBeDefined();
+        expect(messageServiceSpy.receiveNonDistributedPlayerMessage.calls.count()).toBe(0);
     });
 
     it('should emit when it has been clicked', (done) => {

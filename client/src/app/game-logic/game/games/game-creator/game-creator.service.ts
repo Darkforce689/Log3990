@@ -3,8 +3,7 @@ import { OnlineActionCompilerService } from '@app/game-logic/actions/online-acti
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
-import { SpecialOnlineGame } from '@app/game-logic/game/games/special-games/special-online-game';
-import { ObjectiveCreator } from '@app/game-logic/game/objectives/objective-creator/objective-creator.service';
+import { MagicOnlineGame } from '@app/game-logic/game/games/magic-game/magic-game';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 
@@ -14,16 +13,13 @@ import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handle
 export class GameCreatorService {
     constructor(
         private timer: TimerService,
-        // private pointCalculator: PointCalculatorService,
         private boardService: BoardService,
-        // private messageService: MessagesService,
         private gameSocketHandler: GameSocketHandlerService,
         private onlineActionCompiler: OnlineActionCompilerService,
-        private objectiveCreator: ObjectiveCreator,
     ) {}
 
-    createSpecialOnlineGame(gameCreationParams: OnlineGameCreationParams): SpecialOnlineGame {
-        return new SpecialOnlineGame(
+    createMagicOnlineGame(gameCreationParams: OnlineGameCreationParams): MagicOnlineGame {
+        return new MagicOnlineGame(
             gameCreationParams.id,
             gameCreationParams.timePerTurn,
             gameCreationParams.username,
@@ -31,9 +27,9 @@ export class GameCreatorService {
             this.gameSocketHandler,
             this.boardService,
             this.onlineActionCompiler,
-            this.objectiveCreator,
         );
     }
+
     createOnlineGame(gameCreationParams: OnlineGameCreationParams): OnlineGame {
         return new OnlineGame(
             gameCreationParams.id,
@@ -45,27 +41,4 @@ export class GameCreatorService {
             this.onlineActionCompiler,
         );
     }
-    // createSpecialOfflineGame(gameCreationParams: OfflineGameCreationParams, isLoaded: boolean = false): SpecialOfflineGame {
-    //     return new SpecialOfflineGame(
-    //         gameCreationParams.randomBonus,
-    //         gameCreationParams.timePerTurn,
-    //         this.timer,
-    //         this.pointCalculator,
-    //         this.boardService,
-    //         this.messageService,
-    //         this.objectiveCreator,
-    //         isLoaded,
-    //     );
-    // }
-    // createOfflineGame(gameCreationParams: OfflineGameCreationParams, isLoaded: boolean = false): OfflineGame {
-    //     return new OfflineGame(
-    //         gameCreationParams.randomBonus,
-    //         gameCreationParams.timePerTurn,
-    //         this.timer,
-    //         this.pointCalculator,
-    //         this.boardService,
-    //         this.messageService,
-    //         isLoaded,
-    //     );
-    // }
 }

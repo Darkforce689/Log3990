@@ -1,0 +1,8 @@
+button {
+    width: 150px;
+    height: 64px;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}

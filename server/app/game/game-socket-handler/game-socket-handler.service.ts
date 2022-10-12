@@ -1,6 +1,5 @@
-import { ForfeitedGameState, GameState, GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
-import { TimerControls } from '@app/game/game-logic/timer/timer-controls.enum';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineAction } from '@app/game/online-action.interface';
 import { ServerLogger } from '@app/logger/logger';
@@ -22,18 +21,22 @@ export class GameSocketsHandler {
             this.emitGameState(gameState, gameToken);
         });
 
-        this.gameManager.timerControl$.subscribe((timerGameControl: TimerGameControl) => {
+        this.gameManager.timerStartingTime$.subscribe((timerGameControl: TimerStartingTime) => {
             const gameToken = timerGameControl.gameToken;
-            const timerControl = timerGameControl.control;
-            this.emitTimerControl(timerControl, gameToken);
+            const timerStartingTime = timerGameControl.initialTime;
+            this.emitTimerStartingTime(timerStartingTime, gameToken);
         });
 
-        this.gameManager.forfeitedGameState$.subscribe((forfeitedGameState: GameStateToken) => {
+        this.gameManager.timeUpdate$.subscribe((timerTimeUpdate: TimerTimeLeft) => {
+            const gameToken = timerTimeUpdate.gameToken;
+            const timeLeft = timerTimeUpdate.timeLeft;
+            this.emitTimeUpdate(timeLeft, gameToken);
+        });
+
+        this.gameManager.forfeitedGameState$.subscribe((forfeitedGameState: PlayerInfoToken) => {
             const gameToken = forfeitedGameState.gameToken;
-            const gameState = forfeitedGameState.gameState;
-            if ('letterBag' in gameState) {
-                this.emitTransitionGameState(gameState, gameToken);
-            }
+            const playerInfo = forfeitedGameState.playerInfo;
+            this.emitTransitionGameState(playerInfo, gameToken);
         });
     }
 
@@ -65,16 +68,20 @@ export class GameSocketsHandler {
         });
     }
 
-    private emitTimerControl(timerControl: TimerControls, gameToken: string) {
-        this.sio.to(gameToken).emit('timerControl', timerControl);
+    private emitTimerStartingTime(timerStartingTime: number, gameToken: string) {
+        this.sio.to(gameToken).emit('timerStartingTime', timerStartingTime);
+    }
+
+    private emitTimeUpdate(timeLeft: number, gameToken: string) {
+        this.sio.to(gameToken).emit('timeUpdate', timeLeft);
     }
 
     private emitGameState(gameState: GameState, gameToken: string) {
         this.sio.to(gameToken).emit('gameState', gameState);
     }
 
-    private emitTransitionGameState(gameState: ForfeitedGameState, gameToken: string) {
-        this.sio.to(gameToken).emit('transitionGameState', gameState);
+    private emitTransitionGameState(playerInfo: ForfeitPlayerInfo, gameToken: string) {
+        this.sio.to(gameToken).emit('transitionGameState', playerInfo);
     }
 
     private addPlayerToGame(socketId: string, userAuth: UserAuth) {

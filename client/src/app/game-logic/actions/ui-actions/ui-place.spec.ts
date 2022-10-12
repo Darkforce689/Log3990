@@ -14,16 +14,15 @@ import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/game-logic/player/user';
 import { getRandomInt } from '@app/game-logic/utils';
 import { UIPlace } from './ui-place';
 
 class MockGameInfoService {
     players: Player[];
     activePlayerIndex: number = 0;
-    user: Player;
+    player: Player;
     get activePlayer() {
-        return this.user;
+        return this.player;
     }
 }
 
@@ -37,7 +36,7 @@ describe('UIPlace', () => {
             providers: [{ provide: GameInfoService, useClass: MockGameInfoService }],
         });
         boardService = TestBed.inject(BoardService);
-        player = new User('p1');
+        player = new Player('p1');
         player.letterRack = [
             { char: 'A', value: 0 },
             { char: 'B', value: 0 },
@@ -48,8 +47,8 @@ describe('UIPlace', () => {
             { char: 'G', value: 0 },
         ];
         info = TestBed.inject(GameInfoService);
-        info.players = [player, new User('opponent')];
-        info.user = player;
+        info.players = [player, new Player('opponent')];
+        info.player = player;
         action = new UIPlace(info, boardService);
     });
 

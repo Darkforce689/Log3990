@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { MAX_MESSAGE_LENGTH } from '@app/constants';
 import { MessagesSocketHandler, SYSTEM_MESSAGES } from '@app/messages-service/message-socket-handler/messages-socket-handler.service';
 import { Message } from '@app/messages-service/message.interface';
 import { GlobalSystemMessage, IndividualSystemMessage, SystemMessage } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { createSinonStubInstance } from '@app/test.util';
+import { UserService } from '@app/user/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
@@ -23,6 +26,7 @@ describe('MessagesService', () => {
     let httpServer: Server;
     const mockGlobalSystemMessages$ = new Subject<GlobalSystemMessage>();
     const mockIndividualSystemMessages$ = new Subject<IndividualSystemMessage>();
+
     before((done) => {
         httpServer = createServer();
         httpServer.listen(() => {
@@ -30,8 +34,11 @@ describe('MessagesService', () => {
             const systemMessagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
             sinon.stub(systemMessagesService, 'globalSystemMessages$').get(() => mockGlobalSystemMessages$);
             sinon.stub(systemMessagesService, 'individualSystemMessages$').get(() => mockIndividualSystemMessages$);
-            handler = new MessagesSocketHandler(httpServer, systemMessagesService);
-            handler.handleSockets();
+            const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
+            const authService = createSinonStubInstance(AuthService);
+            const userService = createSinonStubInstance(UserService);
+            handler = new MessagesSocketHandler(httpServer, systemMessagesService, sessionMiddleware, authService, userService);
+            handler.handleSockets(false, false);
             handler.sio.on('connection', (socket) => {
                 serverSocket = socket;
             });
@@ -86,12 +93,14 @@ describe('MessagesService', () => {
         clientSocket2.emit('joinRoom', roomID);
 
         const messageContent = 'Hi!';
-        const expectedMessage: Message = {
+        const expectedMessage = {
             from: userName2,
+            date: new Date().toISOString(),
             content: messageContent,
         };
         clientSocket.on('roomMessages', (message: Message) => {
-            expect(message).to.deep.equal(expectedMessage);
+            expect(message.content).equal(expectedMessage.content);
+            expect(message.from).equal(expectedMessage.from);
             done();
         });
         clientSocket2.emit('newMessage', messageContent);

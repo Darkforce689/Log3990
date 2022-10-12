@@ -4,6 +4,4 @@ export interface GameSettings {
     botDifficulty: string;
     privateGame: boolean;
     randomBonus: boolean;
-    dictTitle: string;
-    dictDesc?: string;
 }

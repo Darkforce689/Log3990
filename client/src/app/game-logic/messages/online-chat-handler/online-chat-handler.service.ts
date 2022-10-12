@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { ChatMessage } from '@app/game-logic/messages/message.interface';
 import { isSocketConnected } from '@app/game-logic/utils';
+import { AccountService } from '@app/services/account.service';
+import { AuthService } from '@app/services/auth.service';
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
@@ -11,21 +12,34 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class OnlineChatHandlerService {
+    // TODO refactor class for multi-room
+
     socket: Socket;
     private newRoomMessageSubject = new Subject<ChatMessage>();
     private errorSubject = new Subject<string>();
     private sysMessageSubject = new Subject<string>();
+    // private userName: string | undefined;
 
-    constructor(private gameInfo: GameInfoService) {}
+    constructor(private accountService: AccountService, private authService: AuthService) {
+        this.authService.isAuthenticated$.subscribe((isAuth) => {
+            if (!isAuth) {
+                this.leaveChatRoom();
+            }
+        });
+    }
 
     joinChatRoomWithUser(roomID: string) {
-        const userName = this.gameInfo.user.name;
-        this.joinChatRoom(roomID, userName);
+        const account = this.accountService.account;
+        if (account === undefined) {
+            throw Error("Can't join chat room because client not connected");
+        }
+
+        this.joinChatRoom(roomID);
     }
 
     leaveChatRoom() {
         if (!this.socket) {
-            throw Error('No socket to disconnect from room');
+            return;
         }
         this.socket.close();
         this.socket = undefined as unknown as Socket;
@@ -38,12 +52,12 @@ export class OnlineChatHandlerService {
         this.socket.emit('newMessage', content);
     }
 
-    joinChatRoom(roomID: string, userName: string) {
+    joinChatRoom(roomID: string) {
         this.socket = this.connectToSocket();
-        this.bindRoomChannels(roomID, userName);
+        this.bindRoomChannels(roomID);
     }
-
-    private bindRoomChannels(roomID: string, userName: string) {
+    // TODO refactor
+    private bindRoomChannels(roomID: string) {
         this.socket.on('error', (errorContent: string) => {
             this.receiveChatServerError(errorContent);
         });
@@ -56,12 +70,12 @@ export class OnlineChatHandlerService {
             this.receiveSystemMessage(content);
         });
 
-        this.socket.emit('userName', userName);
         this.socket.emit('joinRoom', roomID);
     }
 
     private connectToSocket() {
-        return io(environment.serverSocketUrl, { path: '/messages' });
+        // transports used to prevent cors error
+        return io(environment.serverSocketUrl, { path: '/messages', withCredentials: true, transports: ['websocket'] });
     }
 
     private receiveChatServerError(content: string) {
@@ -80,12 +94,28 @@ export class OnlineChatHandlerService {
         return isSocketConnected(this.socket);
     }
 
+    get playerMessage$(): Observable<ChatMessage> {
+        return this.newRoomMessageSubject.pipe(
+            filter((chatMessage: ChatMessage) => {
+                const name = chatMessage.from;
+                const account = this.accountService.account;
+                if (!account) {
+                    throw Error('No account defined');
+                }
+                return name === account.name;
+            }),
+        );
+    }
+
     get opponentMessage$(): Observable<ChatMessage> {
         return this.newRoomMessageSubject.pipe(
             filter((chatMessage: ChatMessage) => {
                 const name = chatMessage.from;
-                const userName = this.gameInfo.user.name;
-                return name !== userName;
+                const account = this.accountService.account;
+                if (!account) {
+                    throw Error('No account defined');
+                }
+                return name !== account.name;
             }),
         );
     }

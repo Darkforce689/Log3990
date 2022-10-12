@@ -1,5 +1,5 @@
 import { NEW_GAME_TIMEOUT } from '@app/constants';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -8,17 +8,15 @@ import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCompilerService } from '@app/game/game-logic/actions/action-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
-import { SpecialServerGame } from '@app/game/game-logic/game/special-server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
+import { GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { BindedSocket } from '@app/game/game-manager/binded-client.interface';
 import { GameMode } from '@app/game/game-mode.enum';
@@ -45,9 +43,9 @@ export class GameManagerService {
 
     private gameCreator: GameCreator;
     private newGameStateSubject = new Subject<GameStateToken>();
-    private forfeitedGameStateSubject = new Subject<GameStateToken>();
+    private forfeitedGameStateSubject = new Subject<PlayerInfoToken>();
 
-    get forfeitedGameState$(): Observable<GameStateToken> {
+    get forfeitedGameState$(): Observable<PlayerInfoToken> {
         return this.forfeitedGameStateSubject;
     }
 
@@ -55,8 +53,12 @@ export class GameManagerService {
         return this.newGameStateSubject;
     }
 
-    get timerControl$(): Observable<TimerGameControl> {
-        return this.timerController.timerControl$;
+    get timerStartingTime$(): Observable<TimerStartingTime> {
+        return this.timerController.timerStartingTime$;
+    }
+
+    get timeUpdate$(): Observable<TimerTimeLeft> {
+        return this.timerController.timerTimeUpdate$;
     }
 
     constructor(
@@ -66,12 +68,10 @@ export class GameManagerService {
         private gameCompiler: GameCompiler,
         private timerController: TimerController,
         private gameActionNotifier: GameActionNotifierService,
-        private objectiveCreator: ObjectiveCreator,
         private leaderboardService: LeaderboardService,
         private dictionaryService: DictionaryService,
-        private botInfoService: BotInfoService,
         private botManager: BotManager,
-        protected botMessage: BotMessagesService,
+        protected actionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
     ) {
         this.gameCreator = new GameCreator(
@@ -81,10 +81,8 @@ export class GameManagerService {
             this.newGameStateSubject,
             this.endGame$,
             this.timerController,
-            this.objectiveCreator,
-            this.botInfoService,
             this.botManager,
-            this.botMessage,
+            this.actionNotifier,
             this.actionCreator,
         );
 
@@ -155,20 +153,38 @@ export class GameManagerService {
         }
     }
 
-    removePlayerFromGame(playerId: string) {
+    async removePlayerFromGame(playerId: string) {
         const playerRef = this.activePlayers.get(playerId);
         if (!playerRef) {
             return;
         }
         const gameToken = playerRef.gameToken;
         const game = this.activeGames.get(gameToken);
-        this.activePlayers.delete(playerId);
         if (!game) {
             return;
         }
-        this.sendForfeitedGameState(game);
-        this.endForfeitedGame(game, playerRef.player.name);
-        this.deleteGame(gameToken);
+        const playerNames: string[] = [];
+        this.activePlayers.forEach((playerReference) => playerNames.push(playerReference.player.name));
+        this.activePlayers.delete(playerId);
+        if (this.activePlayers.size <= 0) {
+            this.deleteGame(gameToken);
+            return;
+        }
+        const newPlayer = await this.createNewBotPlayer(playerRef, playerNames);
+        const index = game.players.findIndex((player) => player.name === playerRef.player.name);
+        game.players[index] = newPlayer;
+        this.sendForfeitPlayerInfo(gameToken, newPlayer, playerRef.player.name);
+        if (game.activePlayerIndex === index) {
+            game.forceEndturn();
+            game.forcePlay();
+        }
+    }
+    // TODO GL3A22107-32 : Update bot difficulty to what is specified when game created by player.
+    private async createNewBotPlayer(playerRef: PlayerRef, playerNames: string[]) {
+        const newPlayer = await this.gameCreator.createBotPlayer(BotDifficulty.Easy, playerNames);
+        newPlayer.letterRack = playerRef.player.letterRack;
+        newPlayer.points = playerRef.player.points;
+        return newPlayer;
     }
 
     private getExpectedNumberOfClients(game: ServerGame) {
@@ -197,25 +213,18 @@ export class GameManagerService {
         if (!clientsInGame) {
             throw Error(`GameToken ${gameToken} is not in active game`);
         }
-        this.gameActionNotifier.notify(action, clientsInGame, gameToken);
+        const clientNames = clientsInGame.map((linkedClient) => linkedClient.name);
+        this.gameActionNotifier.notify(action, clientNames, gameToken);
     }
 
     private endGame(game: ServerGame) {
         game.stop();
     }
 
-    private endForfeitedGame(game: ServerGame, playerName: string) {
-        game.forfeit(playerName);
-    }
-
-    private sendForfeitedGameState(game: ServerGame) {
-        if (game.activePlayerIndex === undefined) {
-            return;
-        }
-        const gameToken = game.gameToken;
-        const gameState = this.gameCompiler.compileForfeited(game);
-        const lastGameToken: GameStateToken = { gameState, gameToken };
-        this.forfeitedGameStateSubject.next(lastGameToken);
+    private sendForfeitPlayerInfo(gameToken: string, newPlayer: Player, previousName: string) {
+        const playerInfo = this.gameCompiler.compilePlayerInfo(newPlayer, previousName);
+        const playerInfoToken: PlayerInfoToken = { playerInfo, gameToken };
+        this.forfeitedGameStateSubject.next(playerInfoToken);
     }
 
     private deleteInactiveGame(gameToken: string) {
@@ -235,8 +244,8 @@ export class GameManagerService {
     }
 
     private updateLeaderboard(players: Player[], gameToken: string) {
-        const isSpecial = this.activeGames.get(gameToken) instanceof SpecialServerGame;
-        const gameMode = isSpecial ? GameMode.Special : GameMode.Classic;
+        const isMagic = this.activeGames.get(gameToken) instanceof MagicServerGame;
+        const gameMode = isMagic ? GameMode.Magic : GameMode.Classic;
         players
             .filter((player) => !(player instanceof BotPlayer))
             .forEach((player) => {

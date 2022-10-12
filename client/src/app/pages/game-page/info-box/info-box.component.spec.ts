@@ -4,13 +4,13 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { User } from '@app/game-logic/player/user';
+import { Player } from '@app/game-logic/player/player';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { InfoBoxComponent } from './info-box.component';
 
 class MockGameInfoService {
-    user: User;
+    player: Player;
     timeLeft$: number;
     players = [
         { name: 'P1', points: 120, letterRack: [{ char: 'A', value: 1 }] },

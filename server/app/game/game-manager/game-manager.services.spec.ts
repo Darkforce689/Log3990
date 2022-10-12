@@ -5,7 +5,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { NEW_GAME_TIMEOUT } from '@app/constants';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfoService } from '@app/database/bot-info/bot-info.service';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -13,18 +12,14 @@ import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCompilerService } from '@app/game/game-logic/actions/action-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { ForfeitedGameState } from '@app/game/game-logic/interface/game-state.interface';
-import { ObjectiveCreator } from '@app/game/game-logic/objectives/objective-creator/objective-creator.service';
-import { BotMessagesService } from '@app/game/game-logic/player/bot-message/bot-messages.service';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
-import { TimerGameControl } from '@app/game/game-logic/timer/timer-game-control.interface';
+import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService, PlayerRef } from '@app/game/game-manager/game-manager.services';
 import { GameMode } from '@app/game/game-mode.enum';
@@ -49,14 +44,12 @@ describe('GameManagerService', () => {
     let stubTimerController: TimerController;
     let stubGameCompiler: StubbedClass<GameCompiler>;
     let stubGameActionNotifierService: GameActionNotifierService;
-    let stubObjectiveCreator: ObjectiveCreator;
     let stubLeaderboardService: StubbedClass<LeaderboardService>;
     let stubDictionaryService: DictionaryService;
-    let stubBotInfoService: BotInfoService;
     let stubBotManager: BotManager;
-    let stubBotMessageService: BotMessagesService;
     let stubActionCreatorService: ActionCreatorService;
     let clock: sinon.SinonFakeTimers;
+    let stubActionNotifier: GameActionNotifierService;
     before(() => {
         stubPointCalculator = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
         stubMessageService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
@@ -64,14 +57,12 @@ describe('GameManagerService', () => {
         stubGameCompiler = createSinonStubInstance<GameCompiler>(GameCompiler);
         stubTimerController = createSinonStubInstance<TimerController>(TimerController);
         stubGameActionNotifierService = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
-        stubObjectiveCreator = createSinonStubInstance<ObjectiveCreator>(ObjectiveCreator);
         stubLeaderboardService = createSinonStubInstance<LeaderboardService>(LeaderboardService);
         stubDictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
-        stubBotInfoService = createSinonStubInstance<BotInfoService>(BotInfoService);
         // TODO GL3A22107-35 : BotManager has no methods. Might not be worth of a class
         stubBotManager = {} as BotManager;
-        stubBotMessageService = createSinonStubInstance<BotMessagesService>(BotMessagesService);
         stubActionCreatorService = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
+        stubActionNotifier = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
     });
 
     afterEach(() => {
@@ -87,12 +78,10 @@ describe('GameManagerService', () => {
             stubGameCompiler,
             stubTimerController,
             stubGameActionNotifierService,
-            stubObjectiveCreator,
             stubLeaderboardService,
             stubDictionaryService,
-            stubBotInfoService,
             stubBotManager,
-            stubBotMessageService,
+            stubActionNotifier,
             stubActionCreatorService,
         );
     });
@@ -110,7 +99,6 @@ describe('GameManagerService', () => {
             playerNames,
             privateGame,
             randomBonus,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -136,7 +124,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -174,7 +161,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -201,7 +187,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -228,7 +213,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -257,7 +241,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -285,7 +268,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -317,7 +299,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -344,7 +325,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -377,7 +357,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -404,7 +383,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -427,7 +405,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode,
             botDifficulty,
             numberOfPlayers,
@@ -444,7 +421,7 @@ describe('GameManagerService', () => {
         expect(() => {
             service.removePlayerFromGame(userId);
         }).to.not.throw(Error);
-        expect(service.activePlayers.size).to.be.equal(0);
+        expect(service.activePlayers.size).to.be.equal(1);
     });
 
     it('should delete game when unjoined for a certain time', () => {
@@ -454,7 +431,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -472,7 +448,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -493,7 +468,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -523,7 +497,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -539,9 +512,14 @@ describe('GameManagerService', () => {
         expect(service.newGameState$).to.be.instanceof(Observable);
     });
 
-    it('should get gameState$ properly', () => {
-        sinon.stub(stubTimerController, 'timerControl$').get(() => new Observable<TimerGameControl>());
-        expect(service.timerControl$).to.be.instanceOf(Observable);
+    it('should get timerStartingTime$ properly', () => {
+        sinon.stub(stubTimerController, 'timerStartingTime$').get(() => new Observable<TimerStartingTime>());
+        expect(service.timerStartingTime$).to.be.instanceOf(Observable);
+    });
+
+    it('should get timeUpdate$ properly', () => {
+        sinon.stub(stubTimerController, 'timerTimeUpdate$').get(() => new Observable<TimerTimeLeft>());
+        expect(service.timeUpdate$).to.be.instanceOf(Observable);
     });
 
     it('should do nothing when trying to notify an action when no more userlinked', async () => {
@@ -553,7 +531,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -589,7 +566,6 @@ describe('GameManagerService', () => {
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
@@ -601,9 +577,9 @@ describe('GameManagerService', () => {
 
     it('should update leaderboard with only real players scores', (done) => {
         const player = new Player('realPlayer');
-        const bot1 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
-        const bot2 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
-        const bot3 = new BotPlayer(stubBotInfoService, stubBotManager, BotDifficulty.Easy, stubBotMessageService, stubActionCreatorService);
+        const bot1 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot2 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
+        const bot3 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
         const gameToken = 'gameToken';
 
         const game = { players: [player, bot1, bot2, bot3] } as ServerGame;
@@ -626,32 +602,17 @@ describe('GameManagerService', () => {
         const playerNames = [player.name, 'test3'];
         const gameToken = '1';
         const gameSettings: OnlineGameSettings = {
-            gameMode: GameMode.Special,
+            gameMode: GameMode.Magic,
             id: gameToken,
             timePerTurn: 60000,
             privateGame: false,
             randomBonus: false,
             playerNames,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty,
             numberOfPlayers,
         };
         await service.createGame(gameToken, gameSettings);
         service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player] });
         expect(service.activeGames.size).to.be.equal(0);
-    });
-
-    it('should create appropriate transition objectives', (done) => {
-        const mockGame = {
-            activePlayerIndex: 0,
-        } as unknown as ServerGame;
-        const mockGameState = {} as unknown as ForfeitedGameState;
-        service.forfeitedGameState$.subscribe((forfeitedGameState) => {
-            expect(forfeitedGameState).to.equal(mockGameState);
-            done();
-        });
-        stubGameCompiler.compileForfeited.returns(mockGameState);
-        service['sendForfeitedGameState'](mockGame);
-        done();
     });
 });
