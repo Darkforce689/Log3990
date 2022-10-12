@@ -50,7 +50,6 @@ class BoardViewModel : ViewModel() {
         // Non-null previous coordinates -> un-hovered previous tile
         board.setTileHover(hoveredTileCoordinates!!, false)
         hoveredTileCoordinates = null
-        return
     }
 
     // TODO : REMOVE
