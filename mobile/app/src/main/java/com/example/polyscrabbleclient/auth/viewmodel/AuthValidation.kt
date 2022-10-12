@@ -11,29 +11,11 @@ object AuthValidation {
         return Patterns.EMAIL_ADDRESS.matcher(target).matches()
     }
 
-    fun isValidPassword(password: String) : Boolean {
-        return password.isNotBlank() && password.length <= MAX_PASSWORD_LENGTH && password.length > MIN_PASSWORD_LENGTH
+    fun isValidPassword(password: String): Boolean {
+        return password.length in MIN_PASSWORD_LENGTH..MAX_PASSWORD_LENGTH
     }
 
-    fun isValidUsername(name: String) : Boolean {
-        return name.isNotBlank() && name.length <= MAX_NAME_LENGTH && name.length > MIN_NAME_LENGTH
+    fun isUsernameValid(name: String): Boolean {
+        return name.length in MIN_NAME_LENGTH..MAX_NAME_LENGTH
     }
-
-    fun hasAtLeastOneEmptyField(email:String, name : String?, password: String): Boolean {
-        var hasName = false
-        if (name != null) {
-            hasName = name.isEmpty()
-        }
-
-        return (email.isEmpty() || hasName || password.isEmpty())
-    }
-
-    private fun allEmptyField(email:String, name : String?, password: String): Boolean {
-        var hasName = true
-        if (name != null) {
-            hasName = name.isEmpty()
-        }
-        return email.isEmpty() && hasName  && password.isEmpty()
-    }
-
 }
