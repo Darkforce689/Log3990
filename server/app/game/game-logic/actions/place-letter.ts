@@ -5,6 +5,7 @@ import { LetterCreator } from '@app/game/game-logic/board/letter-creator';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { EMPTY_CHAR, JOKER_CHAR, TIME_FOR_REVERT } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
+import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -39,6 +40,9 @@ export class PlaceLetter extends Action {
                 this.end();
             });
             return;
+        }
+        if (game instanceof MagicServerGame) {
+            game.addWordCount(validWordList.length);
         }
         this.pointCalculator.placeLetterCalculation(this, formedWords, game.board.grid);
         this.drawLettersForPlayer(game);
