@@ -27,8 +27,6 @@ fun DroppableView(
         }
     }
     ) {
-        // TODO : REMOVE
-        println("in?:$isInBounds pos:${dragState.startingPosition} off:${dragState.offsetFromStartingPosition}")
         val canBeDropped =
             dragState.draggableContent !== null &&
             !dragState.isDragging &&
