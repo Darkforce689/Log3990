@@ -155,7 +155,7 @@ describe('PendingGamesComponent', () => {
         const tables = dom.querySelectorAll('tr');
         expect(tables.length).toBe(2);
 
-        const numberHeaders = 4;
+        const numberHeaders = 5;
         const tableGames = tables[0];
         expect(tableGames.cells.length).toBe(numberHeaders);
 

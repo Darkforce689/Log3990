@@ -34,6 +34,7 @@ export class NewGameSocketHandler {
 
             socket.on(createGame, (gameSettings: OnlineGameSettingsUI) => {
                 try {
+                    gameSettings.gameStatus = 'En attente';
                     gameId = this.createGame(gameSettings, socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.emitPendingGamesToAll();
@@ -89,7 +90,12 @@ export class NewGameSocketHandler {
         const gameSettings = this.getPendingGame(id);
         const gameToken = await this.newGameManagerService.launchPendingGame(id, gameSettings);
         this.sendGameStartedToPlayers(id, gameToken, gameSettings);
-        this.deletePendingGame(id);
+        if (gameSettings.privateGame) {
+            this.deletePendingGame(id);
+            return;
+        }
+        gameSettings.gameStatus = 'En cours';
+        // this.emitPendingGamesToAll();
     }
 
     private joinGame(
@@ -118,7 +124,17 @@ export class NewGameSocketHandler {
     }
 
     private onDisconnect(gameId: string) {
-        this.newGameManagerService.deletePendingGame(gameId);
+        const games = this.newGameManagerService.getPendingGames();
+        let isActive = false;
+        for (const game of games) {
+            if (game.id === gameId && game.gameStatus !== 'En attente') {
+                isActive = true;
+                break;
+            }
+        }
+        if (!isActive) {
+            this.newGameManagerService.deletePendingGame(gameId);
+        }
     }
 
     private sendError(error: Error, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {

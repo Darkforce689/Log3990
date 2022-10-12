@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-vars */
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
@@ -59,7 +58,6 @@ describe('New Online Game Service', () => {
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         };
@@ -78,7 +76,6 @@ describe('New Online Game Service', () => {
             randomBonus: true,
             timePerTurn: 60000,
             botDifficulty: BotDifficulty.Easy,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             numberOfPlayers: 2,
         } as OnlineGameSettingsUI;
@@ -135,7 +132,6 @@ describe('New Online Game Service', () => {
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         } as OnlineGameSettingsUI;
@@ -145,7 +141,6 @@ describe('New Online Game Service', () => {
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         } as OnlineGameSettings;
@@ -174,7 +169,6 @@ describe('New Online Game Service', () => {
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         };
@@ -184,7 +178,6 @@ describe('New Online Game Service', () => {
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         };

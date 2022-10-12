@@ -3,5 +3,6 @@ export interface GameSettings {
     playerName: string;
     botDifficulty: string;
     privateGame: boolean;
+    gameStatus: string;
     randomBonus: boolean;
 }

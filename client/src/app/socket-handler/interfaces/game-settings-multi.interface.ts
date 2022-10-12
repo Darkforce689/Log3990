@@ -6,6 +6,7 @@ export interface OnlineGameSettingsUI {
     timePerTurn: number;
     playerNames: string[];
     privateGame: boolean;
+    gameStatus: string;
     randomBonus: boolean;
     botDifficulty: BotDifficulty;
     numberOfPlayers: number;
