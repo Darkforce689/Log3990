@@ -1,9 +1,19 @@
 package com.example.polyscrabbleclient.game.model
 
 import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.game.sources.GameState
 import com.example.polyscrabbleclient.game.sources.Player
+import com.example.polyscrabbleclient.game.sources.RemainingTime
+import com.example.polyscrabbleclient.game.sources.TransitionGameState
 
 class GameModel {
+    val startTime = mutableStateOf<GameState?>(null)
+    val remainingTime = mutableStateOf<RemainingTime?>(null)
+    val gameState = mutableStateOf<GameState?>(null)
+    val transitionGameState = mutableStateOf<TransitionGameState?>(null)
+
+    val board: BoardModel = BoardModel()
+
     val players = mutableListOf<Player>()
 
     fun addPlayer(p: Player) {
@@ -14,17 +24,10 @@ class GameModel {
         return players[position]
     }
 
-    init {
-        addPlayer(Player("playername1"))
-        addPlayer(Player("playername2"))
-        addPlayer(Player("playername3"))
-        addPlayer(Player("playername4"))
-    }
-
     fun getActivePlayer(): Player? {
         return try {
             players[activePlayerIndex.value]
-        } catch (e: Error) {
+        } catch (e: Exception) {
             null
         }
     }
@@ -32,6 +35,9 @@ class GameModel {
     // TODO : REMOVE
     var activePlayerIndex = mutableStateOf(0)
     fun setNextActivePlayer() {
-        activePlayerIndex.value = (activePlayerIndex.value + 1) % players.size
+        try {
+            activePlayerIndex.value = (activePlayerIndex.value + 1) % players.size
+        } catch (e: Exception) {
+        }
     }
 }

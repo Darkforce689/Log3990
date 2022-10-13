@@ -6,6 +6,7 @@ import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.model.BoardModel
 import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.TileModel
+import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.game.view.ThickDividerWidth
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
@@ -16,7 +17,8 @@ data class TileCoordinates (
 )
 
 class BoardViewModel : ViewModel() {
-    var board: BoardModel = BoardModel()
+    var board = GameRepository.game.board
+
     var hoveredTileCoordinates:TileCoordinates? = null
 
     fun hoverBoard(gridDivisionSize: Float, hoverOffset: Offset) {
