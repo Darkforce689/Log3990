@@ -40,11 +40,11 @@ export class NewOnlineGameSocketHandler {
         });
     }
 
-    joinPendingGame(id: string, playerName: string) {
+    joinPendingGame(id: string) {
         if (!this.socket.connected) {
             throw Error("Can't join game, not connected to server");
         }
-        this.socket.emit('joinGame', id, playerName);
+        this.socket.emit('joinGame', id);
         this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
         this.listenForGameStart();
@@ -102,6 +102,6 @@ export class NewOnlineGameSocketHandler {
     }
 
     private connectToSocket() {
-        return io(environment.serverSocketUrl, { path: '/newGame' });
+        return io(environment.serverSocketUrl, { path: '/newGame', withCredentials: true, transports: ['websocket'] });
     }
 }

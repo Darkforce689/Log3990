@@ -1,9 +1,13 @@
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
+import { Session } from '@app/auth/services/session.interface';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { isGameSettings } from '@app/game/game-logic/utils';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { ServerLogger } from '@app/logger/logger';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
+import { UserService } from '@app/user/user.service';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -19,7 +23,14 @@ const pendingGameId = 'pendingGameId';
 export class NewGameSocketHandler {
     readonly ioServer: Server;
 
-    constructor(server: http.Server, private newGameManagerService: NewGameManagerService, private dictionaryService: DictionaryService) {
+    constructor(
+        server: http.Server,
+        private newGameManagerService: NewGameManagerService,
+        private dictionaryService: DictionaryService,
+        private userService: UserService,
+        private authService: AuthService,
+        private sessionMiddleware: SessionMiddlewareService,
+    ) {
         this.ioServer = new Server(server, {
             path: '/newGame',
             cors: { origin: '*', methods: ['GET', 'POST'] },
@@ -27,13 +38,22 @@ export class NewGameSocketHandler {
     }
 
     newGameHandler(): void {
-        this.ioServer.on('connection', (socket) => {
-            let gameId: string;
+        const sessionMiddleware = this.sessionMiddleware.getSocketSessionMiddleware(true);
+        this.ioServer.use(sessionMiddleware);
+        this.ioServer.use(this.authService.socketAuthGuard);
 
+        this.ioServer.on('connection', async (socket) => {
+            let gameId: string;
             socket.emit(pendingGames, this.newGameManagerService.getPendingGames());
 
-            socket.on(createGame, (gameSettings: OnlineGameSettingsUI) => {
+            socket.on(createGame, async (gameSettings: OnlineGameSettingsUI) => {
                 try {
+                    const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+                    const user = await this.userService.getUser({ _id });
+                    if (user === undefined) {
+                        throw Error(`No user found with userId ${_id}`);
+                    }
+                    gameSettings.playerNames.push(user.name);
                     gameId = this.createGame(gameSettings, socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.emitPendingGamesToAll();
@@ -43,9 +63,9 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(launchGame, async (id: string) => {
+            socket.on(launchGame, (id: string) => {
                 try {
-                    await this.launchGame(id);
+                    this.launchGame(id);
                     this.emitPendingGamesToAll();
                 } catch (error) {
                     ServerLogger.logError(error);
@@ -53,9 +73,14 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(joinGame, (id: string, name: string) => {
+            socket.on(joinGame, async (id: string) => {
                 try {
-                    this.joinGame(id, name, this.getPendingGame(id), socket);
+                    const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+                    const user = await this.userService.getUser({ _id });
+                    if (user === undefined) {
+                        throw Error(`No user found with userId ${_id}`);
+                    }
+                    this.joinGame(id, user.name, this.getPendingGame(id), socket);
                     this.emitPendingGamesToAll();
                 } catch (error) {
                     ServerLogger.logError(error);
@@ -106,6 +131,7 @@ export class NewGameSocketHandler {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
         }
         socket.join(id);
+        console.log(id);
         this.sendGameSettingsToPlayers(id, gameToken, gameSettings);
     }
 

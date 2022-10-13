@@ -60,10 +60,23 @@ export class Server {
 
         this.server = http.createServer(this.application.app);
 
-        this.onlineGameManager = new NewGameSocketHandler(this.server, this.onlineGameService, this.dictionaryService);
+        this.onlineGameManager = new NewGameSocketHandler(
+            this.server,
+            this.onlineGameService,
+            this.dictionaryService,
+            this.userService,
+            this.authService,
+            this.sessionMiddlewareService,
+        );
         this.onlineGameManager.newGameHandler();
 
-        this.gameSocketsHandler = new GameSocketsHandler(this.server, this.gameManager);
+        this.gameSocketsHandler = new GameSocketsHandler(
+            this.server,
+            this.gameManager,
+            this.userService,
+            this.authService,
+            this.sessionMiddlewareService,
+        );
         this.gameSocketsHandler.handleSockets();
 
         this.messageHandler = new MessagesSocketHandler(
