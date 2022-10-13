@@ -12,6 +12,12 @@ data class LightPlayer (
     val letterRack: ArrayList<Letter>,
 )
 
+abstract class OnEventContent
+abstract class EmitEventContent
+
+// Warning : Events Data Classes have to match the backend corresponding interfaces
+data class RemainingTime(val a: Int): OnEventContent()
+data class StartTime(val a: Int): OnEventContent()
 data class GameState (
 //    val players: ArrayList<LightPlayer>,
     val activePlayerIndex: Int,
@@ -21,8 +27,8 @@ data class GameState (
 //    val isEndOfGame: Boolean,
 //    val winnerIndex: ArrayList<Int>,
 ): OnEventContent()
+data class TransitionGameState(val a: Int): OnEventContent()
 
-data class JoinGame (
-    val game: Int,
-): EmitEventContent()
-
+data class JoinGame(val a: Int): EmitEventContent()
+data class NextAction(val a: Int): EmitEventContent()
+data class Disconnect(val a: Int): EmitEventContent()

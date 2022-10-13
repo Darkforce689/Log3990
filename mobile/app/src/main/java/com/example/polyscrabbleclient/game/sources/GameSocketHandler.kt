@@ -10,21 +10,6 @@ import org.json.JSONObject
 
 const val GamePath = "/gameTest"
 
-abstract class OnEventContent
-abstract class EmitEventContent
-
-enum class OnGameEvent (val event: String) {
-    StartTime("timerStartingTime"),
-    RemainingTime("timeUpdate"),
-    GameState("gameState"),
-}
-
-enum class EmitGameEvent (val event: String) {
-    JoinGame("joinGame"),
-    NextAction("nextAction"),
-    Disconnect("disconnect"),
-}
-
 private const val URL = BuildConfig.COMMUNICATION_URL
 
 object GameSocketHandler {
@@ -61,17 +46,19 @@ object GameSocketHandler {
     }
 
     @Synchronized
-    fun <T> on(event: OnGameEvent, contentType: Class<T>, callback: (formattedContent: T?) -> Unit) {
-        socket.on(event.event) { args ->
+    fun <T> on(event: OnGameEvent, callback: (formattedContent: T?) -> Unit) {
+        socket.on(event.eventName) { args ->
+            val contentType = GameEventTypes[event] as Class<T>
             val formattedContent = formatResponse(args, contentType)
             callback(formattedContent)
         }
     }
 
     @Synchronized
-    fun <T> emit(event: EmitGameEvent, contentType: Class<T>, content: T) {
+    fun <T> emit(event: EmitGameEvent, content: T) {
+        val contentType = GameEventTypes[event] as Class<T>
         val formattedContent = formatRequest(content, contentType)
-        socket.emit(event.event, formattedContent)
+        socket.emit(event.eventName, formattedContent)
     }
 
     @Synchronized
