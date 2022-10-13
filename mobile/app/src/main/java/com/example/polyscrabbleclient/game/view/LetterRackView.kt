@@ -22,7 +22,6 @@ fun LetterRackView(
 
     LazyRow(
         modifier = Modifier
-            .fillMaxSize()
             .background(MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom
