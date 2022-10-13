@@ -1,6 +1,10 @@
 package com.example.polyscrabbleclient.game.sources
 
-data class Player (
+import androidx.compose.runtime.mutableStateListOf
+
+
+class Player (
+) {
     // TODO : List should not be initialized to default values
-    val letters: List<Char> = listOf('A','A','A','D','A','D','A')
-)
+    var letters = mutableStateListOf('A', 'B', 'X', 'E', 'F', 'G', 'Z')
+}
