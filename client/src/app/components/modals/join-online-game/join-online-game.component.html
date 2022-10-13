@@ -2,16 +2,10 @@
 <br />
 <mat-dialog-content>
     <mat-form-field>
-        <input matInput autocomplete="off" placeholder="Nom de joueur" [formControl]="myName" />
-        <mat-hint>Nom différent de l'adversaire. Min 3, Max 50 charactères</mat-hint>
-    </mat-form-field>
-
-    <mat-form-field>
         <mat-label>Adversaires</mat-label>
         <input matInput [disabled]="true" [value]="data.playerNames" />
     </mat-form-field>
 
-    <br />
     <br />
     <mat-form-field>
         <mat-label #bonus>Bonus aléatoire </mat-label>
@@ -28,5 +22,5 @@
 <br />
 <mat-dialog-actions>
     <button mat-button [mat-dialog-close] (click)="cancel()">Annuler</button>
-    <button mat-button color="primary" [disabled]="!valid" (click)="sendParameter()">Commencer la partie</button>
+    <button mat-button color="primary" (click)="sendParameter()">Rejoindre la partie</button>
 </mat-dialog-actions>

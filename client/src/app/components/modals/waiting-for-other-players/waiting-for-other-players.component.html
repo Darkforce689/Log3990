@@ -6,6 +6,10 @@
         </div>
         <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
     </div>
+    <!-- <div>Joueurs: {{ players.playerNames | async }}</div> -->
+    <div *ngFor="let name of players">
+        <li>{{ name }}</li>
+    </div>
 </mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
