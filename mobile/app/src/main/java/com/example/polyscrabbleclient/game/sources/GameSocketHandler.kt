@@ -29,7 +29,7 @@ private const val URL = BuildConfig.COMMUNICATION_URL
 
 object GameSocketHandler {
 
-    private lateinit var _socket: Socket
+    private lateinit var socket: Socket
 
     @Synchronized
     fun setSocket() {
@@ -44,9 +44,9 @@ object GameSocketHandler {
         try {
             opts.transports = arrayOf(WebSocket.NAME)
             opts.auth
-            _socket = IO.socket(URL, opts)
-            _socket.on(Socket.EVENT_CONNECT) { println("GameSocketHandler Connected") }
-            _socket.on(Socket.EVENT_DISCONNECT) { println("GameSocketHandler Disconnected") }
+            socket = IO.socket(URL, opts)
+            socket.on(Socket.EVENT_CONNECT) { println("GameSocketHandler Connected") }
+            socket.on(Socket.EVENT_DISCONNECT) { println("GameSocketHandler Disconnected") }
         } catch (e: Throwable) {
             println("GameSocketHandler Error : $e")
         }
@@ -54,16 +54,16 @@ object GameSocketHandler {
 
     @Synchronized
     fun ensureConnection() {
-        if (_socket.connected()) {
+        if (socket.connected()) {
             return
         }
-        _socket.connect()
+        socket.connect()
     }
 
     @Synchronized
     fun <T> on(event: OnGameEvent, contentType: Class<T>, callback: (formattedContent: T?) -> Unit) {
-        _socket.on(event.event) { content ->
-            val formattedContent = formatResponse(content, contentType)
+        socket.on(event.event) { args ->
+            val formattedContent = formatResponse(args, contentType)
             callback(formattedContent)
         }
     }
@@ -71,12 +71,12 @@ object GameSocketHandler {
     @Synchronized
     fun <T> emit(event: EmitGameEvent, contentType: Class<T>, content: T) {
         val formattedContent = formatRequest(content, contentType)
-        _socket.emit(event.event, formattedContent)
+        socket.emit(event.event, formattedContent)
     }
 
     @Synchronized
     fun closeConnection() {
-        _socket.disconnect()
+        socket.disconnect()
     }
 
     private fun <T> formatResponse(args: Array<Any>, type: Class<T>): T? {
@@ -90,11 +90,9 @@ object GameSocketHandler {
         }
     }
 
-    private fun <T> formatRequest(content: T, type: Class<T>): String? {
+    private fun <T> formatRequest(content: T, type: Class<T>): JSONObject? {
         return try {
-            // TODO : FIX. GSON sends """{"a":"1"}"""
-            //  instead of """{a:"b"}"""
-            Gson().toJsonTree(content, type).toString()
+            JSONObject(Gson().toJson(content))
         } catch (e: Exception) {
             println("Error -> formatRequest -> $type -> content:$content")
             println(e)
