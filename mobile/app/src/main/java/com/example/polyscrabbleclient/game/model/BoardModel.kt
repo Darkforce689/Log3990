@@ -1,11 +1,9 @@
 package com.example.polyscrabbleclient.game.model
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 
-typealias Tile = TileModel?
-typealias TileContainer = MutableState<Tile>
-typealias TileContainerRow = Array<TileContainer>
+typealias TileContent = TileModel?
+typealias TileContainerRow = Array<GridTileModel>
 typealias TileGrid = Array<TileContainerRow>
 
 const val BoardDimension = 15
@@ -13,7 +11,7 @@ val BoardRange = 1..BoardDimension
 enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 
 class BoardModel(
-    var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { mutableStateOf(null) } }
+    var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { GridTileModel() } }
 ) {
     fun debugPrint() {
         for (row in tileGrid) {
@@ -24,21 +22,40 @@ class BoardModel(
         }
     }
 
-    operator fun get(column: Int, row: Int): Tile {
+    fun toggleTileHover(column: Int, row: Int) {
         requireBoardIndexes(column, row)
-        return tileGrid[column-1][row-1].value
+        val isHighlighted = tileGrid[row-1][column-1].isHighlighted;
+        isHighlighted.value = !isHighlighted.value;
     }
 
-    operator fun get(column: Int, row: RowChar): Tile {
+    fun toggleTileHover(coordinates: TileCoordinates) {
+        toggleTileHover(coordinates.column, coordinates.row)
+    }
+
+    fun setTileHover(column: Int, row: Int, isHighlighted: Boolean) {
+        requireBoardIndexes(column, row)
+        tileGrid[row-1][column-1].isHighlighted.value = isHighlighted
+    }
+
+    fun setTileHover(coordinates: TileCoordinates, isHighlighted: Boolean) {
+        setTileHover(coordinates.column, coordinates.row, isHighlighted)
+    }
+
+    operator fun get(column: Int, row: Int): TileContent {
+        requireBoardIndexes(column, row)
+        return tileGrid[row-1][column-1].content.value
+    }
+
+    operator fun get(column: Int, row: RowChar): TileContent {
         return get(column, row.ordinal + 1)
     }
 
-    operator fun set(column: Int, row: Int, tile: Tile) {
+    operator fun set(column: Int, row: Int, tile: TileContent) {
         requireBoardIndexes(column, row)
-        tileGrid[column-1][row-1].value = tile
+        tileGrid[row-1][column-1].content.value = tile
     }
 
-    operator fun set(column: Int, row: RowChar, tile: Tile) {
+    operator fun set(column: Int, row: RowChar, tile: TileContent) {
         set(column, row.ordinal + 1, tile)
     }
 

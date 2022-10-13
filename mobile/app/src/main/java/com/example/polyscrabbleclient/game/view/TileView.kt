@@ -10,7 +10,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
@@ -19,29 +18,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.polyscrabbleclient.game.model.TileModel
+import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
 
 val subscript = SpanStyle(
     baselineShift = BaselineShift.Subscript,
     fontSize = 16.sp,
 )
 
-
 @Composable
-fun Tile(
+fun TileView(
     tileModel: TileModel,
     select: () -> Unit,
 ) {
     val targetColor by animateColorAsState(
         targetValue =
             if (tileModel.isSelected.value)
-                MaterialTheme.colors.primary
+                MaterialTheme.colors.secondary
             else
-                Color.Transparent,
-        animationSpec = tween(durationMillis = 500)
+                MaterialTheme.colors.primary,
+        animationSpec = tween(durationMillis = 200)
     )
+
     Surface(
-        color = targetColor,
-        modifier = Modifier.border(width = 4.dp, MaterialTheme.colors.secondary)
+        color = TileBackgroundColor,
+        modifier = Modifier
+            .border(width = 4.dp, targetColor)
     ) {
         Text(modifier = Modifier
             .selectable(
@@ -63,7 +64,7 @@ fun Tile(
 @Composable
 fun Preview1 () {
     val tileModel = TileModel('A', 1)
-    Tile(
+    TileView(
         tileModel,
         select = { tileModel.isSelected.value = !tileModel.isSelected.value }
     )
@@ -73,7 +74,7 @@ fun Preview1 () {
 fun Preview2 () {
     val tileModel = TileModel('B', 2)
     tileModel.isSelected.value = true
-    Tile(
+    TileView(
         tileModel,
         select = { tileModel.isSelected.value = !tileModel.isSelected.value }
     )

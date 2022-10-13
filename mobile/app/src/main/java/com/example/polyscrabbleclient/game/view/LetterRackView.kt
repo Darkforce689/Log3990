@@ -9,27 +9,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import com.example.polyscrabbleclient.game.view.draganddrop.DragState
+import com.example.polyscrabbleclient.game.view.draganddrop.DraggableView
 import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
 
 @Composable
-fun LetterRackView() {
+fun LetterRackView(
+    dragState: DragState
+) {
     val viewModel: LetterRackViewModel = viewModel()
+    dragState.onDropCallbacks.add { viewModel.removeTile(dragState.draggableContent) }
 
     LazyRow(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
-        horizontalArrangement = Arrangement.SpaceAround,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom
     ) {
         items(viewModel.tiles.size) { index ->
-            val tile = viewModel.tiles[index];
+            val tile = viewModel.tiles[index]
             val select = { tile.isSelected.value = !tile.isSelected.value }
-            Tile(
+            DraggableView(
+                dragState,
                 tile,
-                select
-            )
+            ) {
+                TileView(tile, select)
+            }
         }
     }
 }
