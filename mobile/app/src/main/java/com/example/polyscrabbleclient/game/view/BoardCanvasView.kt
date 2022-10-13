@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.domain.MultiplierType
+import com.example.polyscrabbleclient.game.domain.MultiplierValue
 import com.example.polyscrabbleclient.game.domain.Multipliers
 import com.example.polyscrabbleclient.game.model.BoardDimension
 import com.example.polyscrabbleclient.game.model.BoardRange
@@ -32,6 +33,8 @@ import kotlin.properties.Delegates
 
 const val ThickDividerWidth = Stroke.DefaultMiter
 const val GridDimension = BoardDimension + 1
+const val SoftBackgroundAlpha = 0.2f
+const val HardBackgroundAlpha = 0.7f
 val BoardSize = 550.dp
 val BoardPadding = 10.dp
 val GridSize = BoardSize - BoardPadding.times(2)
@@ -43,7 +46,7 @@ val DivisionCenterOffset = GridDivisionSize.times(0.3f)
 @Composable
 fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     val themeColors = listOf(MaterialTheme.colors.primary, MaterialTheme.colors.secondary, MaterialTheme.colors.secondary)
-    val thickDividerIndexes = listOf(0,1,GridDimension)
+    val thickDividerIndexes = listOf(0, 1, GridDimension)
 
     val rowChars = RowChar.values()
     val rowCharsColor = MaterialTheme.colors.primary
@@ -205,6 +208,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 tile.content.value?.points.toString(),
+                // TODO : WARNING -> TWEAK
                 horizontalOffset + 2.2f * DivisionCenterOffset.toPx(),
                 verticalOffset - 0.5f * DivisionCenterOffset.toPx(),
                 pointsPaint
@@ -222,8 +226,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         }
         val column = columnIndex + 1
         val row = rowIndex + 1
-        val color = if (tile.content.value === null) Color.Green else Color.Red
-        drawTileBackground(color, column, row, 0.7f)
+        drawTileBackground(Color.Green, column, row, HardBackgroundAlpha)
     }
 
     fun DrawScope.drawTiles() {
@@ -238,8 +241,15 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     fun DrawScope.drawMultipliers() {
         for (multiplier in Multipliers) {
             val color =
-                if (multiplier.type === MultiplierType.Letter) themeColors[0] else themeColors[1]
-            val alpha = if (multiplier.value == 3) 0.7f else 0.2f
+                if (multiplier.type === MultiplierType.Letter)
+                    themeColors[0]
+                else
+                    themeColors[1]
+            val alpha =
+                if (multiplier.value == MultiplierValue.Triple)
+                    HardBackgroundAlpha
+                else
+                    SoftBackgroundAlpha
             drawTileBackground(color, multiplier.column, multiplier.row.ordinal + 1, alpha)
         }
     }
@@ -264,7 +274,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         boardPadding = BoardPadding.toPx()
         drawMultipliers()
         drawTiles()
-        // WARNING -> drawGrid should be called after all others
+        // drawGrid should be called after all others
         drawGridLayout()
 
         val boardHoverOffset = boardPadding

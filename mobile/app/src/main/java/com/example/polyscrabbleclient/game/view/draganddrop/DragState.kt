@@ -18,8 +18,6 @@ class DragState {
         draggableView: (@Composable () -> Unit)?,
         draggableContent: DraggableContent?
     ) {
-        // TODO : REMOVE
-        println("onDragStart")
         this.isDragging = true
         this.startingPosition = startingPosition
         this.draggableView = draggableView
@@ -27,28 +25,20 @@ class DragState {
     }
 
     fun onDragEnd() {
-        // TODO : REMOVE
-        println("onDragEnd")
         this.offsetFromStartingPosition = Offset.Zero
         this.isDragging = false
     }
 
     fun onDragCancel() {
-        // TODO : REMOVE
-        println("onDragCancel")
         this.offsetFromStartingPosition = Offset.Zero
         this.isDragging = false
     }
 
     fun onDrag(dragAmount: Offset) {
-        // TODO : REMOVE
-        println("onDrag")
         this.offsetFromStartingPosition += Offset(dragAmount.x, dragAmount.y)
     }
 
     fun onDrop() {
-        // TODO : REMOVE
-        println("onDrop")
         this.onDropCallbacks.forEach { callback -> callback() }
     }
 }

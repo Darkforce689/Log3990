@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.polyscrabbleclient.auth.model.serverResponse.LoginRes
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
-import com.example.polyscrabbleclient.auth.viewmodel.LoginRes
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient

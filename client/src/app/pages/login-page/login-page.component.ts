@@ -16,9 +16,11 @@ export class LoginPageComponent {
         email: new FormControl('', [Validators.required, Validators.email]),
         password: new FormControl('', [Validators.required]),
     });
+
     constructor(private authService: AuthService, private router: Router, private matDialog: MatDialog) {}
 
     login() {
+        this.loginForm.markAllAsTouched();
         if (!this.isEmailFormValid || !this.isPasswordFormValid) {
             return;
         }
@@ -63,11 +65,19 @@ export class LoginPageComponent {
         return !this.loginForm.controls.email.hasError('notFound');
     }
 
+    get isEmailEmpty() {
+        return this.loginForm.controls.email.hasError('required');
+    }
+
     get isPasswordFormValid() {
         return !this.loginForm.controls.password.hasError('required');
     }
 
     get isPasswordValid() {
         return !this.loginForm.controls.password.hasError('invalid');
+    }
+
+    get isPasswordEmpty() {
+        return this.loginForm.controls.password.hasError('required');
     }
 }

@@ -15,7 +15,6 @@ import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import kotlinx.coroutines.*
 
 enum class NavPage (val label : String){
-    Start("startPage"),
     Login("loginPage"),
     SignUp("signUpPage"),
     MainPage("mainPage"),
@@ -23,7 +22,7 @@ enum class NavPage (val label : String){
     Prototype("prototype"),
     Room("messageList")
 }
-@OptIn(DelicateCoroutinesApi::class)
+
 @Composable
 fun NavGraph(chatBoxViewModel: ChatBoxViewModel, loginViewModel: AuthenticationViewModel, startPage : NavPage, startViewModel: StartViewModel) {
     val navController = rememberNavController()
