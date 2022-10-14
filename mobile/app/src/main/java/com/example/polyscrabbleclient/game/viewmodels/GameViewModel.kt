@@ -10,4 +10,5 @@ class GameViewModel: ViewModel() {
     var remainingLettersCount = mutableStateOf(88)
     var turnRemainingTime = mutableStateOf(14)
     var turnTotalTime = mutableStateOf(60)
+    val remainingTimeFraction = turnRemainingTime.value.toFloat() / turnTotalTime.value
 }
