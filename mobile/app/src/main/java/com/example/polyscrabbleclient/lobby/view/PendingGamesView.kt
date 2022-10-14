@@ -1,10 +1,14 @@
 package com.example.polyscrabbleclient.lobby.view
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Card
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettingsUI
@@ -16,13 +20,46 @@ fun PendingGamesView(pendingGames: MutableState<PendingGames?>) {
         mutableStateOf<Int?>(null)
     }
 
-    LazyColumn {
-        pendingGames.value?.let {
-            items(it.size) { index ->
-                PendingGameView(
-                    pendingGameModel = pendingGames.value!![index],
-                    click = { selectedPendingGameIndex.value = index}
-                ) { selectedPendingGameIndex.value == index }
+    val columnsWeights = listOf(0.1f, 0.2f, 0.2f, 0.2f, 0.1f, 0.2f)
+    val columnsHeaders = listOf("ID", "Mode", "Nb Joueurs", "Temps par tour", "Bonus", "Difficulté")
+
+    Card (
+       modifier = Modifier
+           .fillMaxSize(0.7f)
+           .padding(16.dp)
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            item {
+                Row {
+                    columnsHeaders.forEachIndexed { index, header ->
+                        TableCell(text = header, weight = columnsWeights[index])
+                    }
+                }
+            }
+            pendingGames.value?.let {
+                items(it.size) { index ->
+
+                    fun isPendingGameSelected(index: Int): Boolean {
+                        return selectedPendingGameIndex.value == index
+                    }
+
+                    fun toggleSelected(index: Int) {
+                        if (isPendingGameSelected(index)) {
+                            selectedPendingGameIndex.value = null
+                        } else {
+                            selectedPendingGameIndex.value = index
+                        }
+                    }
+
+                    PendingGameView(
+                        pendingGameModel = pendingGames.value!![index],
+                        columnsWeights,
+                        click = { toggleSelected(index) }
+                    ) { isPendingGameSelected(index) }
+                }
             }
         }
     }
@@ -32,7 +69,6 @@ fun PendingGamesView(pendingGames: MutableState<PendingGames?>) {
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun PendingGamesPreview() {
-
     val a = mutableStateOf<PendingGames?>(
         listOf(
             OnlineGameSettingsUI (

@@ -3,6 +3,7 @@ package com.example.polyscrabbleclient.lobby.view
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -21,6 +22,7 @@ import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettingsUI
 @Composable
 fun PendingGameView(
     pendingGameModel: OnlineGameSettingsUI,
+    columnsWeights: List<Float>,
     click: () -> Unit,
     isSelected: () -> Boolean
 ) {
@@ -36,15 +38,35 @@ fun PendingGameView(
     Row (
         Modifier
             .background(targetColor)
-            .padding(3.dp)
             .clickable { click() },
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = pendingGameModel.id)
-        Text(text = pendingGameModel.gameMode.value)
-        Text(text = pendingGameModel.numberOfPlayers.toString())
-        Text(text = pendingGameModel.botDifficulty.value)
+        val fields = listOf(
+            pendingGameModel.id,
+            pendingGameModel.gameMode.value,
+            pendingGameModel.numberOfPlayers.toString(),
+            pendingGameModel.timePerTurn.toString(),
+            if (pendingGameModel.randomBonus) "Oui" else "Non",
+            pendingGameModel.botDifficulty.value
+        )
+        fields.forEachIndexed { index, field ->
+            TableCell(text = field, weight = columnsWeights[index])
+        }
     }
+}
+
+@Composable
+fun RowScope.TableCell(
+    text: String,
+    weight: Float
+) {
+    Text(
+        text = text,
+        Modifier
+            .border(1.dp, Color.Black)
+            .weight(weight)
+            .padding(8.dp)
+    )
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_C)
@@ -60,9 +82,9 @@ fun PendingGamePreview() {
             randomBonus = false,
             timePerTurn = 60
         ),
-        {},
-        { true }
-    )
+        listOf(0.1f, 0.5f, 0.2f, 0.3f),
+        {}
+    ) { true }
 }
 
 @Preview(showBackground = true, device = Devices.PIXEL_C)
@@ -78,7 +100,7 @@ fun PendingGamePreview2() {
             randomBonus = false,
             timePerTurn = 60
         ),
-        {},
-        { false }
-    )
+        listOf(0.1f, 0.5f, 0.2f, 0.3f),
+        {}
+    ) { false }
 }
