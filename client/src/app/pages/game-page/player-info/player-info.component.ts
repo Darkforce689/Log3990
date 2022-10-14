@@ -34,9 +34,11 @@ export class PlayerInfoComponent {
     get lettersRemaining(): number {
         return this.info.numberOfLettersRemaining;
     }
+
     isActivePlayer(player: Player) {
         return player.name === this.activePlayerName;
     }
+
     private rotatePlayers(array: Player[]) {
         const firstElement = array.shift();
         if (firstElement !== undefined) array.push(firstElement);

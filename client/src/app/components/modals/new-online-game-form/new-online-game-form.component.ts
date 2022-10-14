@@ -66,6 +66,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
         this.onlineGameSettingsUIForm.reset({
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
+            numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
         });
     }
 

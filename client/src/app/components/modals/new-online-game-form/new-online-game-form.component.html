@@ -14,8 +14,7 @@
         [formControlName]="'timePerTurn'"
     ></mat-slider
     ><br />
-    <mat-label>Nombre de joueurs: </mat-label>
-    <mat-label>{{ numPlayer.value }} </mat-label> <br />
+    <mat-label>Nombre de joueurs: {{ numPlayer.value }} </mat-label> <br />
     <mat-slider #numPlayer color="primary" [min]="minNumberOfPlayers" [max]="maxNumberOfPlayers" [formControlName]="'numberOfPlayers'"></mat-slider>
     <br />
 </mat-dialog-content>
