@@ -1,6 +1,6 @@
 import { Tile } from '@app/game/game-logic/board/tile';
-import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
+import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { ForfeitPlayerInfo, GameState, LightPlayer, MagicGameState } from '@app/game/game-logic/interface/game-state.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { Service } from 'typedi';
@@ -62,9 +62,14 @@ export class GameCompiler {
     }
 
     private fillPlayer(players: Player[]): LightPlayer[] {
-        return [
-            { name: players[0].name, points: players[0].points, letterRack: players[0].letterRack },
-            { name: players[1].name, points: players[1].points, letterRack: players[1].letterRack },
-        ];
+        const playersInfo: LightPlayer[] = [];
+        // return [
+        //     { name: players[0].name, points: players[0].points, letterRack: players[0].letterRack },
+        //     { name: players[1].name, points: players[1].points, letterRack: players[1].letterRack },
+        // ];
+        players.forEach((player) => {
+            playersInfo.push({ name: player.name, points: player.points, letterRack: player.letterRack });
+        });
+        return playersInfo;
     }
 }

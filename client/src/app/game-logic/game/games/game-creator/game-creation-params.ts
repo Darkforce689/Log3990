@@ -3,5 +3,4 @@ export interface GameCreationParams {
 }
 export interface OnlineGameCreationParams extends GameCreationParams {
     id: string;
-    username: string;
 }
