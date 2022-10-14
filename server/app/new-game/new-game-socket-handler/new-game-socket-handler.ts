@@ -19,6 +19,7 @@ const launchGame = 'launchGame';
 const gameJoined = 'gameJoined';
 const gameStarted = 'gameStarted';
 const pendingGameId = 'pendingGameId';
+const hostQuit = 'hostQuit';
 
 export class NewGameSocketHandler {
     readonly ioServer: Server;
@@ -88,8 +89,14 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on('disconnect', () => {
-                this.onDisconnect(gameId);
+            socket.on('disconnect', async () => {
+                const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+                const user = await this.userService.getUser({ _id });
+                if (user === undefined) {
+                    throw Error(`No user found with userId ${_id}`);
+                }
+
+                this.onDisconnect(user.name);
                 this.emitPendingGamesToAll();
             });
         });
@@ -142,8 +149,16 @@ export class NewGameSocketHandler {
         this.newGameManagerService.deletePendingGame(id);
     }
 
-    private onDisconnect(gameId: string) {
-        this.newGameManagerService.deletePendingGame(gameId);
+    private onDisconnect(name: string) {
+        const gameToChange = this.newGameManagerService.getPendingGames().find((gameSettings) => gameSettings.playerNames.includes(name));
+
+        if (!gameToChange) return;
+        if (gameToChange?.playerNames[0] === name) {
+            this.ioServer.to(gameToChange.id).emit(hostQuit);
+            this.newGameManagerService.deletePendingGame(gameToChange.id);
+        }
+        this.newGameManagerService.quitPendingGame(gameToChange?.id, name);
+        this.sendGameSettingsToPlayers(gameToChange.id, gameToChange.id, gameToChange);
     }
 
     private sendError(error: Error, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {

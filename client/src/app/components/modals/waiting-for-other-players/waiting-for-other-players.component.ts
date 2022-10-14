@@ -14,7 +14,10 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     spinnerDiameter = SPINNER_DIAMETER;
     botDifficulty: string;
     isSoloStarted: boolean = false;
-    constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler) {}
+    deletedGame: boolean = false;
+    constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler) {
+        this.socketHandler.socket.on('hostQuit', () => (this.deletedGame = true));
+    }
 
     ngAfterContentChecked() {
         this.cdref.detectChanges();

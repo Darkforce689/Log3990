@@ -46,6 +46,18 @@ export class NewGameManagerService {
         return id;
     }
 
+    quitPendingGame(id: string, nameToRemove: string): string | undefined {
+        if (!this.isPendingGame(id)) {
+            return;
+        }
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
+            return;
+        }
+        const index = gameSettings.playerNames.findIndex((name) => name === nameToRemove);
+        gameSettings.playerNames.splice(index, 1);
+        return id;
+    }
     deletePendingGame(id: string) {
         const gameStarted = this.gameMaster.activeGames.has(id);
         if (!gameStarted) {
