@@ -2,7 +2,7 @@ import { AfterContentChecked, Component, Input } from '@angular/core';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
-import { EXCHANGEALETTER_ID, NO_CARD_ID, SPLITPOINTS_ID, UI_MAGIC_CARD_MAP } from '@app/game-logic/actions/magic-card/magic-card-constants';
+import { EXCHANGEALETTER_ID, SPLITPOINTS_ID, UI_MAGIC_CARD_MAP } from '@app/game-logic/actions/magic-card/magic-card-constants';
 
 @Component({
     selector: 'app-magic-card',
@@ -11,12 +11,12 @@ import { EXCHANGEALETTER_ID, NO_CARD_ID, SPLITPOINTS_ID, UI_MAGIC_CARD_MAP } fro
 })
 export class MagicCardComponent implements AfterContentChecked {
     @Input() index: number;
-    magicCardId: string;
+    magicCardId: string | undefined;
 
     constructor(private info: GameInfoService, private inputController: UIInputControllerService) {}
 
     ngAfterContentChecked(): void {
-        this.magicCardId = this.hasMinCard ? this.info.getDrawnMagicCard()[this.index].id : NO_CARD_ID;
+        this.magicCardId = this.hasMinCard ? this.info.getDrawnMagicCard()[this.index].id : undefined;
     }
 
     get isItMyTurn(): boolean {
@@ -49,8 +49,10 @@ export class MagicCardComponent implements AfterContentChecked {
         switch (this.magicCardId) {
             case EXCHANGEALETTER_ID:
                 return this.canExchangeMagicCard;
-            default:
+            case SPLITPOINTS_ID:
                 return this.canUseMagicCards;
+            default:
+                return false;
         }
     }
 
@@ -59,11 +61,11 @@ export class MagicCardComponent implements AfterContentChecked {
     }
 
     get name(): string | undefined {
-        return UI_MAGIC_CARD_MAP.get(this.magicCardId)?.name;
+        return this.magicCardId === undefined ? undefined : UI_MAGIC_CARD_MAP.get(this.magicCardId)?.name;
     }
 
     get description(): string | undefined {
-        return UI_MAGIC_CARD_MAP.get(this.magicCardId)?.description;
+        return this.magicCardId === undefined ? undefined : UI_MAGIC_CARD_MAP.get(this.magicCardId)?.description;
     }
 
     splitPoints() {

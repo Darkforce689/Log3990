@@ -52,6 +52,7 @@ export class NewGamePageComponent {
         dialogConfig.autoFocus = true;
         dialogConfig.disableClose = true;
         dialogConfig.minWidth = 60;
+        dialogConfig.data = { gameMode: this.gameMode };
 
         const dialogRef = this.dialog.open(NewOnlineGameFormComponent, dialogConfig);
         dialogRef.afterClosed().subscribe((gameSettings: GameSettings) => {
@@ -66,6 +67,7 @@ export class NewGamePageComponent {
                 botDifficulty: BotDifficulty.Expert,
                 // TODO GL3A22107-32 : Implement new game parameter :
                 numberOfPlayers: 2,
+                magicCardIds: gameSettings.magicCardIds,
             };
             this.socketHandler.createGame(onlineGameSettings);
             const username = gameSettings.playerName;
