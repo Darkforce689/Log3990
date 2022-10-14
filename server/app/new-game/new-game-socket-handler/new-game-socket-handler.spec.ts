@@ -61,6 +61,7 @@ describe('New Online Game Service', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            magicCardIds: [],
         };
         serverSocket.on('createGame', () => {
             expect(newGameManagerService.createPendingGame.calledWith(gameSettings)).to.be.true;
@@ -80,6 +81,7 @@ describe('New Online Game Service', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             gameMode: GameMode.Classic,
             numberOfPlayers: 2,
+            magicCardIds: [],
         } as OnlineGameSettingsUI;
         clientSocket.on('pendingGameId', (pendingId: string) => {
             expect(pendingId).to.deep.equal(id);
@@ -137,6 +139,7 @@ describe('New Online Game Service', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            magicCardIds: [],
         } as OnlineGameSettingsUI;
         const gameSettings = {
             id: 'a',
@@ -147,6 +150,7 @@ describe('New Online Game Service', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            magicCardIds: [],
         } as OnlineGameSettings;
 
         newGameManagerService.createPendingGame.returns('a');
@@ -186,6 +190,7 @@ describe('New Online Game Service', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            magicCardIds: [],
         };
 
         newGameManagerService.createPendingGame.returns('a');
