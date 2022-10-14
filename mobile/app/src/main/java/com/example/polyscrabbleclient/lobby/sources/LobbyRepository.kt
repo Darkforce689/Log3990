@@ -1,7 +1,11 @@
 package com.example.polyscrabbleclient.lobby.sources
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+
 object LobbyRepository {
     private val lobbySocket = LobbySocketHandler
+    val pendingGames = mutableStateOf<PendingGames?>(null)
 
     private val onGameJoined: (gameJoined: GameJoined?) -> Unit = { gameJoined ->
         TODO()
@@ -11,9 +15,9 @@ object LobbyRepository {
         TODO()
     }
 
-    private val onPendingGames: (pendingGames: PendingGames?) -> Unit = { pendingGames ->
-        pendingGames?.map {
-            println(it.id)
+    private val onPendingGames: (pendingGames: PendingGames?) -> Unit = { newPendingGames ->
+        newPendingGames?.let {
+            pendingGames.value = newPendingGames
         }
     }
 

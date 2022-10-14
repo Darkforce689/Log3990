@@ -4,5 +4,6 @@ import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 class LobbyViewModel: ViewModel() {
-    val lobby = LobbyRepository
+    private val lobby = LobbyRepository
+    val pendingGames = lobby.pendingGames
 }

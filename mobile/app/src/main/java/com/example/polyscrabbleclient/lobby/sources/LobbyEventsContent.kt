@@ -21,7 +21,7 @@ data class GameStarted(
 
 typealias PendingGames = Array<OnlineGameSettingsUI>
 data class OnlineGameSettingsUI (
-    val id : Int,
+    val id: String,
     val gameMode: GameMode,
     val timePerTurn: Int,
     val playerNames: ArrayList<String>,

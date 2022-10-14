@@ -1,22 +1,15 @@
 package com.example.polyscrabbleclient.lobby.view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import com.example.polyscrabbleclient.game.view.draganddrop.DragState
-import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.viewmodels.LobbyViewModel
-import kotlinx.coroutines.delay
-
 
 
 @Composable
@@ -25,7 +18,7 @@ fun LobbyScreen(navController: NavController?) {
 
     EvenlySpacedRowContainer {
         Box {
-            Text("A")
+            PendingGamesView(viewModel.pendingGames)
         }
     }
 }
