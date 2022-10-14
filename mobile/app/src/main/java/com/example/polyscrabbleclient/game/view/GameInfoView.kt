@@ -32,7 +32,6 @@ fun GameInfoView(viewModel: GameViewModel) {
         ) {
             val remainingTimeFraction =
                 viewModel.game.turnRemainingTime.value.toFloat() / viewModel.game.turnTotalTime.value
-            println(remainingTimeFraction)
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(100.dp)
