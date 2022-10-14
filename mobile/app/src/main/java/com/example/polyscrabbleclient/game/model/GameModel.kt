@@ -4,12 +4,22 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.message.model.User
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 class GameModel {
 
     init {
+        // TODO : FIND A WAY TO GET USER NAME
         try {
-            User.updateUser()
+            GlobalScope.launch() {
+                val updateThread = User.updateUser()
+                updateThread.start()
+                updateThread.join()
+            }
+            println("Username : ${User.name}")
         } catch (e: Exception) {
             println("Could not update user : $e")
         }

@@ -11,7 +11,7 @@ import com.example.polyscrabbleclient.game.model.TileModel
 data class Player(
     val name: String,
     val points: Int = 0,
-    var letters: MutableList<TileModel>
+    var letters: MutableList<TileModel> = mutableStateListOf()
 ) {
     companion object {
         fun fromLightPlayer(player: LightPlayer): Player {
