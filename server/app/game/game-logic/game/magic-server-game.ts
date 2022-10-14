@@ -1,12 +1,7 @@
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { MagicCard } from '@app/game/game-logic/actions/magic-card/magic-card';
-import {
-    EXCHANGEALETTER_ID,
-    MAX_NUMBER_OF_MAGIC_CARD,
-    NUMBER_OF_WORDS_FOR_MAGIC_CARD,
-    SPLITPOINTS_ID,
-} from '@app/game/game-logic/actions/magic-card/magic-card-constants';
+import { MAX_NUMBER_OF_MAGIC_CARD, NUMBER_OF_WORDS_FOR_MAGIC_CARD } from '@app/game/game-logic/actions/magic-card/magic-card-constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken, IMagicCard } from '@app/game/game-logic/interface/game-state.interface';
@@ -18,7 +13,7 @@ import { SystemMessagesService } from '@app/messages-service/system-messages-ser
 import { Subject } from 'rxjs';
 
 export class MagicServerGame extends ServerGame {
-    drawableMagicCards: IMagicCard[] = [{ id: SPLITPOINTS_ID } as IMagicCard, { id: EXCHANGEALETTER_ID } as IMagicCard];
+    drawableMagicCards: IMagicCard[];
     drawnMagicCards: IMagicCard[][];
     playersNumberOfWordsPlaced: number[];
 
@@ -32,6 +27,7 @@ export class MagicServerGame extends ServerGame {
         messagesService: SystemMessagesService,
         newGameStateSubject: Subject<GameStateToken>,
         endGameSubject: Subject<EndOfGame>,
+        drawableMagicCardIds: string[],
     ) {
         super(
             timerController,
@@ -44,6 +40,7 @@ export class MagicServerGame extends ServerGame {
             newGameStateSubject,
             endGameSubject,
         );
+        this.drawableMagicCards = drawableMagicCardIds.map((id) => ({ id } as IMagicCard));
     }
 
     start(): void {

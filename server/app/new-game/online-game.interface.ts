@@ -8,6 +8,7 @@ export interface OnlineGameSettingsUI {
     randomBonus: boolean;
     botDifficulty: BotDifficulty;
     numberOfPlayers: number;
+    magicCardIds: string[];
 }
 
 export interface OnlineGameSettings extends OnlineGameSettingsUI {
