@@ -44,6 +44,7 @@ describe('MagicServerGame', () => {
             messagesService,
             newGameStateSubject,
             endGameSubject,
+            [SPLITPOINTS_ID],
         );
         p1 = new Player('Tim');
         p2 = new Player('Paul');
