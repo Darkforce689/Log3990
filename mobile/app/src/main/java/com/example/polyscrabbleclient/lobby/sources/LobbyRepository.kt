@@ -16,7 +16,10 @@ object LobbyRepository {
     }
 
     private val onPendingGames: (pendingGames: PendingGames?) -> Unit = { newPendingGames ->
-        newPendingGames?.let {
+        newPendingGames?.let { it ->
+            it.map { it2 ->
+                println(it2.toString())
+            }
             pendingGames.value = newPendingGames
         }
     }

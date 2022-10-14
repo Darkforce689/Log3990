@@ -1,13 +1,15 @@
 package com.example.polyscrabbleclient.lobby.sources
 
+import com.google.gson.annotations.SerializedName
+
 enum class GameMode (val value: String) {
-    Classic("classic"),
-    Magic("magic"),
+    @SerializedName("classic") Classic("classic"),
+    @SerializedName("magic") Magic("magic"),
 }
 
 enum class BotDifficulty (val value: String) {
-    Easy("Facile"),
-    Expert("Expert"),
+    @SerializedName("Facile") Easy("Facile"),
+    @SerializedName("Expert") Expert("Expert"),
 }
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
