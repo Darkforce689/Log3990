@@ -106,10 +106,7 @@ export class GameManagerService {
 
     private createOnlinePlayers(allPlayerNames: string[]): Player[] {
         const players = allPlayerNames.map((playerName) => new Player(playerName));
-        console.log(allPlayerNames);
-        console.log(this.userName);
         const player = players.find((playerRef) => playerRef.name === this.userName);
-        console.log(player);
 
         if (player) {
             this.info.receivePlayer(player);
