@@ -93,7 +93,7 @@ object LobbySocketHandler {
 
     private fun <T> formatObjectResponse(args: Array<Any>, type: Class<T>): T? {
         return try {
-            Gson().fromJson( args[0].toString(), type) as T
+            Gson().fromJson(args[0].toString(), type) as T
         } catch (e: Exception) {
             println("Error -> formatObjectResponse -> $type -> args:$args")
             println(e)
