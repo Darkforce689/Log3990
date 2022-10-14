@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 })
 export class NewOnlineGameSocketHandler {
     pendingGameId$ = new BehaviorSubject<string | undefined>(undefined);
+    deletedGame$ = new BehaviorSubject<boolean>(false);
     pendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     gameSettings$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     gameStarted$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
@@ -17,10 +18,12 @@ export class NewOnlineGameSocketHandler {
     isDisconnected$ = new Subject<boolean>();
     error$ = new Subject<string>();
     socket: Socket;
+    // TODO envoyer joeur quit a tout le monde
 
     resetGameToken() {
         this.gameStarted$.next(undefined);
         this.isGameOwner = false;
+        this.deletedGame$.next(false);
     }
 
     createGame(gameSettings: OnlineGameSettingsUI) {
@@ -30,6 +33,7 @@ export class NewOnlineGameSocketHandler {
         }
         this.socket.emit('createGame', gameSettings);
         this.isGameOwner = true;
+        this.deletedGame$.next(false);
         this.waitForOtherPlayers();
     }
 
@@ -38,6 +42,7 @@ export class NewOnlineGameSocketHandler {
         this.socket.on('pendingGames', (pendingGames: OnlineGameSettings[]) => {
             this.pendingGames$.next(pendingGames);
         });
+        this.deletedGame$.next(false);
     }
 
     joinPendingGame(id: string) {
@@ -48,6 +53,11 @@ export class NewOnlineGameSocketHandler {
         this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
         this.listenForGameStart();
+        this.listenForHostQuit();
+    }
+
+    listenForHostQuit() {
+        this.socket.on('hostQuit', () => this.deletedGame$.next(true));
     }
 
     launchGame() {
@@ -86,6 +96,7 @@ export class NewOnlineGameSocketHandler {
             this.pendingGameId$.next(pendingGameid);
         });
         this.listenForUpdatedGameSettings();
+        this.listenForHostQuit();
     }
 
     private listenForUpdatedGameSettings() {

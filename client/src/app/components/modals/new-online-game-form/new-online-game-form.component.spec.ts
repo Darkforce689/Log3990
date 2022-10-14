@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormArray, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
+import { DEFAULT_NUMBER_OF_PLAYERS, DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { NewOnlineGameFormComponent } from './new-online-game-form.component';
@@ -64,6 +64,7 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -81,6 +82,7 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -98,6 +100,7 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
         });
         fixture.detectChanges();
         (component.onlineGameSettingsUIForm.controls.magicCardIds as FormArray).push(new FormControl('ANY_MAGIC_CARD_ID'));
@@ -114,6 +117,7 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
         };
         component.onlineGameSettingsUIForm.setValue(settings);
         expect(component.onlineGameSettingsUIForm.value).toEqual(settings);
@@ -125,6 +129,7 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
+            numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
         });
         component.playGame();
         expect(mockDialog.close).toHaveBeenCalled();
@@ -135,6 +140,7 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
         };
         component.onlineGameSettingsUIForm.setValue(setting);
         spyOn(mockDialog, 'close');
@@ -144,6 +150,7 @@ describe('NewOnlineGameFormComponent', () => {
             playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
+            numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
         });
     });
 });

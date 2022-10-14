@@ -13,6 +13,7 @@ import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { LeaderboardService } from '@app/leaderboard/leaderboard.service';
+import { AccountService } from '@app/services/account.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { Observable } from 'rxjs';
 import { GameInfoService } from './game-info.service';
@@ -160,10 +161,16 @@ describe('GameInfoService Online Edition', () => {
     let onlineGame: OnlineGame;
     let timer: TimerService;
     let board: BoardService;
+    const accountService = { account: { name: 'Tim' } };
+
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: LeaderboardService, useValue: leaderboardServiceMock }],
+            providers: [
+                { provide: LeaderboardService, useValue: leaderboardServiceMock },
+                { provide: AccountService, useValue: accountService },
+            ],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(GameInfoService);
         timer = TestBed.inject(TimerService);
@@ -172,11 +179,11 @@ describe('GameInfoService Online Edition', () => {
         onlineGame = new OnlineGame(
             '0',
             DEFAULT_TIME_PER_TURN,
-            'QWERTY',
             timer,
             new GameSocketHandlerService(),
             board,
             TestBed.inject(OnlineActionCompilerService),
+            TestBed.inject(AccountService),
         );
         onlineGame.players = [new Player('p1'), new Player('p2')];
     });
@@ -232,22 +239,5 @@ describe('GameInfoService Online Edition', () => {
 
     it('#is magic game should return false when there is no game', () => {
         expect(service.isMagicGame).toBeFalse();
-    });
-
-    it('should throw when getting opponent when no players received', () => {
-        expect(() => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
-            service.opponent;
-        }).toThrowError();
-    });
-
-    it('should get opponent properly', () => {
-        const p1 = new Player('p1');
-        const p2 = new Player('p2');
-        service.players = [p1, p2];
-        service.receivePlayer(p1);
-        expect(service.opponent).toBe(p2);
-        service.receivePlayer(p2);
-        expect(service.opponent).toBe(p1);
     });
 });

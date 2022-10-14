@@ -12,6 +12,7 @@ import { Tile } from '@app/game-logic/game/board/tile';
 import { GameState, LightPlayer } from '@app/game-logic/game/games/online-game/game-state';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
+import { AccountService } from '@app/services/account.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { Socket } from 'socket.io-client';
 import { OnlineGame } from './online-game';
@@ -23,9 +24,13 @@ describe('OnlineGame', () => {
     let timer: TimerService;
     let player1: Player;
     let player2: Player;
+    const accountService = { account: { name: 'Tim' } };
 
     beforeEach(() => {
-        TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
+        TestBed.configureTestingModule({
+            providers: [{ provide: AccountService, useValue: accountService }],
+            imports: [HttpClientTestingModule],
+        });
         boardService = TestBed.inject(BoardService);
         gameSocketHandlerService = TestBed.inject(GameSocketHandlerService);
         timer = TestBed.inject(TimerService);
@@ -33,11 +38,11 @@ describe('OnlineGame', () => {
         onlineGame = new OnlineGame(
             '0',
             DEFAULT_TIME_PER_TURN,
-            'p1',
             timer,
             gameSocketHandlerService,
             boardService,
             TestBed.inject(OnlineActionCompilerService),
+            TestBed.inject(AccountService),
         );
         player1 = new Player('p1');
         player2 = new Player('p2');
