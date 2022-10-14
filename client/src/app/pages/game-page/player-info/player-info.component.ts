@@ -19,10 +19,11 @@ export class PlayerInfoComponent {
     }
 
     get playersInOrder(): Player[] {
-        const orderedPlayer = [this.user];
-        this.info.players.forEach((player) => {
-            if (player.name !== this.user.name) orderedPlayer.push(player);
-        });
+        const orderedPlayer: Player[] = this.info.players;
+        while (orderedPlayer[0].name !== this.info.player.name) {
+            this.rotatePlayers(orderedPlayer);
+        }
+
         return orderedPlayer;
     }
 
@@ -33,8 +34,11 @@ export class PlayerInfoComponent {
     get lettersRemaining(): number {
         return this.info.numberOfLettersRemaining;
     }
-
     isActivePlayer(player: Player) {
         return player.name === this.activePlayerName;
+    }
+    private rotatePlayers(array: Player[]) {
+        const firstElement = array.shift();
+        if (firstElement !== undefined) array.push(firstElement);
     }
 }
