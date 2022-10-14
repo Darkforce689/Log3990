@@ -22,3 +22,8 @@ const val userName_not_unique = "Un compte utilise déjà ce pseudonyme"
 const val email_not_unique = "Un compte utilise déjà cet e-mail."
 class Invalid_password_creation(minLength : Int, maxLength: Int){ val message = "Entrer un mot de passe entre $minLength et $maxLength caractères"}
 const val already_auth = "Vous êtes déjà connecté sur un autre client"
+
+// GameScreen
+val lettersRemainingFR: (count: Int) -> String = { count -> "$count lettres restantes"}
+val lettersRemainingEN: (count: Int) -> String = { count -> "$count letters remaining"}
+
