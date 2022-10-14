@@ -7,7 +7,8 @@ import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 
 class LetterRackViewModel: ViewModel() {
     private val game = GameRepository.game
-    val tiles = game.getUser()?.letters
+
+    val user = game.user
 
     fun removeTile(draggableContent: DraggableContent?) {
         if (draggableContent == null || draggableContent.type !== DraggableContentType.TileModel) {

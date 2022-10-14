@@ -1,7 +1,9 @@
 package com.example.polyscrabbleclient.game.model
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.message.model.User
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -12,10 +14,11 @@ import kotlinx.coroutines.launch
 class GameModel {
 
     init {
-        // TODO : FIND A WAY TO GET USER NAME
         try {
             GlobalScope.launch() {
                 val updateThread = User.updateUser()
+                // TODO : FIND A WAY TO GET USER NAME
+                username = User.name
                 updateThread.start()
                 updateThread.join()
             }
@@ -32,11 +35,14 @@ class GameModel {
     var turnTotalTime = mutableStateOf(60)
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
+    var user: MutableState<Player?> = mutableStateOf(null)
+    var username: String? = null
 
     fun update(gameState: GameState) {
         board.updateGrid(gameState.grid)
         updatePlayers(gameState)
         updateActivePlayerIndex(gameState)
+        updateUser()
     }
 
     private fun updateActivePlayerIndex(gameState: GameState) {
@@ -47,8 +53,9 @@ class GameModel {
         players.value = gameState.players.map { player -> Player.fromLightPlayer(player) }
     }
 
-    fun getUser(): Player? {
-        return players.value.find { player -> player.name === User.name }
+    private fun updateUser() {
+        // TODO : USE CORRECT USERNAME
+        user.value = players.value.find { player -> player.name == "helloFrom2015" }
     }
 
     fun getPlayer(position: Int): Player? {
