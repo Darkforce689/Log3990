@@ -7,14 +7,18 @@ import com.example.polyscrabbleclient.game.sources.RemainingTime
 import com.example.polyscrabbleclient.game.sources.TransitionGameState
 
 class GameModel {
-    val startTime = mutableStateOf<GameState?>(null)
-    val remainingTime = mutableStateOf<RemainingTime?>(null)
-    val gameState = mutableStateOf<GameState?>(null)
-    val transitionGameState = mutableStateOf<TransitionGameState?>(null)
-
     val board: BoardModel = BoardModel()
 
+    var remainingLettersCount = mutableStateOf(88)
+    var turnRemainingTime = mutableStateOf(14)
+    var turnTotalTime = mutableStateOf(60)
+
     val players = mutableListOf<Player>()
+
+    fun update(newGameState: GameState) {
+        board.updateGrid(newGameState.grid)
+        // TODO : UPDATE OTHER FIELDS
+    }
 
     fun addPlayer(p: Player) {
         players.add(p)
