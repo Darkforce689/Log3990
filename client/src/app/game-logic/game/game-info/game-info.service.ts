@@ -80,14 +80,6 @@ export class GameInfoService {
         return playerWithIndex.index;
     }
 
-    get opponent(): Player {
-        if (!this.players) {
-            throw new Error('No Players in GameInfo');
-        }
-        const opponent = this.player === this.players[0] ? this.players[1] : this.players[0];
-        return opponent;
-    }
-
     get numberOfPlayers(): number {
         return this.players ? this.players.length : NOT_FOUND;
     }

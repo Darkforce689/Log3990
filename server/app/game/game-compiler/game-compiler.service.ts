@@ -63,10 +63,6 @@ export class GameCompiler {
 
     private fillPlayer(players: Player[]): LightPlayer[] {
         const playersInfo: LightPlayer[] = [];
-        // return [
-        //     { name: players[0].name, points: players[0].points, letterRack: players[0].letterRack },
-        //     { name: players[1].name, points: players[1].points, letterRack: players[1].letterRack },
-        // ];
         players.forEach((player) => {
             playersInfo.push({ name: player.name, points: player.points, letterRack: player.letterRack });
         });
