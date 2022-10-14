@@ -1,0 +1,19 @@
+mat-card {
+    width : 25vw;
+}
+
+mat-icon {
+    font-size: 26px !important;
+}
+
+mat-selection-list {
+    display:inline-flex; 
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+mat-selection-list>* {
+    flex: 1 1 30px;
+}
+
