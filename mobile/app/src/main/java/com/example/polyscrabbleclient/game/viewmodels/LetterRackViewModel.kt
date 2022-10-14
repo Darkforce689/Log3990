@@ -10,7 +10,7 @@ import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 
 class LetterRackViewModel: ViewModel() {
     private val letterCreator = LetterCreator();
-    private val player = Player()
+    private val player = Player("A")
     val tiles = mutableStateListOf (
         *player.letters.map { letter -> letterCreator.createTileFromLetter(letter) }.toTypedArray()
     )

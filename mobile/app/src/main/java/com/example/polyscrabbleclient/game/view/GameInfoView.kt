@@ -30,8 +30,6 @@ fun GameInfoView(viewModel: GameViewModel) {
             modifier = Modifier.padding(30.dp),
             contentAlignment = Alignment.Center
         ) {
-            val remainingTimeFraction =
-                viewModel.turnRemainingTime.value.toFloat() / viewModel.turnTotalTime.value
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(100.dp)
@@ -41,7 +39,7 @@ fun GameInfoView(viewModel: GameViewModel) {
             )
             CircularProgressIndicator(
                 modifier = Modifier.size(100.dp),
-                progress = remainingTimeFraction,
+                progress = viewModel.remainingTimeFraction,
                 strokeWidth = 5.dp
             )
             Box(contentAlignment = Alignment.Center) {
@@ -52,8 +50,7 @@ fun GameInfoView(viewModel: GameViewModel) {
                         MaterialTheme.colors.error
                     else
                         Color.Unspecified,
-
-                    )
+                )
             }
         }
         Text(lettersRemainingFR(viewModel.remainingLettersCount.value))

@@ -4,6 +4,7 @@ import { BOARD_MAX_POSITION, BOARD_MIN_POSITION } from '@app/game-logic/constant
 import { Direction } from '@app/game-logic/direction.enum';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
+import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { Socket } from 'socket.io-client';
 
@@ -49,10 +50,12 @@ export const isGameSettings = (obj: unknown): obj is OnlineGameSettingsUI => {
         typeof (obj as OnlineGameSettingsUI).numberOfPlayers === 'number' &&
         (obj as OnlineGameSettingsUI).randomBonus !== undefined &&
         typeof (obj as OnlineGameSettingsUI).randomBonus === 'boolean' &&
-        (obj as OnlineGameSettingsUI).randomBonus !== undefined &&
-        typeof (obj as OnlineGameSettingsUI).randomBonus === 'boolean' &&
+        (obj as OnlineGameSettingsUI).gameMode !== undefined &&
+        typeof (obj as OnlineGameSettingsUI).gameMode === 'string' &&
         (obj as OnlineGameSettingsUI).timePerTurn !== undefined &&
-        typeof (obj as OnlineGameSettingsUI).timePerTurn === 'number'
+        typeof (obj as OnlineGameSettingsUI).timePerTurn === 'number' &&
+        ((obj as OnlineGameSettingsUI).gameMode !== GameMode.Magic ||
+            ((obj as OnlineGameSettingsUI).magicCardIds !== undefined && typeof (obj as OnlineGameSettingsUI).magicCardIds === 'object'))
     );
 };
 
