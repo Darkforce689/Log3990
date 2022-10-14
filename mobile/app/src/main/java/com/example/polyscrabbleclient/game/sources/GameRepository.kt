@@ -17,7 +17,9 @@ object GameRepository {
     private val onGameState: (gameState: GameState?) -> Unit = { newGameState ->
         if (newGameState !== null) {
             game.update(newGameState)
-            println(newGameState.players[0].letterRack[0].char)
+            println(newGameState.players.size)
+            println(newGameState.players[0].name)
+            println(newGameState.players[0].letterRack.size)
             println(newGameState.grid[0][0].letterObject.char)
         } else {
             println("received null GameState value")

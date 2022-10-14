@@ -21,7 +21,7 @@ fun PlayersInfoView(viewModel: GameViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        viewModel.game.players.forEach { player ->
+        viewModel.game.players.value.forEach { player ->
             PlayerInfoView(player) {
                 player === viewModel.game.getActivePlayer()
             }
@@ -59,7 +59,7 @@ fun PlayerInfoView(
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = "${player.points.value.toString()} points",
+                text = "${player.points} points",
                 style = MaterialTheme.typography.caption
             )
         }
