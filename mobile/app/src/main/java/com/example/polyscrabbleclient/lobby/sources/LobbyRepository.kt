@@ -12,7 +12,9 @@ object LobbyRepository {
     }
 
     private val onPendingGames: (pendingGames: PendingGames?) -> Unit = { pendingGames ->
-        TODO()
+        pendingGames?.map {
+            println(it.id)
+        }
     }
 
     private val onPendingGameId: (pendingGameId: PendingGameId?) -> Unit = { pendingGameId ->
@@ -26,5 +28,7 @@ object LobbyRepository {
         lobbySocket.on(OnLobbyEvent.GameStarted, onGameStarted)
         lobbySocket.on(OnLobbyEvent.PendingGames, onPendingGames)
         lobbySocket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
+//        lobbySocket.emit(
+//            EmitLobbyEvent.JoinGame,
     }
 }

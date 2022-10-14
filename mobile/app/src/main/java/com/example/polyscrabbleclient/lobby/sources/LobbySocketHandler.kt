@@ -1,12 +1,16 @@
 package com.example.polyscrabbleclient.lobby.sources
 
 import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.message.model.User
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
+import org.json.JSONArray
 import org.json.JSONObject
+
 
 const val LobbyPath = "/newGame"
 
@@ -45,11 +49,22 @@ object LobbySocketHandler {
         socket.connect()
     }
 
+    @JvmName("onObject")
     @Synchronized
     fun <T> on(event: OnLobbyEvent, callback: (formattedContent: T?) -> Unit) {
         socket.on(event.eventName) { args ->
-            val contentType = LobbyEventTypes[event] as Class<T>
-            val formattedContent = formatResponse(args, contentType)
+            val contentType = LobbyEventTypes[event]!!
+            val formattedContent = formatObjectResponse(args, contentType as Class<T>)
+            callback(formattedContent)
+        }
+    }
+
+    @JvmName("onArray")
+    @Synchronized
+    fun <T> on(event: OnLobbyEvent, callback: (formattedContent: List<T>?) -> Unit) {
+        socket.on(event.eventName) { args ->
+            val contentType = LobbyEventTypes[event]!!
+            val formattedContent = formatArrayResponse(args, contentType as Class<Array<T>>)
             callback(formattedContent)
         }
     }
@@ -66,12 +81,21 @@ object LobbySocketHandler {
         socket.disconnect()
     }
 
-    private fun <T> formatResponse(args: Array<Any>, type: Class<T>): T? {
+    private fun <T> formatArrayResponse(args: Array<Any>, type: Class<Array<T>>): List<T>? {
         return try {
-            val data = args[0] as JSONObject
-            Gson().fromJson(data.toString(), type) as T
+            Gson().fromJson(args[0].toString(), type).toList()
         } catch (e: Exception) {
-            println("Error -> formatResponse -> $type -> args:$args")
+            println("Error -> formatArrayResponse -> $type -> args:$args")
+            println(e)
+            null
+        }
+    }
+
+    private fun <T> formatObjectResponse(args: Array<Any>, type: Class<T>): T? {
+        return try {
+            Gson().fromJson( args[0].toString(), type) as T
+        } catch (e: Exception) {
+            println("Error -> formatObjectResponse -> $type -> args:$args")
             println(e)
             null
         }
