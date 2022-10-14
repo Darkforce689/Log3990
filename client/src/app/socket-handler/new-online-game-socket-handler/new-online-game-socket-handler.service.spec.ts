@@ -20,6 +20,7 @@ describe('NewOnlineGameSocketHandler', () => {
         gameMode: GameMode.Classic,
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
+        magicCardIds: [],
     } as OnlineGameSettingsUI;
 
     beforeEach(() => {

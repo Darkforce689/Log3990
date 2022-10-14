@@ -4,4 +4,5 @@ export interface GameSettings {
     botDifficulty: string;
     randomBonus: boolean;
     numberOfPlayers: number;
+    magicCardIds: string[];
 }

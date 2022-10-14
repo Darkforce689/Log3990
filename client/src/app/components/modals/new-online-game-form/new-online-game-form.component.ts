@@ -1,6 +1,8 @@
 import { AfterContentChecked, ChangeDetectorRef, Component, Inject } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { UIMagicCard, UI_MAGIC_CARD_ARRAY } from '@app/game-logic/actions/magic-card/magic-card-constants';
 import {
     DEFAULT_NUMBER_OF_PLAYERS,
     DEFAULT_TIME_PER_TURN,
@@ -10,6 +12,7 @@ import {
     MIN_TIME_PER_TURN,
     STEP_TIME_PER_TURN
 } from '@app/game-logic/constants';
+import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 
 // const NO_WHITE_SPACE_RGX = /^\S*$/;
@@ -20,6 +23,8 @@ import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settin
     styleUrls: ['./new-online-game-form.component.scss'],
 })
 export class NewOnlineGameFormComponent implements AfterContentChecked {
+    gameMode: string;
+
     onlineGameSettingsUIForm = new FormGroup({
         timePerTurn: new FormControl(DEFAULT_TIME_PER_TURN, [
             Validators.required,
@@ -46,6 +51,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
         private cdref: ChangeDetectorRef,
     ) {
         this.onInit();
+        this.gameMode = data.gameMode;
     }
 
     onInit() {
@@ -54,6 +60,8 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
 
     ngAfterContentChecked() {
         this.cdref.detectChanges();
+        if (this.isMagicGame) this.onlineGameSettingsUIForm.addControl('magicCardIds', new FormArray([], [Validators.required]));
+        else if (this.onlineGameSettingsUIForm.contains('magicCardIds')) this.onlineGameSettingsUIForm.removeControl('magicCardIds');
     }
 
     playGame(): void {
@@ -67,10 +75,25 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
+            magicCardIds: [],
         });
+    }
+
+    onCheckChange(event: MatCheckboxChange, magicCard: UIMagicCard) {
+        const formArray: FormArray = this.onlineGameSettingsUIForm.get('magicCardIds') as FormArray;
+        if (event.checked) formArray.push(new FormControl(magicCard.id));
+        else formArray.removeAt(formArray.controls.findIndex((formControl: AbstractControl) => formControl.value === magicCard.id));
     }
 
     get formValid() {
         return this.onlineGameSettingsUIForm.valid;
+    }
+
+    get isMagicGame() {
+        return this.gameMode === GameMode.Magic;
+    }
+
+    get availableMagicCards(): UIMagicCard[] {
+        return UI_MAGIC_CARD_ARRAY;
     }
 }
