@@ -21,6 +21,7 @@ export class RegisterPageComponent {
         ]),
         email: new FormControl('', [Validators.required, Validators.email]),
         password: new FormControl('', [Validators.required, Validators.minLength(MIN_PASSWORD_LENGTH), Validators.maxLength(MAX_PASSWORD_LENGTH)]),
+        avatar: new FormControl('', Validators.required),
     });
 
     constructor(private authService: AuthService, private router: Router) {}
@@ -50,6 +51,10 @@ export class RegisterPageComponent {
                 });
             },
         );
+    }
+
+    updateAvatar(src: string) {
+        this.registerForm.get('avatar')?.setValue(src);
     }
 
     get isEmailValidToSend() {
