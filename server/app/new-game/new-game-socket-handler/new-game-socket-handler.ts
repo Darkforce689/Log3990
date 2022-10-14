@@ -131,7 +131,6 @@ export class NewGameSocketHandler {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
         }
         socket.join(id);
-        console.log(id);
         this.sendGameSettingsToPlayers(id, gameToken, gameSettings);
     }
 

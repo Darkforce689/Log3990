@@ -28,7 +28,6 @@ export class NewOnlineGameSocketHandler {
         if (!isGameSettings(gameSettings)) {
             throw Error('Games Settings are not valid. Cannot create a game.');
         }
-        console.log(gameSettings);
         this.socket.emit('createGame', gameSettings);
         this.isGameOwner = true;
         this.waitForOtherPlayers();
