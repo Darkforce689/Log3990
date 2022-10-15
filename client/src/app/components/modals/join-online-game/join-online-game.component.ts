@@ -12,7 +12,7 @@ import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-
 })
 export class JoinOnlineGameComponent implements AfterContentChecked {
     myName: FormControl;
-
+    deleted: boolean = false;
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: OnlineGameSettings,
         private dialogRef: MatDialogRef<JoinOnlineGameComponent>,
@@ -20,7 +20,13 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
         private cdref: ChangeDetectorRef,
         private socketHandler: NewOnlineGameSocketHandler,
         private gameLaucherService: GameLauncherService,
-    ) {}
+    ) {
+        this.socketHandler.pendingGames$.subscribe((pendingGames) => {
+            if (pendingGames.find((settings) => this.data.id === settings.id) === undefined) {
+                this.deleted = true;
+            }
+        });
+    }
 
     ngAfterContentChecked() {
         this.cdref.detectChanges();
@@ -28,12 +34,14 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
 
     cancel(): void {
         this.dialogRef.close();
+        this.deleted = false;
         this.myName.reset();
     }
 
     sendParameter(): void {
         this.dialogRef.close();
         this.socketHandler.joinPendingGame(this.data.id);
+        this.socketHandler.deletedGame$.subscribe(() => {});
         this.socketHandler.error$.subscribe((error: string) => {
             if (error) {
                 this.dialog
