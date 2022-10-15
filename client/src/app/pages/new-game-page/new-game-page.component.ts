@@ -63,12 +63,9 @@ export class NewGamePageComponent {
             const onlineGameSettings: OnlineGameSettingsUI = {
                 ...gameSettings,
                 gameMode: this.gameMode,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                playerNames: [],
                 // TODO GL3A22107-32 : Implement new game parameter :
                 botDifficulty: BotDifficulty.Expert,
-                // TODO GL3A22107-32 : Implement new game parameter :
-                magicCardIds: gameSettings.magicCardIds, // Je ne vois pas la nécessité
+                playerNames: [],
             };
             this.socketHandler.createGame(onlineGameSettings);
             this.openWaitingForPlayer();
