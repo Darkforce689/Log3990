@@ -164,9 +164,18 @@ describe('GameInfoService Online Edition', () => {
     const accountService = { account: { name: 'Tim' } };
 
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
+    const accountServiceMock = jasmine.createSpyObj('AccountService', ['actualizeAccount'], {
+        account: {
+            name: 'p1',
+            _id: '1',
+            email: 'a@b.c',
+        },
+    });
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
+                { provide: AccountService, useValue: accountServiceMock },
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: AccountService, useValue: accountService },
             ],
@@ -183,7 +192,7 @@ describe('GameInfoService Online Edition', () => {
             new GameSocketHandlerService(),
             board,
             TestBed.inject(OnlineActionCompilerService),
-            TestBed.inject(AccountService),
+            accountServiceMock,
         );
         onlineGame.players = [new Player('p1'), new Player('p2')];
     });

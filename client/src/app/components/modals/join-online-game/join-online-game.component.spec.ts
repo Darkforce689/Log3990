@@ -82,38 +82,20 @@ describe('JoinOnlineGameComponent', () => {
         expect(component.cancel).toHaveBeenCalled();
     });
 
-    it('startGame not responsive when form not complete', () => {
-        const dom = fixture.nativeElement as HTMLElement;
-        const startGameButton = dom.querySelectorAll('button')[1];
-        const spy = spyOn(component, 'sendParameter');
-        startGameButton.click();
-        expect(component.myName.valid).toBeFalse();
-        expect(spy.calls.count()).toBe(0);
-    });
-
     it('startGame should call sendParameter', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const startGameButton = dom.querySelectorAll('button')[1];
-        component.myName.setValue('easy');
-        component.myName.updateValueAndValidity();
+
         fixture.detectChanges();
         spyOn(component, 'sendParameter');
         startGameButton.click();
         fixture.detectChanges();
-        expect(component.myName.valid).toBeTrue();
         expect(component.sendParameter).toHaveBeenCalled();
     });
 
     it('startGame should close the dialog', () => {
         component.sendParameter();
         expect(mockDialogRef.close).toHaveBeenCalled();
-    });
-
-    it('cancel should close the dialog and reset form', () => {
-        component.myName.setValue('Max');
-        component.cancel();
-        expect(mockDialogRef.close).toHaveBeenCalled();
-        expect(component.myName.value).toEqual(null);
     });
 
     it('should open Error dialog if cant connect to game', (done) => {
