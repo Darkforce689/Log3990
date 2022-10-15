@@ -1,15 +1,37 @@
 package com.example.polyscrabbleclient.game.model
 
+import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.sources.Player
 
 class GameModel {
-    private val _players = mutableListOf<Player>()
+    val players = mutableListOf<Player>()
 
     fun addPlayer(p: Player) {
-        _players.add(p)
+        players.add(p)
     }
 
     fun getPlayer(position: Int): Player {
-        return _players[position]
+        return players[position]
+    }
+
+    init {
+        addPlayer(Player("playername1"))
+        addPlayer(Player("playername2"))
+        addPlayer(Player("playername3"))
+        addPlayer(Player("playername4"))
+    }
+
+    fun getActivePlayer(): Player? {
+        return try {
+            players[activePlayerIndex.value]
+        } catch (e: Error) {
+            null
+        }
+    }
+
+    // TODO : REMOVE
+    var activePlayerIndex = mutableStateOf(0)
+    fun setNextActivePlayer() {
+        activePlayerIndex.value = (activePlayerIndex.value + 1) % players.size
     }
 }

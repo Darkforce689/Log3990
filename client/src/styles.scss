@@ -38,7 +38,16 @@ $light-theme: mat.define-light-theme(
     --warn: #{$warn};
     --fg: #{$fg};
     --bg: #{$bg};
+
+    .accent-color {
+        color: mat-color($light-accent) !important;
+    }
+    
+    .primary-color {
+        color: mat-color($light-primary) !important;
+    }
 }
+
 
 $dark-primary: mat.define-palette(mat.$purple-palette, 500, 100, 900);
 $dark-accent: mat.define-palette(mat.$blue-palette, 500, 100, 900);
@@ -70,7 +79,19 @@ $dark-theme: mat.define-dark-theme(
     --warn: #{$warn};
     --fg: #{$fg};
     --bg: #{$bg};
+
+    .accent-color {
+        color: mat-color($dark-accent) !important;
+    }
+
+    .primary-color {
+        color: mat-color($dark-primary) !important;
+    }
+    
+
 }
+
+
 
 // TODO GL3A22107-104
 :root {

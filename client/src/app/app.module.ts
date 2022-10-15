@@ -20,6 +20,9 @@ import { PreventContextMenuDirective } from '@app/directives/prevent-context-men
 import { AuthInterceptor } from '@app/interceptors/auth.interceptor';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { AccountPageComponent } from '@app/pages/account/account-page/account-page.component';
+import { AvatarListComponent } from '@app/pages/account/avatar-list/avatar-list.component';
+import { AvatarComponent } from '@app/pages/account/avatar/avatar.component';
 import { AppComponent } from '@app/pages/app/app.component';
 import { BoardComponent } from '@app/pages/game-page/board/board.component';
 import { ChatBoxComponent } from '@app/pages/game-page/chat-box/chat-box.component';
@@ -82,6 +85,9 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         ThemeSelectorComponent,
         MagicCardListComponent,
         MagicCardComponent,
+        AccountPageComponent,
+        AvatarListComponent,
+        AvatarComponent,
     ],
     imports: [
         AppMaterialModule,

@@ -26,6 +26,7 @@
                 >
                 <mat-error *ngIf="isPasswordEmpty"> Veuillez remplir tout les champs </mat-error>
             </mat-form-field>
+            <app-avatar-list (srcChange)="updateAvatar($event)"></app-avatar-list>
         </mat-card-content>
 
         <mat-divider></mat-divider>

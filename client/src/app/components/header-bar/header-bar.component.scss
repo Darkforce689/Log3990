@@ -8,3 +8,18 @@ mat-toolbar {
 .inverted {
     filter: invert(1);
 }
+
+.account {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding : 2% 1% 1% 5%;
+    
+    :hover{
+        cursor: pointer;
+    }
+}
+
+.fill {
+    flex: 1 1 auto;
+}
