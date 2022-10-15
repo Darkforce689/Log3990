@@ -13,7 +13,10 @@ fun BoardView(
     val viewModel: BoardViewModel = viewModel()
     dragState.onDropCallbacks.add { viewModel.drop(dragState.draggableContent) }
 
-    DroppableView(dragState = dragState)
+    DroppableView(
+        dragState = dragState,
+        canViewReceiveDrop = { viewModel.canPlaceTile() }
+    )
     {
         BoardCanvasView(dragState, viewModel)
     }
