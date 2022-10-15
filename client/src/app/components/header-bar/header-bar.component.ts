@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { User } from '@app/pages/register-page/user.interface';
+import { AccountService } from '@app/services/account.service';
 import { ThemeService } from '@app/services/theme/theme.service';
 
 @Component({
@@ -7,9 +10,21 @@ import { ThemeService } from '@app/services/theme/theme.service';
     styleUrls: ['./header-bar.component.scss'],
 })
 export class HeaderBarComponent {
-    constructor(private themeService: ThemeService) {}
+    user: User = { _id: '', name: '', email: '', avatar: '' };
+
+    constructor(private themeService: ThemeService, private accountService: AccountService, private router: Router) {
+        this.accountService.account$.subscribe((user: User | undefined) => {
+            if (user) {
+                this.user = user;
+            }
+        });
+    }
 
     get isDarkMode() {
         return this.themeService.isDark;
+    }
+
+    navigateToAccount() {
+        this.router.navigate(['/account']);
     }
 }
