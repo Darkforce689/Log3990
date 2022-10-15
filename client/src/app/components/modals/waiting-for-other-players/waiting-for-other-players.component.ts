@@ -38,7 +38,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     }
 
     get players() {
-        return this.socketHandler.gameSettings$.getValue()?.playerNames;
+        return this.socketHandler.gameSettings$.value?.playerNames;
     }
 
     get deletedGame(): boolean {

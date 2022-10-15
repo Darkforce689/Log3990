@@ -22,6 +22,14 @@ describe('GameManagerService Online Edition', () => {
     let gameSocketHandler: GameSocketHandlerService;
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
+    const accountServiceMock = jasmine.createSpyObj('AccountService', ['actualizeAccount'], {
+        account: {
+            name: 'p1',
+            _id: '1',
+            email: 'a@b.c',
+        },
+    });
+
     const obs = of(['Test1', 'Test2', 'Test3']);
     mockBotHttpService.getDataInfo.and.returnValue(obs);
 
@@ -53,6 +61,7 @@ describe('GameManagerService Online Edition', () => {
                 { provide: AccountService, useValue: accountService },
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
+                { provide: AccountService, useValue: accountServiceMock },
             ],
             imports: [HttpClientTestingModule],
         });

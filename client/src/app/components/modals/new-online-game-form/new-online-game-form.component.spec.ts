@@ -61,7 +61,6 @@ describe('NewOnlineGameFormComponent', () => {
         const playButton = dom.querySelectorAll('button')[1];
 
         component.onlineGameSettingsUIForm.setValue({
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
             numberOfPlayers: 4,
@@ -79,7 +78,6 @@ describe('NewOnlineGameFormComponent', () => {
         const playButton = dom.querySelectorAll('button')[1];
         component.gameMode = GameMode.Magic;
         component.onlineGameSettingsUIForm.setValue({
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
             numberOfPlayers: 4,
@@ -97,7 +95,6 @@ describe('NewOnlineGameFormComponent', () => {
         const playButton = dom.querySelectorAll('button')[1];
         component.gameMode = GameMode.Magic;
         component.onlineGameSettingsUIForm.setValue({
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
             numberOfPlayers: 4,
@@ -114,7 +111,6 @@ describe('NewOnlineGameFormComponent', () => {
 
     it('setting should return group form value', () => {
         const settings = {
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
             numberOfPlayers: 4,
@@ -126,7 +122,6 @@ describe('NewOnlineGameFormComponent', () => {
     it('playGame should close the dialog', () => {
         spyOn(mockDialog, 'close');
         component.onlineGameSettingsUIForm.setValue({
-            playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
@@ -137,7 +132,6 @@ describe('NewOnlineGameFormComponent', () => {
 
     it('cancel should close the dialog and reset form', () => {
         const setting = {
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
             numberOfPlayers: 4,
@@ -147,7 +141,6 @@ describe('NewOnlineGameFormComponent', () => {
         component.cancel();
         expect(mockDialog.close).toHaveBeenCalled();
         expect(component.onlineGameSettingsUIForm.value).toEqual({
-            playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
