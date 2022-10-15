@@ -64,18 +64,18 @@ export class Server {
             this.server,
             this.onlineGameService,
             this.dictionaryService,
-            this.userService,
-            this.authService,
             this.sessionMiddlewareService,
+            this.authService,
+            this.userService,
         );
         this.onlineGameManager.newGameHandler();
 
         this.gameSocketsHandler = new GameSocketsHandler(
             this.server,
             this.gameManager,
-            this.userService,
-            this.authService,
             this.sessionMiddlewareService,
+            this.authService,
+            this.userService,
         );
         this.gameSocketsHandler.handleSockets();
 

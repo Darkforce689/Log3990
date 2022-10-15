@@ -76,6 +76,7 @@ export class NewOnlineGameSocketHandler {
             return;
         }
         this.socket.disconnect();
+        this.gameSettings$.next(undefined);
     }
 
     private connect() {
