@@ -28,9 +28,9 @@ export class NewGameSocketHandler {
         server: http.Server,
         private newGameManagerService: NewGameManagerService,
         private dictionaryService: DictionaryService,
-        private userService: UserService,
-        private authService: AuthService,
         private sessionMiddleware: SessionMiddlewareService,
+        private authService: AuthService,
+        private userService: UserService,
     ) {
         this.ioServer = new Server(server, {
             path: '/newGame',

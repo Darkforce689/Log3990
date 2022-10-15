@@ -16,9 +16,9 @@ export class GameSocketsHandler {
     constructor(
         server: http.Server,
         private gameManager: GameManagerService,
-        private userService: UserService,
-        private authService: AuthService,
         private sessionMiddleware: SessionMiddlewareService,
+        private authService: AuthService,
+        private userService: UserService,
     ) {
         this.sio = new io.Server(server, {
             path: '/game',

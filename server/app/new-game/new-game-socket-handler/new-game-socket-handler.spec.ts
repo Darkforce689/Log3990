@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-vars */
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
@@ -8,6 +10,7 @@ import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
+import { UserService } from '@app/user/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { beforeEach } from 'mocha';
@@ -32,7 +35,12 @@ describe('New Online Game Service', () => {
             port = (httpServer.address() as AddressInfo).port;
             newGameManagerService = createSinonStubInstance<NewGameManagerService>(NewGameManagerService);
             dictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
-            handler = new NewGameSocketHandler(httpServer, newGameManagerService, dictionaryService);
+            newGameManagerService = createSinonStubInstance<NewGameManagerService>(NewGameManagerService);
+            dictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
+            const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
+            const authService = createSinonStubInstance(AuthService);
+            const userService = createSinonStubInstance(UserService);
+            handler = new NewGameSocketHandler(httpServer, newGameManagerService, dictionaryService, sessionMiddleware, authService, userService);
             handler.newGameHandler();
             handler.ioServer.on('connection', (socket: Socket) => {
                 serverSocket = socket;
