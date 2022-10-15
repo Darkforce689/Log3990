@@ -10,7 +10,6 @@ import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-
     templateUrl: './join-online-game.component.html',
     styleUrls: ['./join-online-game.component.scss'],
 })
-// TODO GL3A22107-32 : No form needed
 export class JoinOnlineGameComponent implements AfterContentChecked {
     myName: FormControl;
 

@@ -62,6 +62,7 @@ export class OnlineGame extends Game {
             this.timer.timeLeftSubject.next(timeLeft);
         });
 
+        this.accountService.actualizeAccount();
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.userName = this.accountService.account!.name;
     }
