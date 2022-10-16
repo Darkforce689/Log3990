@@ -13,7 +13,7 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
 
     protected lateinit var socket: Socket
 
-    @JvmName("onObject")
+    @JvmName("onObject") // To prevent platform declaration clash
     @Synchronized
     fun <T> on(event: OnEvent, callback: (formattedContent: T?) -> Unit) {
         socket.on(event.eventName) { args ->
@@ -23,7 +23,7 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
         }
     }
 
-    @JvmName("onArray")
+    @JvmName("onArray") // To prevent platform declaration clash
     @Synchronized
     fun <T> on(event: OnEvent, callback: (formattedContent: List<T>?) -> Unit) {
         socket.on(event.eventName) { args ->
