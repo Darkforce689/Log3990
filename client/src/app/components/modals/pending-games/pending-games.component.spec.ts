@@ -36,6 +36,7 @@ describe('PendingGamesComponent', () => {
             playerNames: ['Jerry'],
             randomBonus: false,
             privateGame: false,
+            gameStatus: 'En attente',
             timePerTurn: 65000,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Expert,
@@ -46,6 +47,7 @@ describe('PendingGamesComponent', () => {
             id: '1',
             playerNames: ['Tom'],
             privateGame: false,
+            gameStatus: 'En attente',
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
@@ -157,7 +159,7 @@ describe('PendingGamesComponent', () => {
         const tables = dom.querySelectorAll('tr');
         expect(tables.length).toBe(2);
 
-        const numberHeaders = 5;
+        const numberHeaders = 6;
         const tableGames = tables[0];
         expect(tableGames.cells.length).toBe(numberHeaders);
 

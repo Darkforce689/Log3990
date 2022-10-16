@@ -63,7 +63,7 @@ describe('New Online Game Service', () => {
             magicCardIds: [],
         };
         serverSocket.on('createGame', () => {
-            expect(newGameManagerService.createPendingGame.calledWith(gameSettings)).to.be.true;
+            expect(newGameManagerService.createPendingGame.called).to.be.true;
             done();
         });
         clientSocket.emit('createGame', gameSettings);
@@ -75,6 +75,7 @@ describe('New Online Game Service', () => {
         const gameSettings = {
             playerNames: ['Max'],
             randomBonus: true,
+            privateGame: false,
             timePerTurn: 60000,
             botDifficulty: BotDifficulty.Easy,
             gameMode: GameMode.Classic,
@@ -98,7 +99,16 @@ describe('New Online Game Service', () => {
     });
 
     it('should delete pending game if client disconnect', (done) => {
-        const gameSettings = { playerNames: ['name'], randomBonus: true, timePerTurn: 60000 };
+        const gameSettings = {
+            playerNames: ['Max'],
+            randomBonus: true,
+            privateGame: false,
+            timePerTurn: 60000,
+            botDifficulty: BotDifficulty.Easy,
+            gameMode: GameMode.Classic,
+            numberOfPlayers: 2,
+            magicCardIds: [],
+        } as OnlineGameSettingsUI;
         clientSocket.emit('createGame', gameSettings);
         serverSocket.on('disconnect', () => {
             expect(newGameManagerService.deletePendingGame.called).to.be.true;
@@ -132,6 +142,7 @@ describe('New Online Game Service', () => {
         const gameSettingsUI = {
             playerNames: ['name'],
             randomBonus: true,
+            privateGame: false,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
@@ -142,6 +153,7 @@ describe('New Online Game Service', () => {
             id: 'a',
             playerNames: ['name'],
             randomBonus: true,
+            privateGame: false,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
@@ -167,10 +179,11 @@ describe('New Online Game Service', () => {
         });
     });
 
-    it('should delete pending game on game launch', (done) => {
+    it('should delete pending game on game launch if private game', (done) => {
         const gameSettingsUI = {
             playerNames: ['name'],
             randomBonus: true,
+            privateGame: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
@@ -180,6 +193,7 @@ describe('New Online Game Service', () => {
             id: 'a',
             playerNames: ['name'],
             randomBonus: true,
+            privateGame: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
@@ -193,7 +207,7 @@ describe('New Online Game Service', () => {
 
         const clientSocket2 = Client(`http://localhost:${port}`, { path: '/newGame', multiplex: false });
         clientSocket2.on('gameStarted', (clientGameSettings: OnlineGameSettings) => {
-            expect(newGameManagerService.deletePendingGame.calledWith(gameSettings.id)).to.be.true;
+            expect(newGameManagerService.deletePendingGame.called).to.be.true;
             done();
         });
         clientSocket2.emit('createGame', gameSettingsUI);

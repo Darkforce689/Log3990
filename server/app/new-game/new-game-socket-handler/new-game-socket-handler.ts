@@ -125,14 +125,14 @@ export class NewGameSocketHandler {
 
     private onDisconnect(gameId: string) {
         const games = this.newGameManagerService.getPendingGames();
-        let isActive = false;
-        for (const game of games) {
-            if (game.id === gameId && game.gameStatus !== 'En attente') {
-                isActive = true;
-                break;
-            }
+        if (!games) {
+            return;
         }
-        if (!isActive) {
+        const game = this.newGameManagerService.getPendingGames().find((gamesList) => gamesList.id === gameId);
+        if (!game) {
+            return;
+        }
+        if (game.gameStatus === 'En attente') {
             this.newGameManagerService.deletePendingGame(gameId);
         }
     }

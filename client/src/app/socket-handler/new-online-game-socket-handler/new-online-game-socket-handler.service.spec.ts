@@ -17,6 +17,7 @@ describe('NewOnlineGameSocketHandler', () => {
         timePerTurn: 60000,
         playerNames: ['allo1'],
         privateGame: false,
+        gameStatus: 'En attente',
         randomBonus: false,
         gameMode: GameMode.Classic,
         botDifficulty: BotDifficulty.Easy,

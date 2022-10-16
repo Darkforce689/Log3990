@@ -12,12 +12,12 @@ export class NewGameManagerService {
 
     getPendingGames(): OnlineGameSettings[] {
         const games: OnlineGameSettings[] = [];
-        const activeGames: string[] = [];
+        const activeGames: Set<string> = new Set<string>();
         this.gameMaster.activeGames.forEach((game, id) => {
-            activeGames.push(id);
+            activeGames.add(id);
         });
         this.pendingGames.forEach((game, id) => {
-            if (game.gameStatus === 'En cours' && !activeGames.includes(id)) {
+            if (game.gameStatus === 'En cours' && !activeGames.has(id)) {
                 this.deletePendingGame(id);
                 return;
             }

@@ -81,6 +81,7 @@ describe('NewOnlineGameFormComponent', () => {
         component.onlineGameSettingsUIForm.setValue({
             playerName: 'samuel',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
@@ -97,6 +98,7 @@ describe('NewOnlineGameFormComponent', () => {
         component.gameMode = GameMode.Magic;
         component.onlineGameSettingsUIForm.setValue({
             playerName: 'samuel',
+            privateGame: false,
             timePerTurn: 60000,
             randomBonus: true,
         });
