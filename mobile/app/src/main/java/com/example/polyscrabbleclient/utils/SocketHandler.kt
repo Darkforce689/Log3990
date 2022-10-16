@@ -34,7 +34,7 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
     }
 
     @Synchronized
-    fun <T> emit(event: EmitLobbyEvent, content: T) {
+    fun <T> emit(event: EmitEvent, content: T) {
         val contentType = EventTypes[event] as Class<T>
         val formattedContent = formatRequest(content, contentType)
         socket.emit(event.eventName, formattedContent)
