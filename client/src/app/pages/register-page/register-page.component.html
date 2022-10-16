@@ -7,14 +7,16 @@
             <mat-form-field>
                 <mat-label>Pseudonyme</mat-label>
                 <input matInput autocomplete="off" [formControlName]="'name'" />
-                <mat-error *ngIf="!isNameValid"> Veuillez saisir un nom valide </mat-error>
                 <mat-error *ngIf="registerForm.controls.name.hasError('notUnique')"> Un compte utilise déjà ce pseudonyme </mat-error>
+                <mat-error *ngIf="!isNameValid"> Veuillez saisir un nom valide </mat-error>
+                <mat-error *ngIf="isNameEmpty"> Veuillez remplir tout les champs </mat-error>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Email</mat-label>
                 <input matInput type="email" placeholder="Ex. pat@example.com" [formControlName]="'email'" />
-                <mat-error *ngIf="!isEmailValid"> Veuillez saisir un e-mail valide </mat-error>
                 <mat-error *ngIf="registerForm.controls.email.hasError('notUnique')"> Un compte utilise déjà ce e-mail </mat-error>
+                <mat-error *ngIf="!isEmailValid"> Veuillez saisir un e-mail valide </mat-error>
+                <mat-error *ngIf="isEmailEmpty"> Veuillez remplir tout les champs </mat-error>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Mot de passe</mat-label>
@@ -22,7 +24,9 @@
                 <mat-error *ngIf="!isPasswordValid">
                     Veuillez saisir un mot de passe entre {{ minPasswordLength }} et {{ maxPasswordLength }}</mat-error
                 >
+                <mat-error *ngIf="isPasswordEmpty"> Veuillez remplir tout les champs </mat-error>
             </mat-form-field>
+            <app-avatar-list (srcChange)="updateAvatar($event)"></app-avatar-list>
         </mat-card-content>
 
         <mat-divider></mat-divider>

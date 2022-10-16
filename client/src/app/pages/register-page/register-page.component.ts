@@ -21,11 +21,13 @@ export class RegisterPageComponent {
         ]),
         email: new FormControl('', [Validators.required, Validators.email]),
         password: new FormControl('', [Validators.required, Validators.minLength(MIN_PASSWORD_LENGTH), Validators.maxLength(MAX_PASSWORD_LENGTH)]),
+        avatar: new FormControl('', Validators.required),
     });
 
     constructor(private authService: AuthService, private router: Router) {}
 
     register() {
+        this.registerForm.markAllAsTouched();
         if (!this.isEmailValidToSend || !this.isNameValidToSend || !this.isPasswordValidToSend) {
             return;
         }
@@ -49,6 +51,10 @@ export class RegisterPageComponent {
                 });
             },
         );
+    }
+
+    updateAvatar(src: string) {
+        this.registerForm.get('avatar')?.setValue(src);
     }
 
     get isEmailValidToSend() {
@@ -81,6 +87,18 @@ export class RegisterPageComponent {
             (!this.registerForm.controls.password.hasError('minlength') && !this.registerForm.controls.password.hasError('maxlength')) ||
             this.registerForm.controls.password.hasError('required')
         );
+    }
+
+    get isEmailEmpty() {
+        return this.registerForm.controls.email.hasError('required');
+    }
+
+    get isPasswordEmpty() {
+        return this.registerForm.controls.password.hasError('required');
+    }
+
+    get isNameEmpty() {
+        return this.registerForm.controls.name.hasError('required');
     }
 
     get maxNameLength() {

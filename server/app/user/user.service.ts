@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { USER_COLLECTION } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
@@ -59,16 +60,57 @@ export class UserService {
         };
         const { _id: userId } = queryClone;
         if (!(userId instanceof ObjectId) && userId !== undefined) {
-            // eslint-disable-next-line no-underscore-dangle
             queryClone._id = new ObjectId(userId);
         }
         const result = await this.collection.findOne(queryClone);
         const user = (result ?? undefined) as User | undefined;
         if (user !== undefined) {
-            // eslint-disable-next-line no-underscore-dangle
             user._id = user._id.toString();
         }
         return user;
+    }
+
+    async updateName(query: UserQuery, userId: string): Promise<string[]> {
+        const errors = [];
+        try {
+            const { name } = query;
+            if (!name) {
+                throw Error('Name undefined');
+            }
+
+            if (await this.isNameExists(name)) {
+                errors.push(UserCreationError.NameAlreadyTaken);
+            }
+
+            if (errors.length > 0) {
+                return errors;
+            }
+
+            query._id = new ObjectId(userId);
+            if (!this.collection.find({ _id: query._id })) {
+                throw Error('No user found.');
+            }
+            this.collection.updateOne({ _id: query._id }, { $set: { name } });
+        } catch (error) {
+            ServerLogger.logError(error);
+            return ['UNEXPECTED_ERROR'];
+        }
+        return [];
+    }
+
+    async updateAvatar(query: UserQuery, userId: string): Promise<string[]> {
+        try {
+            const { avatar } = query;
+            query._id = new ObjectId(userId);
+            if (!this.collection.find({ _id: query._id })) {
+                throw Error('No user found.');
+            }
+            this.collection.updateOne({ _id: query._id }, { $set: { avatar } });
+        } catch (error) {
+            ServerLogger.logError(error);
+            return ['UNEXPECTED_ERROR'];
+        }
+        return [];
     }
 
     private async isEmailExists(email: string) {

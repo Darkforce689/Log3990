@@ -30,6 +30,7 @@ describe('NewGameManagerService', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            magicCardIds: [],
         };
         service.createPendingGame(gameSettings);
         expect(service.pendingGames.size).to.equal(1);
@@ -92,6 +93,7 @@ describe('NewGameManagerService', () => {
             dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            magicCardIds: [],
         };
         service.pendingGames.set('abc', gameSettings);
         const id = 'abc';

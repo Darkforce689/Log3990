@@ -5,4 +5,5 @@ export interface GameSettings {
     privateGame: boolean;
     gameStatus: string;
     randomBonus: boolean;
+    magicCardIds: string[];
 }

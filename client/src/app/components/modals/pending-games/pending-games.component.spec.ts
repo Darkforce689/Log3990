@@ -40,6 +40,7 @@ describe('PendingGamesComponent', () => {
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Expert,
             numberOfPlayers: 2,
+            magicCardIds: [],
         },
         {
             id: '1',
@@ -50,6 +51,7 @@ describe('PendingGamesComponent', () => {
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            magicCardIds: [],
         },
     ];
 

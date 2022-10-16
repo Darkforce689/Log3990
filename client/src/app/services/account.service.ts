@@ -41,6 +41,14 @@ export class AccountService {
         );
     }
 
+    updateName(name: string) {
+        return this.http.patch(`${environment.serverUrl}/account`, { name });
+    }
+
+    updateAvatar(avatar: string) {
+        return this.http.patch(`${environment.serverUrl}/account`, { avatar });
+    }
+
     private updateAccount(user: User | undefined) {
         this.accountSubject.next(user);
     }
