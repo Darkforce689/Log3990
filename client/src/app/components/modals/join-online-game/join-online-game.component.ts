@@ -41,7 +41,6 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
     sendParameter(): void {
         this.dialogRef.close();
         this.socketHandler.joinPendingGame(this.data.id);
-        this.socketHandler.deletedGame$.subscribe(() => {});
         this.socketHandler.error$.subscribe((error: string) => {
             if (error) {
                 this.dialog

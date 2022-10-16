@@ -33,6 +33,7 @@ describe('OnlineGame', () => {
             name: 'p1',
             _id: '1',
             email: 'a@b.c',
+            avatar: 'frite',
         });
 
         TestBed.configureTestingModule({
