@@ -2,8 +2,14 @@
     <a [routerLink]="['/']">
         <img src="assets/img/logoWhite.png" [ngClass]="{ inverted: !isDarkMode }" width="400" height="100" alt="Logo Scrabble" />
     </a>
+    <span class="fill"></span>
     <div>
         <h2>LOG3900</h2>
-        <app-theme-selector></app-theme-selector>
+       <app-theme-selector></app-theme-selector>  
     </div>
+    <div class="account" (click)="navigateToAccount()">
+        <app-avatar [src]="user.avatar" [size]="50" ></app-avatar>
+        <span>Mon compte</span>
+    </div>
+    
 </mat-toolbar>

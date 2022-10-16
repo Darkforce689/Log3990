@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { NewOnlineGameFormComponent } from './new-online-game-form.component';
 
 describe('NewOnlineGameFormComponent', () => {
@@ -64,6 +65,42 @@ describe('NewOnlineGameFormComponent', () => {
             timePerTurn: 60000,
             randomBonus: true,
         });
+        component.onlineGameSettingsUIForm.updateValueAndValidity();
+        fixture.detectChanges();
+        spyOn(component, 'playGame');
+        playButton.click();
+        fixture.detectChanges();
+        expect(component.playGame).toHaveBeenCalled();
+    });
+
+    it('play should not call playGame if no magic card selected and button pressed when magic game', () => {
+        const dom = fixture.nativeElement as HTMLElement;
+        const playButton = dom.querySelectorAll('button')[1];
+        component.gameMode = GameMode.Magic;
+        component.onlineGameSettingsUIForm.setValue({
+            playerName: 'samuel',
+            timePerTurn: 60000,
+            randomBonus: true,
+        });
+        component.onlineGameSettingsUIForm.updateValueAndValidity();
+        fixture.detectChanges();
+        spyOn(component, 'playGame');
+        playButton.click();
+        fixture.detectChanges();
+        expect(component.playGame).not.toHaveBeenCalled();
+    });
+
+    it('play should call playGame if a magic card is selected and button pressed when magic game', () => {
+        const dom = fixture.nativeElement as HTMLElement;
+        const playButton = dom.querySelectorAll('button')[1];
+        component.gameMode = GameMode.Magic;
+        component.onlineGameSettingsUIForm.setValue({
+            playerName: 'samuel',
+            timePerTurn: 60000,
+            randomBonus: true,
+        });
+        fixture.detectChanges();
+        (component.onlineGameSettingsUIForm.controls.magicCardIds as FormArray).push(new FormControl('ANY_MAGIC_CARD_ID'));
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
         spyOn(component, 'playGame');

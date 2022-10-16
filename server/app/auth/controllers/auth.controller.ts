@@ -48,13 +48,14 @@ export class AuthController {
         });
 
         this.router.post('/register', async (req, res) => {
-            const { email, name, password } = req.body;
-            if (!email || !name || !password) {
+            const { email, name, password, avatar } = req.body;
+            if (!email || !name || !password || !avatar) {
                 return res.sendStatus(StatusCodes.BAD_REQUEST);
             }
             const userCreation: UserCreation = {
                 email,
                 name,
+                avatar,
             };
 
             const { object: newUser, errors } = await this.userService.createUser(userCreation);

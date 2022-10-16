@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.example.polyscrabbleclient.message.model.User
 import com.example.polyscrabbleclient.ui.theme.disconnection
 import com.example.polyscrabbleclient.ui.theme.gamePage
+import com.example.polyscrabbleclient.ui.theme.lobbyPage
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.*
 import java.net.URL
@@ -22,6 +23,7 @@ fun StartView(navController: NavController, startViewModel: StartViewModel){
         Text(text = "Page d'accueil")
         Prototype(navController = navController)
         GamePage(navController = navController)
+        LobbyPage(navController = navController)
         Disconnection(navController = navController, startViewModel = startViewModel)
     }
 }
@@ -78,5 +80,20 @@ fun GamePage(navController: NavController) {
     )
     {
         Text(text = gamePage)
+    }
+}
+
+@Composable
+fun LobbyPage(navController: NavController) {
+    Button(
+        modifier = Modifier.padding(20.dp),
+        onClick = {
+            navController.navigate(NavPage.LobbyPage.label) {
+                launchSingleTop = true
+            }
+        }
+    )
+    {
+        Text(text = lobbyPage)
     }
 }

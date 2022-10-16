@@ -20,6 +20,13 @@
         [formControlName]="'timePerTurn'"
     ></mat-slider
     ><br />
+    <div *ngIf="isMagicGame">
+        <mat-label>Cartes de pouvoir disponibles:</mat-label>
+        <div *ngFor="let value of availableMagicCards">
+            <mat-checkbox (change)="onCheckChange($event, value)">{{ value.name }} </mat-checkbox>
+            <br />
+        </div>
+    </div>
 </mat-dialog-content>
 <br />
 <mat-dialog-actions>

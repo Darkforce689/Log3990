@@ -81,6 +81,7 @@ export class GameCreator {
             this.messagesService,
             this.newGameStateSubject,
             this.endGameSubject,
+            gameSettings.magicCardIds,
         );
     }
 
