@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 export class NewOnlineGameSocketHandler {
     pendingGameId$ = new BehaviorSubject<string | undefined>(undefined);
     deletedGame$ = new BehaviorSubject<boolean>(false);
+    kickedFromGame$ = new BehaviorSubject<boolean>(false);
     pendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     gameSettings$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     gameStarted$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
@@ -24,6 +25,7 @@ export class NewOnlineGameSocketHandler {
         this.gameStarted$.next(undefined);
         this.isGameOwner = false;
         this.deletedGame$.next(false);
+        this.kickedFromGame$.next(false);
     }
 
     createGame(gameSettings: OnlineGameSettingsUI) {
@@ -34,6 +36,7 @@ export class NewOnlineGameSocketHandler {
         this.socket.emit('createGame', gameSettings);
         this.isGameOwner = true;
         this.deletedGame$.next(false);
+        this.kickedFromGame$.next(false);
         this.waitForOtherPlayers();
     }
 
@@ -43,6 +46,7 @@ export class NewOnlineGameSocketHandler {
             this.pendingGames$.next(pendingGames);
         });
         this.deletedGame$.next(false);
+        this.kickedFromGame$.next(false);
     }
 
     joinPendingGame(id: string) {
@@ -54,10 +58,15 @@ export class NewOnlineGameSocketHandler {
         this.listenErrorMessage();
         this.listenForGameStart();
         this.listenForHostQuit();
+        this.listenForKick();
     }
 
     listenForHostQuit() {
         this.socket.on('hostQuit', () => this.deletedGame$.next(true));
+    }
+
+    listenForKick() {
+        this.socket.on('kicked', () => this.kickedFromGame$.next(true));
     }
 
     launchGame() {
@@ -69,6 +78,27 @@ export class NewOnlineGameSocketHandler {
         }
         this.socket.emit('launchGame', this.pendingGameId$.value);
         this.listenForGameStart();
+    }
+
+    kickPlayer(playerId: string) {
+        if (!this.socket.connected) {
+            throw Error("Can't kick player, not connected to server");
+        }
+        if (this.pendingGameId$.value === undefined) {
+            throw Error("Can't kick player, no pending game id");
+        }
+        const kickedPlayerNbr = this.gameSettings$.value?.playerNames.findIndex((player) => player === playerId);
+        this.socket.emit('kickPlayer', this.pendingGameId$.value, kickedPlayerNbr);
+    }
+
+    acceptPlayer(playerId: string) {
+        if (!this.socket.connected) {
+            throw Error("Can't accept player, not connected to server");
+        }
+        if (this.pendingGameId$.value === undefined) {
+            throw Error("Can't accept player, no pending game id");
+        }
+        this.socket.emit('acceptPlayer', { gameId: this.pendingGameId$.value, playerId });
     }
 
     disconnectSocket() {

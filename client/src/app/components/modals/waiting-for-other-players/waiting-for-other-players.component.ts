@@ -24,6 +24,14 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         this.socketHandler.launchGame();
     }
 
+    kickPlayer(playerId: string) {
+        this.socketHandler.kickPlayer(playerId);
+    }
+
+    acceptPlayer(playerId: string) {
+        this.socketHandler.acceptPlayer(playerId);
+    }
+
     get canLaunchGame() {
         return this.socketHandler.isGameOwner;
     }
@@ -31,6 +39,20 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     cancel() {
         this.socketHandler.isGameOwner = false;
         this.socketHandler.disconnectSocket();
+    }
+
+    isHost(playerId: string) {
+        if (this.isThatPlayerHost(playerId)) {
+            return false;
+        }
+        return this.socketHandler.isGameOwner;
+    }
+
+    isThatPlayerHost(playerId: string) {
+        if (!this.players) {
+            return;
+        }
+        return playerId === this.players[0];
     }
 
     get pendingGameId$(): Observable<string | undefined> {
@@ -43,5 +65,9 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
 
     get deletedGame(): boolean {
         return this.socketHandler.deletedGame$.value;
+    }
+
+    get kickedFromGame(): boolean {
+        return this.socketHandler.kickedFromGame$.value;
     }
 }

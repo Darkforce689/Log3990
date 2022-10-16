@@ -90,6 +90,16 @@ export class NewGameSocketHandler {
                 }
             });
 
+            socket.on('kickPlayer', (id, playerNbr) => {
+                try {
+                    this.kickPlayer(id, playerNbr);
+                    this.emitPendingGamesToAll();
+                } catch (error) {
+                    ServerLogger.logError(error);
+                    this.sendError(error, socket);
+                }
+            });
+
             socket.on('disconnect', async () => {
                 const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                 const user = await this.userService.getUser({ _id });
@@ -153,6 +163,13 @@ export class NewGameSocketHandler {
 
     private deletePendingGame(id: string): void {
         this.newGameManagerService.deletePendingGame(id);
+    }
+
+    private async kickPlayer(id: string, playerNbr: number) {
+        const allClients = await this.ioServer.in(id).fetchSockets();
+        ServerLogger.logDebug(`Kicking player ${playerNbr} from game ${id}`);
+        allClients[playerNbr].emit('kicked');
+        allClients[playerNbr].disconnect();
     }
 
     private onDisconnect(name: string) {
