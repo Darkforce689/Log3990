@@ -6,26 +6,28 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { AccountService } from '@app/services/account.service';
 import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
+import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { JoinOnlineGameComponent } from './join-online-game.component';
 
-describe('JoinOnlineGameComponent', () => {
+fdescribe('JoinOnlineGameComponent', () => {
     let component: JoinOnlineGameComponent;
     let fixture: ComponentFixture<JoinOnlineGameComponent>;
     const mockError$ = new Subject<string>();
+    const mockPendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
+
     const mockDialogRef = {
         close: jasmine.createSpy('close').and.returnValue(() => {
             return;
         }),
     };
     const mockDialog = {
-        open: jasmine.createSpy('open').and.returnValue(() => {
-            return;
-        }),
+        open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(true) }),
     };
 
     const mockOnlineGameService = {
@@ -34,9 +36,11 @@ describe('JoinOnlineGameComponent', () => {
             return;
         }),
         error$: mockError$,
+        pendingGames$: mockPendingGames$,
     };
 
     const mockGameLauncher = jasmine.createSpyObj('GameLauncherService', ['waitForOnlineGameStart']);
+    const accountServiceMock = jasmine.createSpyObj('AccountService', ['actualizeAccount'], ['account']);
 
     beforeEach(
         waitForAsync(() => {
@@ -49,6 +53,7 @@ describe('JoinOnlineGameComponent', () => {
                     { provide: NewOnlineGameSocketHandler, useValue: mockOnlineGameService },
                     { provide: MatDialog, useValue: mockDialog },
                     { provide: GameLauncherService, useValue: mockGameLauncher },
+                    { provide: AccountService, useValue: accountServiceMock },
                 ],
                 declarations: [JoinOnlineGameComponent, DatePipe],
                 schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -82,38 +87,20 @@ describe('JoinOnlineGameComponent', () => {
         expect(component.cancel).toHaveBeenCalled();
     });
 
-    it('startGame not responsive when form not complete', () => {
-        const dom = fixture.nativeElement as HTMLElement;
-        const startGameButton = dom.querySelectorAll('button')[1];
-        const spy = spyOn(component, 'sendParameter');
-        startGameButton.click();
-        expect(component.myName.valid).toBeFalse();
-        expect(spy.calls.count()).toBe(0);
-    });
-
     it('startGame should call sendParameter', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const startGameButton = dom.querySelectorAll('button')[1];
-        component.myName.setValue('easy');
-        component.myName.updateValueAndValidity();
+
         fixture.detectChanges();
         spyOn(component, 'sendParameter');
         startGameButton.click();
         fixture.detectChanges();
-        expect(component.myName.valid).toBeTrue();
         expect(component.sendParameter).toHaveBeenCalled();
     });
 
     it('startGame should close the dialog', () => {
         component.sendParameter();
         expect(mockDialogRef.close).toHaveBeenCalled();
-    });
-
-    it('cancel should close the dialog and reset form', () => {
-        component.myName.setValue('Max');
-        component.cancel();
-        expect(mockDialogRef.close).toHaveBeenCalled();
-        expect(component.myName.value).toEqual(null);
     });
 
     it('should open Error dialog if cant connect to game', (done) => {

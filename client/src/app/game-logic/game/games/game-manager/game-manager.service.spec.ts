@@ -14,7 +14,6 @@ import { BotHttpService } from '@app/services/bot-http.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
-import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
 import { of } from 'rxjs';
 import { GameManagerService } from './game-manager.service';
 
@@ -23,6 +22,14 @@ describe('GameManagerService Online Edition', () => {
     let gameSocketHandler: GameSocketHandlerService;
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
+    const accountServiceMock = jasmine.createSpyObj('AccountService', ['actualizeAccount'], {
+        account: {
+            name: 'p1',
+            _id: '1',
+            email: 'a@b.c',
+        },
+    });
+
     const obs = of(['Test1', 'Test2', 'Test3']);
     mockBotHttpService.getDataInfo.and.returnValue(obs);
 
@@ -56,6 +63,7 @@ describe('GameManagerService Online Edition', () => {
                 { provide: AccountService, useValue: accountService },
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
+                { provide: AccountService, useValue: accountServiceMock },
             ],
             imports: [HttpClientTestingModule],
         });
@@ -64,24 +72,18 @@ describe('GameManagerService Online Edition', () => {
     });
 
     it('should join an online game', () => {
-        const userAuth: UserAuth = {
-            playerName: 'p1',
-            gameToken: '0',
-        };
+        const gameToken = '0';
 
-        service.joinOnlineGame(userAuth, onlineGameSettings);
+        service.joinOnlineGame(gameToken, onlineGameSettings);
         const result = service['game'];
         expect(result).toBeInstanceOf(OnlineGame);
     });
 
     it('should stop game if online game exist on join an online game', () => {
-        const userAuth: UserAuth = {
-            playerName: 'p1',
-            gameToken: '0',
-        };
+        const gameToken = '0';
         const gameSpy = spyOn(service, 'stopGame').and.callThrough();
-        service.joinOnlineGame(userAuth, onlineGameSettings);
-        service.joinOnlineGame(userAuth, onlineGameSettings);
+        service.joinOnlineGame(gameToken, onlineGameSettings);
+        service.joinOnlineGame(gameToken, onlineGameSettings);
         expect(gameSpy).toHaveBeenCalled();
     });
 
@@ -99,12 +101,9 @@ describe('GameManagerService Online Edition', () => {
             magicCardIds: [],
         };
 
-        const userAuth: UserAuth = {
-            playerName: 'p1',
-            gameToken: '0',
-        };
+        const gameToken = '0';
 
-        expect(() => service.joinOnlineGame(userAuth, faultyOnlineGameSettings)).toThrowError('No opponent name was entered');
+        expect(() => service.joinOnlineGame(gameToken, faultyOnlineGameSettings)).toThrowError('No opponent name was entered');
     });
 
     it('should test the disconnectedFromServerSubject subject', () => {
@@ -120,22 +119,16 @@ describe('GameManagerService Online Edition', () => {
     });
 
     it('should join an online game when you are the opponent', () => {
-        const userAuth: UserAuth = {
-            playerName: 'p1',
-            gameToken: '0',
-        };
+        const gameToken = '0';
 
-        service.joinOnlineGame(userAuth, onlineGameSettings);
+        service.joinOnlineGame(gameToken, onlineGameSettings);
         const result = service['game'];
         expect(result).toBeInstanceOf(OnlineGame);
     });
 
     it('should stopOnlineGame when onlineGame is undefined', () => {
-        const userAuth: UserAuth = {
-            playerName: 'p1',
-            gameToken: '0',
-        };
-        service.joinOnlineGame(userAuth, onlineGameSettings);
+        const gameToken = '0';
+        service.joinOnlineGame(gameToken, onlineGameSettings);
         const spy = spyOn(service['onlineChat'], 'leaveChatRoom');
         service['stopGame']();
         expect(spy).toHaveBeenCalled();

@@ -14,7 +14,6 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     spinnerDiameter = SPINNER_DIAMETER;
     botDifficulty: string;
     isSoloStarted: boolean = false;
-
     constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler) {}
 
     ngAfterContentChecked() {
@@ -36,5 +35,13 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
 
     get pendingGameId$(): Observable<string | undefined> {
         return this.socketHandler.pendingGameId$.asObservable();
+    }
+
+    get players() {
+        return this.socketHandler.gameSettings$.value?.playerNames;
+    }
+
+    get deletedGame(): boolean {
+        return this.socketHandler.deletedGame$.value;
     }
 }

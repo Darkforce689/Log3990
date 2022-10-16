@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
 import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
@@ -8,6 +10,8 @@ import { GameSocketsHandler } from '@app/game/game-socket-handler/game-socket-ha
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction, OnlineActionType } from '@app/game/online-action.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
+import { User } from '@app/user/interfaces/user.interface';
+import { UserService } from '@app/user/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
@@ -28,18 +32,28 @@ describe('GameSocketHandler', () => {
     const mockNewGameState$ = new Subject<GameStateToken>();
     const mockTimerStartingTime$ = new Subject<TimerStartingTime>();
     const mockTimeUpdate$ = new Subject<TimerTimeLeft>();
-
+    const user: User = {
+        name: 'Max',
+        _id: '',
+        email: '',
+        avatar: '',
+    };
     before((done) => {
         httpServer = createServer();
         httpServer.listen(() => {
             port = (httpServer.address() as AddressInfo).port;
 
             stubGameManager = createSinonStubInstance<GameManagerService>(GameManagerService);
+            const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
+            const authService = createSinonStubInstance(AuthService);
+            const userService = createSinonStubInstance(UserService);
+            userService.getUser.returns(Promise.resolve(user));
+
             sinon.stub(stubGameManager, 'newGameState$').value(mockNewGameState$);
             sinon.stub(stubGameManager, 'forfeitedGameState$').value(mockPlayerInfo$);
             sinon.stub(stubGameManager, 'timerStartingTime$').value(mockTimerStartingTime$);
             sinon.stub(stubGameManager, 'timeUpdate$').value(mockTimeUpdate$);
-            handler = new GameSocketsHandler(httpServer, stubGameManager);
+            handler = new GameSocketsHandler(httpServer, stubGameManager, sessionMiddleware, authService, userService);
             handler.handleSockets();
             handler.sio.on('connection', (socket) => {
                 serverSocket = socket;

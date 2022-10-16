@@ -10,12 +10,12 @@ import { Player } from '@app/game-logic/player/player';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
-import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
 import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class GameManagerService {
+    private userName = '';
     private game: OnlineGame | undefined;
 
     private newGameSubject = new Subject<void>();
@@ -65,7 +65,7 @@ export class GameManagerService {
         this.game.playersWithIndex.set(newName, { index, player: playerRef });
     }
 
-    joinOnlineGame(userAuth: UserAuth, gameSettings: OnlineGameSettings) {
+    joinOnlineGame(gameToken: string, gameSettings: OnlineGameSettings) {
         if (this.game) {
             this.stopGame();
         }
@@ -73,18 +73,17 @@ export class GameManagerService {
             throw Error('No opponent name was entered');
         }
 
-        const username = userAuth.playerName;
         const timePerTurn = Number(gameSettings.timePerTurn);
-        const gameCreationParams: OnlineGameCreationParams = { id: gameSettings.id, timePerTurn, username };
+        const gameCreationParams: OnlineGameCreationParams = { id: gameSettings.id, timePerTurn };
 
         this.game = this.createOnlineGame(gameCreationParams, gameSettings.gameMode);
-
-        const players = this.createOnlinePlayers(username, gameSettings.playerNames);
+        this.userName = this.game.userName;
+        const players = this.createOnlinePlayers(gameSettings.playerNames);
         this.allocatePlayers(players);
         this.game.handleUserActions();
         this.info.receiveGame(this.game);
-        this.onlineChat.joinChatRoomWithUser(userAuth.gameToken);
-        this.gameSocketHandler.joinGame(userAuth);
+        this.onlineChat.joinChatRoomWithUser(gameToken);
+        this.gameSocketHandler.joinGame(gameToken);
     }
 
     startGame(): void {
@@ -105,9 +104,10 @@ export class GameManagerService {
         this.messageService.clearLog();
     }
 
-    private createOnlinePlayers(userName: string, allPlayerNames: string[]): Player[] {
+    private createOnlinePlayers(allPlayerNames: string[]): Player[] {
         const players = allPlayerNames.map((playerName) => new Player(playerName));
-        const player = players.find((playerRef) => playerRef.name === userName);
+        const player = players.find((playerRef) => playerRef.name === this.userName);
+
         if (player) {
             this.info.receivePlayer(player);
         }

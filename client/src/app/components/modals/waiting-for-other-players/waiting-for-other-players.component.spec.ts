@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { Observable, Subject } from 'rxjs';
 import { WaitingForOtherPlayersComponent } from './waiting-for-other-players.component';
@@ -16,13 +17,15 @@ describe('WaitingForOtherPlayersComponent', () => {
     let onlineSocketHandlerSpy: jasmine.SpyObj<NewOnlineGameSocketHandler>;
     let matDialog: jasmine.SpyObj<MatDialog>;
     let pendingGameId$: Subject<string>;
+    let gameSettings$: Subject<OnlineGameSettings>;
+    let deletedGame$: Observable<boolean>;
 
     beforeEach(async () => {
         matDialog = jasmine.createSpyObj('MatDialog', ['open']);
         onlineSocketHandlerSpy = jasmine.createSpyObj(
             'NewOnlineGameSocketHandler',
             ['createGame', 'listenForPendingGames', 'disconnectSocket', 'joinPendingGame', 'launchGame'],
-            ['pendingGames$', 'pendingGameId$'],
+            ['pendingGames$', 'pendingGameId$', 'deletedGame$', 'gameSettings$'],
         );
         await TestBed.configureTestingModule({
             imports: [BrowserAnimationsModule, AppMaterialModule],
@@ -39,6 +42,14 @@ describe('WaitingForOtherPlayersComponent', () => {
         (Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'pendingGameId$')?.get as jasmine.Spy<() => Observable<string>>).and.returnValue(
             pendingGameId$,
         );
+        deletedGame$ = new Observable<boolean>();
+        (Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'deletedGame$')?.get as jasmine.Spy<() => Observable<boolean>>).and.returnValue(
+            deletedGame$,
+        );
+        gameSettings$ = new Subject<OnlineGameSettings>();
+        (
+            Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'gameSettings$')?.get as jasmine.Spy<() => Observable<OnlineGameSettings>>
+        ).and.returnValue(gameSettings$);
     });
 
     beforeEach(() => {

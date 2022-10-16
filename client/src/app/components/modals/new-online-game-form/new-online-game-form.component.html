@@ -1,9 +1,5 @@
 <h2>Nouvelle Partie Multijoueurs</h2>
 <mat-dialog-content [formGroup]="onlineGameSettingsUIForm">
-    <mat-form-field>
-        <input matInput autocomplete="off" placeholder="Nom de joueur" formControlName="playerName" />
-        <mat-hint>Min 3 charactères Max 50 charactères</mat-hint>
-    </mat-form-field>
     <br />
     <br />
     <mat-checkbox color="accent" formControlName="privateGame">Partie privé</mat-checkbox>
@@ -23,6 +19,9 @@
         [formControlName]="'timePerTurn'"
     ></mat-slider
     ><br />
+    <mat-label>Nombre de joueurs: {{ numPlayer.value }} </mat-label> <br />
+    <mat-slider #numPlayer color="primary" [min]="minNumberOfPlayers" [max]="maxNumberOfPlayers" [formControlName]="'numberOfPlayers'"></mat-slider>
+    <br />
     <div *ngIf="isMagicGame">
         <mat-label>Cartes de pouvoir disponibles:</mat-label>
         <div *ngFor="let value of availableMagicCards">

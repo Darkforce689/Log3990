@@ -14,6 +14,19 @@ export class PlayerInfoComponent {
         return this.info.activePlayer.name;
     }
 
+    get user(): Player {
+        return this.info.player;
+    }
+
+    get playersInOrder(): Player[] {
+        const orderedPlayer: Player[] = this.info.players;
+        while (orderedPlayer[0].name !== this.info.player.name) {
+            this.rotatePlayers(orderedPlayer);
+        }
+
+        return orderedPlayer;
+    }
+
     get players(): Player[] {
         return this.info.players;
     }
@@ -24,5 +37,10 @@ export class PlayerInfoComponent {
 
     isActivePlayer(player: Player) {
         return player.name === this.activePlayerName;
+    }
+
+    private rotatePlayers(array: Player[]) {
+        const firstElement = array.shift();
+        if (firstElement !== undefined) array.push(firstElement);
     }
 }
