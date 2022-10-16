@@ -1,5 +1,8 @@
 package com.example.polyscrabbleclient.lobby.sources
 
+import com.example.polyscrabbleclient.utils.EmitEvent
+import com.example.polyscrabbleclient.utils.OnEvent
+
 val LobbyEventTypes = mapOf(
     Pair(
         OnLobbyEvent.GameJoined,
@@ -35,16 +38,20 @@ val LobbyEventTypes = mapOf(
     ),
 )
 
-enum class OnLobbyEvent (val eventName: String) {
-    GameJoined("gameJoined"),
-    GameStarted("gameStarted"),
-    PendingGames("pendingGames"),
-    PendingGameId("pendingGameId"),
-    Error("error"),
+class OnLobbyEvent (override val eventName: String): OnEvent(eventName) {
+    companion object {
+        val GameJoined = OnLobbyEvent("gameJoined")
+        val GameStarted = OnLobbyEvent("gameStarted")
+        val PendingGames = OnLobbyEvent("pendingGames")
+        val PendingGameId = OnLobbyEvent("pendingGameId")
+        val Error = OnLobbyEvent("error")
+    }
 }
 
-enum class EmitLobbyEvent (val eventName: String) {
-    CreateGame("createGame"),
-    LaunchGame("launchGame"),
-    JoinGame("joinGame"),
+class EmitLobbyEvent (override val eventName: String): EmitEvent(eventName) {
+    companion object {
+        val CreateGame = EmitLobbyEvent("createGame")
+        val LaunchGame = EmitLobbyEvent("launchGame")
+        val JoinGame = EmitLobbyEvent("joinGame")
+    }
 }
