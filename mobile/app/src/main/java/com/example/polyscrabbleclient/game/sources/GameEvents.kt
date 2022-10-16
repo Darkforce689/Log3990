@@ -1,5 +1,8 @@
 package com.example.polyscrabbleclient.game.sources
 
+import com.example.polyscrabbleclient.utils.EmitEvent
+import com.example.polyscrabbleclient.utils.OnEvent
+
 val GameEventTypes = mapOf(
     Pair(
         OnGameEvent.GameState,
@@ -31,15 +34,19 @@ val GameEventTypes = mapOf(
     ),
 )
 
-enum class OnGameEvent (val eventName: String) {
-    GameState("gameState"),
-    StartTime("timerStartingTime"),
-    RemainingTime("timeUpdate"),
-    TransitionGameState("transitionGameState"),
+class OnGameEvent (override val eventName: String): OnEvent(eventName) {
+    companion object {
+        val GameState = OnGameEvent("gameState")
+        val StartTime = OnGameEvent("timerStartingTime")
+        val RemainingTime = OnGameEvent("timeUpdate")
+        val TransitionGameState = OnGameEvent("transitionGameState")
+    }
 }
 
-enum class EmitGameEvent (val eventName: String) {
-    JoinGame("joinGame"),
-    NextAction("nextAction"),
-    Disconnect("disconnect"),
+class EmitGameEvent (override val eventName: String): EmitEvent(eventName) {
+    companion object {
+        val JoinGame = EmitGameEvent("joinGame")
+        val NextAction = EmitGameEvent("nextAction")
+        val Disconnect = EmitGameEvent("disconnect")
+    }
 }
