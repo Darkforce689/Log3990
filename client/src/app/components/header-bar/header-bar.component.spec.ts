@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatToolbar } from '@angular/material/toolbar';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
@@ -9,7 +10,7 @@ describe('HeaderBarComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [AppRoutingModule],
+            imports: [AppRoutingModule, HttpClientTestingModule],
             declarations: [HeaderBarComponent, MatToolbar],
         }).compileComponents();
         fixture = TestBed.createComponent(HeaderBarComponent);

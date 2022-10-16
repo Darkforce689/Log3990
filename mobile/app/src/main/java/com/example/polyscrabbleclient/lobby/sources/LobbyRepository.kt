@@ -35,12 +35,5 @@ object LobbyRepository {
         lobbySocket.on(OnLobbyEvent.GameStarted, onGameStarted)
         lobbySocket.on(OnLobbyEvent.PendingGames, onPendingGames)
         lobbySocket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
-//        lobbySocket.emit(
-//            EmitLobbyEvent.JoinGame,
-//            JoinGame(
-//                id = "0",
-//                name = "helloFrom2015"
-//            )
-//        )
     }
 }

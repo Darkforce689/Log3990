@@ -23,16 +23,6 @@ fun LobbyScreen(navController: NavController?) {
     }
 }
 
-//@Composable
-//fun EvenlySpacedSubColumn(content: @Composable ColumnScope.() -> Unit) {
-//    Column (
-//        modifier = Modifier.fillMaxHeight(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.SpaceEvenly
-//    ) {
-//        content()
-//    }
-//}
 
 @Composable
 fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
