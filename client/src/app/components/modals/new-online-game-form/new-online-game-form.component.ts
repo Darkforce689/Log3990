@@ -10,7 +10,7 @@ import {
     MAX_TIME_PER_TURN,
     MIN_NUMBER_OF_PLAYERS,
     MIN_TIME_PER_TURN,
-    STEP_TIME_PER_TURN,
+    STEP_TIME_PER_TURN
 } from '@app/game-logic/constants';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
@@ -38,6 +38,8 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             Validators.min(MIN_NUMBER_OF_PLAYERS),
             Validators.max(MAX_NUMBER_OF_PLAYERS),
         ]),
+        hasPassword: new FormControl(false, [Validators.required]),
+        password: new FormControl('', []),
     });
 
     minTimePerTurn = MIN_TIME_PER_TURN;
@@ -78,6 +80,8 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
             magicCardIds: [],
+            hasPassword: false,
+            password: '',
         });
     }
 

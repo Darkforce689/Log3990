@@ -51,11 +51,11 @@ export class NewOnlineGameSocketHandler {
         this.kickedFromGame$.next(false);
     }
 
-    joinPendingGame(id: string) {
+    joinPendingGame(id: string, password: string) {
         if (!this.socket.connected) {
             throw Error("Can't join game, not connected to server");
         }
-        this.socket.emit('joinGame', id);
+        this.socket.emit('joinGame', id, password);
         this.listenForWaitingRoom();
         this.listenForUpdatedGameSettings();
         this.listenErrorMessage();

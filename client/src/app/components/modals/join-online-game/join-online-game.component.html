@@ -18,7 +18,12 @@
             <mat-label>Temps par tour </mat-label>
             <input matInput [disabled]="true" value="{{ data.timePerTurn | date: 'm:ss' }} min" />
         </mat-form-field>
-        <br />
+        <div *ngIf="hasPassword">
+            <mat-form-field>
+                <mat-label>Veuillez enter le mot de passe </mat-label>
+                <input matInput autocomplete="off" placeholder="Mot de passe" formControlName="password" [formControl]="password" />
+            </mat-form-field>
+        </div>
     </mat-dialog-content>
     <br />
 </div>

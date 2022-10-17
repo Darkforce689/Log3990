@@ -43,10 +43,16 @@
 
 <mat-dialog-content #waitingForPlayer *ngIf="kickedFromGame"> L'hôte vous à retirer de la partie </mat-dialog-content>
 
-<mat-dialog-actions>
-    <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
-    <button mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>
-</mat-dialog-actions>
+<ng-template [ngIf]="!kickedFromGame && !deletedGame" [ngIfElse]="OkButton">
+    <mat-dialog-actions>
+        <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
+        <button *ngIf="!isWaiting" mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #OkButton>
+    <button mat-raised-button color="primary" [mat-dialog-close]>Ok</button>
+</ng-template>
 
 <!-- <div *ngFor="let name of players">
     <ng-container matColumnDef="name">

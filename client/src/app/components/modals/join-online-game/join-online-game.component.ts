@@ -1,4 +1,4 @@
-import { AfterContentChecked, ChangeDetectorRef, Component, Inject } from '@angular/core';
+import { AfterContentChecked, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
@@ -10,8 +10,8 @@ import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-
     templateUrl: './join-online-game.component.html',
     styleUrls: ['./join-online-game.component.scss'],
 })
-export class JoinOnlineGameComponent implements AfterContentChecked {
-    myName: FormControl;
+export class JoinOnlineGameComponent implements AfterContentChecked, OnInit {
+    password: FormControl;
     deleted: boolean = false;
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: OnlineGameSettings,
@@ -28,6 +28,10 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
         });
     }
 
+    ngOnInit() {
+        this.password = new FormControl('', []);
+    }
+
     ngAfterContentChecked() {
         this.cdref.detectChanges();
     }
@@ -35,20 +39,16 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
     cancel(): void {
         this.dialogRef.close();
         this.deleted = false;
-        this.myName.reset();
+        this.password.reset();
     }
 
     sendParameter(): void {
-        this.dialogRef.close();
-        this.socketHandler.joinPendingGame(this.data.id);
+        this.dialogRef.close(this.password.value);
+        this.socketHandler.joinPendingGame(this.data.id, this.password.value);
         this.socketHandler.error$.subscribe((error: string) => {
             if (error) {
-                this.dialog
-                    .open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error })
-                    .afterClosed()
-                    .subscribe(() => {
-                        this.dialog.closeAll();
-                    });
+                this.dialog.closeAll();
+                this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error });
             }
         });
 
@@ -61,5 +61,9 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
 
     get privateGameType() {
         return this.data.privateGame ? 'Privée' : 'Publique';
+    }
+
+    get hasPassword() {
+        return this.data.hasPassword;
     }
 }

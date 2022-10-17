@@ -78,14 +78,18 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(joinGame, async (id: string) => {
+            socket.on(joinGame, async (id: string, password: string) => {
                 try {
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
                         throw Error(`No user found with userId ${_id}`);
                     }
-                    this.joinGame(id, user.name, this.getPendingGame(id), socket);
+                    const gameSettings = this.getPendingGame(id);
+                    if (gameSettings.hasPassword && gameSettings.password !== password) {
+                        throw Error('Wrong password');
+                    }
+                    this.joinGame(id, user.name, gameSettings, socket);
                     this.emitPendingGamesToAll();
                 } catch (error) {
                     ServerLogger.logError(error);

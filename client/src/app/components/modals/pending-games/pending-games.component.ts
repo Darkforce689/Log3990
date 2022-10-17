@@ -19,7 +19,7 @@ export const DELAY = 100;
 })
 export class PendingGamesComponent implements AfterContentChecked, OnInit, AfterViewInit {
     @ViewChild(MatSort) tableSort: MatSort;
-    columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn', 'privateGame', 'gameStatus'];
+    columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn', 'hasPassword', 'privateGame', 'gameStatus'];
     selectedRow: OnlineGameSettings | undefined;
     dataSource = new MatTableDataSource<OnlineGameSettings>();
     columns: {
@@ -56,6 +56,12 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
                 columnDef: 'randomBonus',
                 header: 'Bonus Aléatoire',
                 cell: (form: OnlineGameSettings) => (form.randomBonus ? 'activé' : 'désactivé'),
+                tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
+            },
+            {
+                columnDef: 'hasPassword',
+                header: 'Mot de passe',
+                cell: (form: OnlineGameSettings) => `${form.hasPassword ? 'Oui' : 'Non'}`,
                 tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
             {
