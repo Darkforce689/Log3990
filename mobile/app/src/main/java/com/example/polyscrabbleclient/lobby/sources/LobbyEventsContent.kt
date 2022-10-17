@@ -36,9 +36,7 @@ data class PendingGameId(
     val todo: Any
 )
 
-data class Error(
-    val todo: Any
-)
+typealias Error = String
 
 data class CreateGame(
     val gameMode: GameMode,

@@ -9,10 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
-import com.example.polyscrabbleclient.lobby.sources.GameMode
-import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettingsUI
-import com.example.polyscrabbleclient.lobby.sources.PendingGames
+import com.example.polyscrabbleclient.lobby.sources.*
 
 @Composable
 fun PendingGamesView(pendingGames: MutableState<PendingGames?>) {
@@ -71,7 +68,7 @@ fun PendingGamesView(pendingGames: MutableState<PendingGames?>) {
 fun PendingGamesPreview() {
     val a = mutableStateOf<PendingGames?>(
         listOf(
-            OnlineGameSettingsUI (
+            OnlineGameSettings (
                 id = "123",
                 gameMode = GameMode.Classic,
                 botDifficulty = BotDifficulty.Easy,

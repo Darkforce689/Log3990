@@ -28,6 +28,10 @@ object LobbyRepository {
         TODO()
     }
 
+    private val onError: (error: Error?) -> Unit = { error ->
+        println("LobbyRepository -> Error : $error")
+    }
+
     init {
         lobbySocket.setSocket()
         lobbySocket.ensureConnection()
@@ -35,5 +39,6 @@ object LobbyRepository {
         lobbySocket.on(OnLobbyEvent.GameStarted, onGameStarted)
         lobbySocket.on(OnLobbyEvent.PendingGames, onPendingGames)
         lobbySocket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
+        lobbySocket.on(OnLobbyEvent.Error, onError)
     }
 }
