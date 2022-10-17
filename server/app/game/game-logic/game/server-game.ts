@@ -169,19 +169,6 @@ export class ServerGame {
         this.newGameStateSubject.next(gameStateToken);
     }
 
-    protected startTurn() {
-        if (this.endReason) {
-            this.onEndOfGame(this.endReason);
-            return;
-        }
-        const activePlayer = this.setPlayerActive();
-        if (activePlayer instanceof BotPlayer) {
-            activePlayer.generateAction(this);
-        }
-        const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
-        timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
-    }
-
     private onEndOfGame(reason: EndOfGameReason) {
         this.pointCalculator.endOfGamePointDeduction(this);
         this.displayLettersLeft();
@@ -203,6 +190,19 @@ export class ServerGame {
         for (const player of this.players) {
             player.letterRack = this.letterBag.drawEmptyRackLetters();
         }
+    }
+
+    private startTurn() {
+        if (this.endReason) {
+            this.onEndOfGame(this.endReason);
+            return;
+        }
+        const activePlayer = this.setPlayerActive();
+        if (activePlayer instanceof BotPlayer) {
+            activePlayer.generateAction(this);
+        }
+        const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
+        timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
     }
 
     private displayLettersLeft() {
