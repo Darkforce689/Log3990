@@ -8,7 +8,6 @@ import {
     EXCHANGEHORSE_ID,
     SPLITPOINTS_ID,
     UI_MAGIC_CARD_MAP,
-    SKIPNEXTTURN_ID,
 } from '@app/game-logic/actions/magic-card/magic-card-constants';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 
@@ -73,8 +72,6 @@ export class MagicCardComponent implements AfterContentChecked {
                 return this.canPlaceRandomBonusMagicCard;
             case EXCHANGEHORSE_ID:
                 return this.canUseMagicCards;
-            case SKIPNEXTTURN_ID:
-                return this.canUseMagicCards;
             default:
                 return false;
         }
@@ -108,10 +105,6 @@ export class MagicCardComponent implements AfterContentChecked {
         this.inputController.exchangeHorse(this.info.player);
     }
 
-    skipNextTurn() {
-        this.inputController.skipNextTurn(this.info.player);
-    }
-
     execute() {
         switch (this.magicCardId) {
             case SPLITPOINTS_ID:
@@ -125,9 +118,6 @@ export class MagicCardComponent implements AfterContentChecked {
                 break;
             case EXCHANGEHORSE_ID:
                 this.exchangeHorse();
-                break;
-            case SKIPNEXTTURN_ID:
-                this.skipNextTurn();
                 break;
         }
     }
