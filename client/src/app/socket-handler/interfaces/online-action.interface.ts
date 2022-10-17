@@ -6,6 +6,7 @@ export interface OnlineAction {
     placementSettings?: PlacementSetting;
     letters?: string;
     letterRack?: Letter[];
+    position?: { x: number; y: number };
 }
 
 export enum OnlineActionType {
@@ -17,4 +18,5 @@ export enum OnlineActionType {
 export enum OnlineMagicCardActionType {
     SplitPoints = 'splitPoints',
     ExchangeALetter = 'exchangeALetter',
+    PlaceBonus = 'placeBonus',
 }

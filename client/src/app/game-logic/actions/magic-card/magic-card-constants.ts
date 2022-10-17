@@ -13,9 +13,14 @@ export const SPLITPOINTS_ID = 'MC_SPLIT_POINTS';
 export const SPLITPOINTS_NAME = 'Vole des points';
 export const SPLITPOINTS_DESCRIPTION = 'Voler des points du joueur en tête et les séparer entre tous les joueurs';
 
+export const PLACERANDOMBONUS_ID = 'MC_PLACE_RANDOM_BONUS';
+export const PLACERANDOMBONUS_NAME = 'Place un bonus';
+export const PLACERANDOMBONUS_DESCRIPTION = 'Place un bonus aléatoire sur une tuile';
+
 export const UI_MAGIC_CARD_ARRAY: UIMagicCard[] = [
     { id: EXCHANGEALETTER_ID, name: EXCHANGEALETTER_NAME, description: EXCHANGEALETTER_DESCRIPTION },
     { id: SPLITPOINTS_ID, name: SPLITPOINTS_NAME, description: SPLITPOINTS_DESCRIPTION },
+    { id: PLACERANDOMBONUS_ID, name: PLACERANDOMBONUS_NAME, description: PLACERANDOMBONUS_DESCRIPTION },
 ];
 
 export const UI_MAGIC_CARD_MAP: Map<string, UIMagicCard> = new Map(UI_MAGIC_CARD_ARRAY.map((magicCard) => [magicCard.id, magicCard]));
