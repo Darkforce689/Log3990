@@ -1,4 +1,4 @@
-<mat-dialog-content #waitingForPlayer *ngIf="!isSoloStarted && !deletedGame && !kickedFromGame">
+<mat-dialog-content #waitingForPlayer *ngIf="!isSoloStarted && !deletedGame && !kickedFromGame && !isWaiting">
     <div class="title">
         <div>
             <h3>En attente d'autres joueurs</h3>
@@ -20,18 +20,23 @@
         <br />
         <br />
         <div>Joueurs en attentes d'approbation:</div>
-        <div class="player" *ngFor="let name of players">
+        <div class="player" *ngFor="let name of tmpPlayers">
             <div class="player-name">
                 {{ name }}
                 <button class="menuButton" (click)="acceptPlayer(name)" *ngIf="isHost(name)">
-                    <mat-icon color="primary" (click)="acceptPlayer(name)">check</mat-icon>
+                    <mat-icon color="primary">check</mat-icon>
                 </button>
-                <button class="menuButton" (click)="kickPlayer(name)" *ngIf="isHost(name)">
-                    <mat-icon color="primary" (click)="kickPlayer(name)">close</mat-icon>
+                <button class="menuButton" (click)="refusePlayer(name)" *ngIf="isHost(name)">
+                    <mat-icon color="primary">close</mat-icon>
                 </button>
             </div>
         </div>
     </div>
+</mat-dialog-content>
+
+<mat-dialog-content #waitingForPlayer *ngIf="isWaiting">
+    En attente de la réponse de l'hôte
+    <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
 </mat-dialog-content>
 
 <mat-dialog-content #waitingForPlayer *ngIf="deletedGame"> L'hôte a annulé la partie </mat-dialog-content>

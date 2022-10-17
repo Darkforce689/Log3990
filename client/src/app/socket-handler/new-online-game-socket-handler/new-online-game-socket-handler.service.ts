@@ -12,12 +12,14 @@ export class NewOnlineGameSocketHandler {
     pendingGameId$ = new BehaviorSubject<string | undefined>(undefined);
     deletedGame$ = new BehaviorSubject<boolean>(false);
     kickedFromGame$ = new BehaviorSubject<boolean>(false);
+    isWaiting$ = new BehaviorSubject<boolean>(false);
     pendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     gameSettings$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     gameStarted$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     isGameOwner: boolean = false;
     isDisconnected$ = new Subject<boolean>();
     error$ = new Subject<string>();
+    name: string;
     socket: Socket;
     // TODO envoyer joeur quit a tout le monde
 
@@ -54,6 +56,7 @@ export class NewOnlineGameSocketHandler {
             throw Error("Can't join game, not connected to server");
         }
         this.socket.emit('joinGame', id);
+        this.listenForWaitingRoom();
         this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
         this.listenForGameStart();
@@ -61,12 +64,25 @@ export class NewOnlineGameSocketHandler {
         this.listenForKick();
     }
 
+    listenForWaitingRoom() {
+        this.socket.on('waitingRoom', (name) => {
+            this.name = name;
+            this.isWaiting$.next(true);
+        });
+        this.socket.on('accepted', () => {
+            this.isWaiting$.next(false);
+        });
+    }
+
     listenForHostQuit() {
         this.socket.on('hostQuit', () => this.deletedGame$.next(true));
     }
 
     listenForKick() {
-        this.socket.on('kicked', () => this.kickedFromGame$.next(true));
+        this.socket.on('kicked', () => {
+            this.kickedFromGame$.next(true);
+            this.isWaiting$.next(false);
+        });
     }
 
     launchGame() {
@@ -98,7 +114,17 @@ export class NewOnlineGameSocketHandler {
         if (this.pendingGameId$.value === undefined) {
             throw Error("Can't accept player, no pending game id");
         }
-        this.socket.emit('acceptPlayer', { gameId: this.pendingGameId$.value, playerId });
+        this.socket.emit('acceptPlayer', this.pendingGameId$.value, playerId);
+    }
+
+    refusePlayer(playerId: string) {
+        if (!this.socket.connected) {
+            throw Error("Can't refuse player, not connected to server");
+        }
+        if (this.pendingGameId$.value === undefined) {
+            throw Error("Can't refuse player, no pending game id");
+        }
+        this.socket.emit('refusePlayer', this.pendingGameId$.value, playerId);
     }
 
     disconnectSocket() {

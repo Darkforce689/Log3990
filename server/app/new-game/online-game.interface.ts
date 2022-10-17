@@ -5,6 +5,7 @@ export interface OnlineGameSettingsUI {
     gameMode: GameMode;
     timePerTurn: number;
     playerNames: string[];
+    tmpPlayerNames: string[];
     privateGame: boolean;
     gameStatus?: string;
     randomBonus: boolean;

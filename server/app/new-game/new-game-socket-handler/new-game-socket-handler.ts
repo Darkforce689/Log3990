@@ -20,6 +20,9 @@ const gameJoined = 'gameJoined';
 const gameStarted = 'gameStarted';
 const pendingGameId = 'pendingGameId';
 const hostQuit = 'hostQuit';
+const kickPlayer = 'kickPlayer';
+const acceptPlayer = 'acceptPlayer';
+const refusePlayer = 'refusePlayer';
 
 export class NewGameSocketHandler {
     readonly ioServer: Server;
@@ -90,9 +93,29 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on('kickPlayer', (id, playerNbr) => {
+            socket.on(kickPlayer, (id, playerNbr) => {
                 try {
                     this.kickPlayer(id, playerNbr);
+                    this.emitPendingGamesToAll();
+                } catch (error) {
+                    ServerLogger.logError(error);
+                    this.sendError(error, socket);
+                }
+            });
+
+            socket.on(acceptPlayer, (id, playerNbr) => {
+                try {
+                    this.acceptPlayer(id, playerNbr);
+                    this.emitPendingGamesToAll();
+                } catch (error) {
+                    ServerLogger.logError(error);
+                    this.sendError(error, socket);
+                }
+            });
+
+            socket.on(refusePlayer, (id, playerNbr) => {
+                try {
+                    this.refusePlayer(id, playerNbr);
                     this.emitPendingGamesToAll();
                 } catch (error) {
                     ServerLogger.logError(error);
@@ -153,7 +176,12 @@ export class NewGameSocketHandler {
         if (!gameToken) {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
         }
-        socket.join(id);
+        if (gameSettings.privateGame) {
+            socket.emit('waitingRoom');
+            socket.join(id + name);
+        } else {
+            socket.join(id);
+        }
         this.sendGameSettingsToPlayers(id, gameToken, gameSettings);
     }
 
@@ -167,9 +195,40 @@ export class NewGameSocketHandler {
 
     private async kickPlayer(id: string, playerNbr: number) {
         const allClients = await this.ioServer.in(id).fetchSockets();
-        ServerLogger.logDebug(`Kicking player ${playerNbr} from game ${id}`);
+        if (!allClients) {
+            return;
+        }
         allClients[playerNbr].emit('kicked');
         allClients[playerNbr].disconnect();
+    }
+
+    private async acceptPlayer(id: string, name: string) {
+        const client = await this.ioServer.in(id + name).fetchSockets();
+        if (!client) {
+            return;
+        }
+        client[0].join(id);
+        client[0].emit('accepted');
+        client[0].leave(id + name);
+        const gameSettings = this.newGameManagerService.acceptPlayerInPrivatePendingGame(id, name);
+        if (!gameSettings) {
+            throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
+        }
+        this.sendGameSettingsToPlayers(id, id, gameSettings);
+    }
+
+    private async refusePlayer(id: string, name: string) {
+        const client = await this.ioServer.in(id + name).fetchSockets();
+        if (!client) {
+            return;
+        }
+        client[0].emit('kicked');
+        client[0].disconnect();
+        const gameSettings = this.newGameManagerService.removeTmpPlayer(id, name);
+        if (!gameSettings) {
+            throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
+        }
+        this.sendGameSettingsToPlayers(id, id, gameSettings);
     }
 
     private onDisconnect(name: string) {

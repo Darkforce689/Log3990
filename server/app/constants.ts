@@ -15,6 +15,7 @@ export const EXPRESS_SESSION_SECRET = 'SUPER_SECURE_SCRABBLE_KEY_12345678';
 export const REDIS_URL = 'redis://redis-15767.c9.us-east-1-2.ec2.cloud.redislabs.com:15767';
 export const REDIS_USER = 'default';
 export const REDIS_PWD = '45nWN3tcOm2boSIiI1RWtQmsU3X9rTyu';
+export const NOT_FOUND = -1;
 
 // TODO set this to enable api access only for logged in user
 export const ENABLE_API_LOGIN = true;

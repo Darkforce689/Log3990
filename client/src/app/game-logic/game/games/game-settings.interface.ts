@@ -1,6 +1,7 @@
 export interface GameSettings {
     timePerTurn: number;
     playerName: string;
+    tmpPlayerNames: string[];
     botDifficulty: string;
     privateGame: boolean;
     gameStatus: string;

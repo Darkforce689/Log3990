@@ -32,6 +32,10 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         this.socketHandler.acceptPlayer(playerId);
     }
 
+    refusePlayer(playerId: string) {
+        this.socketHandler.refusePlayer(playerId);
+    }
+
     get canLaunchGame() {
         return this.socketHandler.isGameOwner;
     }
@@ -63,11 +67,19 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         return this.socketHandler.gameSettings$.value?.playerNames;
     }
 
+    get tmpPlayers() {
+        return this.socketHandler.gameSettings$.value?.tmpPlayerNames;
+    }
+
     get deletedGame(): boolean {
         return this.socketHandler.deletedGame$.value;
     }
 
     get kickedFromGame(): boolean {
         return this.socketHandler.kickedFromGame$.value;
+    }
+
+    get isWaiting(): boolean {
+        return this.socketHandler.isWaiting$.value;
     }
 }

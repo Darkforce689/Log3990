@@ -1,3 +1,4 @@
+import { NOT_FOUND } from '@app/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
@@ -50,8 +51,44 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
+        if (gameSettings.privateGame) {
+            if (!gameSettings.tmpPlayerNames) {
+                gameSettings.tmpPlayerNames = [];
+            }
+            gameSettings.tmpPlayerNames.push(name);
+            return id;
+        }
         gameSettings.playerNames.push(name);
         return id;
+    }
+
+    acceptPlayerInPrivatePendingGame(id: string, name: string): OnlineGameSettings | undefined {
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
+            return;
+        }
+        const index = gameSettings.tmpPlayerNames.findIndex((playerName) => playerName === name);
+        if (index === NOT_FOUND) {
+            return;
+        }
+        gameSettings.playerNames.push(name);
+        gameSettings.tmpPlayerNames.splice(index, 1);
+        const onlineGameSetting = this.toOnlineGameSettings(id, gameSettings);
+        return onlineGameSetting;
+    }
+
+    removeTmpPlayer(id: string, name: string): OnlineGameSettings | undefined {
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
+            return;
+        }
+        const index = gameSettings.tmpPlayerNames.findIndex((playerName) => playerName === name);
+        if (index === NOT_FOUND) {
+            return;
+        }
+        gameSettings.tmpPlayerNames.splice(index, 1);
+        const onlineGameSetting = this.toOnlineGameSettings(id, gameSettings);
+        return onlineGameSetting;
     }
 
     quitPendingGame(id: string, nameToRemove: string): string | undefined {
