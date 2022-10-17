@@ -26,14 +26,17 @@ fun LetterRackView(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom
     ) {
-        items(viewModel.tiles.size) { index ->
-            val tile = viewModel.tiles[index]
-            val select = { tile.isSelected.value = !tile.isSelected.value }
-            DraggableView(
-                dragState,
-                tile,
-            ) {
-                TileView(tile, select)
+        viewModel.user.value?.let { user ->
+            val tiles = user.letters
+            items(tiles.size) { index ->
+                val tile = tiles[index]
+                val select = { tile.isSelected.value = !tile.isSelected.value }
+                DraggableView(
+                    dragState,
+                    tile,
+                ) {
+                    TileView(tile, select)
+                }
             }
         }
     }

@@ -43,7 +43,7 @@ fun GameInfoView(viewModel: GameViewModel) {
                 strokeWidth = 5.dp
             )
             Box(contentAlignment = Alignment.Center) {
-                val time = viewModel.turnRemainingTime.value
+                val time = viewModel.game.turnRemainingTime.value
                 Text(
                     text = time.toString(),
                     color = if (time < 5)
@@ -53,7 +53,7 @@ fun GameInfoView(viewModel: GameViewModel) {
                 )
             }
         }
-        Text(lettersRemainingFR(viewModel.remainingLettersCount.value))
+        Text(lettersRemainingFR(viewModel.game.remainingLettersCount.value))
     }
 }
 

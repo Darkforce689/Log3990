@@ -1,5 +1,9 @@
 package com.example.polyscrabbleclient.game.model
 
+import androidx.compose.runtime.MutableState
+import com.example.polyscrabbleclient.game.domain.TileCreator
+import com.example.polyscrabbleclient.game.sources.GameState
+import com.example.polyscrabbleclient.game.sources.Tile
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 
 typealias TileContent = TileModel?
@@ -10,9 +14,20 @@ const val BoardDimension = 15
 val BoardRange = 1..BoardDimension
 enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 
-class BoardModel(
+class BoardModel () {
     var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { GridTileModel() } }
-) {
+        private set
+
+    fun updateGrid(grid: ArrayList<ArrayList<Tile>>) {
+        requireBoardDimensions(grid)
+        for (row in BoardRange) {
+            for (column in BoardRange) {
+                val tile = grid[row-1][column-1]
+                this[column, row] = TileCreator.createTileFromRawTile(tile)
+            }
+        }
+    }
+
     fun debugPrint() {
         for (row in tileGrid) {
             for(tile in row) {
@@ -63,6 +78,19 @@ class BoardModel(
         require(column in BoardRange && row in BoardRange)
         {
             "column and row indexes should be in range $BoardRange (found row=$row and column=$column)"
+        }
+    }
+
+    private fun requireBoardDimensions(grid: ArrayList<ArrayList<Tile>>) {
+        val rows = grid.size
+        val columns = try {
+            grid[0].size
+        } catch (e: Exception){
+            -1
+        }
+        require(columns == BoardDimension && rows == BoardDimension)
+        {
+            "grid should be of size $BoardDimension (found rows=$rows and columns=$columns)"
         }
     }
 }
