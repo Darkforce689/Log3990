@@ -1,4 +1,4 @@
 export interface ChatUser {
-    name: string;
-    currentRoom?: string;
+    id: string;
+    rooms: Set<string>;
 }

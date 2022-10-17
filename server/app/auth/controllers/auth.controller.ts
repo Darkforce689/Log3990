@@ -1,6 +1,7 @@
 import { AuthService } from '@app/auth/services/auth.service';
 import { UserCredentials } from '@app/auth/user-credentials.interface';
 import { ServerLogger } from '@app/logger/logger';
+import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { UserCreation } from '@app/user/interfaces/user-creation.interface';
 import { User } from '@app/user/interfaces/user.interface';
 import { UserService } from '@app/user/user.service';
@@ -18,7 +19,7 @@ export enum AuthErrors {
 @Service()
 export class AuthController {
     router: Router;
-    constructor(private authService: AuthService, private userService: UserService) {
+    constructor(private authService: AuthService, private userService: UserService, private conversationService: ConversationService) {
         this.configureRouter();
     }
 
@@ -70,6 +71,7 @@ export class AuthController {
             };
 
             await this.authService.addCredentialsToUser(userId, userCreds);
+            await this.conversationService.addUserToGeneralChannel(userId);
             return res.send({ user: newUser });
         });
 

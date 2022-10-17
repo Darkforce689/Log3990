@@ -9,3 +9,8 @@ export interface GlobalSystemMessage extends SystemMessage {
 export interface IndividualSystemMessage extends GlobalSystemMessage {
     playerName: string;
 }
+
+export interface SystemMessageDTO {
+    content: string;
+    roomId: string;
+}
