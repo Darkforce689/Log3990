@@ -21,11 +21,16 @@ export const EXCHANGEHORSE_ID = 'MC_EXCHANGE_HORSE';
 export const EXCHANGEHORSE_NAME = 'Échanger son chevalet';
 export const EXCHANGEHORSE_DESCRIPTION = "Échanger son chevalet avec celui d'un autre joueur aléatoire";
 
+export const SKIPNEXTTURN_ID = 'MC_SKIP_NEXT_TURN';
+export const SKIPNEXTTURN_NAME = 'Passe le prochain tour';
+export const SKIPNEXTTURN_DESCRIPTION = 'Le prochain joueur perd son tours';
+
 export const UI_MAGIC_CARD_ARRAY: UIMagicCard[] = [
     { id: EXCHANGEALETTER_ID, name: EXCHANGEALETTER_NAME, description: EXCHANGEALETTER_DESCRIPTION },
     { id: SPLITPOINTS_ID, name: SPLITPOINTS_NAME, description: SPLITPOINTS_DESCRIPTION },
     { id: PLACERANDOMBONUS_ID, name: PLACERANDOMBONUS_NAME, description: PLACERANDOMBONUS_DESCRIPTION },
     { id: EXCHANGEHORSE_ID, name: EXCHANGEHORSE_NAME, description: EXCHANGEHORSE_DESCRIPTION },
+    { id: SKIPNEXTTURN_ID, name: SKIPNEXTTURN_NAME, description: SKIPNEXTTURN_DESCRIPTION },
 ];
 
 export const UI_MAGIC_CARD_MAP: Map<string, UIMagicCard> = new Map(UI_MAGIC_CARD_ARRAY.map((magicCard) => [magicCard.id, magicCard]));

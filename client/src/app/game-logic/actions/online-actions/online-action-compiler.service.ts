@@ -9,6 +9,7 @@ import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
 import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
 import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
+import { SkipNextTurn } from '@app/game-logic/actions/magic-card/magic-card-skip-next-turn';
 
 @Injectable({
     providedIn: 'root',
@@ -81,6 +82,10 @@ export class OnlineActionCompilerService {
             return this.compileExchangeHorseOnline(action);
         }
 
+        if (action instanceof SkipNextTurn) {
+            return this.compileSkipNextTurnOnline(action);
+        }
+
         return undefined;
     }
 
@@ -116,5 +121,13 @@ export class OnlineActionCompilerService {
             letterRack: action.player.letterRack,
         };
         return exchangeHorse;
+    }
+
+    private compileSkipNextTurnOnline(action: SkipNextTurn): OnlineAction {
+        const skipNextTurn: OnlineAction = {
+            type: OnlineMagicCardActionType.SkipNextTurn,
+            letterRack: action.player.letterRack,
+        };
+        return skipNextTurn;
     }
 }
