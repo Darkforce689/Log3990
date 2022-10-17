@@ -18,4 +18,5 @@ export enum OnlineMagicCardActionType {
     SplitPoints = 'splitPoints',
     ExchangeALetter = 'exchangeALetter',
     PlaceBonus = 'placeBonus',
+    ExchangeHorse = 'exchangeHorse',
 }

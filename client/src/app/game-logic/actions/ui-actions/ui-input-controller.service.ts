@@ -13,6 +13,7 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
 import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
+import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
 
 @Injectable({
     providedIn: 'root',
@@ -65,6 +66,10 @@ export class UIInputControllerService {
 
     splitPoints(player: Player) {
         this.sendAction(new SplitPoints(player));
+    }
+
+    exchangeHorse(player: Player) {
+        this.sendAction(new ExchangeHorse(player));
     }
 
     exchangeLetter(player: Player) {

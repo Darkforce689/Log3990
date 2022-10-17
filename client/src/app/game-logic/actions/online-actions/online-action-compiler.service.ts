@@ -8,6 +8,7 @@ import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
 import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
+import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
 
 @Injectable({
     providedIn: 'root',
@@ -75,6 +76,11 @@ export class OnlineActionCompilerService {
         if (action instanceof PlaceBonus) {
             return this.compilePlaceBonusOnline(action);
         }
+
+        if (action instanceof ExchangeHorse) {
+            return this.compileExchangeHorseOnline(action);
+        }
+
         return undefined;
     }
 
@@ -102,5 +108,13 @@ export class OnlineActionCompilerService {
             letterRack: action.player.letterRack,
         };
         return passTurn;
+    }
+
+    private compileExchangeHorseOnline(action: ExchangeHorse): OnlineAction {
+        const exchangeHorse: OnlineAction = {
+            type: OnlineMagicCardActionType.ExchangeHorse,
+            letterRack: action.player.letterRack,
+        };
+        return exchangeHorse;
     }
 }
