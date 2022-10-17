@@ -53,34 +53,3 @@
 <ng-template #OkButton>
     <button mat-raised-button color="primary" [mat-dialog-close]>Ok</button>
 </ng-template>
-
-<!-- <div *ngFor="let name of players">
-    <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef> Nom </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{ element.playerId }} </mat-cell>
-    <li>
-        {{ name }}
-
-            <div (click)="kickPlayer(element)" *ngIf="isHost()">
-                <button mat-button>
-                    <mat-icon>close</mat-icon>
-                </button>
-            </div>
-        </td>
-    </li>
-</div> -->
-<!-- <div *ngFor="let name of players">
-    <li>
-        {{ name }}
-        <div (click)="fct()" *ngIf="element.canEdit">
-            <button mat-button>
-                <mat-icon>check</mat-icon>
-            </button>
-        </div>
-        <div (click)="fct()" *ngIf="isHost">
-            <button mat-button>
-                <mat-icon>close</mat-icon>
-            </button>
-        </div>
-    </li>
-</div> -->
