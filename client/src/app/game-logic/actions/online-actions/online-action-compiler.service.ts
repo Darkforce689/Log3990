@@ -7,6 +7,7 @@ import { ExchangeALetter } from '@app/game-logic/actions/magic-card/magic-card-e
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
+import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
 
 @Injectable({
     providedIn: 'root',
@@ -70,6 +71,10 @@ export class OnlineActionCompilerService {
         if (action instanceof ExchangeALetter) {
             return this.compileExchangeALetterOnline(action);
         }
+
+        if (action instanceof PlaceBonus) {
+            return this.compilePlaceBonusOnline(action);
+        }
         return undefined;
     }
 
@@ -80,6 +85,15 @@ export class OnlineActionCompilerService {
             letters: `${action.letterToExchange.char}`,
         };
         return exchangeALetter;
+    }
+
+    private compilePlaceBonusOnline(action: PlaceBonus): OnlineAction {
+        const placeBonus: OnlineAction = {
+            type: OnlineMagicCardActionType.PlaceBonus,
+            letterRack: action.player.letterRack,
+            position: { x: action.pointerPosition.x, y: action.pointerPosition.y },
+        };
+        return placeBonus;
     }
 
     private compileSplitPointsOnline(action: SplitPoints): OnlineAction {

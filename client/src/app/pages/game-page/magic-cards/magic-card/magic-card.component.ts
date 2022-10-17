@@ -2,7 +2,8 @@ import { AfterContentChecked, Component, Input } from '@angular/core';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
-import { EXCHANGEALETTER_ID, SPLITPOINTS_ID, UI_MAGIC_CARD_MAP } from '@app/game-logic/actions/magic-card/magic-card-constants';
+import { EXCHANGEALETTER_ID, PLACERANDOMBONUS_ID, SPLITPOINTS_ID, UI_MAGIC_CARD_MAP } from '@app/game-logic/actions/magic-card/magic-card-constants';
+import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 
 @Component({
     selector: 'app-magic-card',
@@ -45,12 +46,24 @@ export class MagicCardComponent implements AfterContentChecked {
         );
     }
 
+    get canPlaceRandomBonusMagicCard(): boolean {
+        return (
+            this.canUseMagicCards &&
+            this.inputController.activeAction instanceof UIPlace &&
+            this.inputController.activeAction.pointerPosition !== null &&
+            this.inputController.activeAction.concernedIndexes.size === 0 &&
+            !this.info.tileHasBonusOnIt(this.inputController.activeAction.pointerPosition)
+        );
+    }
+
     get canUse(): boolean {
         switch (this.magicCardId) {
             case EXCHANGEALETTER_ID:
                 return this.canExchangeMagicCard;
             case SPLITPOINTS_ID:
                 return this.canUseMagicCards;
+            case PLACERANDOMBONUS_ID:
+                return this.canPlaceRandomBonusMagicCard;
             default:
                 return false;
         }
@@ -76,6 +89,10 @@ export class MagicCardComponent implements AfterContentChecked {
         this.inputController.exchangeLetter(this.info.player);
     }
 
+    placeBonus() {
+        this.inputController.placeBonus(this.info.player);
+    }
+
     execute() {
         switch (this.magicCardId) {
             case SPLITPOINTS_ID:
@@ -84,6 +101,8 @@ export class MagicCardComponent implements AfterContentChecked {
             case EXCHANGEALETTER_ID:
                 this.exchangeLetter();
                 break;
+            case PLACERANDOMBONUS_ID:
+                this.placeBonus();
         }
     }
 }

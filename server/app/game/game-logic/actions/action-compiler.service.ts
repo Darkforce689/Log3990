@@ -11,6 +11,7 @@ import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/
 import { Service } from 'typedi';
 import { ExchangeALetter } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-letter';
 import { SplitPoints } from '@app/game/game-logic/actions/magic-card/magic-card-split-points';
+import { PlaceBonus } from '@app/game/game-logic/actions/magic-card/magic-card-place-bonus';
 
 @Service()
 export class ActionCompilerService {
@@ -60,6 +61,15 @@ export class ActionCompilerService {
             case OnlineMagicCardActionType.SplitPoints: {
                 this.letterRackUpdateValidator(command, player);
                 return new SplitPoints(player);
+            }
+
+            case OnlineMagicCardActionType.PlaceBonus: {
+                const position = command.position;
+                if (!position) {
+                    throw Error('Argument of Action Invalid. Cant compile.');
+                }
+                this.letterRackUpdateValidator(command, player);
+                return new PlaceBonus(player, position);
             }
 
             default:
