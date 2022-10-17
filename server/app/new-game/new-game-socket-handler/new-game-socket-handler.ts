@@ -58,6 +58,7 @@ export class NewGameSocketHandler {
                     gameId = this.createGame(gameSettings, socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.emitPendingGamesToAll();
+                    this.sendGameSettingsToPlayers(gameId, gameId, gameSettings as OnlineGameSettings);
                 } catch (error) {
                     ServerLogger.logError(error);
                     this.sendError(error, socket);
