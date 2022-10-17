@@ -87,7 +87,7 @@ export class NewGameSocketHandler {
                     }
                     const gameSettings = this.getPendingGame(id);
                     if (gameSettings.hasPassword && gameSettings.password !== password) {
-                        throw Error('Wrong password');
+                        throw Error('Mauvais mot de passe');
                     }
                     this.joinGame(id, user.name, gameSettings, socket);
                     this.emitPendingGamesToAll();
