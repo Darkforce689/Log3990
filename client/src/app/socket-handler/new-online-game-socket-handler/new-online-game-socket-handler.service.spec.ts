@@ -23,6 +23,9 @@ describe('NewOnlineGameSocketHandler', () => {
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
         magicCardIds: [],
+        tmpPlayerNames: [],
+        hasPassword: false,
+        password: '',
     } as OnlineGameSettingsUI;
 
     beforeEach(() => {
@@ -56,7 +59,7 @@ describe('NewOnlineGameSocketHandler', () => {
     it('join pending game should throw error if socket not connected', () => {
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(false);
         expect(() => {
-            service.joinPendingGame('abc');
+            service.joinPendingGame('abc', '');
         }).toThrowError();
     });
 
@@ -64,7 +67,7 @@ describe('NewOnlineGameSocketHandler', () => {
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(true);
         spyOn<any>(service, 'listenForUpdatedGameSettings').and.callThrough();
         spyOn(service, 'disconnectSocket').and.callThrough();
-        service.joinPendingGame('abc');
+        service.joinPendingGame('abc', '');
         expect(service['listenForUpdatedGameSettings']).toHaveBeenCalled();
 
         (service.socket as any).peerSideEmit('gameStarted', gameSettings);

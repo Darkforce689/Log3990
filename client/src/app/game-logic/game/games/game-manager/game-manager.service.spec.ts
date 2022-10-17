@@ -54,6 +54,9 @@ describe('GameManagerService Online Edition', () => {
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
         magicCardIds: [],
+        tmpPlayerNames: [],
+        hasPassword: false,
+        password: '',
     };
 
     const accountService = { account: { name: 'Tim' } };
@@ -99,6 +102,9 @@ describe('GameManagerService Online Edition', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames: [],
+            hasPassword: false,
+            password: '',
         };
 
         const gameToken = '0';

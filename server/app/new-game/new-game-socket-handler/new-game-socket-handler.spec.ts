@@ -26,6 +26,9 @@ describe('New Online Game Service', () => {
     let httpServer: Server;
     let newGameManagerService: StubbedClass<NewGameManagerService>;
     let dictionaryService: StubbedClass<DictionaryService>;
+    const tmpPlayerNames: string[] = [];
+    const hasPassword = false;
+    const password = '';
 
     before((done) => {
         httpServer = createServer();
@@ -69,7 +72,10 @@ describe('New Online Game Service', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
-        };
+            tmpPlayerNames: [],
+            hasPassword: false,
+            password: '',
+        } as OnlineGameSettingsUI;
         serverSocket.on('createGame', () => {
             expect(newGameManagerService.createPendingGame.called).to.be.true;
             done();
@@ -89,6 +95,9 @@ describe('New Online Game Service', () => {
             gameMode: GameMode.Classic,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         } as OnlineGameSettingsUI;
         clientSocket.on('pendingGameId', (pendingId: string) => {
             expect(pendingId).to.deep.equal(id);
@@ -116,6 +125,9 @@ describe('New Online Game Service', () => {
             gameMode: GameMode.Classic,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         } as OnlineGameSettingsUI;
         clientSocket.emit('createGame', gameSettings);
         serverSocket.on('disconnect', () => {
@@ -156,6 +168,9 @@ describe('New Online Game Service', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         } as OnlineGameSettingsUI;
         const gameSettings = {
             id: 'a',
@@ -167,6 +182,9 @@ describe('New Online Game Service', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         } as OnlineGameSettings;
 
         newGameManagerService.createPendingGame.returns('a');
@@ -196,6 +214,9 @@ describe('New Online Game Service', () => {
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         const gameSettings = {
             id: 'a',
@@ -207,6 +228,9 @@ describe('New Online Game Service', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         newGameManagerService.createPendingGame.returns('a');

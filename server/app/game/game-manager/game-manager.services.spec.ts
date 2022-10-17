@@ -36,6 +36,9 @@ import * as sinon from 'sinon';
 describe('GameManagerService', () => {
     const botDifficulty = BotDifficulty.Easy;
     const numberOfPlayers = 2;
+    const tmpPlayerNames: string[] = [];
+    const hasPassword = false;
+    const password = '';
 
     let service: GameManagerService;
     let stubPointCalculator: PointCalculatorService;
@@ -104,6 +107,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds,
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -130,6 +136,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -168,6 +177,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -195,6 +207,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -222,6 +237,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -251,6 +269,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -279,6 +300,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -311,6 +335,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -338,6 +365,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -371,6 +401,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -398,6 +431,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -421,6 +457,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -448,6 +487,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         service.createGame('1', gameSettings).then(() => {
             clock.tick(NEW_GAME_TIMEOUT);
@@ -466,6 +508,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         await service.createGame('1', gameSettings);
         service.linkedClients.clear();
@@ -487,6 +532,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         await service.createGame(gameToken, gameSettings);
 
@@ -517,6 +565,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         service.createGame('1', gameSettings).then(() => {
             service.activeGames.delete('1');
@@ -552,6 +603,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         await service.createGame('1', gameSettings);
 
@@ -588,6 +642,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         await service.createGame(gameToken, gameSettings);
         service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [] });
@@ -630,6 +687,9 @@ describe('GameManagerService', () => {
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         await service.createGame(gameToken, gameSettings);
         service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player] });

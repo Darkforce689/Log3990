@@ -31,6 +31,9 @@ describe('GameCreator', () => {
     let botDifficulty: BotDifficulty;
     let numberOfPlayers: number;
     let magicCardIds: string[];
+    let tmpPlayerNames: string[];
+    let hasPassword: boolean;
+    let password: string;
 
     const pointCalculatorStub = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompilerStub = createSinonStubInstance<GameCompiler>(GameCompiler);
@@ -54,7 +57,23 @@ describe('GameCreator', () => {
         gameMode = GameMode.Classic;
         numberOfPlayers = playerNames.length;
         magicCardIds = [];
-        onlineGameSettings = { id, playerNames, privateGame, randomBonus, timePerTurn, gameMode, botDifficulty, numberOfPlayers, magicCardIds };
+        tmpPlayerNames = [];
+        hasPassword = false;
+        password = '';
+        onlineGameSettings = {
+            id,
+            playerNames,
+            privateGame,
+            randomBonus,
+            timePerTurn,
+            gameMode,
+            botDifficulty,
+            numberOfPlayers,
+            magicCardIds,
+            tmpPlayerNames,
+            hasPassword,
+            password,
+        };
         gameCreator = new GameCreator(
             pointCalculatorStub,
             gameCompilerStub,

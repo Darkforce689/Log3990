@@ -42,6 +42,9 @@ describe('PendingGamesComponent', () => {
             botDifficulty: BotDifficulty.Expert,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames: [],
+            hasPassword: false,
+            password: '',
         },
         {
             id: '1',
@@ -54,6 +57,9 @@ describe('PendingGamesComponent', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames: [],
+            hasPassword: false,
+            password: '',
         },
     ];
 
@@ -159,7 +165,7 @@ describe('PendingGamesComponent', () => {
         const tables = dom.querySelectorAll('tr');
         expect(tables.length).toBe(2);
 
-        const numberHeaders = 6;
+        const numberHeaders = 7;
         const tableGames = tables[0];
         expect(tableGames.cells.length).toBe(numberHeaders);
 

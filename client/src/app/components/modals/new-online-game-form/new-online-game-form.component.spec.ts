@@ -65,6 +65,8 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -83,6 +85,8 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -100,6 +104,9 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            timePerTurn: 60000,
+            hasPassword: false,
+            password: '',
         });
         fixture.detectChanges();
         (component.onlineGameSettingsUIForm.controls.magicCardIds as FormArray).push(new FormControl('ANY_MAGIC_CARD_ID'));
@@ -117,6 +124,8 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
         };
         component.onlineGameSettingsUIForm.setValue(settings);
         expect(component.onlineGameSettingsUIForm.value).toEqual(settings);
@@ -129,6 +138,8 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
+            hasPassword: false,
+            password: '',
         });
         component.playGame();
         expect(mockDialog.close).toHaveBeenCalled();
@@ -140,6 +151,8 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
         };
         component.onlineGameSettingsUIForm.setValue(setting);
         spyOn(mockDialog, 'close');
@@ -150,6 +163,8 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
+            hasPassword: false,
+            password: '',
         });
     });
 });

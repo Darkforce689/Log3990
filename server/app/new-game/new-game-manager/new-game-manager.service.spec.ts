@@ -14,6 +14,10 @@ describe('NewGameManagerService', () => {
     let gameManagerStub: StubbedClass<GameManagerService>;
     let dictionaryServiceStub: StubbedClass<DictionaryService>;
     let service: NewGameManagerService;
+    const tmpPlayerNames: string[] = [];
+    const hasPassword = false;
+    const password = '';
+
     before(() => {
         gameManagerStub = createSinonStubInstance<GameManagerService>(GameManagerService);
         dictionaryServiceStub = createSinonStubInstance<DictionaryService>(DictionaryService);
@@ -31,6 +35,9 @@ describe('NewGameManagerService', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         service.createPendingGame(gameSettings);
         expect(service.pendingGames.size).to.equal(1);
@@ -94,6 +101,9 @@ describe('NewGameManagerService', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            hasPassword,
+            password,
         };
         service.pendingGames.set('abc', gameSettings);
         const id = 'abc';
