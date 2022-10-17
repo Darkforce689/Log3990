@@ -16,6 +16,8 @@ const gameJoined = 'gameJoined';
 const gameStarted = 'gameStarted';
 const pendingGameId = 'pendingGameId';
 
+// TODO : REMOVE (ONLY TEMPORARY WHILE WAITING FOR !54)
+let a = 1;
 export class NewGameSocketHandler {
     readonly ioServer: Server;
 
@@ -53,9 +55,10 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(joinGame, (id: string, name: string) => {
+            // TODO : REVERT/ACCEPT OTHER CHANGES (ONLY TEMPORARY WHILE WAITING FOR !54)
+            socket.on(joinGame, (id: string, name?: string) => {
                 try {
-                    this.joinGame(id, name, this.getPendingGame(id), socket);
+                    this.joinGame(id, name ?? `PlayerMobile#${a++}`, this.getPendingGame(id), socket);
                     this.emitPendingGamesToAll();
                 } catch (error) {
                     ServerLogger.logError(error);
