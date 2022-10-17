@@ -12,16 +12,16 @@ enum class BotDifficulty (val value: String) {
     @SerializedName("Expert") Expert("Expert"),
 }
 
-// Warning : Events Data Classes have to match the backend corresponding interfaces
-data class GameJoined(
-    val todo: Any
+// Data class inheritance leads to unexpected behaviors
+data class OnlineGameSettings (
+    val gameMode: GameMode,
+    val timePerTurn: Int,
+    val playerNames: ArrayList<String>,
+    val randomBonus: Boolean,
+    val botDifficulty: BotDifficulty,
+    val numberOfPlayers: Int,
 )
 
-data class GameStarted(
-    val todo: Any
-)
-
-typealias PendingGames = Array<OnlineGameSettingsUI>
 data class OnlineGameSettingsUI (
     val id: String,
     val gameMode: GameMode,
@@ -32,26 +32,23 @@ data class OnlineGameSettingsUI (
     val numberOfPlayers: Int,
 )
 
-data class PendingGameId(
-    val todo: Any
-)
+
+// Warning : Events Data Classes have to match the backend corresponding interfaces
+
+typealias GameJoined = OnlineGameSettings
+
+typealias GameStarted = OnlineGameSettings
+
+typealias PendingGames = Array<OnlineGameSettingsUI>
+
+typealias PendingGameId = GameToken
 
 typealias Error = String
 
-data class CreateGame(
-    val gameMode: GameMode,
-    val timePerTurn: Int,
-    val playerNames: ArrayList<String>,
-    val randomBonus: Boolean,
-    val botDifficulty: BotDifficulty,
-    val numberOfPlayers: Int,
-)
+typealias CreateGame = OnlineGameSettings
 
-data class LaunchGame(
-    val todo: Any
-)
+typealias LaunchGame = GameToken
 
-data class JoinGame(
-    val id: String,
-    val name: String,
-)
+typealias JoinGame = GameToken
+
+typealias GameToken = String

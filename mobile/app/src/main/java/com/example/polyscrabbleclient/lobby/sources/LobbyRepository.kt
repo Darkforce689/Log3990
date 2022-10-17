@@ -1,6 +1,5 @@
 package com.example.polyscrabbleclient.lobby.sources
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 
 object LobbyRepository {
@@ -8,11 +7,13 @@ object LobbyRepository {
     val pendingGames = mutableStateOf<PendingGames?>(null)
 
     private val onGameJoined: (gameJoined: GameJoined?) -> Unit = { gameJoined ->
-        TODO()
+        // TODO
+        println("onGameJoined $gameJoined")
     }
 
     private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
-        TODO()
+        // TODO
+        println("onGameStarted $gameStarted")
     }
 
     private val onPendingGames: (pendingGames: PendingGames?) -> Unit = { newPendingGames ->
@@ -22,11 +23,16 @@ object LobbyRepository {
     }
 
     private val onPendingGameId: (pendingGameId: PendingGameId?) -> Unit = { pendingGameId ->
-        TODO()
+        // TODO
+        println("onPendingGameId $pendingGameId")
     }
 
     private val onError: (error: Error?) -> Unit = { error ->
         println("LobbyRepository -> Error : $error")
+    }
+
+    fun emitJoinGame(gameToken: JoinGame) {
+        lobbySocket.emit(EmitLobbyEvent.JoinGame, gameToken)
     }
 
     init {

@@ -27,7 +27,7 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
     @Synchronized
     fun <T> on(event: OnEvent, callback: (formattedContent: List<T>?) -> Unit) {
         socket.on(event.eventName) { args ->
-            val contentType = EventTypes[event]!!
+            val contentType = EventTypes[event]
             val formattedContent = formatArrayResponse(args, contentType as Class<Array<T>>)
             callback(formattedContent)
         }
@@ -36,8 +36,17 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
     @Synchronized
     fun <T> emit(event: EmitEvent, content: T) {
         val contentType = EventTypes[event] as Class<T>
-        val formattedContent = formatRequest(content, contentType)
+        val formattedContent: Any? =
+            if (isContentPrimitive(content)) {
+                content
+            } else {
+                formatRequest(content, contentType)
+            }
         socket.emit(event.eventName, formattedContent)
+    }
+
+    private fun <T> isContentPrimitive(content: T): Boolean {
+        return content is String || content is Int || content is Boolean
     }
 
     private fun <T> formatArrayResponse(args: Array<Any>, type: Class<Array<T>>): List<T>? {

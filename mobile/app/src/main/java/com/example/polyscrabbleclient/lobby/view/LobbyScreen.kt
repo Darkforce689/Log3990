@@ -18,7 +18,9 @@ fun LobbyScreen(navController: NavController?) {
 
     EvenlySpacedRowContainer {
         Box {
-            PendingGamesView(viewModel.pendingGames)
+            PendingGamesView(viewModel.pendingGames) { pendingGameIndex ->
+                viewModel.joinGame(pendingGameIndex)
+            }
         }
     }
 }
