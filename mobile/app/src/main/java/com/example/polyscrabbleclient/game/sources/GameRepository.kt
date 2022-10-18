@@ -3,6 +3,12 @@ package com.example.polyscrabbleclient.game.sources
 import com.example.polyscrabbleclient.game.model.GameModel
 
 object GameRepository {
+
+    fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
+        // TODO : UPDATE (ONLY TEMPORARY WHILE WAITING FOR !54)
+        gameSocket.emit(EmitGameEvent.JoinGame, UserAuth("helloFrom2015", gameSettings.id))
+    }
+
     private val gameSocket = GameSocketHandler
     val game = GameModel()
 

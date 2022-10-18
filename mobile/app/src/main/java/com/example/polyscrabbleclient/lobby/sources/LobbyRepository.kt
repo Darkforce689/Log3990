@@ -1,8 +1,10 @@
 package com.example.polyscrabbleclient.lobby.sources
 
 import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.game.sources.GameRepository
 
 object LobbyRepository {
+
     private val lobbySocket = LobbySocketHandler
     val pendingGames = mutableStateOf<PendingGames?>(null)
 
@@ -12,8 +14,11 @@ object LobbyRepository {
     }
 
     private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
-        // TODO
+        // TODO : REMOVE NEXT LINE
         println("onGameStarted $gameStarted")
+        gameStarted?.let {
+            GameRepository.receiveInitialGameSettings(it)
+        }
     }
 
     private val onPendingGames: (pendingGames: PendingGames?) -> Unit = { newPendingGames ->
