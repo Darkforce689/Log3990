@@ -112,6 +112,11 @@ export class OnlineGame extends Game {
         return winners;
     }
 
+    tileHasBonus(position: { x: number; y: number }): boolean {
+        const tile = this.boardService.board.grid[position.y][position.x];
+        return tile.letterMultiplicator !== 1 || tile.wordMultiplicator !== 1;
+    }
+
     protected updateClient(gameState: GameState) {
         this.updateBoard(gameState);
         this.updateActivePlayer(gameState);

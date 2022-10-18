@@ -72,6 +72,10 @@ export class GameInfoService {
         return this.players[index].points;
     }
 
+    tileHasBonusOnIt(position: { x: number; y: number }): boolean {
+        return (this.game as OnlineGame).tileHasBonus(position);
+    }
+
     get playerIndex(): number {
         const playerWithIndex = (this.game as OnlineGame).playersWithIndex.get(this.player.name);
         if (!playerWithIndex) {

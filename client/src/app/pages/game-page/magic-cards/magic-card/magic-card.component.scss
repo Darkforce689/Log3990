@@ -1,6 +1,9 @@
 button {
     width: 150px;
     height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 button:disabled {

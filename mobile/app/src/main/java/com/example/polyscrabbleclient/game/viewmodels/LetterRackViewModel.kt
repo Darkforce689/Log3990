@@ -18,4 +18,3 @@ class LetterRackViewModel: ViewModel() {
         }
         tiles?.remove(draggableContent as TileModel)
     }
-}

@@ -12,6 +12,8 @@ import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
+import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
+import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
 
 @Injectable({
     providedIn: 'root',
@@ -66,6 +68,10 @@ export class UIInputControllerService {
         this.sendAction(new SplitPoints(player));
     }
 
+    exchangeHorse(player: Player) {
+        this.sendAction(new ExchangeHorse(player));
+    }
+
     exchangeLetter(player: Player) {
         if (!this.activeAction || !this.canBeExecuted) {
             return;
@@ -78,6 +84,15 @@ export class UIInputControllerService {
         this.discardAction();
         this.sendAction(new ExchangeALetter(player, player.letterRack[concernedIndex]));
         this.activeComponent = InputComponent.Outside;
+    }
+
+    placeBonus(player: Player) {
+        if (!this.activeAction || !(this.activeAction instanceof UIPlace) || this.activeAction.pointerPosition === null) {
+            return;
+        }
+        const pointerPosition = this.activeAction.pointerPosition;
+        this.discardAction();
+        this.sendAction(new PlaceBonus(player, pointerPosition));
     }
 
     private processInput(input: UIInput) {

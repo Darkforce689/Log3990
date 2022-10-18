@@ -4,9 +4,10 @@ import { Session } from '@app/auth/services/session.interface';
 import { ENABLE_SOCKET_LOGIN, MAX_MESSAGE_LENGTH } from '@app/constants';
 import { ServerLogger } from '@app/logger/logger';
 import { ChatUser } from '@app/messages-service/chat-user.interface';
-import { Message } from '@app/messages-service/message.interface';
+import { BaseMessage, Message } from '@app/messages-service/message.interface';
 import { Room } from '@app/messages-service/room/room';
-import { GlobalSystemMessage, IndividualSystemMessage } from '@app/messages-service/system-message.interface';
+import { RoomFactory } from '@app/messages-service/room/room-factory.service';
+import { GlobalSystemMessage, IndividualSystemMessage, SystemMessageDTO } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { UserService } from '@app/user/user.service';
 import * as http from 'http';
@@ -18,6 +19,7 @@ export const NEW_MESSAGE = 'newMessage';
 export const ROOM_MESSAGES = 'roomMessages';
 export const NEW_USER_NAME = 'userName';
 export const JOIN_ROOM = 'joinRoom';
+export const LEAVE_ROOM = 'leaveRoom';
 
 export class MessagesSocketHandler {
     activeRooms = new Map<string, Room>();
@@ -30,6 +32,7 @@ export class MessagesSocketHandler {
         private sessionMiddleware: SessionMiddlewareService,
         private authService: AuthService,
         private userService: UserService,
+        private roomFactory: RoomFactory,
     ) {
         this.sio = new io.Server(server, {
             path: '/messages',
@@ -63,9 +66,13 @@ export class MessagesSocketHandler {
                 });
             }
 
-            socket.on(NEW_MESSAGE, (content: string) => {
+            socket.on(NEW_MESSAGE, (baseMessage: BaseMessage) => {
+                if (!baseMessage.content === undefined || !baseMessage.roomId) {
+                    this.sendError(socket, Error('Message Invalide'));
+                    return;
+                }
                 try {
-                    this.sendMessageToRoom(socket.id, content);
+                    this.sendMessage(socket.id, baseMessage);
                 } catch (error) {
                     this.sendError(socket, error);
                 }
@@ -79,10 +86,32 @@ export class MessagesSocketHandler {
                         if (user === undefined) {
                             throw Error(`No user found with userId ${_id}`);
                         }
-                        ServerLogger.logDebug(user);
-                        this.createUser(user.name, socket.id);
+                        ServerLogger.logDebug(`User joined ${roomID}: ${user}`);
+                        // eslint-disable-next-line no-underscore-dangle
+                        this.createUser(_id, socket.id);
                     }
-                    this.addUserToRoom(socket, roomID);
+
+                    await this.addUserToRoom(socket, roomID);
+                } catch (error) {
+                    this.sendError(socket, error);
+                }
+            });
+
+            socket.on(LEAVE_ROOM, (roomId: string) => {
+                const user = this.users.get(socket.id);
+                if (!user) {
+                    return;
+                }
+                user.rooms.delete(roomId);
+                try {
+                    const room = this.activeRooms.get(roomId);
+                    if (!room) {
+                        throw Error('The room you are trying to leave is not active');
+                    }
+                    room.deleteUser(user.id);
+                    if (room.userIds.size === 0) {
+                        this.deleteRoom(roomId);
+                    }
                 } catch (error) {
                     this.sendError(socket, error);
                 }
@@ -94,8 +123,9 @@ export class MessagesSocketHandler {
         });
     }
 
-    private sendMessageToRoom(socketID: string, content: string): void {
+    private sendMessage(socketID: string, baseMessage: BaseMessage): void {
         const user = this.users.get(socketID);
+        const { content, roomId } = baseMessage;
         if (!user) {
             throw Error("Vous n'avez pas encore entré votre nom dans notre systême");
         }
@@ -104,59 +134,66 @@ export class MessagesSocketHandler {
             throw Error('Le message doit être plus petit que 512 charactères');
         }
 
-        const userName = user.name;
-        const message: Message = {
-            from: userName,
-            date: new Date(),
-            content,
-        };
+        if (!user.rooms.has(roomId)) {
+            throw Error(`Vous n'avez pas rejoint la room: ${roomId}`);
+        }
 
-        const roomID = user.currentRoom;
-        if (!roomID) {
+        const userId = user.id;
+
+        const rooms = user.rooms;
+        if (rooms.size === 0) {
             throw Error("Vous n'avez pas rejoint de salle de chat");
         }
 
-        const room = this.activeRooms.get(roomID);
+        const room = this.activeRooms.get(roomId);
         if (!room) {
+            // TODO handle when conversation is deleted
             throw Error("La salle de chat n'est plus active");
         }
+        const message: Message = {
+            from: userId,
+            date: new Date(),
+            content,
+            roomId,
+        };
 
-        this.sendMessageToRoomSockets(roomID, message);
+        this.sendMessageToRoomSockets(roomId, message);
         room.addMessage(message);
     }
 
-    private createUser(userName: string, socketID: string) {
+    private createUser(userId: string, socketID: string) {
         if (this.users.has(socketID)) {
-            throw Error("Vous avez déjà choisi un nom d'utilisateur");
+            return;
         }
         const newUser: ChatUser = {
-            name: userName,
+            id: userId,
+            rooms: new Set(),
         };
         this.users.set(socketID, newUser);
     }
 
-    private addUserToRoom(socket: io.Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>, roomID: string) {
+    private async addUserToRoom(socket: io.Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>, roomID: string) {
         const socketID = socket.id;
         const user = this.users.get(socketID);
         if (!user) {
             throw Error("Vous n'avez pas encore choisi un nom");
         }
-        const userRoom = user.currentRoom;
-        if (userRoom) {
-            throw Error('Vous êtes déjà dans une salle');
+
+        if (user.rooms.has(roomID)) {
+            throw Error(`Vous êtes déjà dans la salle ${roomID}`);
         }
 
         let activeRoom = this.activeRooms.get(roomID);
         if (!activeRoom) {
-            activeRoom = this.createRoom(roomID);
+            activeRoom = await this.createRoom(roomID);
         }
-        activeRoom.addUser(user.name, socketID);
-        user.currentRoom = roomID;
+        await activeRoom.addUser(user.id, socketID);
+        user.rooms.add(roomID);
         socket.join(roomID);
     }
 
-    private createRoom(roomID: string): Room {
-        const newRoom = new Room();
+    private async createRoom(roomID: string): Promise<Room> {
+        const newRoom = await this.roomFactory.createRoom(roomID);
         this.activeRooms.set(roomID, newRoom);
         return newRoom;
     }
@@ -167,18 +204,20 @@ export class MessagesSocketHandler {
             return;
         }
         this.users.delete(socketID);
-        const roomID = user.currentRoom;
-        if (!roomID) {
+        const rooms = user.rooms;
+        if (!rooms) {
             return;
         }
-        const room = this.activeRooms.get(roomID);
-        if (!room) {
-            return;
-        }
-        room.deleteUser(user.name);
-        if (room.userNames.size === 0) {
-            this.deleteRoom(roomID);
-        }
+        rooms.forEach((roomID) => {
+            const room = this.activeRooms.get(roomID);
+            if (!room) {
+                return;
+            }
+            room.deleteUser(user.id);
+            if (room.userIds.size === 0) {
+                this.deleteRoom(roomID);
+            }
+        });
     }
 
     private deleteRoom(roomID: string) {
@@ -196,29 +235,37 @@ export class MessagesSocketHandler {
     }
 
     private sendGlobalSystemMessage(globalMessage: GlobalSystemMessage) {
-        const roomID = globalMessage.gameToken;
+        const roomId = globalMessage.gameToken;
         const content = globalMessage.content;
-        this.sio.to(roomID).emit(SYSTEM_MESSAGES, content);
+        const message: SystemMessageDTO = {
+            content,
+            roomId,
+        };
+        this.sio.to(roomId).emit(SYSTEM_MESSAGES, message);
     }
 
     private sendIndividualSystemMessage(individualMessage: IndividualSystemMessage) {
-        const userName = individualMessage.playerName;
-        const roomID = individualMessage.gameToken;
-        const socketID = this.getSocketId(userName, roomID);
+        const userId = individualMessage.playerName;
+        const roomId = individualMessage.gameToken;
+        const socketID = this.getSocketId(userId, roomId);
         if (!socketID) {
             return;
         }
         const content = individualMessage.content;
-        this.sio.to(socketID).emit(SYSTEM_MESSAGES, content);
+        const message: SystemMessageDTO = {
+            content,
+            roomId,
+        };
+        this.sio.to(socketID).emit(SYSTEM_MESSAGES, message);
     }
 
-    private getSocketId(userName: string, roomID: string) {
+    private getSocketId(userId: string, roomID: string) {
         const room = this.activeRooms.get(roomID);
         if (!room) {
             return;
         }
 
-        const socketID = room.userNameToId.get(userName);
+        const socketID = room.userIdToSocketId.get(userId);
         return socketID;
     }
 }
