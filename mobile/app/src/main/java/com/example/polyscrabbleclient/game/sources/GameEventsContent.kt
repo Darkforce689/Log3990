@@ -1,5 +1,6 @@
 package com.example.polyscrabbleclient.game.sources
 
+import androidx.annotation.Nullable
 
 data class Tile (
     val letterMultiplicator: Int,
@@ -18,12 +19,20 @@ data class LightPlayer (
     val letterRack: ArrayList<Letter>,
 )
 
-abstract class OnEventContent
-abstract class EmitEventContent
+// TODO : REMOVE (ONLY TEMPORARY WHILE WAITING FOR !54)
+data class UserAuth (
+    val playerName: String,
+    val gameToken: String
+)
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
-data class RemainingTime(val a: Int): OnEventContent()
-data class StartTime(val a: Int): OnEventContent()
+
+// TODO
+typealias RemainingTime = Nullable
+
+// TODO
+typealias StartTime = Nullable
+
 data class GameState (
     val players: ArrayList<LightPlayer>,
     val activePlayerIndex: Int,
@@ -31,9 +40,16 @@ data class GameState (
     val lettersRemaining: Int,
     val isEndOfGame: Boolean,
     val winnerIndex: ArrayList<Int>,
-): OnEventContent()
-data class TransitionGameState(val a: Int): OnEventContent()
+)
 
-data class JoinGame(val a: Int): EmitEventContent()
-data class NextAction(val a: Int): EmitEventContent()
-data class Disconnect(val a: Int): EmitEventContent()
+// TODO
+typealias TransitionGameState =Nullable
+
+// TODO : UPDATE (ONLY TEMPORARY WHILE WAITING FOR !54)
+typealias JoinGame = UserAuth
+
+// TODO
+typealias NextAction = Nullable
+
+// TODO
+typealias Disconnect = Nullable
