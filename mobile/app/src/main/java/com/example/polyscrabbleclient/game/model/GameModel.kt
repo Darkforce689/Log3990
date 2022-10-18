@@ -1,9 +1,7 @@
 package com.example.polyscrabbleclient.game.model
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.message.model.User
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -16,13 +14,12 @@ class GameModel {
     init {
         try {
             GlobalScope.launch() {
-                val updateThread = User.updateUser()
                 // TODO : FIND A WAY TO GET USER NAME
-                username = User.name
-                updateThread.start()
-                updateThread.join()
+                // val updateThread = User.updateUser()
+                // username = User.name
+                // updateThread.start()
+                // updateThread.join()
             }
-            println("Username : ${User.name}")
         } catch (e: Exception) {
             println("Could not update user : $e")
         }

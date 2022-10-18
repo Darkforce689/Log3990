@@ -8,7 +8,7 @@ import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
 
 
-const val GamePath = "/gameTest"
+const val GamePath = "/game"
 
 private const val URL = BuildConfig.COMMUNICATION_URL
 
@@ -26,7 +26,6 @@ object GameSocketHandler: SocketHandler(GameEventTypes) {
         opts.extraHeaders = headers
         try {
             opts.transports = arrayOf(WebSocket.NAME)
-            opts.auth
             socket = IO.socket(URL, opts)
             socket.on(Socket.EVENT_CONNECT) { println("GameSocketHandler Connected") }
             socket.on(Socket.EVENT_DISCONNECT) { println("GameSocketHandler Disconnected") }

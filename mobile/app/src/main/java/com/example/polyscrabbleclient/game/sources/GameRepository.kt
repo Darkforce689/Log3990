@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.game.sources
 
 import com.example.polyscrabbleclient.game.model.GameModel
+import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 
 object GameRepository {
 
@@ -12,28 +13,25 @@ object GameRepository {
     private val gameSocket = GameSocketHandler
     val game = GameModel()
 
-    private val onStartTime: (startTime: StartTime?) -> Unit = { newStartTime ->
-        TODO()
+    private val onStartTime: (startTime: StartTime?) -> Unit = { startTime ->
+        // TODO
+        println("onStartTime $startTime")
     }
 
-    private val onRemainingTime: (remainingTime: RemainingTime?) -> Unit = { newRemainingTime ->
-        TODO()
+    private val onRemainingTime: (remainingTime: RemainingTime?) -> Unit = { remainingTime ->
+        // TODO
+        println("onRemainingTime $remainingTime")
     }
 
-    private val onGameState: (gameState: GameState?) -> Unit = { newGameState ->
-        if (newGameState !== null) {
-            game.update(newGameState)
-            println(newGameState.players.size)
-            println(newGameState.players[0].name)
-            println(newGameState.players[0].letterRack.size)
-            println(newGameState.grid[0][0].letterObject.char)
-        } else {
-            println("received null GameState value")
+    private val onGameState: (gameState: GameState?) -> Unit = { gameState ->
+        gameState?.let {
+            game.update(it)
         }
     }
 
     private val onTransitionGameState: (transitionGameState: TransitionGameState?) -> Unit = { transitionGameState ->
-        TODO()
+        // TODO
+        println("onTransitionGameState $transitionGameState")
     }
 
     init {
@@ -43,6 +41,5 @@ object GameRepository {
         gameSocket.on(OnGameEvent.RemainingTime, onRemainingTime)
         gameSocket.on(OnGameEvent.GameState, onGameState)
         gameSocket.on(OnGameEvent.TransitionGameState, onTransitionGameState)
-        GameSocketHandler.emit(EmitGameEvent.JoinGame, JoinGame(1))
     }
 }
