@@ -53,7 +53,7 @@ fun PreviewDragShadow() {
     d.startingPosition = Offset(100f,100f)
     d.draggableView = {
         TileView(
-            tileModel = TileCreator().createTileFromLetter('X')
+            tileModel = TileCreator.createTileFromLetter('X')
         )
         {}
     }
