@@ -88,7 +88,7 @@ fun PendingGamesView(
 fun PendingGamesPreview() {
     val a = mutableStateOf<PendingGames?>(
         listOf(
-            OnlineGameSettingsUI (
+            OnlineGameSettings(
                 id = "123",
                 gameMode = GameMode.Classic,
                 botDifficulty = BotDifficulty.Easy,
