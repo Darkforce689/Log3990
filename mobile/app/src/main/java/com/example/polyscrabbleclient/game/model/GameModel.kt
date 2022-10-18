@@ -27,8 +27,8 @@ class GameModel {
 
     val board: BoardModel = BoardModel()
 
-    var remainingLettersCount = mutableStateOf(88)
-    var turnRemainingTime = mutableStateOf(14)
+    var remainingLettersCount = mutableStateOf(0)
+    var turnRemainingTime = mutableStateOf(60)
     var turnTotalTime = mutableStateOf(60)
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
@@ -37,17 +37,22 @@ class GameModel {
 
     fun update(gameState: GameState) {
         board.updateGrid(gameState.grid)
-        updatePlayers(gameState)
-        updateActivePlayerIndex(gameState)
+        updatePlayers(gameState.players)
+        updateActivePlayerIndex(gameState.activePlayerIndex)
+        updateRemainingLetters(gameState.lettersRemaining)
         updateUser()
     }
 
-    private fun updateActivePlayerIndex(gameState: GameState) {
-        activePlayerIndex.value = gameState.activePlayerIndex
+    private fun updateRemainingLetters(updatedLettersRemaining: Int) {
+        remainingLettersCount.value = updatedLettersRemaining
     }
 
-    private fun updatePlayers(gameState: GameState) {
-        players.value = gameState.players.map { player -> Player.fromLightPlayer(player) }
+    private fun updateActivePlayerIndex(updatedActivePlayerIndex: Int) {
+        activePlayerIndex.value = updatedActivePlayerIndex
+    }
+
+    private fun updatePlayers(updatedPlayers: ArrayList<LightPlayer>) {
+        players.value = updatedPlayers.map { player -> Player.fromLightPlayer(player) }
     }
 
     private fun updateUser() {
@@ -65,13 +70,5 @@ class GameModel {
 
     fun getActivePlayer(): Player? {
         return getPlayer(activePlayerIndex.value)
-    }
-
-    // TODO : REMOVE
-    fun setNextActivePlayer() {
-        try {
-            activePlayerIndex.value = (activePlayerIndex.value + 1) % players.value.size
-        } catch (e: Exception) {
-        }
     }
 }

@@ -23,6 +23,9 @@ import com.example.polyscrabbleclient.ui.theme.lettersRemainingFR
 
 @Composable
 fun GameInfoView(viewModel: GameViewModel) {
+
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -43,7 +46,7 @@ fun GameInfoView(viewModel: GameViewModel) {
                 strokeWidth = 5.dp
             )
             Box(contentAlignment = Alignment.Center) {
-                val time = viewModel.game.turnRemainingTime.value
+                val time = viewModel.turnRemainingTime.value
                 Text(
                     text = time.toString(),
                     color = if (time < 5)
@@ -53,7 +56,7 @@ fun GameInfoView(viewModel: GameViewModel) {
                 )
             }
         }
-        Text(lettersRemainingFR(viewModel.game.remainingLettersCount.value))
+        Text(lettersRemainingFR(viewModel.remainingLettersCount.value))
     }
 }
 

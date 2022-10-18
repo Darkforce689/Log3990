@@ -27,11 +27,9 @@ data class UserAuth (
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
 
-// TODO
-typealias RemainingTime = Nullable
+typealias RemainingTime = Int
 
-// TODO
-typealias StartTime = Nullable
+typealias StartTime = Int
 
 data class GameState (
     val players: ArrayList<LightPlayer>,

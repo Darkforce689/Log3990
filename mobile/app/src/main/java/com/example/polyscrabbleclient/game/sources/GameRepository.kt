@@ -14,13 +14,15 @@ object GameRepository {
     val game = GameModel()
 
     private val onStartTime: (startTime: StartTime?) -> Unit = { startTime ->
-        // TODO
-        println("onStartTime $startTime")
+        startTime?.let {
+            game.turnRemainingTime.value = it
+        }
     }
 
     private val onRemainingTime: (remainingTime: RemainingTime?) -> Unit = { remainingTime ->
-        // TODO
-        println("onRemainingTime $remainingTime")
+        remainingTime?.let {
+            game.turnTotalTime.value = it
+        }
     }
 
     private val onGameState: (gameState: GameState?) -> Unit = { gameState ->
