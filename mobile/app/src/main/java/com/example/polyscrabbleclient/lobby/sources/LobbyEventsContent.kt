@@ -12,17 +12,7 @@ enum class BotDifficulty (val value: String) {
     @SerializedName("Expert") Expert("Expert"),
 }
 
-// Data class inheritance leads to unexpected behaviors
 data class OnlineGameSettings (
-    val gameMode: GameMode,
-    val timePerTurn: Int,
-    val playerNames: ArrayList<String>,
-    val randomBonus: Boolean,
-    val botDifficulty: BotDifficulty,
-    val numberOfPlayers: Int,
-)
-
-data class OnlineGameSettingsUI (
     val id: String,
     val gameMode: GameMode,
     val timePerTurn: Int,
@@ -39,7 +29,7 @@ typealias GameJoined = OnlineGameSettings
 
 typealias GameStarted = OnlineGameSettings
 
-typealias PendingGames = Array<OnlineGameSettingsUI>
+typealias PendingGames = Array<OnlineGameSettings>
 
 typealias PendingGameId = GameToken
 
