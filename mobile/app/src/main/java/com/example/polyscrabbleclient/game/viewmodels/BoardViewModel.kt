@@ -52,9 +52,9 @@ class BoardViewModel : ViewModel() {
         // Non-null previous coordinates -> un-hovered previous tile
         board.setTileHover(hoveredTileCoordinates!!, false)
         hoveredTileCoordinates = null
-        return
     }
 
+    // TODO : REMOVE
     fun touchBoard(gridDivisionSize: Float, tapOffset: Offset) {
         val coordinates = getTileFromLocalPosition(gridDivisionSize, tapOffset)
         if (coordinates != null && coordinates.row in BoardRange && coordinates.column in BoardRange) {
@@ -88,5 +88,13 @@ class BoardViewModel : ViewModel() {
             return
         }
         board[column, row] = draggableContent as TileModel
+    }
+
+    fun canPlaceTile(tileCoordinates: TileCoordinates? = hoveredTileCoordinates): Boolean {
+        if (tileCoordinates === null) {
+            return false
+        }
+        board.debugPrint()
+        return board[tileCoordinates] === null
     }
 }

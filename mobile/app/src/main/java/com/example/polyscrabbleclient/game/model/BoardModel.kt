@@ -31,7 +31,11 @@ class BoardModel () {
     fun debugPrint() {
         for (row in tileGrid) {
             for(tile in row) {
-                print(tile.toString())
+                if (tile.content.value !== null) {
+                    print(tile.content.value!!.letter)
+                } else {
+                    print("-")
+                }
             }
             println()
         }
@@ -65,6 +69,10 @@ class BoardModel () {
         return get(column, row.ordinal + 1)
     }
 
+    operator fun get(tileCoordinates: TileCoordinates): TileContent {
+        return get(tileCoordinates.column, tileCoordinates.row)
+    }
+
     operator fun set(column: Int, row: Int, tile: TileContent) {
         requireBoardIndexes(column, row)
         tileGrid[row-1][column-1].content.value = tile
@@ -72,6 +80,10 @@ class BoardModel () {
 
     operator fun set(column: Int, row: RowChar, tile: TileContent) {
         set(column, row.ordinal + 1, tile)
+    }
+
+    operator fun set(tileCoordinates: TileCoordinates, tile: TileContent) {
+        set(tileCoordinates.column, tileCoordinates.row, tile)
     }
 
     private fun requireBoardIndexes(column: Int, row: Int) {

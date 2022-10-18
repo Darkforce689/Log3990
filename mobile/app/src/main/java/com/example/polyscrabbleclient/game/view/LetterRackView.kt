@@ -20,23 +20,20 @@ fun LetterRackView(
     val viewModel: LetterRackViewModel = viewModel()
     dragState.onDropCallbacks.add { viewModel.removeTile(dragState.draggableContent) }
 
-    LazyRow(
+    LazyRow (
         modifier = Modifier
             .background(MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom
     ) {
-        viewModel.user.value?.let { user ->
-            val tiles = user.letters
-            items(tiles.size) { index ->
-                val tile = tiles[index]
-                val select = { tile.isSelected.value = !tile.isSelected.value }
-                DraggableView(
-                    dragState,
-                    tile,
-                ) {
-                    TileView(tile, select)
-                }
+        items(viewModel.tiles.size) { index ->
+            val tile = viewModel.tiles[index]
+            val select = { tile.isSelected.value = !tile.isSelected.value }
+            DraggableView(
+                dragState,
+                { viewModel.tiles[index] },
+            ) {
+                TileView(tile, select)
             }
         }
     }
