@@ -31,8 +31,12 @@ object LobbyRepository {
         println("LobbyRepository -> Error : $error")
     }
 
-    fun emitJoinGame(gameToken: JoinGame) {
+    fun emitJoinGame(gameToken: JoinGame, navigateToGameScreen: () -> Unit) {
         lobbySocket.emit(EmitLobbyEvent.JoinGame, gameToken)
+        // TODO : IS THIS ACCEPTABLE ?
+        lobbySocket.on(OnLobbyEvent.GameStarted) { _: GameStarted? ->
+            navigateToGameScreen()
+        }
     }
 
     init {
