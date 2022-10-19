@@ -2,30 +2,15 @@ package com.example.polyscrabbleclient.game.model
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.sources.*
-import com.example.polyscrabbleclient.message.model.User
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 const val defaultTurnTime = 60
 
-@OptIn(DelicateCoroutinesApi::class)
 class GameModel {
-
-    init {
-        try {
-            GlobalScope.launch() {
-                // TODO : FIND A WAY TO GET USER NAME
-                // val updateThread = User.updateUser()
-                // username = User.name
-                // updateThread.start()
-                // updateThread.join()
-            }
-        } catch (e: Exception) {
-            println("Could not update user : $e")
-        }
-    }
 
     val board: BoardModel = BoardModel()
 
@@ -34,8 +19,15 @@ class GameModel {
     var turnTotalTime = mutableStateOf(defaultTurnTime)
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
-    var user: MutableState<Player?> = mutableStateOf(null)
-    var username: String? = null
+    // TODO : FIND A WAY TO GET USER NAME
+    var username: String? = "helloFrom2015"
+    var user: MutableState<Player> = mutableStateOf(
+        Player(
+            "fake_$username",
+            0,
+        )
+    )
+
 
     fun update(gameState: GameState) {
         board.updateGrid(gameState.grid)
@@ -59,7 +51,11 @@ class GameModel {
 
     private fun updateUser() {
         // TODO : USE CORRECT USERNAME
-        user.value = players.value.find { player -> player.name == "helloFrom2015" }
+        val updatedUser = players.value.find { player -> player.name == username }
+        if (updatedUser === null) {
+            return
+        }
+        user.value = updatedUser
     }
 
     fun getPlayer(position: Int): Player? {
