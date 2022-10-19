@@ -39,8 +39,7 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
                 GameInfoView(viewModel)
             }
             Box {
-                // TODO : GAME ACTIONS
-                Text("GAME ACTIONS")
+                GameActionsView(viewModel)
             }
         }
         EvenlySpacedSubColumn {
