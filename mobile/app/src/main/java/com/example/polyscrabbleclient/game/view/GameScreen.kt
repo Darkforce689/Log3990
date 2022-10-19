@@ -11,12 +11,10 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.Alignment
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.game.view.draganddrop.DragShadow
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/) {
@@ -58,18 +56,6 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
                 // TODO : RIGHT PANEL
                 Text("RIGHT PANEL")
             }
-        }
-    }
-
-    // TODO : REMOVE
-    LaunchedEffect(Unit) {
-        while(true) {
-            delay(2000)
-            viewModel.turnRemainingTime.value = viewModel.turnRemainingTime.value - 2
-            viewModel.game.getActivePlayer()?.let {
-                p -> p.points.value = p.points.value + 10
-            }
-            viewModel.game.setNextActivePlayer()
         }
     }
 }
