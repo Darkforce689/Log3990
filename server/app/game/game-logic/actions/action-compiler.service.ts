@@ -14,6 +14,7 @@ import { SplitPoints } from '@app/game/game-logic/actions/magic-card/magic-card-
 import { PlaceBonus } from '@app/game/game-logic/actions/magic-card/magic-card-place-bonus';
 import { ExchangeHorse } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-horse';
 import { ExchangeHorseAll } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-horse-all';
+import { SkipNextTurn } from '@app/game/game-logic/actions/magic-card/magic-card-skip-next-turn';
 
 @Service()
 export class ActionCompilerService {
@@ -24,13 +25,7 @@ export class ActionCompilerService {
     translate(command: OnlineAction, player: Player): Action {
         switch (command.type) {
             case OnlineActionType.Exchange: {
-                const letters = command.letters;
-                if (!letters) {
-                    throw Error('Argument of Action Invalid. Cant compile.');
-                }
-                const lettersToExchange: Letter[] = this.letterFactory.createLetters(letters.split(''));
-                this.letterRackUpdateValidator(command, player);
-                return new ExchangeLetter(player, lettersToExchange);
+                return this.exchange(command, player);
             }
 
             case OnlineActionType.Pass:
@@ -38,26 +33,11 @@ export class ActionCompilerService {
                 return new PassTurn(player);
 
             case OnlineActionType.Place: {
-                const settings = command.placementSettings;
-                const letters = command.letters;
-                if (!letters) {
-                    throw Error('Argument of Action Invalid. Cant compile.');
-                }
-                if (!settings) {
-                    throw Error('Argument of Action Invalid. Cant compile.');
-                }
-                this.letterRackUpdateValidator(command, player);
-                return new PlaceLetter(player, letters, settings, this.pointCalculator, this.wordSearcher);
+                return this.place(command, player);
             }
 
             case OnlineMagicCardActionType.ExchangeALetter: {
-                const letters = command.letters;
-                if (!letters || letters.length !== 1) {
-                    throw Error('Argument of Action Invalid. Cant compile.');
-                }
-                const letterToExchange: Letter = this.letterFactory.createLetter(letters[0]);
-                this.letterRackUpdateValidator(command, player);
-                return new ExchangeALetter(player, letterToExchange);
+                return this.exchangeALetter(command, player);
             }
 
             case OnlineMagicCardActionType.SplitPoints: {
@@ -66,12 +46,7 @@ export class ActionCompilerService {
             }
 
             case OnlineMagicCardActionType.PlaceBonus: {
-                const position = command.position;
-                if (!position) {
-                    throw Error('Argument of Action Invalid. Cant compile.');
-                }
-                this.letterRackUpdateValidator(command, player);
-                return new PlaceBonus(player, position);
+                return this.placeBonus(command, player);
             }
 
             case OnlineMagicCardActionType.ExchangeHorse: {
@@ -82,6 +57,11 @@ export class ActionCompilerService {
             case OnlineMagicCardActionType.ExchangeHorseAll: {
                 this.letterRackUpdateValidator(command, player);
                 return new ExchangeHorseAll(player);
+            }
+
+            case OnlineMagicCardActionType.SkipNextTurn: {
+                this.letterRackUpdateValidator(command, player);
+                return new SkipNextTurn(player);
             }
 
             default:
@@ -128,5 +108,47 @@ export class ActionCompilerService {
             }
         }
         return mapRack;
+    }
+
+    private exchange(command: OnlineAction, player: Player): Action {
+        const letters = command.letters;
+        if (!letters) {
+            throw Error('Argument of Action Invalid. Cant compile.');
+        }
+        const lettersToExchange: Letter[] = this.letterFactory.createLetters(letters.split(''));
+        this.letterRackUpdateValidator(command, player);
+        return new ExchangeLetter(player, lettersToExchange);
+    }
+
+    private place(command: OnlineAction, player: Player): Action {
+        const settings = command.placementSettings;
+        const letters = command.letters;
+        if (!letters) {
+            throw Error('Argument of Action Invalid. Cant compile.');
+        }
+        if (!settings) {
+            throw Error('Argument of Action Invalid. Cant compile.');
+        }
+        this.letterRackUpdateValidator(command, player);
+        return new PlaceLetter(player, letters, settings, this.pointCalculator, this.wordSearcher);
+    }
+
+    private exchangeALetter(command: OnlineAction, player: Player): Action {
+        const letters = command.letters;
+        if (!letters || letters.length !== 1) {
+            throw Error('Argument of Action Invalid. Cant compile.');
+        }
+        const letterToExchange: Letter = this.letterFactory.createLetter(letters[0]);
+        this.letterRackUpdateValidator(command, player);
+        return new ExchangeALetter(player, letterToExchange);
+    }
+
+    private placeBonus(command: OnlineAction, player: Player): Action {
+        const position = command.position;
+        if (!position) {
+            throw Error('Argument of Action Invalid. Cant compile.');
+        }
+        this.letterRackUpdateValidator(command, player);
+        return new PlaceBonus(player, position);
     }
 }

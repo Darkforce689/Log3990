@@ -21,4 +21,5 @@ export enum OnlineMagicCardActionType {
     PlaceBonus = 'placeBonus',
     ExchangeHorse = 'exchangeHorse',
     ExchangeHorseAll = 'exchangeHorseAll',
+    SkipNextTurn = 'skipNextTurn',
 }
