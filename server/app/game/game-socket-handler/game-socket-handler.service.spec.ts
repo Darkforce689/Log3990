@@ -19,14 +19,14 @@ import { Subject } from 'rxjs';
 import * as sinon from 'sinon';
 import { Socket } from 'socket.io';
 import { io as Client, Socket as ClientSocket } from 'socket.io-client';
+import { ExtendedError } from 'socket.io/dist/namespace';
 
-describe('GameSocketHandler', () => {
+describe.only('GameSocketHandler', () => {
     let handler: GameSocketsHandler;
     let httpServer: Server;
     let clientSocket: ClientSocket;
     let serverSocket: Socket;
     let port: number;
-    let sandbox: sinon.SinonSandbox;
     let stubGameManager: StubbedClass<GameManagerService>;
     const mockPlayerInfo$ = new Subject<PlayerInfoToken>();
     const mockNewGameState$ = new Subject<GameStateToken>();
@@ -45,7 +45,14 @@ describe('GameSocketHandler', () => {
 
             stubGameManager = createSinonStubInstance<GameManagerService>(GameManagerService);
             const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
+            sessionMiddleware.getSocketSessionMiddleware.returns((socket: unknown, next: (err?: ExtendedError | undefined) => void) => {
+                next();
+                return;
+            });
             const authService = createSinonStubInstance(AuthService);
+            sinon.stub(authService, 'socketAuthGuard').value((socket: unknown, next: (err?: ExtendedError | undefined) => void) => {
+                next();
+            });
             const userService = createSinonStubInstance(UserService);
             userService.getUser.returns(Promise.resolve(user));
 
@@ -63,14 +70,12 @@ describe('GameSocketHandler', () => {
     });
 
     beforeEach((done) => {
-        sandbox = sinon.createSandbox();
         clientSocket = Client(`http://localhost:${port}`, { path: '/game' });
         clientSocket.on('connect', done);
     });
 
     afterEach(() => {
-        sandbox.restore();
-        clientSocket.disconnect();
+        clientSocket.close();
     });
 
     after(() => {
