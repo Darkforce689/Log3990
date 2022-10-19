@@ -13,6 +13,7 @@ import { ExchangeALetter } from '@app/game/game-logic/actions/magic-card/magic-c
 import { SplitPoints } from '@app/game/game-logic/actions/magic-card/magic-card-split-points';
 import { PlaceBonus } from '@app/game/game-logic/actions/magic-card/magic-card-place-bonus';
 import { ExchangeHorse } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-horse';
+import { ExchangeHorseAll } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-horse-all';
 
 @Service()
 export class ActionCompilerService {
@@ -76,6 +77,11 @@ export class ActionCompilerService {
             case OnlineMagicCardActionType.ExchangeHorse: {
                 this.letterRackUpdateValidator(command, player);
                 return new ExchangeHorse(player);
+            }
+
+            case OnlineMagicCardActionType.ExchangeHorseAll: {
+                this.letterRackUpdateValidator(command, player);
+                return new ExchangeHorseAll(player);
             }
 
             default:
