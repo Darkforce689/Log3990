@@ -8,6 +8,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+const val defaultTurnTime = 60
+
 @OptIn(DelicateCoroutinesApi::class)
 class GameModel {
 
@@ -28,8 +30,8 @@ class GameModel {
     val board: BoardModel = BoardModel()
 
     var remainingLettersCount = mutableStateOf(0)
-    var turnRemainingTime = mutableStateOf(60)
-    var turnTotalTime = mutableStateOf(60)
+    var turnRemainingTime = mutableStateOf(defaultTurnTime)
+    var turnTotalTime = mutableStateOf(defaultTurnTime)
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
     var user: MutableState<Player?> = mutableStateOf(null)
