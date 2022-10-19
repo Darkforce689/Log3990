@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.game.sources
 
 import androidx.annotation.Nullable
+import com.google.gson.annotations.SerializedName
 
 data class Tile (
     val letterMultiplicator: Int,
@@ -25,6 +26,45 @@ data class UserAuth (
     val gameToken: String
 )
 
+data class Position(
+    val x: Int,
+    val y: Int
+)
+
+enum class Direction (value:String) {
+    @SerializedName("H") Horizontal("H"),
+    @SerializedName("V") Vertical("V"),
+}
+
+data class PlacementSetting (
+    val x: Int,
+    val y: Int,
+    val direction: Direction
+)
+
+data class OnlineAction (
+    val type: OnlineActionType, // | OnlineMagicCardActionType,
+    val placementSettings: PlacementSetting?,
+    val letters: String?,
+    val letterRack: ArrayList<Letter>?,
+    val position: Position
+)
+
+enum class OnlineActionType (value: String) {
+    @SerializedName("place") Place("place"),
+    @SerializedName("exchange") Exchange("exchange"),
+    @SerializedName("pass") Pass("pass"),
+}
+
+enum class OnlineMagicCardActionType (value: String) {
+    @SerializedName("splitPoints") SplitPoints("splitPoints"),
+    @SerializedName("exchangeALetter") ExchangeALetter("exchangeALetter"),
+    @SerializedName("placeBonus") PlaceBonus("placeBonus"),
+    @SerializedName("exchangeHorse") ExchangeHorse("exchangeHorse"),
+    // TODO : ADD OTHERS
+}
+
+
 // Warning : Events Data Classes have to match the backend corresponding interfaces
 
 typealias RemainingTime = Int
@@ -47,7 +87,7 @@ typealias TransitionGameState =Nullable
 typealias JoinGame = UserAuth
 
 // TODO
-typealias NextAction = Nullable
+typealias NextAction = OnlineAction
 
 // TODO
 typealias Disconnect = Nullable
