@@ -11,12 +11,10 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.Alignment
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.game.view.draganddrop.DragShadow
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/) {
