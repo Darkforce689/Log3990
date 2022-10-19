@@ -15,4 +15,36 @@ class GameViewModel: ViewModel() {
     ): Float {
         return current.toFloat() / total
     }
+
+    fun canPassTurn(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    fun canPlaceLetter(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    fun canExchangeLetter(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    fun canCancel(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    fun passTurn() {
+        TODO("Not yet implemented")
+    }
+
+    fun placeLetter() {
+        TODO("Not yet implemented")
+    }
+
+    fun exchangeLetter() {
+        TODO("Not yet implemented")
+    }
+
+    fun cancel() {
+        TODO("Not yet implemented")
+    }
 }

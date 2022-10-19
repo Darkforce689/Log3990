@@ -15,17 +15,25 @@ import com.example.polyscrabbleclient.ui.theme.passButtonFR
 import com.example.polyscrabbleclient.ui.theme.placeButtonFR
 
 @Composable
-fun GameActionsView(viewModel: GameViewModel?) {
+fun GameActionsView(viewModel: GameViewModel = GameViewModel()) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row() {
-            GameActionButton(passButtonFR, {true}, {})
-            GameActionButton(placeButtonFR, {true}, {})
+        Row {
+            GameActionButton(passButtonFR, { viewModel.canPassTurn() }) {
+                viewModel.passTurn()
+            }
+            GameActionButton(placeButtonFR, { viewModel.canPlaceLetter() }) {
+                viewModel.placeLetter()
+            }
         }
-        Row() {
-            GameActionButton(exchangeButtonFR, {true}, {})
-            GameActionButton(cancelButtonFR, {true}, {})
+        Row {
+            GameActionButton(exchangeButtonFR, { viewModel.canExchangeLetter() }) {
+                viewModel.exchangeLetter()
+            }
+            GameActionButton(cancelButtonFR, { viewModel.canCancel() }) {
+                viewModel.cancel()
+            }
         }
 
     }
@@ -58,5 +66,5 @@ fun GameActionButton(
 @Preview(showBackground = true)
 @Composable
 fun GameActionsPreview() {
-    GameActionsView(null)
+    GameActionsView(GameViewModel())
 }
