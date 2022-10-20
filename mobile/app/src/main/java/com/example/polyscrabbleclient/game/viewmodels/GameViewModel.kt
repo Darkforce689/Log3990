@@ -16,24 +16,31 @@ class GameViewModel: ViewModel() {
         return current.toFloat() / total
     }
 
+    private fun isActivePlayer(): Boolean {
+        return GameRepository.game.getActivePlayer() === GameRepository.game.user.value
+    }
+
     fun canPassTurn(): Boolean {
-        TODO("Not yet implemented")
+        return isActivePlayer()
     }
 
     fun canPlaceLetter(): Boolean {
-        TODO("Not yet implemented")
+        // TODO
+        return false
     }
 
     fun canExchangeLetter(): Boolean {
-        TODO("Not yet implemented")
+        // TODO
+        return false
     }
 
     fun canCancel(): Boolean {
-        TODO("Not yet implemented")
+        // TODO
+        return false
     }
 
     fun passTurn() {
-        TODO("Not yet implemented")
+        GameRepository.emitNextAction(OnlineActionType.Pass)
     }
 
     fun placeLetter() {

@@ -43,20 +43,21 @@ data class PlacementSetting (
 )
 
 data class OnlineAction (
-    val type: OnlineActionType, // | OnlineMagicCardActionType,
-    val placementSettings: PlacementSetting?,
-    val letters: String?,
-    val letterRack: ArrayList<Letter>?,
-    val position: Position
+    val type: OnlineActionType,
+    val placementSettings: PlacementSetting? = null,
+    val letters: String? = null,
+    val letterRack: ArrayList<Letter>? = null,
+    val position: Position? = null
 )
 
+// No Union types in Kotlin
 enum class OnlineActionType (value: String) {
+    // OnlineActionType
     @SerializedName("place") Place("place"),
     @SerializedName("exchange") Exchange("exchange"),
     @SerializedName("pass") Pass("pass"),
-}
 
-enum class OnlineMagicCardActionType (value: String) {
+    // OnlineMagicCardActionType
     @SerializedName("splitPoints") SplitPoints("splitPoints"),
     @SerializedName("exchangeALetter") ExchangeALetter("exchangeALetter"),
     @SerializedName("placeBonus") PlaceBonus("placeBonus"),
@@ -81,7 +82,7 @@ data class GameState (
 )
 
 // TODO
-typealias TransitionGameState =Nullable
+typealias TransitionGameState = Nullable
 
 // TODO : UPDATE (ONLY TEMPORARY WHILE WAITING FOR !54)
 typealias JoinGame = UserAuth
