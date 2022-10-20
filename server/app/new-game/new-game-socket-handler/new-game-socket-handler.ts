@@ -54,8 +54,7 @@ export class NewGameSocketHandler {
                     if (user === undefined) {
                         throw Error(`No user found with userId ${_id}`);
                     }
-                    gameSettings.playerNames.push(user.name);
-                    gameId = this.createGame(gameSettings, socket);
+                    gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name] }), socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.emitPendingGamesToAll();
                     this.sendGameSettingsToPlayers(gameId, gameId, gameSettings as OnlineGameSettings);
