@@ -31,7 +31,8 @@ object LobbySocketHandler: SocketHandler(LobbyEventTypes) {
             socket.on(Socket.EVENT_CONNECT) { println("LobbySocketHandler Connected") }
             socket.on(Socket.EVENT_DISCONNECT) { println("LobbySocketHandler Disconnected") }
         } catch (e: Throwable) {
-            println("LobbySocketHandler Error : $e")
+            println("LobbySocketHandler Error")
+            e.printStackTrace()
         }
     }
 
@@ -44,7 +45,7 @@ object LobbySocketHandler: SocketHandler(LobbyEventTypes) {
     }
 
     @Synchronized
-    fun closeConnection() {
+    fun disconnect() {
         socket.disconnect()
     }
 }
