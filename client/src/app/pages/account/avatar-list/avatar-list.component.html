@@ -2,7 +2,7 @@
     <h2>Avatar</h2>
     <mat-card-content>
         <mat-selection-list #avatar [multiple]="false" (selectionChange)="updateAvatar($event)">
-            <mat-list-option *ngFor="let avatar of avatarTypes" [value]="avatar.src">
+            <mat-list-option *ngFor="let avatar of avatarTypes" [value]="avatar.name">
                 <img matListAvatar [src]="avatar.src" alt="avatar" width="30" height="30">
             </mat-list-option>
             <mat-list-option *ngIf="hasClear" value="">

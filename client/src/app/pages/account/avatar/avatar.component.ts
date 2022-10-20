@@ -8,4 +8,8 @@ import { Component, Input } from '@angular/core';
 export class AvatarComponent {
     @Input() src: string;
     @Input() size: number;
+
+    get imgSrc() {
+        return 'assets/img/avatar/' + this.src + '.png';
+    }
 }
