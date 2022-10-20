@@ -1,6 +1,11 @@
 button {
     width: 150px;
     height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: pre-wrap;
+    line-height: 22px;
 }
 
 button:disabled {

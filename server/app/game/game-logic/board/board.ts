@@ -1,102 +1,7 @@
+import { BoardSettingPosition, BONUS_MAP, MULTIPLICATORS, MultiType } from '@app/game/game-logic/board/board-constants';
 import { ASCII_CODE, BOARD_DIMENSION, EMPTY_CHAR } from '@app/game/game-logic/constants';
 import { Tile } from './tile';
-export enum MultiType {
-    Letter,
-    Word,
-}
-export interface BoardSettingPosition {
-    x: number;
-    y: string;
-    v: number;
-    type: MultiType;
-}
 
-export const MULTIPLICATORS: BoardSettingPosition[] = [
-    { x: 1, y: 'A', v: 3, type: MultiType.Word },
-    { x: 8, y: 'A', v: 3, type: MultiType.Word },
-    { x: 15, y: 'A', v: 3, type: MultiType.Word },
-
-    { x: 2, y: 'B', v: 2, type: MultiType.Word },
-    { x: 14, y: 'B', v: 2, type: MultiType.Word },
-
-    { x: 3, y: 'C', v: 2, type: MultiType.Word },
-    { x: 13, y: 'C', v: 2, type: MultiType.Word },
-
-    { x: 4, y: 'D', v: 2, type: MultiType.Word },
-    { x: 12, y: 'D', v: 2, type: MultiType.Word },
-
-    { x: 5, y: 'E', v: 2, type: MultiType.Word },
-    { x: 11, y: 'E', v: 2, type: MultiType.Word },
-
-    { x: 1, y: 'H', v: 3, type: MultiType.Word },
-    { x: 8, y: 'H', v: 2, type: MultiType.Word },
-    { x: 15, y: 'H', v: 3, type: MultiType.Word },
-
-    { x: 5, y: 'K', v: 2, type: MultiType.Word },
-    { x: 11, y: 'K', v: 2, type: MultiType.Word },
-
-    { x: 4, y: 'L', v: 2, type: MultiType.Word },
-    { x: 12, y: 'L', v: 2, type: MultiType.Word },
-
-    { x: 3, y: 'M', v: 2, type: MultiType.Word },
-    { x: 13, y: 'M', v: 2, type: MultiType.Word },
-
-    { x: 2, y: 'N', v: 2, type: MultiType.Word },
-    { x: 14, y: 'N', v: 2, type: MultiType.Word },
-
-    { x: 1, y: 'O', v: 3, type: MultiType.Word },
-    { x: 8, y: 'O', v: 3, type: MultiType.Word },
-    { x: 15, y: 'O', v: 3, type: MultiType.Word },
-
-    { x: 4, y: 'A', v: 2, type: MultiType.Letter },
-    { x: 12, y: 'A', v: 2, type: MultiType.Letter },
-
-    { x: 6, y: 'B', v: 3, type: MultiType.Letter },
-    { x: 10, y: 'B', v: 3, type: MultiType.Letter },
-
-    { x: 7, y: 'C', v: 2, type: MultiType.Letter },
-    { x: 9, y: 'C', v: 2, type: MultiType.Letter },
-
-    { x: 1, y: 'D', v: 2, type: MultiType.Letter },
-    { x: 8, y: 'D', v: 2, type: MultiType.Letter },
-    { x: 15, y: 'D', v: 2, type: MultiType.Letter },
-
-    { x: 2, y: 'F', v: 3, type: MultiType.Letter },
-    { x: 6, y: 'F', v: 3, type: MultiType.Letter },
-    { x: 10, y: 'F', v: 3, type: MultiType.Letter },
-    { x: 14, y: 'F', v: 3, type: MultiType.Letter },
-
-    { x: 3, y: 'G', v: 2, type: MultiType.Letter },
-    { x: 7, y: 'G', v: 2, type: MultiType.Letter },
-    { x: 9, y: 'G', v: 2, type: MultiType.Letter },
-    { x: 13, y: 'G', v: 2, type: MultiType.Letter },
-
-    { x: 4, y: 'H', v: 2, type: MultiType.Letter },
-    { x: 12, y: 'H', v: 2, type: MultiType.Letter },
-
-    { x: 3, y: 'I', v: 2, type: MultiType.Letter },
-    { x: 7, y: 'I', v: 2, type: MultiType.Letter },
-    { x: 9, y: 'I', v: 2, type: MultiType.Letter },
-    { x: 13, y: 'I', v: 2, type: MultiType.Letter },
-
-    { x: 2, y: 'J', v: 3, type: MultiType.Letter },
-    { x: 6, y: 'J', v: 3, type: MultiType.Letter },
-    { x: 10, y: 'J', v: 3, type: MultiType.Letter },
-    { x: 14, y: 'J', v: 3, type: MultiType.Letter },
-
-    { x: 1, y: 'L', v: 2, type: MultiType.Letter },
-    { x: 8, y: 'L', v: 2, type: MultiType.Letter },
-    { x: 15, y: 'L', v: 2, type: MultiType.Letter },
-
-    { x: 7, y: 'M', v: 2, type: MultiType.Letter },
-    { x: 9, y: 'M', v: 2, type: MultiType.Letter },
-
-    { x: 6, y: 'N', v: 3, type: MultiType.Letter },
-    { x: 10, y: 'N', v: 3, type: MultiType.Letter },
-
-    { x: 4, y: 'O', v: 2, type: MultiType.Letter },
-    { x: 12, y: 'O', v: 2, type: MultiType.Letter },
-];
 export class Board {
     grid: Tile[][];
 
@@ -136,16 +41,28 @@ export class Board {
         return false;
     }
 
+    placeRandomBonus(position: { x: number; y: number }) {
+        const randomIndex = Math.floor(Math.random() * BONUS_MAP.size);
+        const randomBonusToPlace = Array.from(BONUS_MAP.values())[randomIndex];
+        if (randomBonusToPlace.type === MultiType.Letter) {
+            this.grid[position.y][position.x].wordMultiplicator = 1;
+            this.grid[position.y][position.x].letterMultiplicator = randomBonusToPlace.v;
+            return;
+        }
+        this.grid[position.y][position.x].letterMultiplicator = 1;
+        this.grid[position.y][position.x].wordMultiplicator = randomBonusToPlace.v;
+    }
+
     private randomMultiplicators(): BoardSettingPosition[] {
         const newMultiplicators: BoardSettingPosition[] = [];
         const values: number[] = [];
         for (const multiplicator of MULTIPLICATORS) {
-            newMultiplicators.push({ ...multiplicator });
-            values.push(multiplicator.v);
+            newMultiplicators.push({ x: multiplicator.x, y: multiplicator.y, bonus: { v: multiplicator.bonus.v, type: multiplicator.bonus.type } });
+            values.push(multiplicator.bonus.v);
         }
         for (const element of newMultiplicators) {
             const newValueIndex = Math.floor(Math.random() * values.length);
-            element.v = values[newValueIndex];
+            element.bonus.v = values[newValueIndex];
             values.splice(newValueIndex, 1);
         }
         return newMultiplicators;
@@ -154,17 +71,16 @@ export class Board {
     private generateMultiplicators(randomBonus: boolean): void {
         let listMultiplicator = MULTIPLICATORS;
         if (randomBonus) {
-            listMultiplicator = this.randomMultiplicators();
-            while (listMultiplicator === MULTIPLICATORS) {
+            do {
                 listMultiplicator = this.randomMultiplicators();
-            }
+            } while (listMultiplicator === MULTIPLICATORS);
         }
         for (const elem of listMultiplicator) {
-            if (elem.type === MultiType.Letter) {
-                this.grid[elem.x - 1][elem.y.charCodeAt(0) - ASCII_CODE].letterMultiplicator = elem.v;
+            if (elem.bonus.type === MultiType.Letter) {
+                this.grid[elem.x - 1][elem.y.charCodeAt(0) - ASCII_CODE].letterMultiplicator = elem.bonus.v;
                 continue;
             }
-            this.grid[elem.x - 1][elem.y.charCodeAt(0) - ASCII_CODE].wordMultiplicator = elem.v;
+            this.grid[elem.x - 1][elem.y.charCodeAt(0) - ASCII_CODE].wordMultiplicator = elem.bonus.v;
         }
     }
 }

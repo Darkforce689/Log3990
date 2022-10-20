@@ -7,6 +7,10 @@ import { ExchangeALetter } from '@app/game-logic/actions/magic-card/magic-card-e
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { OnlineAction, OnlineActionType, OnlineMagicCardActionType } from '@app/socket-handler/interfaces/online-action.interface';
+import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
+import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
+import { ExchangeHorseAll } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse-all';
+import { SkipNextTurn } from '@app/game-logic/actions/magic-card/magic-card-skip-next-turn';
 
 @Injectable({
     providedIn: 'root',
@@ -70,6 +74,23 @@ export class OnlineActionCompilerService {
         if (action instanceof ExchangeALetter) {
             return this.compileExchangeALetterOnline(action);
         }
+
+        if (action instanceof PlaceBonus) {
+            return this.compilePlaceBonusOnline(action);
+        }
+
+        if (action instanceof ExchangeHorse) {
+            return this.compileExchangeHorseOnline(action);
+        }
+
+        if (action instanceof ExchangeHorseAll) {
+            return this.compileExchangeHorseAllOnline(action);
+        }
+
+        if (action instanceof SkipNextTurn) {
+            return this.compileSkipNextTurnOnline(action);
+        }
+
         return undefined;
     }
 
@@ -82,11 +103,44 @@ export class OnlineActionCompilerService {
         return exchangeALetter;
     }
 
+    private compilePlaceBonusOnline(action: PlaceBonus): OnlineAction {
+        const placeBonus: OnlineAction = {
+            type: OnlineMagicCardActionType.PlaceBonus,
+            letterRack: action.player.letterRack,
+            position: { x: action.pointerPosition.x, y: action.pointerPosition.y },
+        };
+        return placeBonus;
+    }
+
     private compileSplitPointsOnline(action: SplitPoints): OnlineAction {
         const passTurn: OnlineAction = {
             type: OnlineMagicCardActionType.SplitPoints,
             letterRack: action.player.letterRack,
         };
         return passTurn;
+    }
+
+    private compileExchangeHorseOnline(action: ExchangeHorse): OnlineAction {
+        const exchangeHorse: OnlineAction = {
+            type: OnlineMagicCardActionType.ExchangeHorse,
+            letterRack: action.player.letterRack,
+        };
+        return exchangeHorse;
+    }
+
+    private compileExchangeHorseAllOnline(action: SplitPoints): OnlineAction {
+        const exchangeHorseAll: OnlineAction = {
+            type: OnlineMagicCardActionType.ExchangeHorseAll,
+            letterRack: action.player.letterRack,
+        };
+        return exchangeHorseAll;
+    }
+
+    private compileSkipNextTurnOnline(action: SkipNextTurn): OnlineAction {
+        const skipNextTurn: OnlineAction = {
+            type: OnlineMagicCardActionType.SkipNextTurn,
+            letterRack: action.player.letterRack,
+        };
+        return skipNextTurn;
     }
 }
