@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.auth.model.AuthError
+import com.example.polyscrabbleclient.auth.model.ErrorState
 import com.example.polyscrabbleclient.auth.model.LoginSate
 import com.example.polyscrabbleclient.auth.model.serverResponse.LoginRes
+import com.example.polyscrabbleclient.connectAppSocket
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.updateUser
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,6 +20,7 @@ import java.net.URL
 
 class AuthenticationViewModel : ViewModel() {
     val logInState = mutableStateOf(LoginSate())
+    val errors = ErrorState()
     val isAuthenticate = mutableStateOf(false)
     var isInProcess = mutableStateOf(false)
 
@@ -49,40 +53,40 @@ class AuthenticationViewModel : ViewModel() {
         isInProcess.value = false
         logInState.value.email = ""
         logInState.value.password = ""
-        logInState.value.emailError = mutableStateOf("")
-        logInState.value.passwordError = mutableStateOf("")
+        errors.emailError = mutableStateOf("")
+        errors.passwordError = mutableStateOf("")
     }
 
     private fun updateEmail(email: String) {
-        logInState.value.emailError.value = ""
+        errors.emailError.value = ""
         logInState.value = logInState.value.copy(email = email)
     }
 
     private fun updatePassword(password: String) {
-        logInState.value.passwordError.value = ""
+        errors.passwordError.value = ""
         logInState.value = logInState.value.copy(password = password)
     }
 
     private fun validateEmail(email: String) {
         if (!AuthValidation.isValidEmail(email)) {
-            logInState.value.emailError.value = wrong_form_email
+            errors.emailError.value = wrong_form_email
         }
     }
 
     private fun isFormValid(): Boolean {
         validateEmail(logInState.value.email)
-        return logInState.value.emailError.value.isEmpty() &&
-            logInState.value.passwordError.value.isEmpty()
+        return errors.emailError.value.isEmpty() &&
+            errors.passwordError.value.isEmpty()
     }
 
     private fun hasAtLeastOneEmptyField(): Boolean {
         val hasEmail = logInState.value.email.isNotEmpty()
         val hasPassword = logInState.value.password.isNotEmpty()
         if (!hasEmail) {
-            logInState.value.emailError.value = missing_field
+            errors.emailError.value = missing_field
         }
         if (!hasPassword) {
-            logInState.value.passwordError.value = missing_field
+            errors.passwordError.value = missing_field
         }
         return !hasEmail || !hasPassword
     }
@@ -112,6 +116,8 @@ class AuthenticationViewModel : ViewModel() {
                     }
                     if (response.message != null) {
                         isAuthenticate.value = true
+                        connectAppSocket()
+                        updateUser()
                         return@withContext
                     }
                     setServerErrors(response.errors)
@@ -129,17 +135,15 @@ class AuthenticationViewModel : ViewModel() {
     private fun setServerErrors(serverErrors: List<String>?) {
         fun setError(error: String) {
             if (error == AuthError.EmailNotFound.label) {
-                logInState.value.emailError.value = invalid_email
+                errors.emailError.value = invalid_email
             }
             if (error == AuthError.InvalidPassword.label) {
-                logInState.value.passwordError.value = invalid_password
+                errors.passwordError.value = invalid_password
             }
             if (error == AuthError.AlreadyAuth.label) {
-                logInState.value.passwordError.value = already_auth
+                errors.passwordError.value = already_auth
             }
         }
         serverErrors?.map { content -> setError(content) } as List<AuthError>
     }
 }
-
-
