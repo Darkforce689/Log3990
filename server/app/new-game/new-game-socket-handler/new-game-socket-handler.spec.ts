@@ -23,7 +23,7 @@ import { io as Client, Socket as ClientSocket } from 'socket.io-client';
 import { ExtendedError } from 'socket.io/dist/namespace';
 import { NewGameSocketHandler } from './new-game-socket-handler';
 
-describe.only('New Online Game Service', () => {
+describe('New Online Game Service', () => {
     const timeout = 20;
     let handler: NewGameSocketHandler;
     let clientSocket: ClientSocket;
@@ -83,15 +83,7 @@ describe.only('New Online Game Service', () => {
     it('should create pendingGame', (done) => {
         const playerNames: string[] = [];
         const gameId = '1';
-        // const gameSettings = {
-        //     gameMode: GameMode.Classic,
-        //     timePerTurn: 60000,
-        //     playerNames,
-        //     randomBonus: true,
-        //     botDifficulty: BotDifficulty.Easy,
-        //     numberOfPlayers: 2,
-        //     magicCardIds: [],
-        // };
+
         newGameManagerService.createPendingGame.returns(gameId);
         const gameSettingsOnline: OnlineGameSettingsUI = {
             gameMode: GameMode.Classic,
@@ -224,7 +216,6 @@ describe.only('New Online Game Service', () => {
     });
 
     it('should delete pending game on game launch', (done) => {
-        newGameManagerService.launchPendingGame.returns(Promise.resolve('token'));
         const gameSettingsUI = {
             playerNames: [user.name],
             randomBonus: true,
@@ -244,6 +235,7 @@ describe.only('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
         };
+        newGameManagerService.launchPendingGame.returns(Promise.resolve('a'));
 
         newGameManagerService.createPendingGame.returns('a');
         newGameManagerService.joinPendingGame.returns('a');
@@ -251,7 +243,6 @@ describe.only('New Online Game Service', () => {
 
         const clientSocket2 = Client(`http://localhost:${port}`, { path: '/newGame', multiplex: false });
         clientSocket2.on('gameStarted', (clientGameSettings: OnlineGameSettings) => {
-            //    expect(clientGameSettings).to.deep.equal(gameSettings);
             expect(newGameManagerService.deletePendingGame.calledWith(gameSettings.id)).to.be.true;
             done();
         });
