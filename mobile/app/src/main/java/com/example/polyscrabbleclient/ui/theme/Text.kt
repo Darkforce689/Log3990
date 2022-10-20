@@ -10,6 +10,7 @@ const val connect = "Se connecter"
 const val signUp = "S'inscrire"
 const val disconnection = "Déconnexion"
 const val gamePage = "Page de jeu Scrabble"
+const val lobbyPage = "Créer/Rejoindre une partie"
 const val no_Account = "Vous n'avez pas de compte?"
 
 // Errors
