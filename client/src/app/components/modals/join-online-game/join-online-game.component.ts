@@ -43,12 +43,7 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
         this.socketHandler.joinPendingGame(this.data.id);
         this.socketHandler.error$.subscribe((error: string) => {
             if (error) {
-                this.dialog
-                    .open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error })
-                    .afterClosed()
-                    .subscribe(() => {
-                        this.dialog.closeAll();
-                    });
+                this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error });
             }
         });
 

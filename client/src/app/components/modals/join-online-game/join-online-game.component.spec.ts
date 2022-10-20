@@ -15,7 +15,7 @@ import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
 
-fdescribe('JoinOnlineGameComponent', () => {
+describe('JoinOnlineGameComponent', () => {
     let component: JoinOnlineGameComponent;
     let fixture: ComponentFixture<JoinOnlineGameComponent>;
     const mockError$ = new Subject<string>();
@@ -64,6 +64,8 @@ fdescribe('JoinOnlineGameComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(JoinOnlineGameComponent);
         component = fixture.componentInstance;
+        component.deleted = false;
+
         fixture.detectChanges();
     });
 
