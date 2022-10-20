@@ -10,6 +10,7 @@ import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.game.view.GameScreen
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
+import com.example.polyscrabbleclient.lobby.view.LobbyScreen
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import kotlinx.coroutines.*
@@ -19,6 +20,7 @@ enum class NavPage (val label : String){
     SignUp("signUpPage"),
     MainPage("mainPage"),
     GamePage("gamePage"),
+    LobbyPage("lobbyPage"),
     Prototype("prototype"),
     Room("messageList")
 }
@@ -45,6 +47,9 @@ fun NavGraph(chatBoxViewModel: ChatBoxViewModel, loginViewModel: AuthenticationV
         }
         composable(NavPage.GamePage.label) {
             GameScreen(navController)
+        }
+        composable(NavPage.LobbyPage.label) {
+            LobbyScreen(navController)
         }
     }
 }
