@@ -14,6 +14,8 @@ import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/i
 import { Player } from '@app/game-logic/player/player';
 import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
 import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
+import { ExchangeHorseAll } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse-all';
+import { SkipNextTurn } from '@app/game-logic/actions/magic-card/magic-card-skip-next-turn';
 
 @Injectable({
     providedIn: 'root',
@@ -70,6 +72,14 @@ export class UIInputControllerService {
 
     exchangeHorse(player: Player) {
         this.sendAction(new ExchangeHorse(player));
+    }
+
+    exchangeHorseAll(player: Player) {
+        this.sendAction(new ExchangeHorseAll(player));
+    }
+
+    skipNextTurn(player: Player) {
+        this.sendAction(new SkipNextTurn(player));
     }
 
     exchangeLetter(player: Player) {

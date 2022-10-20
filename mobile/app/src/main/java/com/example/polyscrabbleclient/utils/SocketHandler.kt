@@ -53,8 +53,8 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
         return try {
             Gson().fromJson(args[0].toString(), type).toList()
         } catch (e: Exception) {
-            println("Error -> formatArrayResponse -> $type -> args:$args")
-            println(e)
+            println("Error -> formatArrayResponse -> $type")
+            e.printStackTrace()
             null
         }
     }
@@ -63,8 +63,8 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
         return try {
             Gson().fromJson(args[0].toString(), type) as T
         } catch (e: Exception) {
-            println("Error -> formatObjectResponse -> $type -> args:$args")
-            println(e)
+            println("Error -> formatObjectResponse -> $type")
+            e.printStackTrace()
             null
         }
     }
@@ -73,8 +73,8 @@ open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>
         return try {
             JSONObject(Gson().toJson(content))
         } catch (e: Exception) {
-            println("Error -> formatRequest -> $type -> content:$content")
-            println(e)
+            println("Error -> formatRequest -> $type")
+            e.printStackTrace()
             null
         }
     }

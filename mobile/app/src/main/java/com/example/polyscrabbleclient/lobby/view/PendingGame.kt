@@ -82,7 +82,7 @@ fun PendingGamePreview() {
             randomBonus = false,
             timePerTurn = 60
         ),
-        listOf(0.1f, 0.5f, 0.2f, 0.3f),
+        listOf(0.1f, 0.2f, 0.2f, 0.2f, 0.1f, 0.2f),
         {}
     ) { true }
 }
@@ -100,7 +100,7 @@ fun PendingGamePreview2() {
             randomBonus = false,
             timePerTurn = 60
         ),
-        listOf(0.1f, 0.5f, 0.2f, 0.3f),
+        listOf(0.1f, 0.2f, 0.2f, 0.2f, 0.1f, 0.2f),
         {}
     ) { false }
 }

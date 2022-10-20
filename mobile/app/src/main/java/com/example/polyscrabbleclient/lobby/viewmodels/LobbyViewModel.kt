@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 class LobbyViewModel: ViewModel() {
+    private val lobby = LobbyRepository
+    val pendingGames = lobby.pendingGames
+    
     fun joinGame(
         pendingGameIndex: Int,
         navigateToGameScreen: () -> Unit
@@ -14,7 +17,4 @@ class LobbyViewModel: ViewModel() {
         }
         lobby.emitJoinGame(pendingGameToken, navigateToGameScreen)
     }
-
-    private val lobby = LobbyRepository
-    val pendingGames = lobby.pendingGames
 }
