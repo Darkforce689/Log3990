@@ -19,12 +19,12 @@ export class PlayerInfoComponent {
     }
 
     get playersInOrder(): Player[] {
-        const orderedPlayer: Player[] = this.info.players;
-        while (orderedPlayer[0].name !== this.info.player.name) {
-            this.rotatePlayers(orderedPlayer);
+        const orderedPlayers: Player[] = this.info.players;
+        while (orderedPlayers[0].name !== this.info.player.name) {
+            this.rotatePlayers(orderedPlayers);
         }
 
-        return orderedPlayer;
+        return orderedPlayers;
     }
 
     get players(): Player[] {
