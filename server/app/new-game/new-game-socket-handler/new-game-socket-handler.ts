@@ -158,7 +158,7 @@ export class NewGameSocketHandler {
             this.newGameManagerService.deletePendingGame(gameToChange.id);
         }
         this.newGameManagerService.quitPendingGame(gameToChange?.id, name);
-        this.sendGameSettingsToPlayers(gameToChange.id, gameToChange.id, gameToChange);
+        this.sendGameSettingsToPlayers(gameToChange.id, gameToChange);
     }
 
     private sendError(error: Error, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
@@ -166,9 +166,9 @@ export class NewGameSocketHandler {
         socket.emit('error', errorMessage);
     }
 
-    private sendGameSettingsToPlayers(gameId: string, gameToken: string, gameSettings: OnlineGameSettings) {
+    private sendGameSettingsToPlayers(gameToken: string, gameSettings: OnlineGameSettings) {
         gameSettings.id = gameToken;
-        this.ioServer.to(gameId).emit(gameJoined, gameSettings);
+        this.ioServer.to(gameToken).emit(gameJoined, gameSettings);
     }
 
     private sendGameStartedToPlayers(gameId: string, gameToken: string, gameSettings: OnlineGameSettings) {

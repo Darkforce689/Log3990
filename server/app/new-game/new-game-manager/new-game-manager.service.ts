@@ -47,9 +47,6 @@ export class NewGameManagerService {
     }
 
     quitPendingGame(id: string, nameToRemove: string): string | undefined {
-        if (!this.isPendingGame(id)) {
-            return;
-        }
         const gameSettings = this.pendingGames.get(id);
         if (!gameSettings) {
             return;

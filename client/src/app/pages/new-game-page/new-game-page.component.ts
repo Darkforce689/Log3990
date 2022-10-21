@@ -63,7 +63,6 @@ export class NewGamePageComponent {
             const onlineGameSettings: OnlineGameSettingsUI = {
                 ...gameSettings,
                 gameMode: this.gameMode,
-                // TODO GL3A22107-32 : Implement new game parameter :
                 botDifficulty: BotDifficulty.Expert,
                 playerNames: [],
             };
