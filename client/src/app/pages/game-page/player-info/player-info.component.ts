@@ -19,8 +19,7 @@ export class PlayerInfoComponent {
     }
 
     get playersInOrder(): Player[] {
-        let orderedPlayers: Player[] = [];
-        this.info.players.forEach((player) => orderedPlayers.push(player));
+        let orderedPlayers: Player[] = [...this.info.players];
 
         const userIndex = orderedPlayers.findIndex((player) => player.name === this.info.player.name);
         const left = orderedPlayers.slice(0, userIndex);
