@@ -138,7 +138,7 @@ export class ServerGame {
         return;
     }
 
-    protected endOfTurn(action: Action | undefined) {
+    protected endOfTurn(action: Action | undefined, nextPlayerDelta: number = 1) {
         this.timer.stop();
         if (!action) {
             this.onEndOfGame(EndOfGameReason.Forfeit);
@@ -155,7 +155,7 @@ export class ServerGame {
                 this.onEndOfGame(EndOfGameReason.GameEnded);
                 return;
             }
-            this.nextPlayer();
+            this.nextPlayer(nextPlayerDelta);
             this.emitGameState();
             this.startTurn();
         });
@@ -182,15 +182,15 @@ export class ServerGame {
         timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
     }
 
-    private onEndOfGame(reason: EndOfGameReason) {
+    protected onEndOfGame(reason: EndOfGameReason) {
         this.pointCalculator.endOfGamePointDeduction(this);
         this.displayLettersLeft();
         this.emitGameState();
         this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
     }
 
-    private nextPlayer() {
-        this.activePlayerIndex = (this.activePlayerIndex + 1) % this.players.length;
+    private nextPlayer(delta: number = 1) {
+        this.activePlayerIndex = (this.activePlayerIndex + delta) % this.players.length;
     }
 
     private pickFirstPlayer() {
