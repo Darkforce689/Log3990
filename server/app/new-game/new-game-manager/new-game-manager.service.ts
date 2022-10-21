@@ -55,6 +55,7 @@ export class NewGameManagerService {
         gameSettings.playerNames.splice(index, 1);
         return id;
     }
+
     deletePendingGame(id: string) {
         const gameStarted = this.gameMaster.activeGames.has(id);
         if (!gameStarted) {
