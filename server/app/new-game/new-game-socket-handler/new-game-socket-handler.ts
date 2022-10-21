@@ -157,7 +157,7 @@ export class NewGameSocketHandler {
             this.ioServer.to(gameToChange.id).emit(hostQuit);
             this.newGameManagerService.deletePendingGame(gameToChange.id);
         }
-        this.newGameManagerService.quitPendingGame(gameToChange?.id, name);
+        this.newGameManagerService.quitPendingGame(gameToChange.id, name);
         this.sendGameSettingsToPlayers(gameToChange.id, gameToChange.id, gameToChange);
     }
 
