@@ -19,10 +19,13 @@ export class PlayerInfoComponent {
     }
 
     get playersInOrder(): Player[] {
-        const orderedPlayers: Player[] = this.info.players;
-        while (orderedPlayers[0].name !== this.info.player.name) {
-            this.rotatePlayers(orderedPlayers);
-        }
+        let orderedPlayers: Player[] = [];
+        this.info.players.forEach((player) => orderedPlayers.push(player));
+
+        const userIndex = orderedPlayers.findIndex((player) => player.name === this.info.player.name);
+        const left = orderedPlayers.slice(0, userIndex);
+        const right = orderedPlayers.slice(userIndex, orderedPlayers.length);
+        orderedPlayers = right.concat(left);
 
         return orderedPlayers;
     }
@@ -37,10 +40,5 @@ export class PlayerInfoComponent {
 
     isActivePlayer(player: Player) {
         return player.name === this.activePlayerName;
-    }
-
-    private rotatePlayers(array: Player[]) {
-        const firstElement = array.shift();
-        if (firstElement !== undefined) array.push(firstElement);
     }
 }
