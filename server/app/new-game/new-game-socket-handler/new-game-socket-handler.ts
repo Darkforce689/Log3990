@@ -57,7 +57,7 @@ export class NewGameSocketHandler {
                     gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name] }), socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.emitPendingGamesToAll();
-                    this.sendGameSettingsToPlayers(gameId, gameId, gameSettings as OnlineGameSettings);
+                    this.sendGameSettingsToPlayers(gameId, gameSettings as OnlineGameSettings);
                 } catch (error) {
                     ServerLogger.logError(error);
                     this.sendError(error, socket);
@@ -138,7 +138,7 @@ export class NewGameSocketHandler {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
         }
         socket.join(id);
-        this.sendGameSettingsToPlayers(id, gameToken, gameSettings);
+        this.sendGameSettingsToPlayers(gameToken, gameSettings);
     }
 
     private getPendingGame(id: string): OnlineGameSettings {
