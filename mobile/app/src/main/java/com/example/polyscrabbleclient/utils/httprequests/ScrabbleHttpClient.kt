@@ -54,7 +54,7 @@ object ScrabbleHttpClient {
         }
     }
 
-    private fun <T: Any, U: Any> postPutRequest(url: URL, objectToSend: U, returnType: Class<T>, postOrPut: String): T? {
+    private fun <T: Any, U: Any> request(url: URL, objectToSend: U, returnType: Class<T>, postOrPut: String): T? {
         val requestBody = Gson().toJson(objectToSend)
         val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
         urlConnection.requestMethod = postOrPut
@@ -72,6 +72,7 @@ object ScrabbleHttpClient {
             val responseBody = inputStream.readTextAndClose()
             Gson().fromJson(responseBody, returnType)
         } catch (e: Exception) {
+            e.printStackTrace()
             null
         } finally {
             urlConnection.disconnect()
@@ -79,11 +80,15 @@ object ScrabbleHttpClient {
     }
 
     fun <T: Any, U: Any> post(url: URL, body: U, returnType: Class<T>): T? {
-        return postPutRequest(url, body, returnType, "POST")
+        return request(url, body, returnType, "POST")
     }
 
     fun <T: Any, U: Any> put(url: URL, body: U, returnType: Class<T>): T? {
-        return postPutRequest(url, body, returnType, "PUT")
+        return request(url, body, returnType, "PUT")
+    }
+
+    fun <T: Any, U: Any> patch(url: URL, body: U, returnType: Class<T>): T? {
+        return request(url, body, returnType, "PATCH")
     }
 
     fun <T: Any> delete(url: URL, returnType: Class<T>): T? {
