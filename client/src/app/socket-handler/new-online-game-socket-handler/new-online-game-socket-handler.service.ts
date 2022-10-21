@@ -18,7 +18,6 @@ export class NewOnlineGameSocketHandler {
     isDisconnected$ = new Subject<boolean>();
     error$ = new Subject<string>();
     socket: Socket;
-    // TODO envoyer joeur quit a tout le monde
 
     resetGameToken() {
         this.gameStarted$.next(undefined);
