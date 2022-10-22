@@ -5,6 +5,7 @@ import {
     EXTRATURN_ID,
     MAX_NUMBER_OF_MAGIC_CARD,
     NUMBER_OF_WORDS_FOR_MAGIC_CARD,
+    REDUCETIMER_ID,
     SKIPNEXTTURN_ID,
 } from '@app/game/game-logic/actions/magic-card/magic-card-constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
@@ -74,12 +75,18 @@ export class MagicServerGame extends ServerGame {
     }
 
     protected startTurn() {
+        let reduceTimer = false;
+        const indexReduceTimer = this.activeMagicCards.findIndex((value) => value.id === REDUCETIMER_ID);
+        if (indexReduceTimer !== NOT_FOUND) {
+            this.activeMagicCards.splice(indexReduceTimer, 1);
+            reduceTimer = true;
+        }
         const indexSkipTurn = this.activeMagicCards.findIndex((value) => value.id === SKIPNEXTTURN_ID);
         if (indexSkipTurn !== NOT_FOUND) {
             this.skipTurn(indexSkipTurn);
             return;
         }
-        super.startTurn();
+        super.startTurn(reduceTimer);
     }
 
     protected endOfTurn(action: Action | undefined) {

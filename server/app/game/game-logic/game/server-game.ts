@@ -169,7 +169,7 @@ export class ServerGame {
         this.newGameStateSubject.next(gameStateToken);
     }
 
-    protected startTurn() {
+    protected startTurn(reduceTimer: boolean = false) {
         if (this.endReason) {
             this.onEndOfGame(this.endReason);
             return;
@@ -178,7 +178,7 @@ export class ServerGame {
         if (activePlayer instanceof BotPlayer) {
             activePlayer.generateAction(this);
         }
-        const timerEnd$ = this.timer.start(this.timePerTurn).pipe(mapTo(new PassTurn(activePlayer)));
+        const timerEnd$ = this.timer.start(this.timePerTurn, reduceTimer).pipe(mapTo(new PassTurn(activePlayer)));
         timerEnd$.pipe(first()).subscribe((action) => this.endOfTurn(action));
     }
 
