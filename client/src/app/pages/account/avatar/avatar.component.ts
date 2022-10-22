@@ -10,6 +10,9 @@ export class AvatarComponent {
     @Input() size: number;
 
     get imgSrc() {
+        if (!this.src) {
+            return 'assets/img/avatar/default.png';
+        }
         return 'assets/img/avatar/' + this.src + '.png';
     }
 }

@@ -10,6 +10,8 @@ import {
     EXCHANGEHORSEALL_ID,
     UI_MAGIC_CARD_MAP,
     SKIPNEXTTURN_ID,
+    EXTRATURN_ID,
+    REDUCETIMER_ID,
 } from '@app/game-logic/actions/magic-card/magic-card-constants';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 
@@ -78,6 +80,10 @@ export class MagicCardComponent implements AfterContentChecked {
                 return this.canUseMagicCards;
             case SKIPNEXTTURN_ID:
                 return this.canUseMagicCards;
+            case EXTRATURN_ID:
+                return this.canUseMagicCards;
+            case REDUCETIMER_ID:
+                return this.canUseMagicCards;
             default:
                 return false;
         }
@@ -119,6 +125,14 @@ export class MagicCardComponent implements AfterContentChecked {
         this.inputController.skipNextTurn(this.info.player);
     }
 
+    extraTurn() {
+        this.inputController.extraTurn(this.info.player);
+    }
+
+    reduceTimer() {
+        this.inputController.reduceTimer(this.info.player);
+    }
+
     execute() {
         switch (this.magicCardId) {
             case SPLITPOINTS_ID:
@@ -138,6 +152,12 @@ export class MagicCardComponent implements AfterContentChecked {
                 break;
             case SKIPNEXTTURN_ID:
                 this.skipNextTurn();
+                break;
+            case EXTRATURN_ID:
+                this.extraTurn();
+                break;
+            case REDUCETIMER_ID:
+                this.reduceTimer();
                 break;
         }
     }

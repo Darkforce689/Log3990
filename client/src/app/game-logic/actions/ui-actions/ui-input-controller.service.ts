@@ -16,6 +16,8 @@ import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-
 import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
 import { ExchangeHorseAll } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse-all';
 import { SkipNextTurn } from '@app/game-logic/actions/magic-card/magic-card-skip-next-turn';
+import { ExtraTurn } from '@app/game-logic/actions/magic-card/magic-card-extra-turn';
+import { ReduceTimer } from '@app/game-logic/actions/magic-card/magic-card-reduce-timer';
 
 @Injectable({
     providedIn: 'root',
@@ -80,6 +82,14 @@ export class UIInputControllerService {
 
     skipNextTurn(player: Player) {
         this.sendAction(new SkipNextTurn(player));
+    }
+
+    extraTurn(player: Player) {
+        this.sendAction(new ExtraTurn(player));
+    }
+
+    reduceTimer(player: Player) {
+        this.sendAction(new ReduceTimer(player));
     }
 
     exchangeLetter(player: Player) {
