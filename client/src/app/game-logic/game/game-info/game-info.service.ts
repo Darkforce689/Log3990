@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
 import { Game } from '@app/game-logic/game/games/game';
 import { MagicOnlineGame } from '@app/game-logic/game/games/magic-game/magic-game';
+import { IMagicCard } from '@app/game-logic/game/games/online-game/game-state';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
-import { IMagicCard } from '@app/game-logic/game/games/online-game/game-state';
 import { Observable, Subject, Subscription } from 'rxjs';
 
 @Injectable({
@@ -82,14 +82,6 @@ export class GameInfoService {
             return NOT_FOUND;
         }
         return playerWithIndex.index;
-    }
-
-    get opponent(): Player {
-        if (!this.players) {
-            throw new Error('No Players in GameInfo');
-        }
-        const opponent = this.player === this.players[0] ? this.players[1] : this.players[0];
-        return opponent;
     }
 
     get numberOfPlayers(): number {

@@ -5,18 +5,17 @@ import { GameState } from '@app/game-logic/game/games/online-game/game-state';
 import { SocketMock } from '@app/game-logic/socket-mock';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { OnlineAction, OnlineActionType } from '@app/socket-handler/interfaces/online-action.interface';
-import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
 import { take } from 'rxjs/operators';
 
 describe('GameSocketHandlerService', () => {
     let service: GameSocketHandlerService;
+    const gameToken = '1';
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(GameSocketHandlerService);
         service['connectToSocket'] = jasmine.createSpy().and.returnValue(new SocketMock());
         service['connectToSocket']();
-        const userAuth: UserAuth = { playerName: 'Test', gameToken: '1' };
-        service.joinGame(userAuth);
+        service.joinGame(gameToken);
     });
 
     it('should be created', () => {
@@ -25,8 +24,7 @@ describe('GameSocketHandlerService', () => {
 
     it('joinGame should throw error if already connected', () => {
         expect(() => {
-            const userAuth: UserAuth = { playerName: 'Test', gameToken: '1' };
-            service.joinGame(userAuth);
+            service.joinGame(gameToken);
         }).toThrowError();
     });
 

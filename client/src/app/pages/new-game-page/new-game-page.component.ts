@@ -59,29 +59,26 @@ export class NewGamePageComponent {
             if (!gameSettings) {
                 return;
             }
+
             const onlineGameSettings: OnlineGameSettingsUI = {
                 ...gameSettings,
                 gameMode: this.gameMode,
-                playerNames: [gameSettings.playerName],
                 // TODO GL3A22107-32 : Implement new game parameter :
                 botDifficulty: BotDifficulty.Expert,
-                // TODO GL3A22107-32 : Implement new game parameter :
-                numberOfPlayers: 2,
-                magicCardIds: gameSettings.magicCardIds,
+                playerNames: [],
             };
             this.socketHandler.createGame(onlineGameSettings);
-            const username = gameSettings.playerName;
-            this.openWaitingForPlayer(username);
+            this.openWaitingForPlayer();
         });
     }
 
-    openWaitingForPlayer(username: string) {
+    openWaitingForPlayer() {
         this.startGame$$?.unsubscribe();
         const secondDialogConfig = new MatDialogConfig();
         secondDialogConfig.autoFocus = true;
         secondDialogConfig.disableClose = true;
 
-        this.gameLaucherService.waitForOnlineGameStart(username);
+        this.gameLaucherService.waitForOnlineGameStart();
     }
 
     openPendingGames() {

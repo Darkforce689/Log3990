@@ -54,7 +54,7 @@ describe('NewOnlineGameSocketHandler', () => {
     it('join pending game should throw error if socket not connected', () => {
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(false);
         expect(() => {
-            service.joinPendingGame('abc', 'allo');
+            service.joinPendingGame('abc');
         }).toThrowError();
     });
 
@@ -62,7 +62,7 @@ describe('NewOnlineGameSocketHandler', () => {
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(true);
         spyOn<any>(service, 'listenForUpdatedGameSettings').and.callThrough();
         spyOn(service, 'disconnectSocket').and.callThrough();
-        service.joinPendingGame('abc', 'allo1');
+        service.joinPendingGame('abc');
         expect(service['listenForUpdatedGameSettings']).toHaveBeenCalled();
 
         (service.socket as any).peerSideEmit('gameStarted', gameSettings);
