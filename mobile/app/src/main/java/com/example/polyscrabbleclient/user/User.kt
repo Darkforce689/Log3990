@@ -8,7 +8,7 @@ object User {
     var name: String = ""
     var email: String = ""
     var _id: String = ""
-    var avatar: String = ""
+    var avatar: String = "avatardefault"
 
     fun updateUser(): Thread {
         data class AccountRes(val _id: String, val name: String, val email: String, val avatar : String)
