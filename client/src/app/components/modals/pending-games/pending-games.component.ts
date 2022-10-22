@@ -118,12 +118,11 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
         joinPendingGameRef.autoFocus = true;
         joinPendingGameRef.disableClose = true;
         joinPendingGameRef.data = this.selectedRow;
+
         const joinPendingGame = this.dialog.open(JoinOnlineGameComponent, joinPendingGameRef);
-        joinPendingGame.beforeClosed().subscribe((name) => {
+        joinPendingGame.beforeClosed().subscribe(() => {
             this.isClicked = false;
-            if (name) {
-                this.dialogRef.close(name);
-            }
+            this.dialogRef.close();
         });
     }
 

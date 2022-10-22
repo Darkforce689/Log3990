@@ -21,7 +21,6 @@ export class NewOnlineGameSocketHandler {
     error$ = new Subject<string>();
     name: string;
     socket: Socket;
-    // TODO envoyer joeur quit a tout le monde
 
     resetGameToken() {
         this.gameStarted$.next(undefined);

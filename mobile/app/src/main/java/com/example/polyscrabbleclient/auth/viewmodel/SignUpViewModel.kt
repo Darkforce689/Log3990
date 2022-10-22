@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.auth.model.AuthError
 import com.example.polyscrabbleclient.auth.model.AuthSignUpSate
+import com.example.polyscrabbleclient.auth.model.ErrorState
 import com.example.polyscrabbleclient.auth.model.serverResponse.SignUpRes
 import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.utils.constants.MAX_NAME_LENGTH
@@ -20,6 +21,7 @@ import java.net.URL
 
 class SignUpViewModel : ViewModel() {
     val signUp = mutableStateOf(AuthSignUpSate())
+    val errorState = ErrorState()
     val isCreated = mutableStateOf(false)
     var isInProcess = mutableStateOf(false)
 
@@ -30,6 +32,7 @@ class SignUpViewModel : ViewModel() {
         class ValidateUsername(val username: String) : AuthEvent()
         class ValidateEmail(val email: String) : AuthEvent()
         class ValidatePassword(val password: String) : AuthEvent()
+        class ValidateAvatar(val avatar: String) : AuthEvent()
         object CreateAccount : AuthEvent()
     }
 
@@ -53,6 +56,9 @@ class SignUpViewModel : ViewModel() {
             is AuthEvent.ValidatePassword -> {
                 validatePassword(authEvent.password)
             }
+            is AuthEvent.ValidateAvatar -> {
+                updateAvatar(authEvent.avatar)
+            }
             is AuthEvent.CreateAccount -> {
                 createAccountRequest()
             }
@@ -65,10 +71,11 @@ class SignUpViewModel : ViewModel() {
         signUp.value.name = ""
         signUp.value.email = ""
         signUp.value.password = ""
+        signUp.value.avatar = ""
     }
 
     private fun updateEmail(email: String) {
-        signUp.value.emailError.value = ""
+        errorState.emailError.value = ""
         if (email.isBlank()) {
             signUp.value = signUp.value.copy(email = email)
             return
@@ -79,12 +86,12 @@ class SignUpViewModel : ViewModel() {
     }
 
     private fun updatePassword(password: String) {
-        signUp.value.passwordError.value = ""
+        errorState.passwordError.value = ""
         signUp.value = signUp.value.copy(password = password)
     }
 
     private fun updateUsername(username: String) {
-        signUp.value.usenameError.value = ""
+        errorState.usenameError.value = ""
         if (username.isBlank()) {
             signUp.value = signUp.value.copy(name = username)
             return
@@ -96,31 +103,36 @@ class SignUpViewModel : ViewModel() {
 
     private fun validateUsername(username: String) {
         if (!AuthValidation.isUsernameValid(username)) {
-            signUp.value.usenameError.value =
-                Invalid_username_creation(MIN_NAME_LENGTH, MAX_NAME_LENGTH).message
+            errorState.usenameError.value =
+                invalid_username_creation(MIN_NAME_LENGTH, MAX_NAME_LENGTH)
         }
     }
 
     private fun validateEmail(email: String) {
         if (!AuthValidation.isValidEmail(email)) {
-            signUp.value.emailError.value = wrong_form_email
+            errorState.emailError.value = wrong_form_email
         }
     }
 
     private fun validatePassword(password: String) {
         if (!AuthValidation.isValidPassword(password)) {
-            signUp.value.passwordError.value =
-                Invalid_password_creation(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH).message
+            errorState.passwordError.value =
+                invalid_password_creation(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
         }
+    }
+
+    private fun updateAvatar(avatarName: String) {
+        errorState.avatarError.value = ""
+        signUp.value = signUp.value.copy(avatar = avatarName)
     }
 
     private fun isFormValid(): Boolean {
         validateEmail(signUp.value.email)
         validateUsername(signUp.value.email)
         validatePassword(signUp.value.password)
-        return signUp.value.emailError.value.isEmpty() &&
-            signUp.value.usenameError.value.isEmpty() &&
-            signUp.value.passwordError.value.isEmpty()
+        return errorState.emailError.value.isEmpty() &&
+            errorState.usenameError.value.isEmpty() &&
+            errorState.passwordError.value.isEmpty()
     }
 
 
@@ -128,16 +140,20 @@ class SignUpViewModel : ViewModel() {
         val hasName = signUp.value.name.isNotEmpty()
         val hasEmail = signUp.value.email.isNotEmpty()
         val hasPassword = signUp.value.password.isNotEmpty()
+        val hasSelectedAvatar = signUp.value.avatar.isNotEmpty()
         if (!hasName) {
-            signUp.value.usenameError.value = missing_field
+            errorState.usenameError.value = missing_field
         }
         if (!hasEmail) {
-            signUp.value.emailError.value = missing_field
+            errorState.emailError.value = missing_field
         }
         if (!hasPassword) {
-            signUp.value.passwordError.value = missing_field
+            errorState.passwordError.value = missing_field
         }
-        return !hasEmail || !hasName || !hasPassword
+        if (!hasSelectedAvatar) {
+            errorState.avatarError.value = missing_field
+        }
+        return !hasEmail || !hasName || !hasPassword || !hasSelectedAvatar
     }
 
     private fun createAccountRequest() {
@@ -171,10 +187,10 @@ class SignUpViewModel : ViewModel() {
     private fun setServerErrors(serverErrors: List<String>?) {
         fun setError(error: String) {
             if (error == AuthError.EmailAlreadyTaken.label) {
-                signUp.value.emailError.value = email_not_unique
+                errorState.emailError.value = email_not_unique
             }
             if (error == AuthError.NameAlreadyTaken.label) {
-                signUp.value.usenameError.value = userName_not_unique
+                errorState.usenameError.value = userName_not_unique
             }
         }
         serverErrors?.map { content -> setError(content) } as List<AuthError>

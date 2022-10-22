@@ -10,12 +10,11 @@ import {
     MAX_TIME_PER_TURN,
     MIN_NUMBER_OF_PLAYERS,
     MIN_TIME_PER_TURN,
-    STEP_TIME_PER_TURN,
+    STEP_TIME_PER_TURN
 } from '@app/game-logic/constants';
+import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
-
-// const NO_WHITE_SPACE_RGX = /^\S*$/;
 
 @Component({
     selector: 'app-new-online-game-form',
@@ -40,6 +39,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
         ]),
         hasPassword: new FormControl(false, [Validators.required]),
         password: new FormControl('', []),
+        botDifficulty: new FormControl(BotDifficulty.Easy, [Validators.required]),
     });
 
     minTimePerTurn = MIN_TIME_PER_TURN;
@@ -82,6 +82,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             magicCardIds: [],
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Easy,
         });
     }
 

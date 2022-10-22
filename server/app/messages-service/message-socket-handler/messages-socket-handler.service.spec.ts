@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
@@ -6,9 +7,11 @@ import { SessionMiddlewareService } from '@app/auth/services/session-middleware.
 import { MAX_MESSAGE_LENGTH } from '@app/constants';
 import { MessagesSocketHandler, SYSTEM_MESSAGES } from '@app/messages-service/message-socket-handler/messages-socket-handler.service';
 import { Message } from '@app/messages-service/message.interface';
-import { GlobalSystemMessage, IndividualSystemMessage, SystemMessage } from '@app/messages-service/system-message.interface';
+import { Room } from '@app/messages-service/room/room';
+import { RoomFactory } from '@app/messages-service/room/room-factory.service';
+import { GlobalSystemMessage, IndividualSystemMessage, SystemMessageDTO } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
-import { createSinonStubInstance } from '@app/test.util';
+import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { UserService } from '@app/user/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -24,6 +27,8 @@ describe('MessagesService', () => {
     let serverSocket: Socket;
     let port: number;
     let httpServer: Server;
+    let room: StubbedClass<Room>;
+
     const mockGlobalSystemMessages$ = new Subject<GlobalSystemMessage>();
     const mockIndividualSystemMessages$ = new Subject<IndividualSystemMessage>();
 
@@ -37,7 +42,13 @@ describe('MessagesService', () => {
             const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
             const authService = createSinonStubInstance(AuthService);
             const userService = createSinonStubInstance(UserService);
-            handler = new MessagesSocketHandler(httpServer, systemMessagesService, sessionMiddleware, authService, userService);
+            const roomFactory = createSinonStubInstance(RoomFactory);
+
+            room = createSinonStubInstance(Room);
+            room.userIds = new Set();
+            room.userIdToSocketId = new Map();
+            roomFactory.createRoom.resolves(room);
+            handler = new MessagesSocketHandler(httpServer, systemMessagesService, sessionMiddleware, authService, userService, roomFactory);
             handler.handleSockets(false, false);
             handler.sio.on('connection', (socket) => {
                 serverSocket = socket;
@@ -64,7 +75,7 @@ describe('MessagesService', () => {
         clientSocket.emit('userName', userName);
         serverSocket.once('userName', () => {
             const user = [...handler.users.values()][0];
-            expect(user.name).to.equal(userName);
+            expect(user.id).to.equal(userName);
             done();
         });
     });
@@ -74,9 +85,11 @@ describe('MessagesService', () => {
         clientSocket.emit('userName', userName);
         const roomID = 'abc';
         clientSocket.emit('joinRoom', roomID);
-        serverSocket.on('joinRoom', () => {
-            expect(handler.activeRooms.has(roomID)).to.be.true;
-            done();
+        serverSocket.once('joinRoom', () => {
+            setTimeout(() => {
+                expect(handler.activeRooms.has(roomID)).to.be.true;
+                done();
+            }, 10);
         });
     });
 
@@ -92,18 +105,25 @@ describe('MessagesService', () => {
         clientSocket.emit('joinRoom', roomID);
         clientSocket2.emit('joinRoom', roomID);
 
-        const messageContent = 'Hi!';
+        const messageToSend = {
+            content: 'Hi',
+            roomId: roomID,
+        };
         const expectedMessage = {
             from: userName2,
             date: new Date().toISOString(),
-            content: messageContent,
+            content: 'Hi',
+            roomId: roomID,
         };
-        clientSocket.on('roomMessages', (message: Message) => {
-            expect(message.content).equal(expectedMessage.content);
-            expect(message.from).equal(expectedMessage.from);
-            done();
-        });
-        clientSocket2.emit('newMessage', messageContent);
+
+        setTimeout(() => {
+            clientSocket.on('roomMessages', (message: Message) => {
+                expect(message.content).equal(expectedMessage.content);
+                expect(message.from).equal(expectedMessage.from);
+                done();
+            });
+            clientSocket2.emit('newMessage', messageToSend);
+        }, 175);
     });
 
     it('should not send message to user in other room', (done) => {
@@ -124,8 +144,11 @@ describe('MessagesService', () => {
             receivedMessage = true;
         });
 
-        const messageContent = 'Hi!';
-        clientSocket2.emit('newMessage', messageContent);
+        const messageToSend = {
+            content: 'Hi',
+            roomId: roomID2,
+        };
+        clientSocket2.emit('newMessage', messageToSend);
 
         setTimeout(() => {
             expect(receivedMessage).to.be.false;
@@ -134,44 +157,44 @@ describe('MessagesService', () => {
         }, 30);
     });
 
-    it('client should receive error when setting two userName', (done) => {
-        const name = 'hello';
-        clientSocket.emit('userName', name);
-        clientSocket.once('error', (errorMessage: string) => {
-            expect(errorMessage).to.equal("Vous avez déjà choisi un nom d'utilisateur");
-            done();
-        });
-        clientSocket.emit('userName', name);
-    });
-
     it('client should receive error when sending message with no userName', (done) => {
-        const content = 'hello';
+        const messageToSend = {
+            content: 'Hi',
+            roomId: 'abc',
+        };
         clientSocket.once('error', (errorMessage: string) => {
             expect(errorMessage).to.equal("Vous n'avez pas encore entré votre nom dans notre systême");
             done();
         });
-        clientSocket.emit('newMessage', content);
+        clientSocket.emit('newMessage', messageToSend);
     });
 
     it('client should receive error when sending message with message over max length allowed', (done) => {
         const name = 'hello';
         clientSocket.emit('userName', name);
         const bigContent = 'a'.repeat(MAX_MESSAGE_LENGTH + 1);
+        const message = {
+            content: bigContent,
+            roomId: 'abc',
+        };
         clientSocket.once('error', (errorMessage: string) => {
             expect(errorMessage).to.equal('Le message doit être plus petit que 512 charactères');
             done();
         });
-        clientSocket.emit('newMessage', bigContent);
+        clientSocket.emit('newMessage', message);
     });
 
     it('client should receive error when message sent without joining a room', (done) => {
         const name = 'hello';
         clientSocket.emit('userName', name);
         clientSocket.once('error', (errorMessage: string) => {
-            expect(errorMessage).to.equal("Vous n'avez pas rejoint de salle de chat");
+            expect(errorMessage).to.equal("Vous n'avez pas rejoint la room: abc");
             done();
         });
-        const content = 'hi';
+        const content = {
+            content: 'hi',
+            roomId: 'abc',
+        };
         clientSocket.emit('newMessage', content);
     });
 
@@ -186,29 +209,14 @@ describe('MessagesService', () => {
         const roomID = 'abc';
         clientSocket.emit('joinRoom', roomID);
         serverSocket.on('joinRoom', () => {
-            handler.activeRooms.delete(roomID);
+            setTimeout(() => handler.activeRooms.delete(roomID), 10);
         });
 
-        const content = 'hi';
-        clientSocket.emit('newMessage', content);
-    });
-
-    it('client should receive an error when sending message in a not active room', (done) => {
-        const name = 'hello';
-        clientSocket.emit('userName', name);
-        clientSocket.once('error', (errorMessage: string) => {
-            expect(errorMessage).to.equal("La salle de chat n'est plus active");
-            done();
-        });
-
-        const roomID = 'abc';
-        clientSocket.emit('joinRoom', roomID);
-        serverSocket.on('joinRoom', () => {
-            handler.activeRooms.delete(roomID);
-        });
-
-        const content = 'hi';
-        clientSocket.emit('newMessage', content);
+        const message = {
+            content: 'hi',
+            roomId: roomID,
+        };
+        setTimeout(() => clientSocket.emit('newMessage', message), 150);
     });
 
     it('client should receive an error when joining a room without user name', (done) => {
@@ -220,19 +228,6 @@ describe('MessagesService', () => {
         clientSocket.emit('joinRoom', roomID);
     });
 
-    it('client should receive an error when joinning a room multiple times', (done) => {
-        clientSocket.once('error', (errorMessage: string) => {
-            expect(errorMessage).to.equal('Vous êtes déjà dans une salle');
-            done();
-        });
-        const name = 'allo';
-        clientSocket.emit('userName', name);
-        const roomID1 = 'abc';
-        clientSocket.emit('joinRoom', roomID1);
-        const roomID2 = 'def';
-        clientSocket.emit('joinRoom', roomID2);
-    });
-
     it('should delete user on deconnection', (done) => {
         const name = 'allo';
         clientSocket.emit('userName', name);
@@ -242,7 +237,6 @@ describe('MessagesService', () => {
             expect(handler.users.has(socketID)).to.be.false;
             done();
         });
-
         clientSocket.close();
     });
 
@@ -267,8 +261,10 @@ describe('MessagesService', () => {
 
         const roomID = 'abc';
         serverSocket.on('joinRoom', () => {
-            expect(handler.activeRooms.has(roomID)).to.be.true;
-            done();
+            setTimeout(() => {
+                expect(handler.activeRooms.has(roomID)).to.be.true;
+                done();
+            }, 10);
         });
 
         clientSocket.emit('joinRoom', roomID);
@@ -277,17 +273,20 @@ describe('MessagesService', () => {
     it('should receive global system message', (done) => {
         const name = 'abc';
         clientSocket.emit('userName', name);
-        const room = 'abc';
-        clientSocket.emit('joinRoom', room);
+        const roomId = 'abc';
+        clientSocket.emit('joinRoom', roomId);
         serverSocket.on('joinRoom', () => {
-            mockGlobalSystemMessages$.next(sysMessage);
+            setTimeout(() => {
+                mockGlobalSystemMessages$.next(sysMessage);
+            }, 50);
         });
         const sysMessage: GlobalSystemMessage = {
             content: 'allo',
-            gameToken: room,
+            gameToken: roomId,
         };
-        clientSocket.on(SYSTEM_MESSAGES, (message: SystemMessage) => {
-            expect(message).to.deep.equal(sysMessage.content);
+        clientSocket.on(SYSTEM_MESSAGES, (message: SystemMessageDTO) => {
+            expect(message.content).to.deep.equal(sysMessage.content);
+            expect(message.roomId).to.deep.equal(sysMessage.gameToken);
             done();
         });
     });
@@ -297,16 +296,18 @@ describe('MessagesService', () => {
         clientSocket.emit('userName', playerName);
         const gameToken = 'def';
         clientSocket.emit('joinRoom', gameToken);
+        room.userIdToSocketId.set(playerName, clientSocket.id);
         serverSocket.on('joinRoom', () => {
-            mockIndividualSystemMessages$.next(sysMessage);
+            setTimeout(() => mockIndividualSystemMessages$.next(sysMessage), 50);
         });
         const sysMessage: IndividualSystemMessage = {
             content: 'allo',
             gameToken,
             playerName,
         };
-        clientSocket.on(SYSTEM_MESSAGES, (message: SystemMessage) => {
-            expect(message).to.deep.equal(sysMessage.content);
+        clientSocket.on(SYSTEM_MESSAGES, (message: SystemMessageDTO) => {
+            expect(message.content).to.deep.equal(sysMessage.content);
+            expect(message.roomId).to.deep.equal(sysMessage.gameToken);
             done();
         });
     });

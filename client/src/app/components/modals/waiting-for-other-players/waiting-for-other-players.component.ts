@@ -37,7 +37,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     }
 
     get canLaunchGame() {
-        return this.socketHandler.isGameOwner;
+        return this.socketHandler.isGameOwner && this.players.length <= this.numberOfPlayers;
     }
 
     cancel() {
@@ -64,7 +64,10 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     }
 
     get players() {
-        return this.socketHandler.gameSettings$.value?.playerNames;
+        return this.socketHandler.gameSettings$.value?.playerNames ?? [];
+    }
+    get numberOfPlayers() {
+        return this.socketHandler.gameSettings$.value?.numberOfPlayers ?? 0;
     }
 
     get tmpPlayers() {

@@ -1,16 +1,15 @@
 package com.example.polyscrabbleclient.message.viewModel
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.message.EventType
 import com.example.polyscrabbleclient.message.SocketHandler
 import com.example.polyscrabbleclient.message.model.*
+import com.example.polyscrabbleclient.user.User
 import io.socket.emitter.Emitter
 import org.json.JSONException
 import org.json.JSONObject
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*

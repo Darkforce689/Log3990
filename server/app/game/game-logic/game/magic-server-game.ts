@@ -1,7 +1,13 @@
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { MagicCard } from '@app/game/game-logic/actions/magic-card/magic-card';
-import { MAX_NUMBER_OF_MAGIC_CARD, NUMBER_OF_WORDS_FOR_MAGIC_CARD } from '@app/game/game-logic/actions/magic-card/magic-card-constants';
+import {
+    EXTRATURN_ID,
+    MAX_NUMBER_OF_MAGIC_CARD,
+    NUMBER_OF_WORDS_FOR_MAGIC_CARD,
+    REDUCETIMER_ID,
+    SKIPNEXTTURN_ID,
+} from '@app/game/game-logic/actions/magic-card/magic-card-constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken, IMagicCard } from '@app/game/game-logic/interface/game-state.interface';
@@ -11,10 +17,12 @@ import { NOT_FOUND } from '@app/game/game-logic/constants';
 import { getRandomInt } from '@app/game/game-logic/utils';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { Subject } from 'rxjs';
+import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 
 export class MagicServerGame extends ServerGame {
     drawableMagicCards: IMagicCard[];
     drawnMagicCards: IMagicCard[][];
+    activeMagicCards: IMagicCard[];
     playersNumberOfWordsPlaced: number[];
 
     constructor(
@@ -66,6 +74,31 @@ export class MagicServerGame extends ServerGame {
         this.executeMagicCard(action);
     }
 
+    protected startTurn() {
+        let reduceTimer = false;
+        const indexReduceTimer = this.activeMagicCards.findIndex((value) => value.id === REDUCETIMER_ID);
+        if (indexReduceTimer !== NOT_FOUND) {
+            this.activeMagicCards.splice(indexReduceTimer, 1);
+            reduceTimer = true;
+        }
+        const indexSkipTurn = this.activeMagicCards.findIndex((value) => value.id === SKIPNEXTTURN_ID);
+        if (indexSkipTurn !== NOT_FOUND) {
+            this.skipTurn(indexSkipTurn);
+            return;
+        }
+        super.startTurn(reduceTimer);
+    }
+
+    protected endOfTurn(action: Action | undefined) {
+        const indexExtraTurn = this.activeMagicCards.findIndex((value) => value.id === EXTRATURN_ID);
+        if (indexExtraTurn !== NOT_FOUND) {
+            this.activeMagicCards.splice(indexExtraTurn, 1);
+            super.endOfTurn(action, 0);
+            return;
+        }
+        super.endOfTurn(action);
+    }
+
     private executeMagicCard(action: MagicCard) {
         action.execute(this);
         this.removeMagicCard(action);
@@ -76,6 +109,7 @@ export class MagicServerGame extends ServerGame {
     private initiateDrawnMagicCards() {
         this.drawnMagicCards = [];
         this.playersNumberOfWordsPlaced = [];
+        this.activeMagicCards = [];
         this.players.forEach(() => {
             this.drawnMagicCards.push([]);
             this.playersNumberOfWordsPlaced.push(0);
@@ -95,5 +129,11 @@ export class MagicServerGame extends ServerGame {
         const index = this.drawnMagicCards[this.activePlayerIndex].findIndex((magicCard) => magicCard.id === action.id);
         if (index === NOT_FOUND) return;
         this.drawnMagicCards[this.activePlayerIndex].splice(index, 1);
+    }
+
+    private skipTurn(index: number) {
+        this.activeMagicCards.splice(index, 1);
+        super.endOfTurn(new PassTurn(this.getActivePlayer()));
+        this.consecutivePass--;
     }
 }

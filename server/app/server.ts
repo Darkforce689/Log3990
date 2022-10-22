@@ -8,6 +8,7 @@ import { GameManagerService } from '@app/game/game-manager/game-manager.services
 import { GameSocketsHandler } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { ServerLogger } from '@app/logger/logger';
 import { MessagesSocketHandler } from '@app/messages-service/message-socket-handler/messages-socket-handler.service';
+import { RoomFactory } from '@app/messages-service/room/room-factory.service';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { NewGameSocketHandler } from '@app/new-game/new-game-socket-handler/new-game-socket-handler';
@@ -35,6 +36,7 @@ export class Server {
         private sessionMiddlewareService: SessionMiddlewareService,
         private authService: AuthService,
         private userService: UserService,
+        private roomFactory: RoomFactory,
     ) {}
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -85,6 +87,7 @@ export class Server {
             this.sessionMiddlewareService,
             this.authService,
             this.userService,
+            this.roomFactory,
         );
         this.messageHandler.handleSockets();
 

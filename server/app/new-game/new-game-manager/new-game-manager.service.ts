@@ -92,9 +92,6 @@ export class NewGameManagerService {
     }
 
     quitPendingGame(id: string, nameToRemove: string): string | undefined {
-        if (!this.isPendingGame(id)) {
-            return;
-        }
         const gameSettings = this.pendingGames.get(id);
         if (!gameSettings) {
             return;
@@ -103,6 +100,7 @@ export class NewGameManagerService {
         gameSettings.playerNames.splice(index, 1);
         return id;
     }
+
     deletePendingGame(id: string) {
         const gameStarted = this.gameMaster.activeGames.has(id);
         if (!gameStarted) {

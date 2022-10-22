@@ -14,7 +14,7 @@ import { first } from 'rxjs/operators';
     styleUrls: ['./account-page.component.scss'],
 })
 export class AccountPageComponent implements OnInit {
-    user: User = { _id: '', name: '', email: '', avatar: '' };
+    user: User = { _id: '', name: '', email: '', avatar: 'default' };
 
     name = new FormControl('', [
         Validators.required,

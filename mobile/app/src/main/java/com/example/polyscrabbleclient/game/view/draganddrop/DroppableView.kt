@@ -18,16 +18,16 @@ fun DroppableView(
 ) {
     var isInBounds by remember { mutableStateOf(false) }
     var dragGlobalPosition by remember { mutableStateOf(Offset.Zero) }
+    val offsetFromStartingPosition = dragState.offsetFromStartingPosition
 
     Box(modifier = modifier.onGloballyPositioned {
         it.boundsInWindow().let { rect ->
             val canvasOrigin = rect.topLeft
-            dragGlobalPosition = dragState.startingPosition + dragState.offsetFromStartingPosition
+            dragGlobalPosition = dragState.startingPosition + offsetFromStartingPosition
             dragState.currentLocalPosition = dragGlobalPosition - canvasOrigin
             isInBounds = rect.contains(dragGlobalPosition)
         }
-    }
-    ) {
+    }) {
         val canBeDropped =
             dragState.draggableContent !== null &&
             !dragState.isDragging &&

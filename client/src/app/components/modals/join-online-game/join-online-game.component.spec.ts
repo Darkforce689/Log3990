@@ -64,6 +64,8 @@ describe('JoinOnlineGameComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(JoinOnlineGameComponent);
         component = fixture.componentInstance;
+        component.deleted = false;
+
         fixture.detectChanges();
     });
 

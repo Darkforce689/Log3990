@@ -39,34 +39,37 @@ fun UserNameInput(
 ) {
     val focusRequester = FocusRequester()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val displayErrorModifier = if (error.isNotEmpty()) Modifier.alpha(1f) else Modifier.alpha(0f)
+    val displayErrorModifier =
 
-    TextField(
-        value = name,
-        onValueChange = { onUsernameChanged(it.filter { char -> !char.isWhitespace() }) },
-        modifier = Modifier
-            .focusRequester(focusRequester)
-            .onFocusChanged { focusState ->
-                if (!focusState.isFocused && name.isNotBlank()) validateUsername(
-                    name
+        TextField(
+            value = name,
+            onValueChange = { onUsernameChanged(it.filter { char -> !char.isWhitespace() }) },
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    if (!focusState.isFocused && name.isNotBlank()) validateUsername(
+                        name
+                    )
+                },
+            isError = error.isNotEmpty(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.None
+            ),
+            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+            label = { Text(userName_string) },
+            singleLine = true,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null
                 )
-            },
-        isError = error.isNotEmpty(),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.None
-        ),
-        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-        label = { Text(userName_string) },
-        singleLine = true,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null
-            )
-        }
+            }
+        )
+    Requirement(
+        showError = error.isNotEmpty(),
+        message = error
     )
-    Requirement(modifier = displayErrorModifier, message = error)
 
 }
 
@@ -80,7 +83,6 @@ fun EmailInput(
     error: String,
 ) {
     val focusRequester = FocusRequester()
-    val displayErrorModifier = if (error.isNotEmpty()) Modifier.alpha(1f) else Modifier.alpha(0f)
     val keyboardController = LocalSoftwareKeyboardController.current
 
     TextField(
@@ -106,7 +108,7 @@ fun EmailInput(
         leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) }
     )
     Requirement(
-        modifier = displayErrorModifier,
+        showError = error.isNotEmpty(),
         message = error
     )
 }
@@ -121,7 +123,6 @@ fun PasswordInput(
     error: String,
 ) {
     val showPassword = remember { mutableStateOf(false) }
-    val displayErrorModifier = if (error.isNotEmpty()) Modifier.alpha(1f) else Modifier.alpha(0f)
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = FocusRequester()
 
@@ -158,7 +159,7 @@ fun PasswordInput(
         }
     )
     Requirement(
-        modifier = displayErrorModifier,
+        showError = error.isNotEmpty(),
         message = error
     )
 }
@@ -166,10 +167,13 @@ fun PasswordInput(
 @Composable
 fun Requirement(
     modifier: Modifier = Modifier,
+    showError: Boolean,
     message: String,
 ) {
     Row(
-        modifier = modifier.padding(6.dp),
+        modifier = modifier
+            .padding(6.dp)
+            .alpha(if (showError) 1f else 0f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

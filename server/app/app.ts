@@ -6,6 +6,7 @@ import { HttpException } from '@app/classes/http.exception';
 import { ENABLE_API_LOGIN } from '@app/constants';
 import { DebugController } from '@app/controllers/debug.controller';
 import { LeaderboardController } from '@app/controllers/leaderboard-controller/leaderboard.controller';
+import { ConversationController } from '@app/messages-service/controllers/conversation.controller';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -37,6 +38,7 @@ export class Application {
         private readonly authService: AuthService,
         private readonly sessionMiddlewareService: SessionMiddlewareService,
         private readonly accountController: AccountController,
+        private readonly conversationController: ConversationController,
     ) {}
 
     start(enableRedisSession = true, enableApiLogin = ENABLE_API_LOGIN): void {
@@ -57,6 +59,7 @@ export class Application {
         this.app.use('/api/servergame', this.debugController.router);
         this.app.use('/api/scores', this.leaderboardController.router);
         this.app.use('/api/account', this.accountController.router);
+        this.app.use('/api/conversations', this.conversationController.router);
 
         this.errorHandling();
     }

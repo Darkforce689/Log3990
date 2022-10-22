@@ -36,6 +36,13 @@
             <br />
         </div>
     </div>
+    <mat-form-field appearance="fill">
+        <mat-label>Choisir une difficulté pour les joueurs virtuels</mat-label>
+        <mat-select formControlName="botDifficulty">
+            <mat-option matInput value="Facile"> Facile</mat-option>
+            <mat-option matInput value="Expert"> Expert</mat-option>
+        </mat-select>
+    </mat-form-field>
 </mat-dialog-content>
 <br />
 <mat-dialog-actions>

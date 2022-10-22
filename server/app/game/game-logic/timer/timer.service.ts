@@ -11,15 +11,16 @@ export class Timer {
 
     constructor(private gameToken: string, private timerController: TimerController) {}
 
-    start(interval: number) {
+    start(interval: number, halfTime: boolean = false) {
         this.emitStartControl(interval);
         const end$: Subject<void> = new Subject();
-        const numberOfStep = Math.ceil(interval / TIMER_STEP);
+        const newInterval = halfTime ? interval / 2 : interval;
+        const numberOfStep = Math.ceil(newInterval / TIMER_STEP);
 
-        this.timeLeftSubject.next(interval);
+        this.timeLeftSubject.next(newInterval);
         this.source = timer(TIMER_STEP, TIMER_STEP);
         this.end$$ = this.source.pipe(takeUntil(end$)).subscribe((step) => {
-            const timeLeft = interval - (step + 1) * this.timePerStep;
+            const timeLeft = newInterval - (step + 1) * this.timePerStep;
             this.timeLeftSubject.next(timeLeft);
             this.emitTimeUpdate(timeLeft);
             if (step >= numberOfStep - 1) {

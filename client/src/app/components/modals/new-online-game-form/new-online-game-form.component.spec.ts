@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DEFAULT_NUMBER_OF_PLAYERS, DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { NewOnlineGameFormComponent } from './new-online-game-form.component';
 
@@ -67,6 +68,7 @@ describe('NewOnlineGameFormComponent', () => {
             numberOfPlayers: 4,
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -87,6 +89,7 @@ describe('NewOnlineGameFormComponent', () => {
             numberOfPlayers: 4,
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -107,6 +110,7 @@ describe('NewOnlineGameFormComponent', () => {
             timePerTurn: 60000,
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Easy,
         });
         fixture.detectChanges();
         (component.onlineGameSettingsUIForm.controls.magicCardIds as FormArray).push(new FormControl('ANY_MAGIC_CARD_ID'));
@@ -126,6 +130,7 @@ describe('NewOnlineGameFormComponent', () => {
             numberOfPlayers: 4,
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Easy,
         };
         component.onlineGameSettingsUIForm.setValue(settings);
         expect(component.onlineGameSettingsUIForm.value).toEqual(settings);
@@ -140,6 +145,7 @@ describe('NewOnlineGameFormComponent', () => {
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Easy,
         });
         component.playGame();
         expect(mockDialog.close).toHaveBeenCalled();
@@ -153,6 +159,7 @@ describe('NewOnlineGameFormComponent', () => {
             numberOfPlayers: 4,
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Expert,
         };
         component.onlineGameSettingsUIForm.setValue(setting);
         spyOn(mockDialog, 'close');
@@ -165,6 +172,7 @@ describe('NewOnlineGameFormComponent', () => {
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
             hasPassword: false,
             password: '',
+            botDifficulty: BotDifficulty.Easy,
         });
     });
 });

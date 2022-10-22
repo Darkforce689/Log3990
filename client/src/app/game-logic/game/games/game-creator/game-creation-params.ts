@@ -1,6 +1,4 @@
-export interface GameCreationParams {
-    timePerTurn: number;
-}
-export interface OnlineGameCreationParams extends GameCreationParams {
+export interface OnlineGameCreationParams {
     id: string;
+    timePerTurn: number;
 }

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.NavPage
+import com.example.polyscrabbleclient.auth.model.ErrorState
 import com.example.polyscrabbleclient.auth.model.LoginSate
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.ui.theme.connect
@@ -37,6 +38,9 @@ fun LogInScreen(navController: NavController, viewModel: AuthenticationViewModel
 
     if (isAuthenticate) {
         navController.navigate(NavPage.MainPage.label) {
+            popUpTo(NavPage.Login.label) {
+                inclusive = true
+            }
             launchSingleTop = true
         }
         viewModel.reset()
@@ -46,6 +50,7 @@ fun LogInScreen(navController: NavController, viewModel: AuthenticationViewModel
         AuthContent(
             modifier = Modifier.fillMaxWidth(),
             authState = viewModel.logInState.value,
+            errorState = viewModel.errors,
             handleEvent = viewModel::handleLoginEvent,
             isInProcess = viewModel.isInProcess.value,
             onSignUp = {
@@ -65,12 +70,14 @@ fun LogInScreen(navController: NavController, viewModel: AuthenticationViewModel
 fun AuthContent(
     modifier: Modifier,
     authState: LoginSate,
+    errorState: ErrorState,
     handleEvent: (event: AuthenticationViewModel.AuthEvent) -> Unit,
     onSignUp: () -> Unit,
     isInProcess: Boolean
 ) {
     AuthForm(
         authState = authState,
+        errorState = errorState,
         onEmailChanged = { email ->
             handleEvent(
                 AuthenticationViewModel.AuthEvent.EmailChanged(email)
@@ -97,6 +104,7 @@ fun AuthContent(
 fun AuthForm(
     modifier: Modifier = Modifier,
     authState: LoginSate,
+    errorState: ErrorState,
     onEmailChanged: (email: String) -> Unit,
     onPasswordChanged: (password: String) -> Unit,
     validateEmail: (email: String) -> Unit,
@@ -127,7 +135,7 @@ fun AuthForm(
                     EmailInput(
                         email = authState.email,
                         onEmailChanged = { onEmailChanged(it) },
-                        error = authState.emailError.value,
+                        error = errorState.emailError.value,
                         validateEmail = validateEmail
                     )
                     PasswordInput(
@@ -135,7 +143,7 @@ fun AuthForm(
                         onPasswordChanged = {
                             onPasswordChanged(it)
                         },
-                        error = authState.passwordError.value,
+                        error = errorState.passwordError.value,
                         validatePassword = {}, // No form error possible
                     )
                 }

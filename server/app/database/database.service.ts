@@ -1,4 +1,4 @@
-import { DATABASE_URL, USER_COLLECTION, USER_CREDS_COLLECTION } from '@app/constants';
+import { CONVERSATION_COLLECTION, DATABASE_URL, GENERAL_CHANNEL, MESSAGE_COLLECTION, USER_COLLECTION, USER_CREDS_COLLECTION } from '@app/constants';
 import {
     DEFAULT_LEADERBOARD_CLASSIC,
     DEFAULT_LEADERBOARD_LOG,
@@ -27,6 +27,8 @@ export class DatabaseService {
         this.createLeaderboardCollection(LEADERBOARD_LOG_COLLECTION);
         this.createUserCollection();
         this.createUserCredentialsCollection();
+        this.createConversationCollection();
+        this.createMessagesCollection();
         await this.redisService.start();
     }
 
@@ -41,6 +43,47 @@ export class DatabaseService {
             await collection.createIndex({ name: 1 }, { unique: true });
         } catch (e) {
             throw Error('Data base users collection creation error');
+        }
+    }
+
+    private async createConversationCollection() {
+        try {
+            const isCollectionExist = await this.isCollectionInDb(CONVERSATION_COLLECTION);
+            if (isCollectionExist) {
+                return;
+            }
+            const collection = await this.db.createCollection(CONVERSATION_COLLECTION);
+            await collection.createIndex({ name: 1 }, { unique: true });
+            await collection.createIndex({ participants: 1 }, { unique: true });
+            await collection.insertOne({ name: GENERAL_CHANNEL, participants: [] });
+            const isUserCollectionExists = await this.isCollectionInDb(USER_COLLECTION);
+            if (isUserCollectionExists) {
+                this.db
+                    .collection(USER_COLLECTION)
+                    .find()
+                    .forEach((user) => {
+                        // eslint-disable-next-line no-underscore-dangle
+                        collection.updateOne({ name: GENERAL_CHANNEL }, { $push: { participants: user._id } });
+                    });
+            }
+            ServerLogger.logInfo("Don't forget to create search index for conversation name in mongoatlas");
+        } catch (e) {
+            throw Error('Data base conversation collection creation error');
+        }
+    }
+
+    private async createMessagesCollection() {
+        try {
+            const isCollectionExist = await this.isCollectionInDb(MESSAGE_COLLECTION);
+            if (isCollectionExist) {
+                return;
+            }
+            // TODO add sort for date etc
+            const collection = await this.db.createCollection(MESSAGE_COLLECTION);
+            await collection.createIndex({ conversation: 1 }, { unique: false });
+            await collection.createIndex({ date: -1 }, { unique: false });
+        } catch (e) {
+            throw Error('Data base messages collection creation error');
         }
     }
 
