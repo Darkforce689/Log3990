@@ -13,12 +13,12 @@ export class AvatarListComponent {
     @Output() srcChange = new EventEmitter<string>();
     @Input() hasClear = false;
     avatarTypes: Avatar[] = [
-        { src: 'assets/img/avatar/koala.png', name: 'Koala' },
-        { src: 'assets/img/avatar/fox.png', name: 'Renard' },
-        { src: 'assets/img/avatar/elephant.png', name: 'Élephant' },
-        { src: 'assets/img/avatar/lynx.png', name: 'Panthère' },
-        { src: 'assets/img/avatar/polarbear.png', name: 'Ours polaire' },
-        { src: 'assets/img/avatar/stag.png', name: 'Cerf' },
+        { src: 'assets/img/avatar/koala.png', name: 'koala' },
+        { src: 'assets/img/avatar/fox.png', name: 'fox' },
+        { src: 'assets/img/avatar/elephant.png', name: 'elephant' },
+        { src: 'assets/img/avatar/lynx.png', name: 'lynx' },
+        { src: 'assets/img/avatar/polarbear.png', name: 'polarbear' },
+        { src: 'assets/img/avatar/stag.png', name: 'stag' },
     ];
 
     updateAvatar(src: MatSelectionListChange) {

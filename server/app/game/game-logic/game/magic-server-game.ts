@@ -2,6 +2,7 @@ import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { MagicCard } from '@app/game/game-logic/actions/magic-card/magic-card';
 import {
+    EXTRATURN_ID,
     MAX_NUMBER_OF_MAGIC_CARD,
     NUMBER_OF_WORDS_FOR_MAGIC_CARD,
     SKIPNEXTTURN_ID,
@@ -79,6 +80,16 @@ export class MagicServerGame extends ServerGame {
             return;
         }
         super.startTurn();
+    }
+
+    protected endOfTurn(action: Action | undefined) {
+        const indexExtraTurn = this.activeMagicCards.findIndex((value) => value.id === EXTRATURN_ID);
+        if (indexExtraTurn !== NOT_FOUND) {
+            this.activeMagicCards.splice(indexExtraTurn, 1);
+            super.endOfTurn(action, 0);
+            return;
+        }
+        super.endOfTurn(action);
     }
 
     private executeMagicCard(action: MagicCard) {
