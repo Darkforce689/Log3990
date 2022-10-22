@@ -52,7 +52,7 @@ export class NewGameSocketHandler {
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
-                        throw Error(`No user found with userId ${_id}`);
+                        return;
                     }
                     gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name] }), socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
@@ -79,7 +79,7 @@ export class NewGameSocketHandler {
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
-                        throw Error(`No user found with userId ${_id}`);
+                        return;
                     }
                     this.joinGame(id, user.name, this.getPendingGame(id), socket);
                     this.emitPendingGamesToAll();
@@ -93,7 +93,7 @@ export class NewGameSocketHandler {
                 const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                 const user = await this.userService.getUser({ _id });
                 if (user === undefined) {
-                    throw Error(`No user found with userId ${_id}`);
+                    return;
                 }
 
                 this.onDisconnect(user.name);
