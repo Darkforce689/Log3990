@@ -15,8 +15,6 @@ import {
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 
-// const NO_WHITE_SPACE_RGX = /^\S*$/;
-
 @Component({
     selector: 'app-new-online-game-form',
     templateUrl: './new-online-game-form.component.html',
