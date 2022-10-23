@@ -9,16 +9,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.lobby.viewmodels.LobbyViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun LobbyScreen(navController: NavController?) {
+fun LobbyScreen(navController: NavController) {
     val viewModel: LobbyViewModel = viewModel()
 
     EvenlySpacedRowContainer {
         Box {
-            PendingGamesView(viewModel.pendingGames)
+            PendingGamesView(viewModel.pendingGames) { pendingGameIndex ->
+                viewModel.joinGame(pendingGameIndex) {
+                    CoroutineScope(IO).launch {
+                        launch(Dispatchers.Main) {
+                            navController.navigate(NavPage.GamePage.label) {
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -38,5 +54,5 @@ fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun LobbyScreenPreview() {
-    LobbyScreen(null)
+    LobbyScreen(navController = rememberNavController())
 }
