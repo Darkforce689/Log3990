@@ -247,13 +247,13 @@ export class NewGameSocketHandler {
         const gameToChange = this.newGameManagerService.getPendingGames().find((gameSettings) => gameSettings.playerNames.includes(name));
 
         if (!gameToChange) return;
-        if (gameToChange?.playerNames[0] === name) {
+        if (gameToChange.playerNames[0] === name) {
             this.ioServer.to(gameToChange.id).emit(hostQuit);
             if (gameToChange.gameStatus === 'En attente') {
                 this.newGameManagerService.deletePendingGame(gameToChange.id);
             }
         }
-        this.newGameManagerService.quitPendingGame(gameToChange?.id, name);
+        this.newGameManagerService.quitPendingGame(gameToChange.id, name);
         this.sendGameSettingsToPlayers(gameToChange.id, gameToChange);
     }
 
