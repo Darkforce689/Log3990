@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-vars */
+import { AuthService } from '@app/auth/services/auth.service';
+import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
+import { Session } from '@app/auth/services/session.interface';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
@@ -8,15 +11,20 @@ import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
+import { User } from '@app/user/interfaces/user.interface';
+import { UserService } from '@app/user/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { beforeEach } from 'mocha';
 import { AddressInfo } from 'net';
+import * as sinon from 'sinon';
 import { Socket } from 'socket.io';
 import { io as Client, Socket as ClientSocket } from 'socket.io-client';
+import { ExtendedError } from 'socket.io/dist/namespace';
 import { NewGameSocketHandler } from './new-game-socket-handler';
 
 describe('New Online Game Service', () => {
+    const timeout = 20;
     let handler: NewGameSocketHandler;
     let clientSocket: ClientSocket;
     let serverSocket: Socket;
@@ -24,7 +32,12 @@ describe('New Online Game Service', () => {
     let httpServer: Server;
     let newGameManagerService: StubbedClass<NewGameManagerService>;
     let dictionaryService: StubbedClass<DictionaryService>;
-
+    const user: User = {
+        name: 'Max',
+        _id: '1',
+        email: '',
+        avatar: '',
+    };
     before((done) => {
         httpServer = createServer();
         httpServer.listen(() => {
@@ -32,10 +45,25 @@ describe('New Online Game Service', () => {
             port = (httpServer.address() as AddressInfo).port;
             newGameManagerService = createSinonStubInstance<NewGameManagerService>(NewGameManagerService);
             dictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
-            handler = new NewGameSocketHandler(httpServer, newGameManagerService, dictionaryService);
+            newGameManagerService = createSinonStubInstance<NewGameManagerService>(NewGameManagerService);
+            dictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
+            const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
+            sessionMiddleware.getSocketSessionMiddleware.returns((socket: unknown, next: (err?: ExtendedError | undefined) => void) => {
+                next();
+                return;
+            });
+            const authService = createSinonStubInstance(AuthService);
+            sinon.stub(authService, 'socketAuthGuard').value((socket: unknown, next: (err?: ExtendedError | undefined) => void) => {
+                next();
+            });
+            const userService = createSinonStubInstance(UserService);
+            userService.getUser.returns(Promise.resolve(user));
+
+            handler = new NewGameSocketHandler(httpServer, newGameManagerService, dictionaryService, sessionMiddleware, authService, userService);
             handler.newGameHandler();
             handler.ioServer.on('connection', (socket: Socket) => {
                 serverSocket = socket;
+                (socket.request as unknown as { session: Session }).session = { userId: '1' };
             });
             done();
         });
@@ -53,36 +81,44 @@ describe('New Online Game Service', () => {
     });
 
     it('should create pendingGame', (done) => {
-        const gameSettings = {
-            playerNames: ['Max'],
-            randomBonus: true,
-            timePerTurn: 60000,
+        const playerNames: string[] = [];
+        const gameId = '1';
+
+        newGameManagerService.createPendingGame.returns(gameId);
+        const gameSettingsOnline: OnlineGameSettingsUI = {
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
+            timePerTurn: 60000,
+            playerNames,
+            randomBonus: true,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
         };
-        serverSocket.on('createGame', () => {
-            expect(newGameManagerService.createPendingGame.calledWith(gameSettings)).to.be.true;
-            done();
+        serverSocket.on('createGame', (gameSettings) => {
+            setTimeout(() => {
+                gameSettingsOnline.playerNames.push(user.name);
+                (gameSettingsOnline as OnlineGameSettings).id = gameId;
+                expect(newGameManagerService.createPendingGame.calledWith(gameSettingsOnline)).to.be.true;
+                // expect(gameSettings).to.deep.equal(gameSettingsOnline);
+                done();
+            }, 3 * timeout);
         });
-        clientSocket.emit('createGame', gameSettings);
+        clientSocket.emit('createGame', gameSettingsOnline);
     });
 
     it('should receive pendingGameId on create', (done) => {
         const id = 'abc';
         newGameManagerService.createPendingGame.returns(id);
         const gameSettings = {
+            gameMode: GameMode.Classic,
+            timePerTurn: 60000,
             playerNames: ['Max'],
             randomBonus: true,
-            timePerTurn: 60000,
             botDifficulty: BotDifficulty.Easy,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
-            gameMode: GameMode.Classic,
             numberOfPlayers: 2,
             magicCardIds: [],
-        } as OnlineGameSettingsUI;
+        };
+
         clientSocket.on('pendingGameId', (pendingId: string) => {
             expect(pendingId).to.deep.equal(id);
             done();
@@ -91,20 +127,25 @@ describe('New Online Game Service', () => {
     });
 
     it('should throw error if game settings are invalid', (done) => {
-        const gameSettings = { playerName: false, randomBonus: true, timePerTurn: 60000 };
+        const gameSettings = { playerName: [false], randomBonus: 3, timePerTurn: 'uyyu' };
         clientSocket.on('error', (errorContent: string) => {
-            expect(errorContent).to.equal('Impossible de rejoindre la partie, les paramètres de partie sont invalides.');
-            done();
+            setTimeout(() => {
+                expect(errorContent).to.equal('Impossible de rejoindre la partie, les paramètres de partie sont invalides.');
+                done();
+            }, timeout);
         });
         clientSocket.emit('createGame', gameSettings);
     });
 
     it('should delete pending game if client disconnect', (done) => {
-        const gameSettings = { playerNames: ['name'], randomBonus: true, timePerTurn: 60000 };
+        const gameSettings = { playerNames: ['Max'], id: '1', randomBonus: true, timePerTurn: 60000 };
+        newGameManagerService.getPendingGames.returns([gameSettings as OnlineGameSettings]);
         clientSocket.emit('createGame', gameSettings);
         serverSocket.on('disconnect', () => {
-            expect(newGameManagerService.deletePendingGame.called).to.be.true;
-            done();
+            setTimeout(() => {
+                expect(newGameManagerService.deletePendingGame.called).to.be.true;
+                done();
+            }, timeout);
         });
         clientSocket.close();
     });
@@ -113,8 +154,10 @@ describe('New Online Game Service', () => {
         const id = true;
         const playerName = 'abc';
         clientSocket.on('error', (errorContent: string) => {
-            expect(errorContent).to.equal('Impossible de rejoindre la partie, les paramètres sont invalides.');
-            done();
+            setTimeout(() => {
+                expect(errorContent).to.equal('Impossible de rejoindre la partie, les paramètres sont invalides.');
+                done();
+            }, timeout);
         });
         clientSocket.emit('joinGame', id, playerName);
     });
@@ -124,30 +167,31 @@ describe('New Online Game Service', () => {
         const id = 'aa';
         const playerName = 'abc';
         clientSocket.on('error', (errorContent: string) => {
-            expect(errorContent).to.equal("Impossible de rejoindre la partie, elle n'existe pas.");
-            done();
+            setTimeout(() => {
+                expect(errorContent).to.equal("Impossible de rejoindre la partie, elle n'existe pas.");
+                done();
+            }, timeout);
         });
         clientSocket.emit('joinGame', id, playerName);
     });
 
     it('should send gameSettings to players on joinGame', (done) => {
         const gameSettingsUI = {
-            playerNames: ['name'],
+            playerNames: [],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
         } as OnlineGameSettingsUI;
+
         const gameSettings = {
             id: 'a',
-            playerNames: ['name'],
+            playerNames: [user.name],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
@@ -173,17 +217,16 @@ describe('New Online Game Service', () => {
 
     it('should delete pending game on game launch', (done) => {
         const gameSettingsUI = {
-            playerNames: ['name'],
+            playerNames: [user.name],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
-            dictTitle: DEFAULT_DICTIONARY_TITLE,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
         };
         const gameSettings = {
             id: 'a',
-            playerNames: ['name'],
+            playerNames: [user.name],
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
@@ -192,9 +235,10 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
         };
+        newGameManagerService.launchPendingGame.returns(Promise.resolve('a'));
 
         newGameManagerService.createPendingGame.returns('a');
-        newGameManagerService.joinPendingGame.returns('id');
+        newGameManagerService.joinPendingGame.returns('a');
         newGameManagerService.getPendingGame.returns(gameSettings as OnlineGameSettings);
 
         const clientSocket2 = Client(`http://localhost:${port}`, { path: '/newGame', multiplex: false });

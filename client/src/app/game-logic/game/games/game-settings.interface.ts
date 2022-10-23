@@ -3,5 +3,6 @@ export interface GameSettings {
     playerName: string;
     botDifficulty: string;
     randomBonus: boolean;
+    numberOfPlayers: number;
     magicCardIds: string[];
 }

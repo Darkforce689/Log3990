@@ -12,6 +12,7 @@ import { GameState } from '@app/game-logic/game/games/online-game/game-state';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
 import { isCharUpperCase } from '@app/game-logic/utils';
+import { AccountService } from '@app/services/account.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { OnlineAction } from '@app/socket-handler/interfaces/online-action.interface';
 import { Subscription } from 'rxjs';
@@ -30,6 +31,7 @@ export class OnlineGame extends Game {
     hasGameEnded: boolean = false;
     winnerNames: string[];
     playersWithIndex = new Map<string, PlayerWithIndex>();
+    userName: string;
     private letterCreator = new LetterCreator();
 
     private gameState$$: Subscription;
@@ -39,11 +41,11 @@ export class OnlineGame extends Game {
     constructor(
         public gameToken: string,
         public timePerTurn: number,
-        public userName: string,
         private timer: TimerService,
         private onlineSocket: GameSocketHandlerService,
         private boardService: BoardService,
         private onlineActionCompiler: OnlineActionCompilerService,
+        private accountService: AccountService,
     ) {
         super();
         this.boardService.board = new Board();
@@ -59,6 +61,10 @@ export class OnlineGame extends Game {
         this.timeLeft$$ = this.onlineSocket.timerTimeLeft$.subscribe((timeLeft: number) => {
             this.timer.timeLeftSubject.next(timeLeft);
         });
+
+        this.accountService.actualizeAccount();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.userName = this.accountService.account!.name;
     }
 
     getNumberOfLettersRemaining(): number {
