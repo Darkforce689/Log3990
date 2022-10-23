@@ -12,6 +12,9 @@ import { Tile } from '@app/game-logic/game/board/tile';
 import { GameState, LightPlayer } from '@app/game-logic/game/games/online-game/game-state';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
+import { User } from '@app/pages/register-page/user.interface';
+
+import { AccountService } from '@app/services/account.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { Socket } from 'socket.io-client';
 import { OnlineGame } from './online-game';
@@ -23,9 +26,20 @@ describe('OnlineGame', () => {
     let timer: TimerService;
     let player1: Player;
     let player2: Player;
+    const accountServiceMock = jasmine.createSpyObj('AccountService', ['actualizeAccount'], ['account']);
 
     beforeEach(() => {
-        TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
+        (Object.getOwnPropertyDescriptor(accountServiceMock, 'account')?.get as jasmine.Spy<() => User>).and.returnValue({
+            name: 'p1',
+            _id: '1',
+            email: 'a@b.c',
+            avatar: 'frite',
+        });
+
+        TestBed.configureTestingModule({
+            providers: [{ provide: AccountService, useValue: accountServiceMock }],
+            imports: [HttpClientTestingModule],
+        });
         boardService = TestBed.inject(BoardService);
         gameSocketHandlerService = TestBed.inject(GameSocketHandlerService);
         timer = TestBed.inject(TimerService);
@@ -33,15 +47,16 @@ describe('OnlineGame', () => {
         onlineGame = new OnlineGame(
             '0',
             DEFAULT_TIME_PER_TURN,
-            'p1',
             timer,
             gameSocketHandlerService,
             boardService,
             TestBed.inject(OnlineActionCompilerService),
+            TestBed.inject(AccountService),
         );
         player1 = new Player('p1');
         player2 = new Player('p2');
         onlineGame.players = [player1, player2];
+        onlineGame.userName = player1.name;
     });
 
     it('should create an instance', () => {
@@ -225,6 +240,7 @@ describe('OnlineGame', () => {
         gameSocketHandlerService['gameStateSubject'].next(gameState);
         const action = new PassTurn(onlineGame.players[0]);
 
+        onlineGame.userName = p1.name;
         onlineGame.handleUserActions();
         const playActionSpy = spyOn(gameSocketHandlerService, 'playAction');
         onlineGame.players[0].action$.next(action);

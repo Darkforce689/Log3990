@@ -20,6 +20,7 @@ describe('PlayerInfoComponent', () => {
         info['game'] = {} as unknown as Game;
         const mockPlayer = {} as unknown as Player;
         info.players = [mockPlayer, mockPlayer];
+        info.player = mockPlayer;
         const activePlayer = {
             name: 'test',
         } as unknown as Player;
