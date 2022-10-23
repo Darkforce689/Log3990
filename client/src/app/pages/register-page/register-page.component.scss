@@ -10,7 +10,7 @@
 
 .register-form {
     padding: 20px 22px 11px;
-    height: auto;
+    height: 350px;
     width: 500px;
 }
 
@@ -18,12 +18,18 @@
     padding-bottom: 3%;
 }
 
-.mat-card-content {
+.field-container {
     padding-top: 5%;
     margin-left: 5%;
     margin-right: 5%;
     display: flex;
     flex-direction: column;
+}
+.mat-card-content {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 3%;
+    margin-top: 2%;
 }
 
 .mat-card-header {
@@ -41,4 +47,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.error {
+    color : red;
+    font-size: 10px;
+}
+
+app-avatar-list {
+   margin-top: 1%;
+   width: 10%;
 }
