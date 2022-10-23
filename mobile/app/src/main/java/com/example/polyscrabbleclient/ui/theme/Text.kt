@@ -32,3 +32,7 @@ const val already_auth = "Vous êtes déjà connecté sur un autre client"
 val lettersRemainingFR: (count: Int) -> String = { count -> "$count lettres restantes"}
 val lettersRemainingEN: (count: Int) -> String = { count -> "$count letters remaining"}
 
+// Lobby
+val joinGameButtonFR = "Rejoindre la partie"
+val joinGameButtonEN = "Join game"
+

@@ -12,48 +12,33 @@ enum class BotDifficulty (val value: String) {
     @SerializedName("Expert") Expert("Expert"),
 }
 
+data class OnlineGameSettings (
+    val id: String,
+    val gameMode: GameMode,
+    val timePerTurn: Int,
+    val playerNames: ArrayList<String>,
+    val randomBonus: Boolean,
+    val botDifficulty: BotDifficulty,
+    val numberOfPlayers: Int,
+)
+
+
 // Warning : Events Data Classes have to match the backend corresponding interfaces
-data class GameJoined(
-    val todo: Any
-)
 
-data class GameStarted(
-    val todo: Any
-)
+typealias GameJoined = OnlineGameSettings
 
-typealias PendingGames = Array<OnlineGameSettingsUI>
-data class OnlineGameSettingsUI (
-    val id: String,
-    val gameMode: GameMode,
-    val timePerTurn: Int,
-    val playerNames: ArrayList<String>,
-    val randomBonus: Boolean,
-    val botDifficulty: BotDifficulty,
-    val numberOfPlayers: Int,
-)
+typealias GameStarted = OnlineGameSettings
 
-data class PendingGameId(
-    val todo: Any
-)
+typealias PendingGames = Array<OnlineGameSettings>
 
-data class Error(
-    val todo: Any
-)
+typealias PendingGameId = GameToken
 
-data class CreateGame(
-    val gameMode: GameMode,
-    val timePerTurn: Int,
-    val playerNames: ArrayList<String>,
-    val randomBonus: Boolean,
-    val botDifficulty: BotDifficulty,
-    val numberOfPlayers: Int,
-)
+typealias Error = String
 
-data class LaunchGame(
-    val todo: Any
-)
+typealias CreateGame = OnlineGameSettings
 
-data class JoinGame(
-    val id: String,
-    val name: String,
-)
+typealias LaunchGame = GameToken
+
+typealias JoinGame = GameToken
+
+typealias GameToken = String
