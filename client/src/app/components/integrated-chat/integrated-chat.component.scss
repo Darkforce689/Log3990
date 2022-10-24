@@ -1,0 +1,39 @@
+mat-drawer-inner-container {
+    min-width    : 15vw;
+    max-width    : 33vw;
+}
+
+.chatContainer {
+    overflow-wrap: anywhere;
+    max-width    : 33vw;
+
+}
+
+.wrapper {
+    position: relative;
+}
+
+.button {
+    height    : 10%;
+    padding   : 2% 1% 1% 5%;
+    align-self: flex-start;
+}
+
+.icon {
+    transform: scale(2);
+    padding  : 0;
+}
+
+.sideNav {
+    width    : fit-content;
+    position : absolute;
+    display  : flex;
+    flex-flow: row;
+    flex-grow: 1;
+
+    min-height     : 77vh;
+    justify-content: flex-end;
+    top            : 0;
+    right          : 0;
+    bottom         : 0;
+}

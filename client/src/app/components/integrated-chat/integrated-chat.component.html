@@ -1,0 +1,12 @@
+<div class="wrapper">
+    <div class="sideNav">
+        <button class="button" mat-button (click)="sidenav.toggle()">
+            <mat-icon class="icon">message</mat-icon>
+        </button>
+        <mat-sidenav-container class="chatContainer">
+            <mat-sidenav class="chat" #sidenav position="end" mode="side" [(opened)]="opened">
+                {{content}}
+            </mat-sidenav>
+        </mat-sidenav-container>
+    </div>
+</div>

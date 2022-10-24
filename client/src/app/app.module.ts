@@ -5,6 +5,7 @@ import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
+import { IntegratedChatComponent } from '@app/components/integrated-chat/integrated-chat.component';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
@@ -62,6 +63,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         HomepageComponent,
         NewGamePageComponent,
         HeaderBarComponent,
+        IntegratedChatComponent,
         BoldPipe,
         PreventContextMenuDirective,
         ClickAndClickoutDirective,
