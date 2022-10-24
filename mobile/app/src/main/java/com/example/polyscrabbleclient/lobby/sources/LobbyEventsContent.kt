@@ -28,7 +28,6 @@ data class OnlineGameSettings(
     val numberOfPlayers: Int,
 )
 
-
 // Warning : Events Data Classes have to match the backend corresponding interfaces
 
 typealias GameJoined = OnlineGameSettings
@@ -41,7 +40,14 @@ typealias PendingGameId = GameToken
 
 typealias Error = String
 
-typealias CreateGame = OnlineGameSettings
+data class CreateGame (
+    val gameMode: GameMode,
+    val timePerTurn: Int,
+    val playerNames: ArrayList<String>,
+    val randomBonus: Boolean,
+    val botDifficulty: BotDifficulty,
+    val numberOfPlayers: Int,
+)
 
 typealias LaunchGame = GameToken
 

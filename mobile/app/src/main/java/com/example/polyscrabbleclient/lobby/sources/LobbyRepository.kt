@@ -7,6 +7,7 @@ object LobbyRepository {
 
     private val lobbySocket = LobbySocketHandler
     val pendingGames = mutableStateOf<PendingGames?>(null)
+    private var isGameOwner = false
 
     private val onGameJoined: (gameJoined: GameJoined?) -> Unit = { gameJoined ->
         // TODO
@@ -52,5 +53,10 @@ object LobbyRepository {
         lobbySocket.on(OnLobbyEvent.PendingGames, onPendingGames)
         lobbySocket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
         lobbySocket.on(OnLobbyEvent.Error, onError)
+    }
+
+    fun emitCreateGame(newGameParam : CreateGame) {
+        lobbySocket.emit(EmitLobbyEvent.CreateGame, newGameParam)
+        isGameOwner = true
     }
 }
