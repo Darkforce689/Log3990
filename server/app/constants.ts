@@ -23,6 +23,7 @@ export const MESSAGE_PAGINATION_DEFAULT_PAGE = 0;
 export const CONVERSATION_PAGINATION_DEFAULT_PAGE = 0;
 export const CONVERSATION_PAGINATION_DEFAULT_PERPAGE = 5;
 export const GENERAL_CHANNEL = 'general';
+export const GAME_TOKEN_PREFIX = 'game-';
 
 // TODO set this to enable api access only for logged in user
 export const ENABLE_API_LOGIN = true;

@@ -7,8 +7,9 @@ import { GameCreator } from '@app/game/game-creator/game-creator';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCompilerService } from '@app/game/game-logic/actions/action-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
-import { ServerGame } from '@app/game/game-logic/game/server-game';
+import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
+import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
@@ -99,6 +100,7 @@ export class GameManagerService {
         const newServerGame = await this.gameCreator.createGame(onlineGameSettings, gameToken);
         this.activeGames.set(gameToken, newServerGame);
         this.linkedClients.set(gameToken, []);
+        this.dictionaryService.makeGameDictionary(gameToken, DEFAULT_DICTIONARY_TITLE);
         this.startInactiveGameDestructionTimer(gameToken);
         return newServerGame;
     }
