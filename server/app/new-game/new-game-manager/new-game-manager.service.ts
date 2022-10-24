@@ -1,7 +1,9 @@
+import { GAME_TOKEN_PREFIX } from '@app/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { Service } from 'typedi';
+import { v4 as uuidv4 } from 'uuid';
 
 @Service()
 export class NewGameManagerService {
@@ -31,7 +33,7 @@ export class NewGameManagerService {
         const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken(onlineGameSettingsUI);
         await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
-        return id;
+        return gameToken;
     }
 
     joinPendingGame(id: string, name: string): string | undefined {
@@ -89,7 +91,8 @@ export class NewGameManagerService {
     }
 
     private generateGameToken(gameSettings: OnlineGameSettings): string {
-        return gameSettings.id;
+        const uuid = uuidv4();
+        return `${GAME_TOKEN_PREFIX}${uuid}`;
     }
 
     private toOnlineGameSettings(id: string, settings: OnlineGameSettingsUI | undefined): OnlineGameSettings {
