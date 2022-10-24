@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { isGameSettings } from '@app/game-logic/utils';
+import { AccountService } from '@app/services/account.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -21,6 +22,8 @@ export class NewOnlineGameSocketHandler {
     error$ = new Subject<string>();
     name: string;
     socket: Socket;
+
+    constructor(private account: AccountService) {}
 
     resetGameToken() {
         this.gameStarted$.next(undefined);
@@ -55,33 +58,14 @@ export class NewOnlineGameSocketHandler {
             throw Error("Can't join game, not connected to server");
         }
         this.socket.emit('joinGame', id, password);
-        this.listenForWaitingRoom();
         this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
         this.listenForGameStart();
         this.listenForHostQuit();
-        this.listenForKick();
-    }
-
-    listenForWaitingRoom() {
-        this.socket.on('waitingRoom', (name) => {
-            this.name = name;
-            this.isWaiting$.next(true);
-        });
-        this.socket.on('accepted', () => {
-            this.isWaiting$.next(false);
-        });
     }
 
     listenForHostQuit() {
         this.socket.on('hostQuit', () => this.deletedGame$.next(true));
-    }
-
-    listenForKick() {
-        this.socket.on('kicked', () => {
-            this.kickedFromGame$.next(true);
-            this.isWaiting$.next(false);
-        });
     }
 
     launchGame() {
@@ -102,8 +86,8 @@ export class NewOnlineGameSocketHandler {
         if (this.pendingGameId$.value === undefined) {
             throw Error("Can't kick player, no pending game id");
         }
-        const kickedPlayerNbr = this.gameSettings$.value?.playerNames.findIndex((player) => player === playerId);
-        this.socket.emit('kickPlayer', this.pendingGameId$.value, kickedPlayerNbr);
+        console.log('clientgameid: ' + this.pendingGameId$.value + ' ' + ' ' + playerId);
+        this.socket.emit('kickPlayer', this.pendingGameId$.value, playerId);
     }
 
     acceptPlayer(playerId: string) {
@@ -158,6 +142,20 @@ export class NewOnlineGameSocketHandler {
     private listenForUpdatedGameSettings() {
         this.socket.on('gameJoined', (gameSettings: OnlineGameSettings) => {
             this.gameSettings$.next(gameSettings);
+            const clientName = this.account.account?.name;
+            if (clientName === undefined) {
+                return;
+            }
+            if (this.gameSettings$.value?.playerNames.includes(clientName)) {
+                this.isWaiting$.next(false);
+                return;
+            }
+            if (this.gameSettings$.value?.tmpPlayerNames.includes(clientName)) {
+                this.isWaiting$.next(true);
+                return;
+            }
+            this.kickedFromGame$.next(true);
+            this.isWaiting$.next(false);
         });
     }
 

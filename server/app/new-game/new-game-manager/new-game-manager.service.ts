@@ -1,5 +1,4 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
-
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
@@ -10,18 +9,26 @@ import { v4 as uuidv4 } from 'uuid';
 export class NewGameManagerService {
     static gameIdCounter: number = 0;
     pendingGames: Map<string, OnlineGameSettingsUI> = new Map<string, OnlineGameSettingsUI>();
+    activeStatus = 'En cours';
+    activeGameIdMap = new Map<string, string>();
 
     constructor(private gameMaster: GameManagerService, private dictionaryService: DictionaryService) {}
 
     getPendingGames(): OnlineGameSettings[] {
         const games: OnlineGameSettings[] = [];
         const activeGames: Set<string> = new Set<string>();
-        this.gameMaster.activeGames.forEach((game, id) => {
-            activeGames.add(id);
+        this.gameMaster.activeGames.forEach((game, gameToken) => {
+            activeGames.add(gameToken);
         });
         this.pendingGames.forEach((game, id) => {
-            if (game.gameStatus === 'En cours' && !activeGames.has(id)) {
+            const activeToken = this.activeGameIdMap.get(id);
+            if (activeToken === undefined) {
+                games.push(this.toOnlineGameSettings(id, game));
+                return;
+            }
+            if (game.gameStatus === this.activeStatus && !activeGames.has(activeToken)) {
                 this.deletePendingGame(id);
+                this.activeGameIdMap.delete(id);
                 return;
             }
             games.push(this.toOnlineGameSettings(id, game));
@@ -41,6 +48,7 @@ export class NewGameManagerService {
         }
         const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken();
+        this.activeGameIdMap.set(id, gameToken);
         await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
         return gameToken;
     }
