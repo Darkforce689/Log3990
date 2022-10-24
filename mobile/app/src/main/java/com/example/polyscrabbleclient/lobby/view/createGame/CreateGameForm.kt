@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.lobby.view
+package com.example.polyscrabbleclient.lobby.view.createGame
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -77,7 +77,7 @@ fun TimeSlider(
                 sliderPosition.value = progress
             },
             onValueChangeFinished = {
-                onSeek(sliderPosition.value.roundDownToMultipleOf(300000.0))
+                onSeek(sliderPosition.value.roundDownToMultipleOf(30000.0))
             },
             valueRange = MIN_TIMER.toFloat()..MAX_TIMER.toFloat(),
             steps = 8

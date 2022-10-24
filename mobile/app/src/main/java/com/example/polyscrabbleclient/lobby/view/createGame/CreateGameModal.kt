@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.polyscrabbleclient.lobby.view.NewGameForm
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.ui.theme.cancel
 import com.example.polyscrabbleclient.ui.theme.create_game
