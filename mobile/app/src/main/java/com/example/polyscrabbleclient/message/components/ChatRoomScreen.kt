@@ -11,7 +11,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,7 +27,7 @@ import com.example.polyscrabbleclient.message.model.*
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.message.SocketHandler
-import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
+import com.example.polyscrabbleclient.user.User
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable

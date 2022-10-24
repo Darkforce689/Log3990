@@ -10,8 +10,7 @@ object GameRepository {
     fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
         game.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
         game.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
-        // TODO : UPDATE USERNAME (ONLY TEMPORARY WHILE WAITING FOR !54)
-        gameSocket.emit(EmitGameEvent.JoinGame, UserAuth("helloFrom2015", gameSettings.id))
+        gameSocket.emit(EmitGameEvent.JoinGame, gameSettings.id)
     }
 
     private val gameSocket = GameSocketHandler

@@ -14,6 +14,21 @@ export class PlayerInfoComponent {
         return this.info.activePlayer.name;
     }
 
+    get user(): Player {
+        return this.info.player;
+    }
+
+    get playersInOrder(): Player[] {
+        let orderedPlayers: Player[] = [...this.info.players];
+
+        const userIndex = orderedPlayers.findIndex((player) => player.name === this.info.player.name);
+        const left = orderedPlayers.slice(0, userIndex);
+        const right = orderedPlayers.slice(userIndex, orderedPlayers.length);
+        orderedPlayers = right.concat(left);
+
+        return orderedPlayers;
+    }
+
     get players(): Player[] {
         return this.info.players;
     }

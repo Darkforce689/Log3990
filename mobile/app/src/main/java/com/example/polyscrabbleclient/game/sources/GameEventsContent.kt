@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.game.sources
 
 import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
+import com.example.polyscrabbleclient.lobby.sources.GameToken
 
 data class Tile (
     val letterMultiplicator: Int,
@@ -84,8 +85,7 @@ data class GameState (
 // TODO
 typealias TransitionGameState = Nullable
 
-// TODO : UPDATE (ONLY TEMPORARY WHILE WAITING FOR !54)
-typealias JoinGame = UserAuth
+typealias JoinGame = GameToken
 
 // TODO
 typealias NextAction = OnlineAction

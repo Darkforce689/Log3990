@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GameState, PlayerInfoForfeit } from '@app/game-logic/game/games/online-game/game-state';
 import { OnlineAction } from '@app/socket-handler/interfaces/online-action.interface';
-import { UserAuth } from '@app/socket-handler/interfaces/user-auth.interface';
 import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -45,12 +44,12 @@ export class GameSocketHandlerService {
         return this.disconnectedFromServerSubject;
     }
 
-    joinGame(userAuth: UserAuth) {
+    joinGame(gameToken: string) {
         if (this.socket) {
             throw Error(GAME_ALREADY_JOINED);
         }
         this.socket = this.connectToSocket();
-        this.socket.emit('joinGame', userAuth);
+        this.socket.emit('joinGame', gameToken);
         this.socket.on('gameState', (gameState: GameState) => {
             this.receiveGameState(gameState);
         });
@@ -96,7 +95,7 @@ export class GameSocketHandlerService {
     }
 
     private connectToSocket() {
-        return io(environment.serverSocketUrl, { path: '/game' });
+        return io(environment.serverSocketUrl, { path: '/game', withCredentials: true, transports: ['websocket'] });
     }
 
     private receiveGameState(gameState: GameState) {

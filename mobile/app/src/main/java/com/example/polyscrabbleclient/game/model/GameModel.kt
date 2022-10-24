@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.sources.*
+import com.example.polyscrabbleclient.user.User
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -19,14 +20,7 @@ class GameModel {
     var turnTotalTime = mutableStateOf(defaultTurnTime)
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
-    // TODO : FIND A WAY TO GET USER NAME
-    var username: String? = "helloFrom2015"
-    var user: MutableState<Player> = mutableStateOf(
-        Player(
-            "fake_$username",
-            0,
-        )
-    )
+    var user: MutableState<Player?> = mutableStateOf(null)
 
 
     fun update(gameState: GameState) {
@@ -50,8 +44,7 @@ class GameModel {
     }
 
     private fun updateUser() {
-        // TODO : USE CORRECT USERNAME
-        val updatedUser = players.value.find { player -> player.name == username }
+        val updatedUser = players.value.find { player -> player.name == User.name }
         if (updatedUser === null) {
             return
         }

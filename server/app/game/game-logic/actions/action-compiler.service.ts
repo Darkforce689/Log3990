@@ -15,6 +15,7 @@ import { PlaceBonus } from '@app/game/game-logic/actions/magic-card/magic-card-p
 import { ExchangeHorse } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-horse';
 import { ExchangeHorseAll } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-horse-all';
 import { SkipNextTurn } from '@app/game/game-logic/actions/magic-card/magic-card-skip-next-turn';
+import { ExtraTurn } from '@app/game/game-logic/actions/magic-card/magic-card-extra-turn';
 
 @Service()
 export class ActionCompilerService {
@@ -62,6 +63,11 @@ export class ActionCompilerService {
             case OnlineMagicCardActionType.SkipNextTurn: {
                 this.letterRackUpdateValidator(command, player);
                 return new SkipNextTurn(player);
+            }
+
+            case OnlineMagicCardActionType.ExtraTurn: {
+                this.letterRackUpdateValidator(command, player);
+                return new ExtraTurn(player);
             }
 
             default:

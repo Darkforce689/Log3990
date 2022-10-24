@@ -12,13 +12,13 @@ class LetterRackViewModel: ViewModel() {
     private val user = game.user
 
     fun getTiles(): MutableList<TileModel> {
-        return user.value.letters
+        return user.value?.letters ?: mutableListOf()
     }
 
     fun removeTile(draggableContent: DraggableContent?) {
         if (draggableContent == null || draggableContent.type !== DraggableContentType.TileModel) {
             return
         }
-        user.value.letters.remove(draggableContent as TileModel)
+        user.value?.letters?.remove(draggableContent as TileModel)
     }
 }

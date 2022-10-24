@@ -10,7 +10,7 @@ import { ThemeService } from '@app/services/theme/theme.service';
     styleUrls: ['./header-bar.component.scss'],
 })
 export class HeaderBarComponent {
-    user: User = { _id: '', name: '', email: '', avatar: '' };
+    user: User = { _id: '', name: '', email: '', avatar: 'default' };
 
     constructor(private themeService: ThemeService, private accountService: AccountService, private router: Router) {
         this.accountService.account$.subscribe((user: User | undefined) => {
