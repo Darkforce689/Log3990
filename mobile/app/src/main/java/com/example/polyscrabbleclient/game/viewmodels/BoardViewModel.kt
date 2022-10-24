@@ -11,7 +11,7 @@ import com.example.polyscrabbleclient.game.view.ThickDividerWidth
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 
-data class TileCoordinates (
+data class TileCoordinates(
     val row: Int,
     val column: Int
 )
@@ -19,7 +19,7 @@ data class TileCoordinates (
 class BoardViewModel : ViewModel() {
     var board = GameRepository.game.board
 
-    var hoveredTileCoordinates:TileCoordinates? = null
+    var hoveredTileCoordinates: TileCoordinates? = null
 
     fun hoverBoard(gridDivisionSize: Float, hoverOffset: Offset) {
         val newCoordinates = getTileFromLocalPosition(gridDivisionSize, hoverOffset)
@@ -62,7 +62,10 @@ class BoardViewModel : ViewModel() {
         }
     }
 
-    private fun getTileFromLocalPosition(gridDivisionSize: Float, tapOffset: Offset): TileCoordinates? {
+    private fun getTileFromLocalPosition(
+        gridDivisionSize: Float,
+        tapOffset: Offset
+    ): TileCoordinates? {
         // Dividers 0 and 1 are larger than the rest of the Grid
         val gridX = tapOffset.x + ThickDividerWidth
         val gridY = tapOffset.y + ThickDividerWidth

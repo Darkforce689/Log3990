@@ -27,10 +27,10 @@ fun PendingGamesView(
     val columnsHeaders = listOf("ID", "Mode", "Nb Joueurs", "Temps par tour", "Bonus", "Difficulté")
 
     Column {
-        Card (
-           modifier = Modifier
-               .fillMaxSize(0.7f)
-               .padding(16.dp)
+        Card(
+            modifier = Modifier
+                .fillMaxSize(0.7f)
+                .padding(16.dp)
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -73,7 +73,7 @@ fun PendingGamesView(
             return selectedPendingGameIndex.value !== null
         }
 
-        Button (
+        Button(
             onClick = { joinGame(selectedPendingGameIndex.value!!) },
             enabled = canJoinGame()
         ) {

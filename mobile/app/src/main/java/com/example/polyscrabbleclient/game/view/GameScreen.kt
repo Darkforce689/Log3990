@@ -39,8 +39,7 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
                 GameInfoView(viewModel)
             }
             Box {
-                // TODO : GAME ACTIONS
-                Text("GAME ACTIONS")
+                GameActionsView(viewModel)
             }
         }
         EvenlySpacedSubColumn {
@@ -62,7 +61,7 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
 
 @Composable
 fun EvenlySpacedSubColumn(content: @Composable ColumnScope.() -> Unit) {
-    Column (
+    Column(
         modifier = Modifier.fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
@@ -73,7 +72,7 @@ fun EvenlySpacedSubColumn(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
-    Row (
+    Row(
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly

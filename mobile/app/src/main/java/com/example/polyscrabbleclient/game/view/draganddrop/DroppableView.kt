@@ -30,9 +30,9 @@ fun DroppableView(
     }) {
         val canBeDropped =
             dragState.draggableContent !== null &&
-            !dragState.isDragging &&
-            isInBounds &&
-            canViewReceiveDrop()
+                !dragState.isDragging &&
+                isInBounds &&
+                canViewReceiveDrop()
         if (canBeDropped) {
             dragState.onDrop()
         }

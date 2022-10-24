@@ -32,10 +32,10 @@ fun TileView(
 ) {
     val targetColor by animateColorAsState(
         targetValue =
-            if (tileModel.isSelected.value)
-                MaterialTheme.colors.secondary
-            else
-                MaterialTheme.colors.primary,
+        if (tileModel.isSelected.value)
+            MaterialTheme.colors.secondary
+        else
+            MaterialTheme.colors.primary,
         animationSpec = tween(durationMillis = 200)
     )
 
@@ -62,16 +62,17 @@ fun TileView(
 
 @Preview(showBackground = true)
 @Composable
-fun Preview1 () {
+fun Preview1() {
     val tileModel = TileModel('A', 1)
     TileView(
         tileModel,
         select = { tileModel.isSelected.value = !tileModel.isSelected.value }
     )
 }
+
 @Preview(showBackground = true)
 @Composable
-fun Preview2 () {
+fun Preview2() {
     val tileModel = TileModel('B', 2)
     tileModel.isSelected.value = true
     TileView(
