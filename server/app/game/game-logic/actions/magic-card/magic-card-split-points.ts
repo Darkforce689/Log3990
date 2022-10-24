@@ -13,7 +13,6 @@ export class SplitPoints extends MagicCard {
             this.end();
             return;
         }
-        // TODO: come back to test it once we can play more than 2 players
         const pointsToSplit = Math.ceil((leader.points * PERCENTAGE_OF_POINTS_TO_SPLIT) / nbPlayers) * nbPlayers;
         leader.points -= pointsToSplit;
         game.players.forEach((player) => {
