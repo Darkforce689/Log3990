@@ -36,7 +36,24 @@ const val placeButtonFR = "Placer"
 const val exchangeButtonFR = "Échanger"
 const val cancelButtonFR = "Annuler"
 
+// GameCreation
+const val new_game_creation = "Nouvelle Partie Multijoueurs"
+const val time_per_turn = "Temps par tour"
+const val random_bonus = "Bonus aléatoire"
+const val cancel = "Annuler"
+const val create_game = "Créer la partie"
+const val number_of_player ="Nombre de joueurs"
+const val create_game_multiplayers = "Créer une partie multijoueurs"
+const val join_game_multiplayers = "Joindre une partie multijoueurs"
+const val new_game = "Nouvelle Partie"
+const val choose_bot_difficulty = "Difficulté du joueur virtuel"
+const val game_mode ="Mode de jeu"
+const val classic = "Classique"
+const val magic_cards = "Carte de pouvoirs"
+
 // Lobby
 const val joinGameButtonFR = "Rejoindre la partie"
 const val joinGameButtonEN = "Join game"
+
+
 
