@@ -31,7 +31,7 @@ export class NewGameManagerService {
             gameSettings = this.pendingGames.get(id);
         }
         const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
-        const gameToken = this.generateGameToken(onlineGameSettingsUI);
+        const gameToken = this.generateGameToken();
         await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
         return gameToken;
     }
@@ -90,7 +90,7 @@ export class NewGameManagerService {
         return gameId;
     }
 
-    private generateGameToken(gameSettings: OnlineGameSettings): string {
+    private generateGameToken(): string {
         const uuid = uuidv4();
         return `${GAME_TOKEN_PREFIX}${uuid}`;
     }
