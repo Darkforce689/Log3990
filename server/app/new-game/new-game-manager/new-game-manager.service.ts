@@ -1,8 +1,9 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
-import { ACTIVE_STATUS } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
+import { ServerLogger } from '@app/logger/logger';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
+import { Subject } from 'rxjs';
 import { Service } from 'typedi';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,28 +11,37 @@ import { v4 as uuidv4 } from 'uuid';
 export class NewGameManagerService {
     static gameIdCounter: number = 0;
     pendingGames: Map<string, OnlineGameSettingsUI> = new Map<string, OnlineGameSettingsUI>();
-    activeGameIdMap = new Map<string, string>();
+    activeGameSettingMap = new Map<string, OnlineGameSettings>();
+    refreshPendingGame$ = new Subject<void>();
 
-    constructor(private gameMaster: GameManagerService, private dictionaryService: DictionaryService) {}
+    constructor(private gameMaster: GameManagerService, private dictionaryService: DictionaryService) {
+        this.gameMaster.gameDeleted$.subscribe((gameToken) => {
+            ServerLogger.logDebug(`Game observable ${gameToken} deleted`);
+            if (gameToken) {
+                this.activeGameSettingMap.delete(gameToken);
+                this.refreshPendingGame$.next();
+            }
+        });
+    }
 
     getPendingGames(): OnlineGameSettings[] {
         const games: OnlineGameSettings[] = [];
-        const activeGames: Set<string> = new Set<string>();
-        this.gameMaster.activeGames.forEach((game, gameToken) => {
-            activeGames.add(gameToken);
-        });
         this.pendingGames.forEach((game, id) => {
-            const activeToken = this.activeGameIdMap.get(id);
-            if (activeToken === undefined) {
-                games.push(this.toOnlineGameSettings(id, game));
-                return;
-            }
-            if (game.gameStatus === ACTIVE_STATUS && !activeGames.has(activeToken)) {
-                this.deletePendingGame(id);
-                this.activeGameIdMap.delete(id);
-                return;
-            }
             games.push(this.toOnlineGameSettings(id, game));
+        });
+        return games;
+    }
+
+    getObservableGames(): OnlineGameSettings[] {
+        const games: OnlineGameSettings[] = [];
+        this.gameMaster.activeGames.forEach((game, gameToken) => {
+            const gameSetting = this.activeGameSettingMap.get(gameToken);
+            if (!gameSetting) {
+                return;
+            }
+            if (!gameSetting.privateGame) {
+                games.push(gameSetting);
+            }
         });
         return games;
     }
@@ -46,10 +56,11 @@ export class NewGameManagerService {
         if (!gameSettings) {
             gameSettings = this.pendingGames.get(id);
         }
-        const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
+        const onlineGameSettings = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken();
-        this.activeGameIdMap.set(id, gameToken);
-        await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
+        ServerLogger.logDebug(`New game created with token ${gameToken}`);
+        this.activeGameSettingMap.set(gameToken, onlineGameSettings);
+        await this.startGame(gameToken, onlineGameSettings);
         return gameToken;
     }
 

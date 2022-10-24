@@ -22,6 +22,7 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
     columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn', 'hasPassword', 'privateGame', 'gameStatus'];
     selectedRow: OnlineGameSettings | undefined;
     dataSource = new MatTableDataSource<OnlineGameSettings>();
+    dataSource2 = new MatTableDataSource<OnlineGameSettings>();
     columns: {
         columnDef: string;
         header: string;
@@ -90,6 +91,10 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
             const filteredGameSettings = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.gameMode);
             this.dataSource.data = filteredGameSettings;
         });
+        this.observableGames$.subscribe((gameSettings) => {
+            const filteredGameSettings = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.gameMode);
+            this.dataSource2.data = filteredGameSettings;
+        });
         this.onlineSocketHandler.listenForPendingGames();
     }
 
@@ -156,6 +161,10 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
 
     get pendingGames$(): BehaviorSubject<OnlineGameSettings[]> {
         return this.onlineSocketHandler.pendingGames$;
+    }
+
+    get observableGames$(): BehaviorSubject<OnlineGameSettings[]> {
+        return this.onlineSocketHandler.observableGames$;
     }
 
     private getToolTip(form: OnlineGameSettings, columnDef: string): string {

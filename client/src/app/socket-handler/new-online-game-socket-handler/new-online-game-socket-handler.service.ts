@@ -15,6 +15,7 @@ export class NewOnlineGameSocketHandler {
     kickedFromGame$ = new BehaviorSubject<boolean>(false);
     isWaiting$ = new BehaviorSubject<boolean>(false);
     pendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
+    observableGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     gameSettings$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     gameStarted$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     isGameOwner: boolean = false;
@@ -46,8 +47,9 @@ export class NewOnlineGameSocketHandler {
 
     listenForPendingGames() {
         this.connect();
-        this.socket.on('pendingGames', (pendingGames: OnlineGameSettings[]) => {
+        this.socket.on('pendingGames', (pendingGames: OnlineGameSettings[], observableGames: OnlineGameSettings[]) => {
             this.pendingGames$.next(pendingGames);
+            this.observableGames$.next(observableGames);
         });
         this.deletedGame$.next(false);
         this.kickedFromGame$.next(false);

@@ -40,6 +40,9 @@ export class NewGameSocketHandler {
             path: '/newGame',
             cors: { origin: '*', methods: ['GET', 'POST'] },
         });
+        this.newGameManagerService.refreshPendingGame$.subscribe(() => {
+            this.emitPendingGamesToAll();
+        });
     }
 
     newGameHandler(): void {
@@ -49,7 +52,7 @@ export class NewGameSocketHandler {
 
         this.ioServer.on('connection', async (socket) => {
             let gameId: string;
-            socket.emit(pendingGames, this.newGameManagerService.getPendingGames());
+            socket.emit(pendingGames, this.newGameManagerService.getPendingGames(), this.newGameManagerService.getObservableGames());
 
             socket.on(createGame, async (gameSettings: OnlineGameSettingsUI) => {
                 try {
@@ -58,7 +61,7 @@ export class NewGameSocketHandler {
                     if (user === undefined) {
                         return;
                     }
-                    gameSettings.gameStatus = ACTIVE_STATUS;
+                    gameSettings.gameStatus = WAIT_STATUS;
                     gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name] }), socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.addToSocketMap(gameId, user.name, socket, true);
@@ -214,10 +217,7 @@ export class NewGameSocketHandler {
         const gameToken = await this.newGameManagerService.launchPendingGame(id, gameSettings);
         this.sendGameStartedToPlayers(id, gameToken, gameSettings);
         this.deleteGameSocketMap(id);
-        if (gameSettings.privateGame) {
-            this.deletePendingGame(id);
-            return;
-        }
+        this.deletePendingGame(id);
         this.emitPendingGamesToAll();
     }
 
@@ -299,17 +299,19 @@ export class NewGameSocketHandler {
         socket.emit('error', errorMessage);
     }
 
-    private sendGameSettingsToPlayers(gameToken: string, gameSettings: OnlineGameSettings) {
-        gameSettings.id = gameToken;
-        this.ioServer.to(gameToken).emit(gameJoined, gameSettings);
+    private sendGameSettingsToPlayers(gameId: string, gameSettings: OnlineGameSettings) {
+        gameSettings.id = gameId;
+        this.ioServer.to(gameId).emit(gameJoined, gameSettings);
     }
 
     private sendGameStartedToPlayers(gameId: string, gameToken: string, gameSettings: OnlineGameSettings) {
+        this.newGameManagerService.activeGameSettingMap.set(gameId, gameSettings);
         gameSettings.id = gameToken;
         this.ioServer.to(gameId).emit(gameStarted, gameSettings);
     }
 
     private emitPendingGamesToAll() {
-        this.ioServer.emit(pendingGames, this.newGameManagerService.getPendingGames());
+        ServerLogger.logDebug(`Observable games: ${JSON.stringify(this.newGameManagerService.getObservableGames())}`);
+        this.ioServer.emit(pendingGames, this.newGameManagerService.getPendingGames(), this.newGameManagerService.getObservableGames());
     }
 }
