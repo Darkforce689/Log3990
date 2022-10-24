@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     val response = ScrabbleHttpClient.get(
                         URL(BuildConfig.COMMUNICATION_URL + "/auth/validatesession")
                     )
-                    if (response != null) {
+                    if(response == "OK" ) {
                         connectAppSocket()
                         updateUser()
                         startPage = NavPage.MainPage
