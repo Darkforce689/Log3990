@@ -42,7 +42,7 @@ fun LobbyScreen(navController: NavController) {
 
 @Composable
 fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
-    Row (
+    Row(
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
