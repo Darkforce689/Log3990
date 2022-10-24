@@ -1,10 +1,10 @@
 mat-drawer-inner-container {
-    min-width    : 15vw;
     max-width    : 33vw;
 }
 
-.chatContainer {
+.mat-sidenav-content {
     overflow-wrap: anywhere;
+    min-width    : 15vw;
     max-width    : 33vw;
 
 }
