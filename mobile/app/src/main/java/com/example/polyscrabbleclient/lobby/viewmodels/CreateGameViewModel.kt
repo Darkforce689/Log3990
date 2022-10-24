@@ -1,19 +1,20 @@
 package com.example.polyscrabbleclient.lobby.viewmodels
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import com.example.polyscrabbleclient.lobby.sources.*
+import androidx.lifecycle.ViewModel
+import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
+import com.example.polyscrabbleclient.lobby.sources.CreateGame
+import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 const val DEFAULT_TIMER = 60000
 const val DEFAULT_PLAYER_NUMBER = 2
-const val MIN_TIMER = 30000.0
-const val MAX_TIMER = 300000.0
-const val MIN_PLAYER_NUMBER = 2.0
-const val MAX_PLAYER_NUMBER = 4.0
+const val MIN_TIMER = 30000
+const val MAX_TIMER = 300000
+const val MIN_PLAYER_NUMBER = 2
+const val MAX_PLAYER_NUMBER = 4
 
-class CreateGameViewModel {
-    private val lobby = LobbyRepository
+class CreateGameViewModel : ViewModel() {
     val timePerTurn = mutableStateOf(DEFAULT_TIMER)
     val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)
     val randomBonus = mutableStateOf(false)
@@ -30,7 +31,7 @@ class CreateGameViewModel {
             botDifficulty = botDifficulty.value,
             numberOfPlayers = numberOfPlayer.value,
         )
-        lobby.emitCreateGame(newGameParam)
+        LobbyRepository.emitCreateGame(newGameParam)
 
         // TODO: Open wait for other player
     }

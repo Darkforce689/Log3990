@@ -47,12 +47,12 @@ object LobbyRepository {
 
     init {
         lobbySocket.setSocket()
-        lobbySocket.ensureConnection()
         lobbySocket.on(OnLobbyEvent.GameJoined, onGameJoined)
         lobbySocket.on(OnLobbyEvent.GameStarted, onGameStarted)
         lobbySocket.on(OnLobbyEvent.PendingGames, onPendingGames)
         lobbySocket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
         lobbySocket.on(OnLobbyEvent.Error, onError)
+        lobbySocket.ensureConnection()
     }
 
     fun emitCreateGame(newGameParam : CreateGame) {
