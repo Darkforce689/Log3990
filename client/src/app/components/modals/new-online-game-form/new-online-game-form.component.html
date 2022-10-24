@@ -17,13 +17,6 @@
     <mat-label>Nombre de joueurs: {{ numPlayer.value }} </mat-label> <br />
     <mat-slider #numPlayer color="primary" [min]="minNumberOfPlayers" [max]="maxNumberOfPlayers" [formControlName]="'numberOfPlayers'"></mat-slider>
     <br />
-    <div *ngIf="isMagicGame">
-        <mat-label>Cartes de pouvoir disponibles:</mat-label>
-        <div *ngFor="let value of availableMagicCards">
-            <mat-checkbox (change)="onCheckChange($event, value)">{{ value.name }} </mat-checkbox>
-            <br />
-        </div>
-    </div>
     <mat-form-field appearance="fill">
         <mat-label>Choisir une difficulté pour les joueurs virtuels</mat-label>
         <mat-select formControlName="botDifficulty">
@@ -31,6 +24,13 @@
             <mat-option matInput value="Expert"> Expert</mat-option>
         </mat-select>
     </mat-form-field>
+    <div *ngIf="isMagicGame">
+        <mat-label>Cartes de pouvoir disponibles:</mat-label>
+        <div *ngFor="let value of availableMagicCards">
+            <mat-checkbox (change)="onCheckChange($event, value)">{{ value.name }} </mat-checkbox>
+            <br />
+        </div>
+    </div>
 </mat-dialog-content>
 <br />
 <mat-dialog-actions>
