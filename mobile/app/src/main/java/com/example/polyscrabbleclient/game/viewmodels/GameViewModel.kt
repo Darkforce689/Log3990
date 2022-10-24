@@ -1,14 +1,18 @@
 package com.example.polyscrabbleclient.game.viewmodels
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.polyscrabbleclient.game.model.GameModel
-import com.example.polyscrabbleclient.game.sources.Player
+import com.example.polyscrabbleclient.game.sources.*
 
 class GameViewModel: ViewModel() {
-    var game: GameModel = GameModel()
-    var remainingLettersCount = mutableStateOf(88)
-    var turnRemainingTime = mutableStateOf(14)
-    var turnTotalTime = mutableStateOf(60)
-    val remainingTimeFraction = turnRemainingTime.value.toFloat() / turnTotalTime.value
+    val game = GameRepository.game
+    var remainingLettersCount = game.remainingLettersCount
+    var turnRemainingTime = game.turnRemainingTime
+    var turnTotalTime = game.turnTotalTime
+
+    fun getRemainingTimeFraction(
+        current: Int = turnRemainingTime.value,
+        total: Int = turnTotalTime.value
+    ): Float {
+        return current.toFloat() / total
+    }
 }
