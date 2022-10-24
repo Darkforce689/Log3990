@@ -28,7 +28,10 @@ export class RegisterPageComponent {
 
     register() {
         this.registerForm.markAllAsTouched();
-        if (!this.isEmailValidToSend || !this.isNameValidToSend || !this.isPasswordValidToSend) {
+        if (!this.registerForm.controls.avatar.value) {
+            this.registerForm.controls.avatar.setErrors({ empty: true });
+        }
+        if (!this.isEmailValidToSend || !this.isNameValidToSend || !this.isPasswordValidToSend || !this.isAvatarValidToSend) {
             return;
         }
         const result = this.authService.register(this.registerForm.value);
@@ -69,6 +72,10 @@ export class RegisterPageComponent {
         return this.registerForm.controls.password.valid;
     }
 
+    get isAvatarValidToSend() {
+        return this.registerForm.controls.avatar.valid;
+    }
+
     get isEmailValid() {
         return !this.registerForm.controls.email.hasError('email') || this.registerForm.controls.name.hasError('required');
     }
@@ -99,6 +106,10 @@ export class RegisterPageComponent {
 
     get isNameEmpty() {
         return this.registerForm.controls.name.hasError('required');
+    }
+
+    get isAvatarEmpty() {
+        return this.registerForm.controls.avatar.hasError('empty');
     }
 
     get maxNameLength() {

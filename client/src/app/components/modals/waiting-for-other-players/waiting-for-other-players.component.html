@@ -1,4 +1,4 @@
-<mat-dialog-content #waitingForPlayer *ngIf="!isSoloStarted">
+<mat-dialog-content #waitingForPlayer *ngIf="!isSoloStarted && !deletedGame">
     <div class="title">
         <div>
             <h3>En attente d'autres joueurs</h3>
@@ -6,7 +6,13 @@
         </div>
         <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
     </div>
+    <div *ngFor="let name of players">
+        <li>{{ name }}</li>
+    </div>
 </mat-dialog-content>
+
+<mat-dialog-content #waitingForPlayer *ngIf="deletedGame"> L'hôte a annulé la partie </mat-dialog-content>
+
 <mat-dialog-actions>
     <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
     <button mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>

@@ -17,11 +17,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
 import com.example.polyscrabbleclient.lobby.sources.GameMode
-import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettingsUI
+import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 
 @Composable
 fun PendingGameView(
-    pendingGameModel: OnlineGameSettingsUI,
+    pendingGameModel: OnlineGameSettings,
     columnsWeights: List<Float>,
     click: () -> Unit,
     isSelected: () -> Boolean
@@ -35,7 +35,7 @@ fun PendingGameView(
         animationSpec = tween(durationMillis = 200)
     )
 
-    Row (
+    Row(
         Modifier
             .background(targetColor)
             .clickable { click() },
@@ -73,7 +73,7 @@ fun RowScope.TableCell(
 @Composable
 fun PendingGamePreview() {
     PendingGameView(
-        OnlineGameSettingsUI (
+        OnlineGameSettings(
             id = "123",
             gameMode = GameMode.Classic,
             botDifficulty = BotDifficulty.Easy,
@@ -91,7 +91,7 @@ fun PendingGamePreview() {
 @Composable
 fun PendingGamePreview2() {
     PendingGameView(
-        OnlineGameSettingsUI (
+        OnlineGameSettings(
             id = "123",
             gameMode = GameMode.Classic,
             botDifficulty = BotDifficulty.Easy,

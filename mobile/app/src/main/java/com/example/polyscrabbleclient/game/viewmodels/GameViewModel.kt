@@ -1,14 +1,57 @@
 package com.example.polyscrabbleclient.game.viewmodels
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.polyscrabbleclient.game.model.GameModel
-import com.example.polyscrabbleclient.game.sources.Player
+import com.example.polyscrabbleclient.game.sources.*
 
-class GameViewModel: ViewModel() {
-    var game: GameModel = GameModel()
-    var remainingLettersCount = mutableStateOf(88)
-    var turnRemainingTime = mutableStateOf(14)
-    var turnTotalTime = mutableStateOf(60)
-    val remainingTimeFraction = turnRemainingTime.value.toFloat() / turnTotalTime.value
+class GameViewModel : ViewModel() {
+    val game = GameRepository.game
+    var remainingLettersCount = game.remainingLettersCount
+    var turnRemainingTime = game.turnRemainingTime
+    var turnTotalTime = game.turnTotalTime
+
+    fun getRemainingTimeFraction(
+        current: Int = turnRemainingTime.value,
+        total: Int = turnTotalTime.value
+    ): Float {
+        return current.toFloat() / total
+    }
+
+    private fun isActivePlayer(): Boolean {
+        return GameRepository.game.getActivePlayer() === GameRepository.game.user.value
+    }
+
+    fun canPassTurn(): Boolean {
+        return isActivePlayer()
+    }
+
+    fun canPlaceLetter(): Boolean {
+        // TODO
+        return false
+    }
+
+    fun canExchangeLetter(): Boolean {
+        // TODO
+        return false
+    }
+
+    fun canCancel(): Boolean {
+        // TODO
+        return false
+    }
+
+    fun passTurn() {
+        GameRepository.emitNextAction(OnlineActionType.Pass)
+    }
+
+    fun placeLetter() {
+        TODO("Not yet implemented")
+    }
+
+    fun exchangeLetter() {
+        TODO("Not yet implemented")
+    }
+
+    fun cancel() {
+        TODO("Not yet implemented")
+    }
 }

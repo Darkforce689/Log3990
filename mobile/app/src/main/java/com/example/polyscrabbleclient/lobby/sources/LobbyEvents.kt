@@ -38,7 +38,7 @@ val LobbyEventTypes = mapOf(
     ),
 )
 
-class OnLobbyEvent (override val eventName: String): OnEvent(eventName) {
+class OnLobbyEvent(override val eventName: String) : OnEvent(eventName) {
     companion object {
         val GameJoined = OnLobbyEvent("gameJoined")
         val GameStarted = OnLobbyEvent("gameStarted")
@@ -48,7 +48,7 @@ class OnLobbyEvent (override val eventName: String): OnEvent(eventName) {
     }
 }
 
-class EmitLobbyEvent (override val eventName: String): EmitEvent(eventName) {
+class EmitLobbyEvent(override val eventName: String) : EmitEvent(eventName) {
     companion object {
         val CreateGame = EmitLobbyEvent("createGame")
         val LaunchGame = EmitLobbyEvent("launchGame")

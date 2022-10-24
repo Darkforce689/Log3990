@@ -2,8 +2,9 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormArray, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
+import { DEFAULT_NUMBER_OF_PLAYERS, DEFAULT_TIME_PER_TURN } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { NewOnlineGameFormComponent } from './new-online-game-form.component';
 
@@ -61,9 +62,10 @@ describe('NewOnlineGameFormComponent', () => {
         const playButton = dom.querySelectorAll('button')[1];
 
         component.onlineGameSettingsUIForm.setValue({
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
+            botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -78,9 +80,10 @@ describe('NewOnlineGameFormComponent', () => {
         const playButton = dom.querySelectorAll('button')[1];
         component.gameMode = GameMode.Magic;
         component.onlineGameSettingsUIForm.setValue({
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
+            botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
         fixture.detectChanges();
@@ -95,9 +98,10 @@ describe('NewOnlineGameFormComponent', () => {
         const playButton = dom.querySelectorAll('button')[1];
         component.gameMode = GameMode.Magic;
         component.onlineGameSettingsUIForm.setValue({
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
+            botDifficulty: BotDifficulty.Easy,
         });
         fixture.detectChanges();
         (component.onlineGameSettingsUIForm.controls.magicCardIds as FormArray).push(new FormControl('ANY_MAGIC_CARD_ID'));
@@ -111,9 +115,10 @@ describe('NewOnlineGameFormComponent', () => {
 
     it('setting should return group form value', () => {
         const settings = {
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
+            botDifficulty: BotDifficulty.Easy,
         };
         component.onlineGameSettingsUIForm.setValue(settings);
         expect(component.onlineGameSettingsUIForm.value).toEqual(settings);
@@ -122,9 +127,10 @@ describe('NewOnlineGameFormComponent', () => {
     it('playGame should close the dialog', () => {
         spyOn(mockDialog, 'close');
         component.onlineGameSettingsUIForm.setValue({
-            playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
+            numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
+            botDifficulty: BotDifficulty.Easy,
         });
         component.playGame();
         expect(mockDialog.close).toHaveBeenCalled();
@@ -132,18 +138,20 @@ describe('NewOnlineGameFormComponent', () => {
 
     it('cancel should close the dialog and reset form', () => {
         const setting = {
-            playerName: 'samuel',
             timePerTurn: 60000,
             randomBonus: true,
+            numberOfPlayers: 4,
+            botDifficulty: BotDifficulty.Expert,
         };
         component.onlineGameSettingsUIForm.setValue(setting);
         spyOn(mockDialog, 'close');
         component.cancel();
         expect(mockDialog.close).toHaveBeenCalled();
         expect(component.onlineGameSettingsUIForm.value).toEqual({
-            playerName: '',
             timePerTurn: DEFAULT_TIME_PER_TURN,
             randomBonus: false,
+            numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
+            botDifficulty: BotDifficulty.Easy,
         });
     });
 });

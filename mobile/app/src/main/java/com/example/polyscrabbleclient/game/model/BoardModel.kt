@@ -1,5 +1,9 @@
 package com.example.polyscrabbleclient.game.model
 
+import androidx.compose.runtime.MutableState
+import com.example.polyscrabbleclient.game.domain.TileCreator
+import com.example.polyscrabbleclient.game.sources.GameState
+import com.example.polyscrabbleclient.game.sources.Tile
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 
 typealias TileContent = TileModel?
@@ -8,14 +12,26 @@ typealias TileGrid = Array<TileContainerRow>
 
 const val BoardDimension = 15
 val BoardRange = 1..BoardDimension
+
 enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 
-class BoardModel(
+class BoardModel {
     var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { GridTileModel() } }
-) {
+        private set
+
+    fun updateGrid(grid: ArrayList<ArrayList<Tile>>) {
+        requireBoardDimensions(grid)
+        for (row in BoardRange) {
+            for (column in BoardRange) {
+                val tile = grid[row - 1][column - 1]
+                this[column, row] = TileCreator.createTileFromRawTile(tile)
+            }
+        }
+    }
+
     fun debugPrint() {
         for (row in tileGrid) {
-            for(tile in row) {
+            for (tile in row) {
                 if (tile.content.value !== null) {
                     print(tile.content.value!!.letter)
                 } else {
@@ -28,7 +44,7 @@ class BoardModel(
 
     fun toggleTileHover(column: Int, row: Int) {
         requireBoardIndexes(column, row)
-        val isHighlighted = tileGrid[row-1][column-1].isHighlighted;
+        val isHighlighted = tileGrid[row - 1][column - 1].isHighlighted;
         isHighlighted.value = !isHighlighted.value;
     }
 
@@ -38,7 +54,7 @@ class BoardModel(
 
     fun setTileHover(column: Int, row: Int, isHighlighted: Boolean) {
         requireBoardIndexes(column, row)
-        tileGrid[row-1][column-1].isHighlighted.value = isHighlighted
+        tileGrid[row - 1][column - 1].isHighlighted.value = isHighlighted
     }
 
     fun setTileHover(coordinates: TileCoordinates, isHighlighted: Boolean) {
@@ -47,7 +63,7 @@ class BoardModel(
 
     operator fun get(column: Int, row: Int): TileContent {
         requireBoardIndexes(column, row)
-        return tileGrid[row-1][column-1].content.value
+        return tileGrid[row - 1][column - 1].content.value
     }
 
     operator fun get(column: Int, row: RowChar): TileContent {
@@ -60,7 +76,7 @@ class BoardModel(
 
     operator fun set(column: Int, row: Int, tile: TileContent) {
         requireBoardIndexes(column, row)
-        tileGrid[row-1][column-1].content.value = tile
+        tileGrid[row - 1][column - 1].content.value = tile
     }
 
     operator fun set(column: Int, row: RowChar, tile: TileContent) {
@@ -75,6 +91,19 @@ class BoardModel(
         require(column in BoardRange && row in BoardRange)
         {
             "column and row indexes should be in range $BoardRange (found row=$row and column=$column)"
+        }
+    }
+
+    private fun requireBoardDimensions(grid: ArrayList<ArrayList<Tile>>) {
+        val rows = grid.size
+        val columns = try {
+            grid[0].size
+        } catch (e: Exception) {
+            -1
+        }
+        require(columns == BoardDimension && rows == BoardDimension)
+        {
+            "grid should be of size $BoardDimension (found rows=$rows and columns=$columns)"
         }
     }
 }

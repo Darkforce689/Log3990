@@ -21,7 +21,7 @@ fun PlayersInfoView(viewModel: GameViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        viewModel.game.players.forEach { player ->
+        viewModel.game.players.value.forEach { player ->
             PlayerInfoView(player) {
                 player === viewModel.game.getActivePlayer()
             }
@@ -44,22 +44,22 @@ fun PlayerInfoView(
         animationSpec = tween(durationMillis = 200)
     )
 
-        Surface(
-            modifier = Modifier
-                .border(width = 4.dp, targetColor)
-                .padding(10.dp)
-                .defaultMinSize(100.dp)
+    Surface(
+        modifier = Modifier
+            .border(width = 4.dp, targetColor)
+            .padding(10.dp)
+            .defaultMinSize(100.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
             Text(
                 text = player.name,
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = "${player.points.value.toString()} points",
+                text = "${player.points} points",
                 style = MaterialTheme.typography.caption
             )
         }

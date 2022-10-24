@@ -1,4 +1,4 @@
-package com.example.polyscrabbleclient.lobby.sources
+package com.example.polyscrabbleclient.game.sources
 
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.utils.SocketHandler
@@ -8,16 +8,16 @@ import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
 
 
-const val LobbyPath = "/newGame"
+const val GamePath = "/game"
 
 private const val URL = BuildConfig.COMMUNICATION_URL
 
-object LobbySocketHandler : SocketHandler(LobbyEventTypes) {
+object GameSocketHandler : SocketHandler(GameEventTypes) {
 
     @Synchronized
     fun setSocket() {
         val opts = IO.Options()
-        opts.path = LobbyPath
+        opts.path = GamePath
         val cookie = ScrabbleHttpClient.getAuthCookie()
 
         val headers: MutableMap<String, List<String>> = mutableMapOf()
@@ -26,13 +26,11 @@ object LobbySocketHandler : SocketHandler(LobbyEventTypes) {
         opts.extraHeaders = headers
         try {
             opts.transports = arrayOf(WebSocket.NAME)
-            opts.auth
             socket = IO.socket(URL, opts)
-            socket.on(Socket.EVENT_CONNECT) { println("LobbySocketHandler Connected") }
-            socket.on(Socket.EVENT_DISCONNECT) { println("LobbySocketHandler Disconnected") }
+            socket.on(Socket.EVENT_CONNECT) { println("GameSocketHandler Connected") }
+            socket.on(Socket.EVENT_DISCONNECT) { println("GameSocketHandler Disconnected") }
         } catch (e: Throwable) {
-            println("LobbySocketHandler Error")
-            e.printStackTrace()
+            println("GameSocketHandler Error : $e")
         }
     }
 
@@ -45,7 +43,7 @@ object LobbySocketHandler : SocketHandler(LobbyEventTypes) {
     }
 
     @Synchronized
-    fun disconnect() {
+    fun closeConnection() {
         socket.disconnect()
     }
 }

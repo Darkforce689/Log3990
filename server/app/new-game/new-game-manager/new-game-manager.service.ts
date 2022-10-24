@@ -1,7 +1,9 @@
+import { GAME_TOKEN_PREFIX } from '@app/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { Service } from 'typedi';
+import { v4 as uuidv4 } from 'uuid';
 
 @Service()
 export class NewGameManagerService {
@@ -29,9 +31,9 @@ export class NewGameManagerService {
             gameSettings = this.pendingGames.get(id);
         }
         const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
-        const gameToken = this.generateGameToken(onlineGameSettingsUI);
+        const gameToken = this.generateGameToken();
         await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
-        return id;
+        return gameToken;
     }
 
     joinPendingGame(id: string, name: string): string | undefined {
@@ -43,6 +45,16 @@ export class NewGameManagerService {
             return;
         }
         gameSettings.playerNames.push(name);
+        return id;
+    }
+
+    quitPendingGame(id: string, nameToRemove: string): string | undefined {
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
+            return;
+        }
+        const index = gameSettings.playerNames.findIndex((name) => name === nameToRemove);
+        gameSettings.playerNames.splice(index, 1);
         return id;
     }
 
@@ -78,8 +90,9 @@ export class NewGameManagerService {
         return gameId;
     }
 
-    private generateGameToken(gameSettings: OnlineGameSettings): string {
-        return gameSettings.id;
+    private generateGameToken(): string {
+        const uuid = uuidv4();
+        return `${GAME_TOKEN_PREFIX}${uuid}`;
     }
 
     private toOnlineGameSettings(id: string, settings: OnlineGameSettingsUI | undefined): OnlineGameSettings {

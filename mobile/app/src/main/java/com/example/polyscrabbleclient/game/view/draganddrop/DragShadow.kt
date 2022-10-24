@@ -25,7 +25,7 @@ fun DragShadow(
         var targetSize by remember {
             mutableStateOf(IntSize.Zero)
         }
-        Box (
+        Box(
             modifier = Modifier
                 .graphicsLayer {
                     alpha = shadowAlpha
@@ -50,10 +50,10 @@ fun DragShadow(
 fun PreviewDragShadow() {
     val d = DragState()
     d.isDragging = true
-    d.startingPosition = Offset(100f,100f)
+    d.startingPosition = Offset(100f, 100f)
     d.draggableView = {
         TileView(
-            tileModel = TileCreator().createTileFromLetter('X')
+            tileModel = TileCreator.createTileFromLetter('X')
         )
         {}
     }
