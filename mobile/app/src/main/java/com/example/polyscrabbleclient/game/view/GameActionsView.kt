@@ -45,7 +45,7 @@ fun GameActionButton(
     enabled: () -> Boolean,
     click: () -> Unit
 ) {
-    Button (
+    Button(
         modifier = Modifier
             .size(
                 width = 135.dp,
@@ -54,8 +54,7 @@ fun GameActionButton(
             .padding(
                 vertical = 15.dp,
                 horizontal = 15.dp
-            )
-        ,
+            ),
         onClick = click,
         enabled = enabled()
     ) {

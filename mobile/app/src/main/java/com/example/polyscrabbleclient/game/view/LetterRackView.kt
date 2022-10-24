@@ -19,7 +19,7 @@ fun LetterRackView(
     val viewModel: LetterRackViewModel = viewModel()
     dragState.onDropCallbacks.add { viewModel.removeTile(dragState.draggableContent) }
 
-    LazyRow (
+    LazyRow(
         modifier = Modifier
             .background(MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.Center,

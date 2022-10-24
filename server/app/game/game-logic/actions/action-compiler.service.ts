@@ -16,6 +16,7 @@ import { ExchangeHorse } from '@app/game/game-logic/actions/magic-card/magic-car
 import { ExchangeHorseAll } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-horse-all';
 import { SkipNextTurn } from '@app/game/game-logic/actions/magic-card/magic-card-skip-next-turn';
 import { ExtraTurn } from '@app/game/game-logic/actions/magic-card/magic-card-extra-turn';
+import { ReduceTimer } from '@app/game/game-logic/actions/magic-card/magic-card-reduce-timer';
 
 @Service()
 export class ActionCompilerService {
@@ -68,6 +69,11 @@ export class ActionCompilerService {
             case OnlineMagicCardActionType.ExtraTurn: {
                 this.letterRackUpdateValidator(command, player);
                 return new ExtraTurn(player);
+            }
+
+            case OnlineMagicCardActionType.ReduceTimer: {
+                this.letterRackUpdateValidator(command, player);
+                return new ReduceTimer(player);
             }
 
             default:

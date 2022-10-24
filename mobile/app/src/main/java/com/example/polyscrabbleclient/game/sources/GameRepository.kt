@@ -34,10 +34,11 @@ object GameRepository {
         }
     }
 
-    private val onTransitionGameState: (transitionGameState: TransitionGameState?) -> Unit = { transitionGameState ->
-        // TODO
-        println("onTransitionGameState $transitionGameState")
-    }
+    private val onTransitionGameState: (transitionGameState: TransitionGameState?) -> Unit =
+        { transitionGameState ->
+            // TODO
+            println("onTransitionGameState $transitionGameState")
+        }
 
     init {
         gameSocket.setSocket()

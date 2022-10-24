@@ -39,13 +39,17 @@ val BoardSize = 550.dp
 val BoardPadding = 10.dp
 val GridSize = BoardSize - BoardPadding.times(2)
 val GridDivisionSize = GridSize / GridDimension
-val HeaderRange = (BoardRange.first+1)..(BoardRange.last+1)
+val HeaderRange = (BoardRange.first + 1)..(BoardRange.last + 1)
 val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
 val DivisionCenterOffset = GridDivisionSize.times(0.3f)
 
 @Composable
 fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
-    val themeColors = listOf(MaterialTheme.colors.primary, MaterialTheme.colors.secondary, MaterialTheme.colors.secondary)
+    val themeColors = listOf(
+        MaterialTheme.colors.primary,
+        MaterialTheme.colors.secondary,
+        MaterialTheme.colors.secondary
+    )
     val thickDividerIndexes = listOf(0, 1, GridDimension)
 
     val rowChars = RowChar.values()

@@ -35,7 +35,7 @@ fun PendingGameView(
         animationSpec = tween(durationMillis = 200)
     )
 
-    Row (
+    Row(
         Modifier
             .background(targetColor)
             .clickable { click() },
@@ -73,7 +73,7 @@ fun RowScope.TableCell(
 @Composable
 fun PendingGamePreview() {
     PendingGameView(
-        OnlineGameSettings (
+        OnlineGameSettings(
             id = "123",
             gameMode = GameMode.Classic,
             botDifficulty = BotDifficulty.Easy,
@@ -91,7 +91,7 @@ fun PendingGamePreview() {
 @Composable
 fun PendingGamePreview2() {
     PendingGameView(
-        OnlineGameSettings (
+        OnlineGameSettings(
             id = "123",
             gameMode = GameMode.Classic,
             botDifficulty = BotDifficulty.Easy,

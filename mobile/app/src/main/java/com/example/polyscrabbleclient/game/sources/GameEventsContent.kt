@@ -4,27 +4,21 @@ import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
 import com.example.polyscrabbleclient.lobby.sources.GameToken
 
-data class Tile (
+data class Tile(
     val letterMultiplicator: Int,
     val wordMultiplicator: Int,
     val letterObject: Letter
 )
 
-data class Letter (
+data class Letter(
     val char: String,
     val value: Int
 )
 
-data class LightPlayer (
+data class LightPlayer(
     val name: String,
     val points: Int,
     val letterRack: ArrayList<Letter>,
-)
-
-// TODO : REMOVE (ONLY TEMPORARY WHILE WAITING FOR !54)
-data class UserAuth (
-    val playerName: String,
-    val gameToken: String
 )
 
 data class Position(
@@ -32,18 +26,21 @@ data class Position(
     val y: Int
 )
 
-enum class Direction (value:String) {
-    @SerializedName("H") Horizontal("H"),
-    @SerializedName("V") Vertical("V"),
+enum class Direction(value: String) {
+    @SerializedName("H")
+    Horizontal("H"),
+
+    @SerializedName("V")
+    Vertical("V"),
 }
 
-data class PlacementSetting (
+data class PlacementSetting(
     val x: Int,
     val y: Int,
     val direction: Direction
 )
 
-data class OnlineAction (
+data class OnlineAction(
     val type: OnlineActionType,
     val placementSettings: PlacementSetting? = null,
     val letters: String? = null,
@@ -52,17 +49,30 @@ data class OnlineAction (
 )
 
 // No Union types in Kotlin
-enum class OnlineActionType (value: String) {
+enum class OnlineActionType(value: String) {
     // OnlineActionType
-    @SerializedName("place") Place("place"),
-    @SerializedName("exchange") Exchange("exchange"),
-    @SerializedName("pass") Pass("pass"),
+    @SerializedName("place")
+    Place("place"),
+
+    @SerializedName("exchange")
+    Exchange("exchange"),
+
+    @SerializedName("pass")
+    Pass("pass"),
 
     // OnlineMagicCardActionType
-    @SerializedName("splitPoints") SplitPoints("splitPoints"),
-    @SerializedName("exchangeALetter") ExchangeALetter("exchangeALetter"),
-    @SerializedName("placeBonus") PlaceBonus("placeBonus"),
-    @SerializedName("exchangeHorse") ExchangeHorse("exchangeHorse"),
+    @SerializedName("splitPoints")
+    SplitPoints("splitPoints"),
+
+    @SerializedName("exchangeALetter")
+    ExchangeALetter("exchangeALetter"),
+
+    @SerializedName("placeBonus")
+    PlaceBonus("placeBonus"),
+
+    @SerializedName("exchangeHorse")
+    ExchangeHorse("exchangeHorse"),
+    
     // TODO : ADD OTHERS
 }
 
@@ -73,7 +83,7 @@ typealias RemainingTime = Int
 
 typealias StartTime = Int
 
-data class GameState (
+data class GameState(
     val players: ArrayList<LightPlayer>,
     val activePlayerIndex: Int,
     val grid: ArrayList<ArrayList<Tile>>,
@@ -87,7 +97,6 @@ typealias TransitionGameState = Nullable
 
 typealias JoinGame = GameToken
 
-// TODO
 typealias NextAction = OnlineAction
 
 // TODO

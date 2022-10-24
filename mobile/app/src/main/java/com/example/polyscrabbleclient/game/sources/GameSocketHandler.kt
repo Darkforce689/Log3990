@@ -12,7 +12,7 @@ const val GamePath = "/game"
 
 private const val URL = BuildConfig.COMMUNICATION_URL
 
-object GameSocketHandler: SocketHandler(GameEventTypes) {
+object GameSocketHandler : SocketHandler(GameEventTypes) {
 
     @Synchronized
     fun setSocket() {
