@@ -1,6 +1,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
+import { WAIT_STATUS } from '@app/game-logic/constants';
 import { SocketMock } from '@app/game-logic/socket-mock';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
@@ -17,7 +18,7 @@ describe('NewOnlineGameSocketHandler', () => {
         timePerTurn: 60000,
         playerNames: ['allo1'],
         privateGame: false,
-        gameStatus: 'En attente',
+        gameStatus: WAIT_STATUS,
         randomBonus: false,
         gameMode: GameMode.Classic,
         botDifficulty: BotDifficulty.Easy,

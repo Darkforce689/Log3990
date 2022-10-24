@@ -5,6 +5,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { Sort } from '@angular/material/sort';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
+import { WAIT_STATUS } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
@@ -36,7 +37,7 @@ describe('PendingGamesComponent', () => {
             playerNames: ['Jerry'],
             randomBonus: false,
             privateGame: false,
-            gameStatus: 'En attente',
+            gameStatus: WAIT_STATUS,
             timePerTurn: 65000,
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Expert,
@@ -50,7 +51,7 @@ describe('PendingGamesComponent', () => {
             id: '1',
             playerNames: ['Tom'],
             privateGame: false,
-            gameStatus: 'En attente',
+            gameStatus: WAIT_STATUS,
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,

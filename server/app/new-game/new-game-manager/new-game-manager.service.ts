@@ -1,4 +1,5 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
+import { ACTIVE_STATUS } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
@@ -9,7 +10,6 @@ import { v4 as uuidv4 } from 'uuid';
 export class NewGameManagerService {
     static gameIdCounter: number = 0;
     pendingGames: Map<string, OnlineGameSettingsUI> = new Map<string, OnlineGameSettingsUI>();
-    activeStatus = 'En cours';
     activeGameIdMap = new Map<string, string>();
 
     constructor(private gameMaster: GameManagerService, private dictionaryService: DictionaryService) {}
@@ -26,7 +26,7 @@ export class NewGameManagerService {
                 games.push(this.toOnlineGameSettings(id, game));
                 return;
             }
-            if (game.gameStatus === this.activeStatus && !activeGames.has(activeToken)) {
+            if (game.gameStatus === ACTIVE_STATUS && !activeGames.has(activeToken)) {
                 this.deletePendingGame(id);
                 this.activeGameIdMap.delete(id);
                 return;

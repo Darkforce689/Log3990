@@ -1,7 +1,7 @@
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { Session } from '@app/auth/services/session.interface';
-import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
+import { ACTIVE_STATUS, DEFAULT_DICTIONARY_TITLE, WAIT_STATUS } from '@app/game/game-logic/constants';
 import { isGameSettings } from '@app/game/game-logic/utils';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { ServerLogger } from '@app/logger/logger';
@@ -58,7 +58,7 @@ export class NewGameSocketHandler {
                     if (user === undefined) {
                         return;
                     }
-                    gameSettings.gameStatus = 'En attente';
+                    gameSettings.gameStatus = ACTIVE_STATUS;
                     gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name] }), socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.addToSocketMap(gameId, user.name, socket, true);
@@ -117,20 +117,34 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(acceptPlayer, (id, playerNbr) => {
+            socket.on(acceptPlayer, async (id, playerNbr) => {
                 try {
-                    this.acceptPlayer(id, playerNbr);
-                    this.emitPendingGamesToAll();
+                    const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+                    const user = await this.userService.getUser({ _id });
+                    if (user === undefined) {
+                        return;
+                    }
+                    if (this.socketMap.get(id)?.get(user.name)?.isHost) {
+                        this.acceptPlayer(id, playerNbr);
+                        this.emitPendingGamesToAll();
+                    }
                 } catch (error) {
                     ServerLogger.logError(error);
                     this.sendError(error, socket);
                 }
             });
 
-            socket.on(refusePlayer, (id, playerNbr) => {
+            socket.on(refusePlayer, async (id, playerNbr) => {
                 try {
-                    this.refusePlayer(id, playerNbr);
-                    this.emitPendingGamesToAll();
+                    const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+                    const user = await this.userService.getUser({ _id });
+                    if (user === undefined) {
+                        return;
+                    }
+                    if (this.socketMap.get(id)?.get(user.name)?.isHost) {
+                        this.refusePlayer(id, playerNbr);
+                        this.emitPendingGamesToAll();
+                    }
                 } catch (error) {
                     ServerLogger.logError(error);
                     this.sendError(error, socket);
@@ -196,7 +210,7 @@ export class NewGameSocketHandler {
 
     private async launchGame(id: string) {
         const gameSettings = this.getPendingGame(id);
-        gameSettings.gameStatus = 'En cours';
+        gameSettings.gameStatus = ACTIVE_STATUS;
         const gameToken = await this.newGameManagerService.launchPendingGame(id, gameSettings);
         this.sendGameStartedToPlayers(id, gameToken, gameSettings);
         this.deleteGameSocketMap(id);
@@ -269,7 +283,7 @@ export class NewGameSocketHandler {
 
         if (!gameToChange) return;
         if (gameToChange.playerNames[0] === name) {
-            if (gameToChange.gameStatus === 'En attente') {
+            if (gameToChange.gameStatus === WAIT_STATUS) {
                 this.ioServer.to(gameToChange.id).emit(hostQuit);
                 this.newGameManagerService.deletePendingGame(gameToChange.id);
                 this.deleteGameSocketMap(gameToChange.id);

@@ -61,3 +61,5 @@ export const HIGHSCORES_TO_DISPLAY = 5;
 export const NOT_ONLY_SPACE_RGX = new RegExp('.*[^ ].*');
 export const MAX_FILE_LENGTH = 235;
 export const NO_WHITE_SPACE_RGX = /^\S*$/;
+export const WAIT_STATUS = 'En attente';
+export const ACTIVE_STATUS = 'En cours';

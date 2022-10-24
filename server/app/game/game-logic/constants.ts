@@ -43,3 +43,5 @@ export const ARROWRIGHT = 'ArrowRight';
 export const ARROWLEFT = 'ArrowLeft';
 export const SHIFT = 'Shift';
 export const DEFAULT_DICTIONARY_TITLE = 'Mon dictionnaire';
+export const WAIT_STATUS = 'En attente';
+export const ACTIVE_STATUS = 'En cours';
