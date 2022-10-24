@@ -12,7 +12,7 @@
             <div class="player-name">
                 {{ name }}
                 <mat-icon color="primary" *ngIf="isThatPlayerHost(name)">star</mat-icon>
-                <button class="menuButton" (click)="kickPlayer(name)" *ngIf="isHost(name)">
+                <button class="menuButton" mat-icon-button (click)="kickPlayer(name)" *ngIf="isHost(name)">
                     <mat-icon color="primary">close</mat-icon>
                 </button>
             </div>

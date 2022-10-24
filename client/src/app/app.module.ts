@@ -1,6 +1,8 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -98,6 +100,8 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         HttpClientModule,
         ReactiveFormsModule,
         MatTableModule,
+        MatButtonModule,
+        MatIconModule,
     ],
     providers: [
         {
