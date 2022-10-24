@@ -23,10 +23,10 @@
         <div class="player" *ngFor="let name of tmpPlayers">
             <div class="player-name">
                 {{ name }}
-                <button class="menuButton" (click)="acceptPlayer(name)" *ngIf="isHost(name)">
+                <button class="menuButton" mat-icon-button (click)="acceptPlayer(name)" *ngIf="isHost(name)">
                     <mat-icon color="primary">check</mat-icon>
                 </button>
-                <button class="menuButton" (click)="refusePlayer(name)" *ngIf="isHost(name)">
+                <button class="menuButton" mat-icon-button (click)="refusePlayer(name)" *ngIf="isHost(name)">
                     <mat-icon color="primary">close</mat-icon>
                 </button>
             </div>
