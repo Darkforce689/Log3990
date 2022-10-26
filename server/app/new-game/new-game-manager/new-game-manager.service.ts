@@ -117,8 +117,16 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        const index = gameSettings.playerNames.findIndex((name) => name === nameToRemove);
-        gameSettings.playerNames.splice(index, 1);
+        let index = gameSettings.playerNames.findIndex((name) => name === nameToRemove);
+        if (index !== NOT_FOUND) {
+            gameSettings.playerNames.splice(index, 1);
+            return id;
+        }
+        index = gameSettings.tmpPlayerNames.findIndex((name) => name === nameToRemove);
+        if (index !== NOT_FOUND) {
+            gameSettings.tmpPlayerNames.splice(index, 1);
+            return id;
+        }
         return id;
     }
 

@@ -279,9 +279,14 @@ export class NewGameSocketHandler {
     }
 
     private onDisconnect(name: string) {
-        const gameToChange = this.newGameManagerService.getPendingGames().find((gameSettings) => gameSettings.playerNames.includes(name));
+        let gameToChange = this.newGameManagerService.getPendingGames().find((gameSettings) => gameSettings.playerNames.includes(name));
 
-        if (!gameToChange) return;
+        if (!gameToChange) {
+            gameToChange = this.newGameManagerService.getPendingGames().find((gameSettings) => gameSettings.tmpPlayerNames.includes(name));
+        }
+        if (!gameToChange) {
+            return;
+        }
         if (gameToChange.playerNames[0] === name) {
             if (gameToChange.gameStatus === WAIT_STATUS) {
                 this.ioServer.to(gameToChange.id).emit(hostQuit);
@@ -311,7 +316,6 @@ export class NewGameSocketHandler {
     }
 
     private emitPendingGamesToAll() {
-        ServerLogger.logDebug(`Observable games: ${JSON.stringify(this.newGameManagerService.getObservableGames())}`);
         this.ioServer.emit(pendingGames, this.newGameManagerService.getPendingGames(), this.newGameManagerService.getObservableGames());
     }
 }
