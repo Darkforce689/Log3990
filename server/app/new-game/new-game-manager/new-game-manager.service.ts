@@ -1,7 +1,6 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
-import { ServerLogger } from '@app/logger/logger';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { Subject } from 'rxjs';
 import { Service } from 'typedi';
@@ -16,7 +15,6 @@ export class NewGameManagerService {
 
     constructor(private gameMaster: GameManagerService, private dictionaryService: DictionaryService) {
         this.gameMaster.gameDeleted$.subscribe((gameToken) => {
-            ServerLogger.logDebug(`Game observable ${gameToken} deleted`);
             if (gameToken) {
                 this.activeGameSettingMap.delete(gameToken);
                 this.refreshPendingGame$.next();
@@ -58,7 +56,6 @@ export class NewGameManagerService {
         }
         const onlineGameSettings = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken();
-        ServerLogger.logDebug(`New game created with token ${gameToken}`);
         this.activeGameSettingMap.set(gameToken, onlineGameSettings);
         await this.startGame(gameToken, onlineGameSettings);
         return gameToken;

@@ -88,7 +88,6 @@ export class NewOnlineGameSocketHandler {
         if (this.pendingGameId$.value === undefined) {
             throw Error("Can't kick player, no pending game id");
         }
-        console.log('clientgameid: ' + this.pendingGameId$.value + ' ' + ' ' + playerId);
         this.socket.emit('kickPlayer', this.pendingGameId$.value, playerId);
     }
 
@@ -145,14 +144,19 @@ export class NewOnlineGameSocketHandler {
         this.socket.on('gameJoined', (gameSettings: OnlineGameSettings) => {
             this.gameSettings$.next(gameSettings);
             const clientName = this.account.account?.name;
-            if (clientName === undefined) {
-                return;
-            }
-            if (this.gameSettings$.value?.playerNames.includes(clientName)) {
+            if (this.gameSettings$.value === undefined) {
+                this.kickedFromGame$.next(true);
                 this.isWaiting$.next(false);
                 return;
             }
-            if (this.gameSettings$.value?.tmpPlayerNames.includes(clientName)) {
+            if (clientName === undefined) {
+                return;
+            }
+            if (this.gameSettings$.value.playerNames.includes(clientName)) {
+                this.isWaiting$.next(false);
+                return;
+            }
+            if (this.gameSettings$.value.tmpPlayerNames.includes(clientName)) {
                 this.isWaiting$.next(true);
                 return;
             }

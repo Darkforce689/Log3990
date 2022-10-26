@@ -3,6 +3,7 @@
         <h5>Joindre une partie</h5>
     </div>
     <div class="table-container">
+        <header>Partie en attente</header>
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort (matSortChange)="announceSortChange($event)" matSortDisableClear>
             <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -29,6 +30,7 @@
     <br />
     <br />
     <div class="table-container">
+        <header>Partie observable</header>
         <table mat-table [dataSource]="dataSource2" class="mat-elevation-z8" matSort (matSortChange)="announceSortChange($event)" matSortDisableClear>
             <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
