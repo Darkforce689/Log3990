@@ -41,7 +41,7 @@ describe('New Online Game Service', () => {
         email: '',
         avatar: '',
     };
-    
+
     before((done) => {
         httpServer = createServer();
         httpServer.listen(() => {

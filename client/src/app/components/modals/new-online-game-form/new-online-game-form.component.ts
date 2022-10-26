@@ -10,7 +10,7 @@ import {
     MAX_TIME_PER_TURN,
     MIN_NUMBER_OF_PLAYERS,
     MIN_TIME_PER_TURN,
-    STEP_TIME_PER_TURN
+    STEP_TIME_PER_TURN,
 } from '@app/game-logic/constants';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
