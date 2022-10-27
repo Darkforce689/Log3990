@@ -90,7 +90,9 @@ class BoardViewModel : ViewModel() {
         if (draggableContent.type !== DraggableContentType.TileModel) {
             return
         }
-        board[column, row] = draggableContent as TileModel
+        if (draggableContent is TileModel) {
+            board[column, row] = draggableContent
+        }
     }
 
     fun canPlaceTile(tileCoordinates: TileCoordinates? = hoveredTileCoordinates): Boolean {

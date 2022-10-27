@@ -1,13 +1,10 @@
 package com.example.polyscrabbleclient.game.model
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.user.User
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 const val defaultTurnTime = 60
 
@@ -20,8 +17,11 @@ class GameModel {
     var turnTotalTime = mutableStateOf(defaultTurnTime)
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
-    var user: MutableState<Player?> = mutableStateOf(null)
+    val userLetters = mutableStateListOf<TileModel>()
 
+    fun getUser(): Player? {
+        return players.value.find { it.name == User.name }
+    }
 
     fun update(gameState: GameState) {
         board.updateGrid(gameState.grid)
@@ -48,7 +48,8 @@ class GameModel {
         if (updatedUser === null) {
             return
         }
-        user.value = updatedUser
+        userLetters.clear()
+        userLetters.addAll(updatedUser.letters)
     }
 
     fun getPlayer(position: Int): Player? {
@@ -61,5 +62,9 @@ class GameModel {
 
     fun getActivePlayer(): Player? {
         return getPlayer(activePlayerIndex.value)
+    }
+
+    fun createPlayersFrom(playerNames: ArrayList<String>) {
+        players.value = playerNames.map { Player(it, 0) }
     }
 }
