@@ -17,7 +17,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun isActivePlayer(): Boolean {
-        return GameRepository.game.getActivePlayer() === GameRepository.game.user.value
+        return GameRepository.game.getActivePlayer() === GameRepository.game.getUser()
     }
 
     fun canPassTurn(): Boolean {

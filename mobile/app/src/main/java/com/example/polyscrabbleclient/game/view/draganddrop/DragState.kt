@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.game.view.draganddrop
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
+import com.example.polyscrabbleclient.game.model.TileModel
 
 // ADAPTED FROM https://github.com/microsoft/surface-duo-compose-sdk/blob/main/DragAndDrop/library/src/main/java/com/microsoft/device/dualscreen/draganddrop/DragContainer.kt
 class DragState {
@@ -18,27 +19,37 @@ class DragState {
         draggableView: (@Composable () -> Unit)?,
         draggableContent: DraggableContent?
     ) {
-        this.isDragging = true
-        this.startingPosition = startingPosition
-        this.draggableView = draggableView
-        this.draggableContent = draggableContent
+        if (draggableContent?.canBeDragged?.invoke() == true) {
+            this.isDragging = true
+            this.startingPosition = startingPosition
+            this.draggableView = draggableView
+            this.draggableContent = draggableContent
+        }
     }
 
     fun onDragEnd() {
-        this.offsetFromStartingPosition = Offset.Zero
-        this.isDragging = false
+        if (draggableContent?.canBeDragged?.invoke() == true) {
+            this.offsetFromStartingPosition = Offset.Zero
+            this.isDragging = false
+        }
     }
 
     fun onDragCancel() {
-        this.offsetFromStartingPosition = Offset.Zero
-        this.isDragging = false
+        if (draggableContent?.canBeDragged?.invoke() == true) {
+            this.offsetFromStartingPosition = Offset.Zero
+            this.isDragging = false
+        }
     }
 
     fun onDrag(dragAmount: Offset) {
-        this.offsetFromStartingPosition += Offset(dragAmount.x, dragAmount.y)
+        if (draggableContent?.canBeDragged?.invoke() == true) {
+            this.offsetFromStartingPosition += Offset(dragAmount.x, dragAmount.y)
+        }
     }
 
     fun onDrop() {
-        this.onDropCallbacks.forEach { callback -> callback() }
+        if (draggableContent?.canBeDragged?.invoke() == true) {
+            this.onDropCallbacks.forEach { callback -> callback() }
+        }
     }
 }

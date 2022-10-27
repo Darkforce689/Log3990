@@ -8,8 +8,12 @@ import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 data class TileModel(
     val letter: Char,
     val points: Int,
-    var isSelected: MutableState<Boolean> = mutableStateOf(false)
-) : DraggableContent(type = DraggableContentType.TileModel)
+    var isSelected: MutableState<Boolean> = mutableStateOf(false),
+    var isUsedOnBoard: MutableState<Boolean> = mutableStateOf(false)
+) : DraggableContent(
+    type = DraggableContentType.TileModel,
+    canBeDragged = { !isUsedOnBoard.value }
+)
 
 data class GridTileModel(
     val content: MutableState<TileModel?> = mutableStateOf(null),
