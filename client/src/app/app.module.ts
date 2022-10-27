@@ -1,3 +1,4 @@
+import { PortalModule } from '@angular/cdk/portal';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -108,6 +109,7 @@ import { MessageComponent } from './chat/components/message/message.component';
         HttpClientModule,
         ReactiveFormsModule,
         MatTableModule,
+        PortalModule,
     ],
     providers: [
         {
