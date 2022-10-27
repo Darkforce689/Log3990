@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ChatMessage } from '@app/game-logic/messages/message.interface';
+import { BaseMessage, ChatMessage } from '@app/chat/interfaces/message.interface';
 import { isSocketConnected } from '@app/game-logic/utils';
 import { AccountService } from '@app/services/account.service';
 import { AuthService } from '@app/services/auth.service';
 import { Observable, Subject } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
@@ -12,18 +11,17 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class OnlineChatHandlerService {
-    // TODO refactor class for multi-room
-
     socket: Socket;
     private newRoomMessageSubject = new Subject<ChatMessage>();
     private errorSubject = new Subject<string>();
     private sysMessageSubject = new Subject<string>();
-    // private userName: string | undefined;
+    private joinedRooms = new Set<string>();
 
+    // TODO refactor remove accountService
     constructor(private accountService: AccountService, private authService: AuthService) {
         this.authService.isAuthenticated$.subscribe((isAuth) => {
             if (!isAuth) {
-                this.leaveChatRoom();
+                this.disconnect();
             }
         });
     }
@@ -37,7 +35,7 @@ export class OnlineChatHandlerService {
         this.joinChatRoom(roomID);
     }
 
-    leaveChatRoom() {
+    disconnect() {
         if (!this.socket) {
             return;
         }
@@ -45,19 +43,39 @@ export class OnlineChatHandlerService {
         this.socket = undefined as unknown as Socket;
     }
 
-    sendMessage(content: string) {
+    leaveChatRoom(roomId: string) {
+        if (!this.socket) {
+            throw Error('No socket to leave the room with');
+        }
+        const isRoomJoined = this.joinedRooms.delete(roomId) !== undefined;
+        if (!isRoomJoined) {
+            throw Error('You have not joined the room you trying to leave');
+        }
+
+        this.socket.emit('leaveRoom', roomId);
+    }
+
+    sendMessage(message: BaseMessage) {
         if (!this.socket) {
             throw Error('No socket to send message from');
         }
-        this.socket.emit('newMessage', content);
+        this.socket.emit('newMessage', message);
     }
 
-    joinChatRoom(roomID: string) {
-        this.socket = this.connectToSocket();
-        this.bindRoomChannels(roomID);
+    joinChatRoom(roomId: string) {
+        if (!this.socket) {
+            this.socket = this.connectToSocket();
+            this.bindRoomChannels();
+        }
+
+        if (this.joinedRooms.has(roomId)) {
+            return;
+        }
+        this.joinedRooms.add(roomId);
+        this.socket.emit('joinRoom', roomId);
     }
-    // TODO refactor
-    private bindRoomChannels(roomID: string) {
+
+    private bindRoomChannels() {
         this.socket.on('error', (errorContent: string) => {
             this.receiveChatServerError(errorContent);
         });
@@ -69,8 +87,6 @@ export class OnlineChatHandlerService {
         this.socket.on('systemMessages', (content: string) => {
             this.receiveSystemMessage(content);
         });
-
-        this.socket.emit('joinRoom', roomID);
     }
 
     private connectToSocket() {
@@ -94,30 +110,8 @@ export class OnlineChatHandlerService {
         return isSocketConnected(this.socket);
     }
 
-    get playerMessage$(): Observable<ChatMessage> {
-        return this.newRoomMessageSubject.pipe(
-            filter((chatMessage: ChatMessage) => {
-                const name = chatMessage.from;
-                const account = this.accountService.account;
-                if (!account) {
-                    throw Error('No account defined');
-                }
-                return name === account.name;
-            }),
-        );
-    }
-
-    get opponentMessage$(): Observable<ChatMessage> {
-        return this.newRoomMessageSubject.pipe(
-            filter((chatMessage: ChatMessage) => {
-                const name = chatMessage.from;
-                const account = this.accountService.account;
-                if (!account) {
-                    throw Error('No account defined');
-                }
-                return name !== account.name;
-            }),
-        );
+    get newMessages$(): Observable<ChatMessage> {
+        return this.newRoomMessageSubject;
     }
 
     get newRoomMessages$(): Observable<ChatMessage> {

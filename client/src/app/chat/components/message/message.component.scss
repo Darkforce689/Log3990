@@ -1,0 +1,54 @@
+.message {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-header {
+    display: flex;
+    padding-bottom: 5px;
+    justify-content: center;
+}
+
+.message-bubble {
+    display: flex;
+}
+
+.system {
+    .message-content {
+        // TODO GL3A22107-104
+        background-color: grey;
+    }
+
+    align-self: flex-start;
+}
+
+.player1 {
+    .message-content {
+        background-color: var(--primary);
+    }
+    align-self: flex-end;
+}
+
+.player2 {
+    .message-content {
+        background-color: var(--accent);
+    }
+
+    align-self: flex-start;
+}
+
+.message-content {
+    border-radius: 25px;
+    margin-bottom: 1.5vh;
+    padding: 1.25vh 1.5vw;
+}
+
+.empty-space {
+    flex-grow: 1;
+    min-width: 20%;
+}
+
+.message-header {
+    // TODO GL3A22107-104
+    color: grey;
+}

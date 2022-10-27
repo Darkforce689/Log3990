@@ -1,34 +1,30 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ChatMessage, Message, MessageType } from '@app/game-logic/messages/message.interface';
-import { MessagesService } from '@app/game-logic/messages/messages.service';
-import { OnlineChatHandlerService } from '@app/game-logic/messages/online-chat-handler/online-chat-handler.service';
+import { ChatMessage, Message, MessageType } from '@app/chat/interfaces/message.interface';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
+import { OnlineChatHandlerService } from '@app/chat/services/online-chat-handler/online-chat-handler.service';
 import { Observable, Subject } from 'rxjs';
 
 describe('Service: Messages', () => {
     let service: MessagesService;
     let onlineChatSpy: jasmine.SpyObj<OnlineChatHandlerService>;
-    let mockOpponentMessage$: Subject<ChatMessage>;
+    let mockNewMessage$$: Subject<ChatMessage>;
     let mockErrorMessage$: Subject<string>;
     let mockSystemMessage$: Subject<string>;
-    let mockPlayerMessage$: Subject<ChatMessage>;
 
     beforeEach(() => {
-        mockOpponentMessage$ = new Subject<ChatMessage>();
+        mockNewMessage$$ = new Subject<ChatMessage>();
         mockErrorMessage$ = new Subject<string>();
         mockSystemMessage$ = new Subject<string>();
-        mockPlayerMessage$ = new Subject<ChatMessage>();
 
         onlineChatSpy = jasmine.createSpyObj(
             'OnlineChatHandler',
             ['sendMessage'],
-            ['isConnected', 'opponentMessage$', 'errorMessage$', 'systemMessage$', 'playerMessage$'],
+            ['isConnected', 'opponentMessage$', 'errorMessage$', 'systemMessage$', 'newMessages$'],
         );
 
-        (Object.getOwnPropertyDescriptor(onlineChatSpy, 'opponentMessage$')?.get as jasmine.Spy<() => Observable<ChatMessage>>).and.returnValue(
-            mockOpponentMessage$,
-        );
-        (Object.getOwnPropertyDescriptor(onlineChatSpy, 'playerMessage$')?.get as jasmine.Spy<() => Observable<ChatMessage>>).and.returnValue(
-            mockPlayerMessage$,
+        (Object.getOwnPropertyDescriptor(onlineChatSpy, 'newMessages$')?.get as jasmine.Spy<() => Observable<ChatMessage>>).and.returnValue(
+            mockNewMessage$$,
         );
 
         (Object.getOwnPropertyDescriptor(onlineChatSpy, 'errorMessage$')?.get as jasmine.Spy<() => Observable<string>>).and.returnValue(
@@ -40,6 +36,7 @@ describe('Service: Messages', () => {
 
         TestBed.configureTestingModule({
             providers: [{ provide: OnlineChatHandlerService, useValue: onlineChatSpy }],
+            imports: [HttpClientTestingModule],
         });
         service = TestBed.inject(MessagesService);
     });
@@ -56,7 +53,7 @@ describe('Service: Messages', () => {
             content,
             type: MessageType.System,
         };
-        const log = service.messagesLog;
+        const log = service.messages;
         const lastMessage = log[log.length - 1];
         expect(lastMessage).toEqual(expectedMesssage);
     });
@@ -64,7 +61,7 @@ describe('Service: Messages', () => {
     it('should receive error', () => {
         const errorContent = 'this is an error';
         service.receiveErrorMessage(errorContent);
-        const log = service.messagesLog;
+        const log = service.messages;
         const lastMessage = log[log.length - 1];
         const message: Message = {
             from: 'SystemError',
@@ -77,7 +74,7 @@ describe('Service: Messages', () => {
     it('should receive error Message', () => {
         const errorContent = 'this is a parse error';
         service.receiveErrorMessage(errorContent);
-        const log = service.messagesLog;
+        const log = service.messages;
         const lastMessage = log[log.length - 1];
         const message: Message = {
             from: 'SystemError',
@@ -85,29 +82,6 @@ describe('Service: Messages', () => {
             type: MessageType.System,
         };
         expect(lastMessage).toEqual(message);
-    });
-
-    it('should clear log', () => {
-        const message = {
-            from: 'paul',
-            content: 'test',
-            date: new Date(),
-        };
-        service.receiveOpponentMessage(message);
-        const prevNLogs = service.messagesLog.length;
-        expect(prevNLogs).toBe(1);
-        service.clearLog();
-        const nLogs = service.messagesLog.length;
-        expect(nLogs).toBe(0);
-    });
-
-    it('should receive opponent message from chat server', () => {
-        const from = 'Paul';
-        const content = 'Hi';
-        const chatMessage = { from, content, date: new Date() };
-        const spy = spyOn(service, 'receiveOpponentMessage');
-        mockOpponentMessage$.next(chatMessage);
-        expect(spy).toHaveBeenCalledOnceWith(chatMessage);
     });
 
     it('should receive error message from chat server', () => {

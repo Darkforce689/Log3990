@@ -83,11 +83,11 @@ describe('MessagesService', () => {
     it('should join room', (done) => {
         const userName = 'test';
         clientSocket.emit('userName', userName);
-        const roomID = 'abc';
-        clientSocket.emit('joinRoom', roomID);
+        const conversation = 'abc';
+        clientSocket.emit('joinRoom', conversation);
         serverSocket.once('joinRoom', () => {
             setTimeout(() => {
-                expect(handler.activeRooms.has(roomID)).to.be.true;
+                expect(handler.activeRooms.has(conversation)).to.be.true;
                 done();
             }, 10);
         });
@@ -101,19 +101,19 @@ describe('MessagesService', () => {
         const userName2 = 'test2';
         clientSocket2.emit('userName', userName2);
 
-        const roomID = 'abc';
-        clientSocket.emit('joinRoom', roomID);
-        clientSocket2.emit('joinRoom', roomID);
+        const conversation = 'abc';
+        clientSocket.emit('joinRoom', conversation);
+        clientSocket2.emit('joinRoom', conversation);
 
         const messageToSend = {
             content: 'Hi',
-            roomId: roomID,
+            conversation,
         };
         const expectedMessage = {
             from: userName2,
             date: new Date().toISOString(),
             content: 'Hi',
-            roomId: roomID,
+            conversation,
         };
 
         setTimeout(() => {
@@ -134,10 +134,10 @@ describe('MessagesService', () => {
         const userName2 = 'test2';
         clientSocket2.emit('userName', userName2);
 
-        const roomID1 = 'abc';
-        clientSocket.emit('joinRoom', roomID1);
-        const roomID2 = 'def';
-        clientSocket2.emit('joinRoom', roomID2);
+        const conversation1 = 'abc';
+        clientSocket.emit('joinRoom', conversation1);
+        const conversation2 = 'def';
+        clientSocket2.emit('joinRoom', conversation2);
 
         let receivedMessage = false;
         clientSocket.on('roomMessages', () => {
@@ -146,7 +146,7 @@ describe('MessagesService', () => {
 
         const messageToSend = {
             content: 'Hi',
-            roomId: roomID2,
+            conversation: conversation2,
         };
         clientSocket2.emit('newMessage', messageToSend);
 
@@ -160,7 +160,7 @@ describe('MessagesService', () => {
     it('client should receive error when sending message with no userName', (done) => {
         const messageToSend = {
             content: 'Hi',
-            roomId: 'abc',
+            conversation: 'abc',
         };
         clientSocket.once('error', (errorMessage: string) => {
             expect(errorMessage).to.equal("Vous n'avez pas encore entré votre nom dans notre systême");
@@ -175,7 +175,7 @@ describe('MessagesService', () => {
         const bigContent = 'a'.repeat(MAX_MESSAGE_LENGTH + 1);
         const message = {
             content: bigContent,
-            roomId: 'abc',
+            conversation: 'abc',
         };
         clientSocket.once('error', (errorMessage: string) => {
             expect(errorMessage).to.equal('Le message doit être plus petit que 512 charactères');
@@ -193,7 +193,7 @@ describe('MessagesService', () => {
         });
         const content = {
             content: 'hi',
-            roomId: 'abc',
+            conversation: 'abc',
         };
         clientSocket.emit('newMessage', content);
     });
@@ -206,15 +206,15 @@ describe('MessagesService', () => {
             done();
         });
 
-        const roomID = 'abc';
-        clientSocket.emit('joinRoom', roomID);
+        const conversation = 'abc';
+        clientSocket.emit('joinRoom', conversation);
         serverSocket.on('joinRoom', () => {
-            setTimeout(() => handler.activeRooms.delete(roomID), 10);
+            setTimeout(() => handler.activeRooms.delete(conversation), 10);
         });
 
         const message = {
             content: 'hi',
-            roomId: roomID,
+            conversation,
         };
         setTimeout(() => clientSocket.emit('newMessage', message), 150);
     });
@@ -224,8 +224,8 @@ describe('MessagesService', () => {
             expect(errorMessage).to.equal("Vous n'avez pas encore choisi un nom");
             done();
         });
-        const roomID = 'abc';
-        clientSocket.emit('joinRoom', roomID);
+        const conversation = 'abc';
+        clientSocket.emit('joinRoom', conversation);
     });
 
     it('should delete user on deconnection', (done) => {
@@ -244,11 +244,11 @@ describe('MessagesService', () => {
         const name = 'allo';
         clientSocket.emit('userName', name);
 
-        const roomID = 'abc';
-        clientSocket.emit('joinRoom', roomID);
+        const conversation = 'abc';
+        clientSocket.emit('joinRoom', conversation);
 
         serverSocket.on('disconnect', () => {
-            expect(handler.activeRooms.has(roomID)).to.be.false;
+            expect(handler.activeRooms.has(conversation)).to.be.false;
             done();
         });
 
@@ -259,22 +259,22 @@ describe('MessagesService', () => {
         const name = 'allo';
         clientSocket.emit('userName', name);
 
-        const roomID = 'abc';
+        const conversation = 'abc';
         serverSocket.on('joinRoom', () => {
             setTimeout(() => {
-                expect(handler.activeRooms.has(roomID)).to.be.true;
+                expect(handler.activeRooms.has(conversation)).to.be.true;
                 done();
             }, 10);
         });
 
-        clientSocket.emit('joinRoom', roomID);
+        clientSocket.emit('joinRoom', conversation);
     });
 
     it('should receive global system message', (done) => {
         const name = 'abc';
         clientSocket.emit('userName', name);
-        const roomId = 'abc';
-        clientSocket.emit('joinRoom', roomId);
+        const conversation = 'abc';
+        clientSocket.emit('joinRoom', conversation);
         serverSocket.on('joinRoom', () => {
             setTimeout(() => {
                 mockGlobalSystemMessages$.next(sysMessage);
@@ -282,7 +282,7 @@ describe('MessagesService', () => {
         });
         const sysMessage: GlobalSystemMessage = {
             content: 'allo',
-            gameToken: roomId,
+            gameToken: conversation,
         };
         clientSocket.on(SYSTEM_MESSAGES, (message: SystemMessageDTO) => {
             expect(message.content).to.deep.equal(sysMessage.content);

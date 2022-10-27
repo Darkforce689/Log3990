@@ -14,5 +14,5 @@ export interface ConvoMessage {
 
 export interface BaseMessage {
     content: string;
-    roomId: string;
+    conversation: string;
 }

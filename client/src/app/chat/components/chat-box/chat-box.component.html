@@ -1,0 +1,20 @@
+<mat-card class="chatContainer" appClickAndClickout [inputComponent]="self" (click)="click()">
+    <app-conversation-picker></app-conversation-picker>
+    <div #chat class="sharedChat" (scroll)="onChatScroll()">
+        <app-message *ngFor="let message of messages$ | async" [message]="message"></app-message>
+    </div>
+    <mat-form-field appearance="fill">
+        <input
+            matInput
+            #enter
+            type="text"
+            [(ngModel)]="messageContent"
+            autocomplete="off"
+            autofocus
+            (keyup.enter)="sendMessage()"
+            placeholder="Aa"
+            [maxlength]="maxMessageLength"
+        />
+        <mat-hint>{{ enter.value.length }}/{{ maxMessageLength }}</mat-hint>
+    </mat-form-field>
+</mat-card>

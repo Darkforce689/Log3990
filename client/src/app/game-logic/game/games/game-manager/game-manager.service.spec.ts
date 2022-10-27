@@ -122,14 +122,6 @@ describe('GameManagerService Online Edition', () => {
         expect(result).toBeInstanceOf(OnlineGame);
     });
 
-    it('should stopOnlineGame when onlineGame is undefined', () => {
-        const gameToken = '0';
-        service.joinOnlineGame(gameToken, onlineGameSettings);
-        const spy = spyOn(service['onlineChat'], 'leaveChatRoom');
-        service['stopGame']();
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('should not allocate players if there is no game', () => {
         service['allocatePlayers']([new Player('p1'), new Player('p2')]);
         expect(service['game']?.players).toBe(undefined);
