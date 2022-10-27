@@ -67,7 +67,7 @@ export class MessagesSocketHandler {
             }
 
             socket.on(NEW_MESSAGE, (baseMessage: BaseMessage) => {
-                if (!baseMessage.content === undefined || !baseMessage.roomId) {
+                if (!baseMessage.content === undefined || !baseMessage.conversation) {
                     this.sendError(socket, Error('Message Invalide'));
                     return;
                 }
@@ -125,7 +125,7 @@ export class MessagesSocketHandler {
 
     private sendMessage(socketID: string, baseMessage: BaseMessage): void {
         const user = this.users.get(socketID);
-        const { content, roomId } = baseMessage;
+        const { content, conversation } = baseMessage;
         if (!user) {
             throw Error("Vous n'avez pas encore entré votre nom dans notre systême");
         }
@@ -134,8 +134,8 @@ export class MessagesSocketHandler {
             throw Error('Le message doit être plus petit que 512 charactères');
         }
 
-        if (!user.rooms.has(roomId)) {
-            throw Error(`Vous n'avez pas rejoint la room: ${roomId}`);
+        if (!user.rooms.has(conversation)) {
+            throw Error(`Vous n'avez pas rejoint la room: ${conversation}`);
         }
 
         const userId = user.id;
@@ -145,7 +145,7 @@ export class MessagesSocketHandler {
             throw Error("Vous n'avez pas rejoint de salle de chat");
         }
 
-        const room = this.activeRooms.get(roomId);
+        const room = this.activeRooms.get(conversation);
         if (!room) {
             // TODO handle when conversation is deleted
             throw Error("La salle de chat n'est plus active");
@@ -154,10 +154,10 @@ export class MessagesSocketHandler {
             from: userId,
             date: new Date(),
             content,
-            roomId,
+            conversation,
         };
 
-        this.sendMessageToRoomSockets(roomId, message);
+        this.sendMessageToRoomSockets(conversation, message);
         room.addMessage(message);
     }
 

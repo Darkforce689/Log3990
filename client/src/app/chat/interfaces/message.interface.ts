@@ -7,12 +7,18 @@ export interface Message {
 
 export enum MessageType {
     System = 'System',
-    Player1 = 'Player1',
-    Player2 = 'Player2',
+    FromMe = 'FromMe',
+    FromOther = 'FromOther',
 }
 
 export interface ChatMessage {
     from: string;
     content: string;
+    conversation: string;
     date: Date;
+}
+
+export interface BaseMessage {
+    content: string;
+    conversation: string;
 }

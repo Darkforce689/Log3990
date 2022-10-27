@@ -1,8 +1,6 @@
 package com.example.polyscrabbleclient.game.model
 
-import androidx.compose.runtime.MutableState
 import com.example.polyscrabbleclient.game.domain.TileCreator
-import com.example.polyscrabbleclient.game.sources.GameState
 import com.example.polyscrabbleclient.game.sources.Tile
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 

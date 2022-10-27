@@ -1,0 +1,15 @@
+<div class="message">
+    <div class="message-header">
+        {{ message.date | date: 'MMM d, y, HH:mm' }}
+    </div>
+    <div class="message-bubble">
+        <div *ngIf="message.type === 'FromMe'" class="empty-space"></div>
+        <div [ngClass]="{ system: message.type === 'System', player1: message.type === 'FromMe', player2: message.type === 'FromOther' }">
+            <div class="message-content">
+                <b>{{ message.from }} : </b>
+                <span [innerHTML]="generateMessageContentHTML(message.content)"></span>
+            </div>
+        </div>
+        <div *ngIf="message.type === 'FromOther' || message.type === 'System'" class="empty-space"></div>
+    </div>
+</div>

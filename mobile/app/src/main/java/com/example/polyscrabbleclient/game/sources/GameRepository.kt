@@ -10,6 +10,7 @@ object GameRepository {
     fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
         game.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
         game.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
+        game.createPlayersFrom(gameSettings.playerNames)
         gameSocket.emit(EmitGameEvent.JoinGame, gameSettings.id)
     }
 

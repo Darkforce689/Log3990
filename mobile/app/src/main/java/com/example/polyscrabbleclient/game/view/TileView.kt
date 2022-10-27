@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
+import com.example.polyscrabbleclient.ui.theme.TileGrayedOutBackgroundColor
 
 val subscript = SpanStyle(
     baselineShift = BaselineShift.Subscript,
@@ -40,7 +41,12 @@ fun TileView(
     )
 
     Surface(
-        color = TileBackgroundColor,
+        color =
+            if (tileModel.isUsedOnBoard.value) {
+                TileGrayedOutBackgroundColor
+            } else {
+                TileBackgroundColor
+            },
         modifier = Modifier
             .border(width = 4.dp, targetColor)
     ) {
@@ -62,7 +68,7 @@ fun TileView(
 
 @Preview(showBackground = true)
 @Composable
-fun Preview1() {
+fun NormalTilePreview() {
     val tileModel = TileModel('A', 1)
     TileView(
         tileModel,
@@ -72,9 +78,20 @@ fun Preview1() {
 
 @Preview(showBackground = true)
 @Composable
-fun Preview2() {
+fun SelectedTilePreview() {
     val tileModel = TileModel('B', 2)
     tileModel.isSelected.value = true
+    TileView(
+        tileModel,
+        select = { tileModel.isSelected.value = !tileModel.isSelected.value }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OnBoardTilePreview() {
+    val tileModel = TileModel('C', 3)
+    tileModel.isUsedOnBoard.value = true
     TileView(
         tileModel,
         select = { tileModel.isSelected.value = !tileModel.isSelected.value }
