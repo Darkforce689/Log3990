@@ -4,13 +4,13 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { OnlineActionCompilerService } from '@app/game-logic/actions/online-actions/online-action-compiler.service';
 import { DEFAULT_TIME_PER_TURN, EMPTY_CHAR, NOT_FOUND } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { MockGame } from '@app/game-logic/game/games/mock-game';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
-import { MessagesService } from '@app/game-logic/messages/messages.service';
 import { Player } from '@app/game-logic/player/player';
 import { LeaderboardService } from '@app/leaderboard/leaderboard.service';
 import { AccountService } from '@app/services/account.service';

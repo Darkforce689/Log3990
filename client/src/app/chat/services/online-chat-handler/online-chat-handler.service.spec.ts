@@ -2,8 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ChatMessage } from '@app/game-logic/messages/message.interface';
-import { OnlineChatHandlerService } from '@app/game-logic/messages/online-chat-handler/online-chat-handler.service';
+import { OnlineChatHandlerService } from '@app/chat/services/online-chat-handler/online-chat-handler.service';
 import { SocketMock } from '@app/game-logic/socket-mock';
 import { AccountService } from '@app/services/account.service';
 import { take } from 'rxjs/operators';
@@ -16,7 +15,7 @@ describe('online chat handler', () => {
         TestBed.configureTestingModule({ providers: [{ provide: AccountService, useValue: accountService }], imports: [HttpClientTestingModule] });
         service = TestBed.inject(OnlineChatHandlerService);
         (service.socket as any) = new SocketMock();
-        service['bindRoomChannels']('1');
+        service['bindRoomChannels']();
     });
 
     it('should be created', () => {
@@ -26,13 +25,6 @@ describe('online chat handler', () => {
     it('should call error when servit emit error', () => {
         const spy = spyOn<any>(service, 'receiveChatServerError');
         (service.socket as any).peerSideEmit('error', 'test');
-        expect(spy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call receiveServerMessage when servit emit roomMessage', () => {
-        const spy = spyOn<any>(service, 'receiveServerMessage');
-        const message: ChatMessage = { content: 'hello there', from: 'General Kenoby', date: new Date() };
-        (service.socket as any).peerSideEmit('roomMessages', message);
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -48,17 +40,6 @@ describe('online chat handler', () => {
         expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('leaveChatRoom should disconnect the socket', () => {
-        service.leaveChatRoom();
-        expect(service.isConnected).toBeFalse();
-    });
-
-    it('sendMessage should emit a new message', () => {
-        const spy = spyOn(service.socket, 'emit');
-        service.sendMessage('Hello Word!');
-        expect(spy).toHaveBeenCalledTimes(1);
-    });
-
     it('receiveChatServerError should set next subject', () => {
         let test = '';
         service.errorMessage$.pipe(take(1)).subscribe((value) => {
@@ -66,16 +47,6 @@ describe('online chat handler', () => {
         });
         service['receiveChatServerError']('Huston we got a problem');
         expect(test).toEqual('Huston we got a problem');
-    });
-
-    it('receiveServerMessage should set roomMessage', () => {
-        let test: ChatMessage = { content: '', from: '', date: new Date() };
-        service.newRoomMessages$.pipe(take(1)).subscribe((value) => {
-            test = value;
-        });
-        const message: ChatMessage = { content: 'Hello There', from: 'General Kenobi', date: new Date() };
-        service['receiveServerMessage'](message);
-        expect(test).toEqual(message);
     });
 
     it('receiveSystemMessage shoudl set sysMessage', () => {
@@ -86,32 +57,6 @@ describe('online chat handler', () => {
         const message = 'Dont look directly on the sun';
         service['receiveSystemMessage'](message);
         expect(test).toEqual(message);
-    });
-
-    it('opponent message should only return message from opponent', () => {
-        let getter: ChatMessage = { content: '', from: '', date: new Date() };
-        const messageOpponent: ChatMessage = { content: 'Hello There', from: 'General Kenobi', date: new Date() };
-        const messageMe: ChatMessage = { content: 'Ho ho', from: 'Tim', date: new Date() };
-        service.opponentMessage$.subscribe((value) => {
-            getter = value;
-        });
-        service['receiveServerMessage'](messageOpponent);
-        service['receiveServerMessage'](messageMe);
-        expect(getter).toEqual(messageOpponent);
-    });
-
-    it('should throw error when leaving chat room when not connected', () => {
-        (service.socket as unknown) = undefined;
-        expect(() => {
-            service.leaveChatRoom();
-        }).not.toThrowError();
-    });
-
-    it('should throw error when leaving chat room when not connected', () => {
-        (service.socket as unknown) = undefined;
-        expect(() => {
-            service.sendMessage('allo');
-        }).toThrowError();
     });
 
     it('should not throw when joining two time a game', () => {
