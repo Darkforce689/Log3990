@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OnlineChatHandlerService } from '@app/chat/services/online-chat-handler/online-chat-handler.service';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { OnlineGameCreationParams } from '@app/game-logic/game/games/game-creator/game-creation-params';
 import { GameCreatorService } from '@app/game-logic/game/games/game-creator/game-creator.service';
@@ -32,10 +32,9 @@ export class GameManagerService {
     }
 
     constructor(
-        // private messageService: MessagesService,
+        private messageService: MessagesService,
         private info: GameInfoService,
         private gameSocketHandler: GameSocketHandlerService,
-        private onlineChat: OnlineChatHandlerService,
         private gameCreator: GameCreatorService,
     ) {
         this.gameSocketHandler.disconnectedFromServer$.subscribe(() => {
@@ -81,12 +80,11 @@ export class GameManagerService {
         this.allocatePlayers(players);
         this.game.handleUserActions();
         this.info.receiveGame(this.game);
-        this.onlineChat.joinChatRoomWithUser(gameToken);
+        this.messageService.joinGameConversation(gameToken);
         this.gameSocketHandler.joinGame(gameToken);
     }
 
     startGame(): void {
-        this.resetServices();
         if (!this.game) {
             throw Error('No game created yet');
         }
@@ -94,13 +92,8 @@ export class GameManagerService {
 
     stopGame(): void {
         this.game?.stop();
-        // this.onlineChat.leaveChatRoom();
-        this.resetServices();
+        this.messageService.leaveGameConversation();
         this.game = undefined;
-    }
-
-    private resetServices() {
-        // this.messageService.clearLog();
     }
 
     private createOnlinePlayers(allPlayerNames: string[]): Player[] {
