@@ -28,10 +28,10 @@ export class WordSearcher {
         listOfValidWord.push({ letters, index });
 
         const coordsOfLettersToPlace = this.findCoordOfLettersToPlace(wordPlacement, grid);
+        const adjacentWordDirection = this.getAdjacentWordsDirection(direction);
         for (const coord of coordsOfLettersToPlace) {
-            const adjacentWordDirection = this.getAdjacentWordsDirection(direction);
             if (!this.hasNeighbour(coord, adjacentWordDirection, grid)) {
-                return listOfValidWord;
+                continue;
             }
             const wordToValidate = this.extractWord(wordPlacement, coord, grid);
             if (!this.isInDictionnary(wordToValidate.letters, gameToken)) {
