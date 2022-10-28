@@ -8,6 +8,7 @@ import {
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { RedisClientService } from '@app/database/redis-client.service';
 import { ServerLogger } from '@app/logger/logger';
+import { ConversationType } from '@app/messages-service/interfaces/conversation.interface';
 import { CollectionInfo, Db } from 'mongodb';
 import 'reflect-metadata';
 import { Service } from 'typedi';
@@ -50,11 +51,13 @@ export class DatabaseService {
         try {
             const isCollectionExist = await this.isCollectionInDb(CONVERSATION_COLLECTION);
             if (isCollectionExist) {
+                await this.purgeGameConversations();
                 return;
             }
             const collection = await this.db.createCollection(CONVERSATION_COLLECTION);
             await collection.createIndex({ name: 1 }, { unique: true });
             await collection.createIndex({ participants: 1 }, { unique: true });
+            await collection.createIndex({ type: 1 });
             await collection.insertOne({ name: GENERAL_CHANNEL, participants: [] });
             const isUserCollectionExists = await this.isCollectionInDb(USER_COLLECTION);
             if (isUserCollectionExists) {
@@ -70,6 +73,18 @@ export class DatabaseService {
         } catch (e) {
             throw Error('Data base conversation collection creation error');
         }
+    }
+
+    private async purgeGameConversations() {
+        const conversations = this.db.collection(CONVERSATION_COLLECTION);
+        if (await this.isCollectionInDb(MESSAGE_COLLECTION)) {
+            const messages = this.db.collection(MESSAGE_COLLECTION);
+            await conversations.find({ type: ConversationType.Game }).forEach((conversation) => {
+                // eslint-disable-next-line no-underscore-dangle
+                messages.deleteMany({ conversation: conversation._id });
+            });
+        }
+        await conversations.deleteMany({ type: ConversationType.Game });
     }
 
     private async createMessagesCollection() {

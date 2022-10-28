@@ -1,6 +1,6 @@
 import { Session } from '@app/auth/services/session.interface';
 import { Pagination } from '@app/common/interfaces/pagination.interface';
-import { parseBooleanQueryParam, parseNumWithDefault } from '@app/common/utils';
+import { isObjectId, parseBooleanQueryParam, parseNumWithDefault } from '@app/common/utils';
 import {
     CONVERSATION_PAGINATION_DEFAULT_PAGE,
     CONVERSATION_PAGINATION_DEFAULT_PERPAGE,
@@ -11,6 +11,7 @@ import {
 import { ConversationJoinError } from '@app/messages-service/services/conversation-join-leave-error';
 import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { MessageService } from '@app/messages-service/services/messages-service';
+import { isGameToken } from '@app/messages-service/utils';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
@@ -60,6 +61,9 @@ export class ConversationController {
 
         this.router.delete('/:conversationId', async (req, res) => {
             const { conversationId } = req.params;
+            if (!isObjectId(conversationId)) {
+                return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
+            }
             const conversation = await this.conversationService.getConversation({ _id: conversationId });
             if (!conversation) {
                 return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
@@ -78,6 +82,10 @@ export class ConversationController {
 
         this.router.get('/:conversationId', async (req, res) => {
             const { conversationId } = req.params;
+            if (!isObjectId(conversationId)) {
+                return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
+            }
+
             const conversation = await this.conversationService.getConversation({ _id: conversationId });
             if (!conversation) {
                 return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
@@ -86,19 +94,32 @@ export class ConversationController {
         });
 
         this.router.get('/:conversationId/messages', async (req, res) => {
+            // we can use gametoken as conversationId here for usage simplicity
             const { conversationId } = req.params;
-            const conversation = await this.conversationService.getConversation({ _id: conversationId });
+            if (!conversationId) {
+                return res.status(StatusCodes.BAD_REQUEST).send({ errors: ['Invalid conversation id'] });
+            }
+            const isGameConvo = isGameToken(conversationId);
+            if (!isObjectId(conversationId) && !isGameConvo) {
+                return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
+            }
+            const getQuery = isGameConvo ? { name: conversationId } : { _id: conversationId };
+            const conversation = await this.conversationService.getConversation(getQuery);
             if (!conversation) {
                 return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
             }
             const { perPage, page, offset } = req.query;
             const pagination = this.getMessagePagination(perPage as string | undefined, page as string | undefined, offset as string | undefined);
-            const messages = await this.messageService.getMessagesFromConversation(conversationId, pagination);
+            // eslint-disable-next-line no-underscore-dangle
+            const messages = await this.messageService.getMessagesFromConversation(conversation._id, pagination);
             return res.send({ pagination, messages });
         });
 
         this.router.get('/:conversationId/join', async (req, res) => {
             const { conversationId } = req.params;
+            if (!isObjectId(conversationId)) {
+                return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
+            }
             const conversation = await this.conversationService.getConversation({ _id: conversationId });
             if (!conversation) {
                 return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
@@ -115,6 +136,9 @@ export class ConversationController {
 
         this.router.get('/:conversationId/quit', async (req, res) => {
             const { conversationId } = req.params;
+            if (!isObjectId(conversationId)) {
+                return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });
+            }
             const conversation = await this.conversationService.getConversation({ _id: conversationId });
             if (!conversation) {
                 return res.status(StatusCodes.NOT_FOUND).send({ errors: ['This conversation does not exist'] });

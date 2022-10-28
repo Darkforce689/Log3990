@@ -27,7 +27,7 @@ describe('ChatBoxComponent', () => {
     const currentConversation$ = new Subject<Conversation>();
 
     beforeEach(() => {
-        messageServiceSpy = jasmine.createSpyObj('MessagesService', ['receiveNonDistributedPlayerMessage']);
+        messageServiceSpy = jasmine.createSpyObj('MessagesService', ['receiveNonDistributedPlayerMessage', 'connect', 'disconnect']);
         messageServiceSpy.messages$ = new BehaviorSubject<MessagesUpdate>({
             reason: MessageUpdateReason.Other,
             messages: [{ content: 'Test', from: 'test from', type: MessageType.FromMe }],

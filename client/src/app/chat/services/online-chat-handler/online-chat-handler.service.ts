@@ -40,6 +40,7 @@ export class OnlineChatHandlerService {
             return;
         }
         this.socket.close();
+        this.joinedRooms.clear();
         this.socket = undefined as unknown as Socket;
     }
 

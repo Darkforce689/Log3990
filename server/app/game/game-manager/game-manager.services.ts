@@ -24,6 +24,7 @@ import { GameMode } from '@app/game/game-mode.enum';
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction } from '@app/game/online-action.interface';
 import { ServerLogger } from '@app/logger/logger';
+import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { Observable, Subject } from 'rxjs';
@@ -72,6 +73,7 @@ export class GameManagerService {
         private leaderboardService: LeaderboardService,
         private dictionaryService: DictionaryService,
         private botManager: BotManager,
+        private conversationService: ConversationService,
         protected actionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
     ) {
@@ -101,6 +103,7 @@ export class GameManagerService {
         this.activeGames.set(gameToken, newServerGame);
         this.linkedClients.set(gameToken, []);
         this.dictionaryService.makeGameDictionary(gameToken, DEFAULT_DICTIONARY_TITLE);
+        await this.conversationService.createGameConversation(gameToken);
         this.startInactiveGameDestructionTimer(gameToken);
         return newServerGame;
     }
@@ -243,6 +246,7 @@ export class GameManagerService {
         this.activeGames.delete(gameToken);
         this.linkedClients.delete(gameToken);
         this.dictionaryService.deleteGameDictionary(gameToken);
+        this.conversationService.deleteGameConversation(gameToken);
     }
 
     private updateLeaderboard(players: Player[], gameToken: string) {

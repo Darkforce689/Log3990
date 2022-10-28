@@ -40,6 +40,7 @@ export class ChatBoxComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
+        this.messageService.connect();
         this.cdRef.detectChanges();
         this.messageService.messages$.subscribe(({ messages, reason }) => {
             this.messages$.next(messages);

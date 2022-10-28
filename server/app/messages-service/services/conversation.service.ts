@@ -4,11 +4,12 @@ import { CONVERSATION_COLLECTION, GENERAL_CHANNEL } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
 import { ServerLogger } from '@app/logger/logger';
-import { Conversation, ConversationCreation } from '@app/messages-service/interfaces/conversation.interface';
-import { ConversationCrudError } from '@app/messages-service/services/conversation-crud-error';
+import { Conversation, ConversationCreation, ConversationDTO, ConversationType } from '@app/messages-service/interfaces/conversation.interface';
+import { ConversationCrudError, GameConversationCrudError } from '@app/messages-service/services/conversation-crud-error';
 import { ConversationJoinError, ConversationLeaveError } from '@app/messages-service/services/conversation-join-leave-error';
 import { ConversationGetQuery, ConversationSearchQuery } from '@app/messages-service/services/conversation-queries';
 import { MessageService } from '@app/messages-service/services/messages-service';
+import { isGameToken } from '@app/messages-service/utils';
 import { ObjectId } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -20,11 +21,12 @@ export class ConversationService {
         return this.mongoService.db.collection(CONVERSATION_COLLECTION);
     }
 
-    async getConversations(pagination: Pagination): Promise<Conversation[]> {
+    async getConversations(pagination: Pagination): Promise<ConversationDTO[]> {
+        // Can only get chat conversations
         const { perPage, page } = pagination;
         const conversations = await this.collection
-            .find()
-            .project({ participants: 0 })
+            .find({ type: ConversationType.Chat })
+            .project({ participants: 0, type: 0 })
             .skip(perPage * page)
             .limit(perPage)
             .toArray();
@@ -34,14 +36,20 @@ export class ConversationService {
         });
     }
 
-    async searchConversations(query: ConversationSearchQuery): Promise<Conversation[]> {
+    async searchConversations(query: ConversationSearchQuery): Promise<ConversationDTO[]> {
+        // Can only search on chat conversations
         const {
             name,
             pagination: { perPage, page },
         } = query;
         const conversations = await this.collection
-            .aggregate([{ $search: { autocomplete: { path: 'name', query: name } } }, { $skip: perPage * page }, { $limit: perPage }])
-            .project({ participants: 0 })
+            .aggregate([
+                { $search: { autocomplete: { path: 'name', query: name } } },
+                { $match: { type: ConversationType.Chat } },
+                { $skip: perPage * page },
+                { $limit: perPage },
+            ])
+            .project({ participants: 0, type: 0 })
             .toArray();
         return conversations.map((conversation) => {
             conversation._id = conversation._id.toString();
@@ -51,6 +59,14 @@ export class ConversationService {
 
     async createConversation(conversationCreation: ConversationCreation): Promise<ObjectCrudResult<Conversation>> {
         const { name } = conversationCreation;
+
+        if (isGameToken(name)) {
+            return {
+                object: undefined,
+                errors: [ConversationCrudError.ConversationCreationForbiden],
+            };
+        }
+
         if (await this.isConversationExisting(name)) {
             return {
                 object: undefined,
@@ -59,6 +75,7 @@ export class ConversationService {
         }
         const conversation = {
             participants: [],
+            type: ConversationType.Chat,
             ...conversationCreation,
         };
         try {
@@ -76,8 +93,35 @@ export class ConversationService {
         }
     }
 
+    async createGameConversation(gameToken: string): Promise<ObjectCrudResult<Conversation>> {
+        if (!isGameToken(gameToken)) {
+            return {
+                object: undefined,
+                errors: [GameConversationCrudError.InvalidGameToken],
+            };
+        }
+
+        try {
+            const gameConversation = {
+                name: gameToken,
+                type: ConversationType.Game,
+            };
+            await this.collection.insertOne(gameConversation);
+            return {
+                object: gameConversation as Conversation,
+                errors: [],
+            };
+        } catch (e) {
+            ServerLogger.logError(e);
+            return {
+                object: undefined,
+                errors: ['UNEXPECTED_ERROR'],
+            };
+        }
+    }
+
     async deleteConversation(id: string): Promise<ObjectCrudResult<Conversation>> {
-        const conversation = (await this.getConversation({ _id: id })) as Conversation;
+        const conversation = (await this.getConversation({ _id: id })) as Conversation | null;
         if (!conversation) {
             return {
                 object: undefined,
@@ -101,23 +145,35 @@ export class ConversationService {
         }
     }
 
+    async deleteGameConversation(gameToken: string) {
+        const conversation = (await this.getConversation({ name: gameToken })) as Conversation | null;
+        if (!conversation) {
+            return;
+        }
+        try {
+            await this.collection.deleteOne({ name: gameToken });
+            await this.messageService.deleteMessagesFromConversation(conversation._id);
+        } catch (e) {
+            ServerLogger.logError(e);
+        }
+    }
+
     async getConversation(query: ConversationGetQuery): Promise<Conversation | null> {
         const { name, _id } = query;
         if (_id === undefined && name === undefined) {
             throw Error('Empty conversation get query');
         }
 
-        const conversation =
-            _id !== undefined
-                ? await this.collection.findOne({ _id: new ObjectId(_id) }, { projection: { participants: 0 } })
-                : await this.collection.findOne({ name: { $eq: name } }, { projection: { participants: 0 } });
+        // To prioritize _id search
+        const getQuery = _id !== undefined ? { _id: new ObjectId(_id) } : { name: { $eq: name } };
+        const conversation = await this.collection.findOne(getQuery, { projection: { participants: 0 } });
         if (conversation !== null) {
             conversation._id = conversation._id.toString();
         }
         return conversation as Conversation;
     }
 
-    async getUserConversations(userId: string) {
+    async getUserConversations(userId: string): Promise<Conversation[]> {
         const conversations = await this.collection
             .find({ participants: new ObjectId(userId) })
             .project({ participants: 0 })

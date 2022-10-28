@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { GAME_CONVO_NAME } from '@app/chat/constants';
 import { ConversationGetQuery } from '@app/chat/interfaces/conversation-get-query';
 import { Conversation, ConversationCreation } from '@app/chat/interfaces/conversation.interface';
 import { Pagination } from '@app/chat/interfaces/pagination.interface';
@@ -16,6 +17,7 @@ export interface ConversationsGetRes {
     providedIn: 'root',
 })
 export class ConversationService {
+    gameConversation: Conversation | undefined = undefined;
     joinedConversationUpdated$ = new Subject<void>();
     joinedConversations$ = new BehaviorSubject<Conversation[]>([]);
 
@@ -43,8 +45,10 @@ export class ConversationService {
         this.http.get(`${environment.serverUrl}/conversations?joined=true`).subscribe(
             (body) => {
                 const { conversations } = body as { conversations: Conversation[] };
-                this.joinedConversations$.next(conversations as Conversation[]);
-                this.joinedConversationUpdated$.next();
+                if (this.gameConversation) {
+                    conversations.push(this.gameConversation);
+                }
+                this.setJoinedConversations(conversations);
             },
             () => {
                 return;
@@ -79,6 +83,30 @@ export class ConversationService {
         );
     }
 
+    joinGameConversation(gameToken: string) {
+        const gameConvo: Conversation = {
+            _id: gameToken,
+            name: GAME_CONVO_NAME,
+        };
+        this.gameConversation = gameConvo;
+        const currentJoinedConvos = this.joinedConversations$.value;
+        currentJoinedConvos.push(gameConvo);
+        this.setJoinedConversations(currentJoinedConvos);
+    }
+
+    leaveGameConversation() {
+        const gameConvo = this.gameConversation;
+        if (!gameConvo) {
+            throw Error('You have not joined a game convo yet');
+        }
+        const currentJoinedConvos = this.joinedConversations$.value;
+        const gameConvoIndex = currentJoinedConvos.indexOf(gameConvo);
+        currentJoinedConvos.splice(gameConvoIndex, 1);
+        this.setJoinedConversations(currentJoinedConvos);
+        this.gameConversation = undefined;
+        return gameConvo;
+    }
+
     getConversations(query: ConversationGetQuery): Observable<ConversationsGetRes> {
         const {
             pagination: { perPage, page },
@@ -96,5 +124,10 @@ export class ConversationService {
             throw Error('The conversation you are trying to focus does not exist');
         }
         this.setCurrentConversation(conversation);
+    }
+
+    private setJoinedConversations(conversations: Conversation[]) {
+        this.joinedConversations$.next(conversations);
+        this.joinedConversationUpdated$.next();
     }
 }
