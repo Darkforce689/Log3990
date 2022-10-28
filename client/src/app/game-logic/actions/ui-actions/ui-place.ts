@@ -3,7 +3,17 @@ import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { LetterPlacement } from '@app/game-logic/actions/ui-actions/ui-place-interface';
 import { WordPlacement } from '@app/game-logic/actions/ui-actions/word-placement.interface';
-import { BACKSPACE, BOARD_MAX_POSITION, BOARD_MIN_POSITION, EMPTY_CHAR, JOKER_CHAR, MIN_PLACE_LETTER_ARG_SIZE } from '@app/game-logic/constants';
+import {
+    BACKSPACE,
+    BOARD_DIMENSION,
+    BOARD_MAX_POSITION,
+    BOARD_MIN_POSITION,
+    EMPTY_CHAR,
+    JOKER_CHAR,
+    MIN_PLACE_LETTER_ARG_SIZE,
+    nextTile,
+    previousTile,
+} from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
@@ -16,6 +26,7 @@ export class UIPlace implements UIAction {
     letterCreator = new LetterCreator();
     direction = Direction.Horizontal;
     pointerPosition: { x: number; y: number } | null = null;
+    tempLettersPosition: { x: number; y: number }[] = [];
 
     constructor(private info: GameInfoService, private boardService: BoardService) {}
 
@@ -66,13 +77,16 @@ export class UIPlace implements UIAction {
         return;
     }
 
-    create(): Action {
+    create(): Action | null {
         const wordPlacement = this.getWordFromBoard();
         const createdAction = new PlaceLetter(this.info.player, wordPlacement.word, {
             direction: this.direction,
             x: wordPlacement.x,
             y: wordPlacement.y,
         });
+        if (!this.checkPlaceLetter(this.tempLettersPosition)) {
+            return null;
+        }
         return createdAction;
     }
 
@@ -82,6 +96,7 @@ export class UIPlace implements UIAction {
             this.boardService.board.grid[placement.y][placement.x].letterObject = newBlankLetter;
         }
         this.pointerPosition = null;
+        this.tempLettersPosition = [];
     }
 
     private isSamePositionClicked(clickPosition: { x: number; y: number }): boolean {
@@ -143,6 +158,7 @@ export class UIPlace implements UIAction {
         }
         this.concernedIndexes.add(letterPlacement.rackIndex);
         this.orderedIndexes.push(letterPlacement);
+        this.tempLettersPosition.push({ x: this.pointerPosition.x, y: this.pointerPosition.y });
         const concernedTile = this.boardService.board.grid[this.pointerPosition.y][this.pointerPosition.x];
         const usedChar = this.info.player.letterRack[letterPlacement.rackIndex].char;
         if (usedChar === JOKER_CHAR) {
@@ -211,6 +227,7 @@ export class UIPlace implements UIAction {
         this.boardService.board.grid[lastLetter.y][lastLetter.x].letterObject = newBlankLetter;
         this.concernedIndexes.delete(lastLetter.rackIndex);
         this.pointerPosition = { x: lastLetter.x, y: lastLetter.y };
+        this.tempLettersPosition.pop();
     }
 
     private isPlacementInProgress(): boolean {
@@ -221,5 +238,67 @@ export class UIPlace implements UIAction {
         if (!this.isPlacementInProgress()) {
             this.direction = this.direction === Direction.Horizontal ? Direction.Vertical : Direction.Horizontal;
         }
+    }
+
+    private checkPlaceLetter(tempPosition: { x: number; y: number }[]): boolean {
+        let direction = Direction.Horizontal;
+        if (tempPosition.length > 1) {
+            direction = tempPosition[0].x === tempPosition[1].x ? Direction.Vertical : Direction.Horizontal;
+        }
+        const centerTilePosition: number = Math.floor(BOARD_DIMENSION / 2);
+        const hasCenterTile = this.grid[centerTilePosition][centerTilePosition].letterObject.char !== EMPTY_CHAR;
+        if (this.isAddingToAWord(tempPosition, direction)) {
+            return true;
+        }
+
+        for (const pos of tempPosition) {
+            const { x, y } = pos;
+            if (hasCenterTile && x === centerTilePosition && y === centerTilePosition) {
+                return true;
+            }
+            if (this.hasNeighbour(x, y, direction)) {
+                return true;
+            }
+        }
+
+        if (!hasCenterTile) {
+            // TODO GL3A22107-146 : add message to chat
+            // this.sendErrorMessage("Commande impossible à réaliser : Aucun mot n'est pas placé sur la tuile centrale");
+        } else {
+            // TODO GL3A22107-146 : add message to chat
+            // this.sendErrorMessage("Commande impossible à réaliser : Le mot placé n'est pas adjacent à un autre mot");
+        }
+        return false;
+    }
+
+    private hasNeighbour(x: number, y: number, direction: Direction): boolean {
+        const adjacentDirection = direction === Direction.Horizontal ? Direction.Vertical : Direction.Horizontal;
+        return !this.isAdjacentTileEmpty(x, y, adjacentDirection, previousTile) || !this.isAdjacentTileEmpty(x, y, adjacentDirection, nextTile);
+    }
+
+    private isAddingToAWord(lettersIndex: { x: number; y: number }[], direction: Direction) {
+        const firstCoord = lettersIndex[0];
+        const lastIndex = lettersIndex.length - 1;
+        const lastCoord = lettersIndex[lastIndex];
+
+        if (!this.isAdjacentTileEmpty(firstCoord.x, firstCoord.y, direction, previousTile)) {
+            return true;
+        }
+        if (!this.isAdjacentTileEmpty(lastCoord.x, lastCoord.y, direction, nextTile)) {
+            return true;
+        }
+        return false;
+    }
+
+    private isAdjacentTileEmpty(x: number, y: number, direction: Direction, delta: number) {
+        [x, y] = direction === Direction.Horizontal ? [x + delta, y] : [x, y + delta];
+        if (!this.isInsideOfBoard(x, y)) {
+            return true;
+        }
+        return this.grid[y][x].letterObject.char === EMPTY_CHAR;
+    }
+
+    get grid() {
+        return this.boardService.board.grid;
     }
 }
