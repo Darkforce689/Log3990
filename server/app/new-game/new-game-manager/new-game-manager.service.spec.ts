@@ -9,6 +9,7 @@ import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-m
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { expect } from 'chai';
+import { Subject } from 'rxjs';
 
 describe('NewGameManagerService', () => {
     let gameManagerStub: StubbedClass<GameManagerService>;
@@ -20,6 +21,7 @@ describe('NewGameManagerService', () => {
 
     before(() => {
         gameManagerStub = createSinonStubInstance<GameManagerService>(GameManagerService);
+        gameManagerStub.gameDeleted$ = new Subject<string>();
         dictionaryServiceStub = createSinonStubInstance<DictionaryService>(DictionaryService);
         service = new NewGameManagerService(gameManagerStub, dictionaryServiceStub);
     });

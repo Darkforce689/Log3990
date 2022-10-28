@@ -49,7 +49,7 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
             },
             {
                 columnDef: 'playerNames',
-                header: 'Autres Joueurs',
+                header: 'Joueurs',
                 cell: (form: OnlineGameSettings) => `${form.playerNames}`,
                 tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
@@ -79,8 +79,9 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
             },
             {
                 columnDef: 'numberOfPlayers',
-                header: 'Nombre de joueurs',
-                cell: (form: OnlineGameSettings) => `${form.playerNames.length}/${form.numberOfPlayers}`,
+                header: 'Joueurs : IA / Max',
+                cell: (form: OnlineGameSettings) =>
+                    `${form.playerNames.length} : ${form.numberOfPlayers - form.playerNames.length} / ${form.numberOfPlayers}`,
                 tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
         ];

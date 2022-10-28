@@ -16,6 +16,7 @@ import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { beforeEach } from 'mocha';
 import { AddressInfo } from 'net';
+import { Subject } from 'rxjs';
 import * as sinon from 'sinon';
 import { Socket } from 'socket.io';
 import { io as Client, Socket as ClientSocket } from 'socket.io-client';
@@ -48,8 +49,7 @@ describe('New Online Game Service', () => {
             process.setMaxListeners(0);
             port = (httpServer.address() as AddressInfo).port;
             newGameManagerService = createSinonStubInstance<NewGameManagerService>(NewGameManagerService);
-            dictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
-            newGameManagerService = createSinonStubInstance<NewGameManagerService>(NewGameManagerService);
+            newGameManagerService.refreshPendingGame$ = new Subject<void>();
             dictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
             const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
             sessionMiddleware.getSocketSessionMiddleware.returns((socket: unknown, next: (err?: ExtendedError | undefined) => void) => {
@@ -106,7 +106,7 @@ describe('New Online Game Service', () => {
             setTimeout(() => {
                 gameSettingsOnline.playerNames.push(user.name);
                 (gameSettingsOnline as OnlineGameSettings).id = gameId;
-                expect(newGameManagerService.createPendingGame.calledWith(gameSettingsOnline)).to.be.true;
+                expect(newGameManagerService.createPendingGame.calledOnce).to.be.true;
                 // expect(gameSettings).to.deep.equal(gameSettingsOnline);
                 done();
             }, 3 * timeout);

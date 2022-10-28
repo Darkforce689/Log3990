@@ -1,4 +1,4 @@
-<mat-dialog-content #waitingForPlayer *ngIf="!isSoloStarted && !deletedGame && !kickedFromGame && !isWaiting">
+<mat-dialog-content #waitingForPlayer *ngIf="!isSoloStarted && !deletedGame && !isWaiting">
     <div class="title">
         <div>
             <h3>En attente d'autres joueurs</h3>
@@ -41,9 +41,7 @@
 
 <mat-dialog-content #waitingForPlayer *ngIf="deletedGame"> L'hôte a annulé la partie </mat-dialog-content>
 
-<mat-dialog-content #waitingForPlayer *ngIf="kickedFromGame"> L'hôte vous à retirer de la partie </mat-dialog-content>
-
-<ng-template [ngIf]="!kickedFromGame && !deletedGame" [ngIfElse]="OkButton">
+<ng-template [ngIf]="!deletedGame" [ngIfElse]="OkButton">
     <mat-dialog-actions>
         <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
         <button *ngIf="!isWaiting" mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>

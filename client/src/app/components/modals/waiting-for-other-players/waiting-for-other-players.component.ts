@@ -78,10 +78,6 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         return this.socketHandler.deletedGame$.value;
     }
 
-    get kickedFromGame(): boolean {
-        return this.socketHandler.kickedFromGame$.value;
-    }
-
     get isWaiting(): boolean {
         return this.socketHandler.isWaiting$.value;
     }

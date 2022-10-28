@@ -12,7 +12,6 @@ import { environment } from 'src/environments/environment';
 export class NewOnlineGameSocketHandler {
     pendingGameId$ = new BehaviorSubject<string | undefined>(undefined);
     deletedGame$ = new BehaviorSubject<boolean>(false);
-    kickedFromGame$ = new BehaviorSubject<boolean>(false);
     isWaiting$ = new BehaviorSubject<boolean>(false);
     pendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     observableGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
@@ -23,6 +22,7 @@ export class NewOnlineGameSocketHandler {
     error$ = new Subject<string>();
     name: string;
     socket: Socket;
+    kickedErrorMsg = "L'hôte vous à retirer de la partie";
 
     constructor(private account: AccountService) {}
 
@@ -30,7 +30,6 @@ export class NewOnlineGameSocketHandler {
         this.gameStarted$.next(undefined);
         this.isGameOwner = false;
         this.deletedGame$.next(false);
-        this.kickedFromGame$.next(false);
     }
 
     createGame(gameSettings: OnlineGameSettingsUI) {
@@ -41,7 +40,6 @@ export class NewOnlineGameSocketHandler {
         this.socket.emit('createGame', gameSettings);
         this.isGameOwner = true;
         this.deletedGame$.next(false);
-        this.kickedFromGame$.next(false);
         this.waitForOtherPlayers();
     }
 
@@ -52,7 +50,6 @@ export class NewOnlineGameSocketHandler {
             this.observableGames$.next(observableGames);
         });
         this.deletedGame$.next(false);
-        this.kickedFromGame$.next(false);
     }
 
     joinPendingGame(id: string, password: string) {
@@ -145,8 +142,7 @@ export class NewOnlineGameSocketHandler {
             this.gameSettings$.next(gameSettings);
             const clientName = this.account.account?.name;
             if (this.gameSettings$.value === undefined) {
-                this.kickedFromGame$.next(true);
-                this.isWaiting$.next(false);
+                this.error$.next(this.kickedErrorMsg);
                 return;
             }
             if (clientName === undefined) {
@@ -160,8 +156,7 @@ export class NewOnlineGameSocketHandler {
                 this.isWaiting$.next(true);
                 return;
             }
-            this.kickedFromGame$.next(true);
-            this.isWaiting$.next(false);
+            this.error$.next(this.kickedErrorMsg);
         });
     }
 

@@ -47,6 +47,9 @@ export class JoinOnlineGameComponent implements AfterContentChecked, OnInit {
         this.socketHandler.joinPendingGame(this.data.id, this.password.value);
         this.socketHandler.error$.subscribe((error: string) => {
             if (error) {
+                if (error === 'Mauvais mot de passe' || error === "L'hôte vous à retirer de la partie") {
+                    this.dialog.closeAll();
+                }
                 this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error });
             }
         });
