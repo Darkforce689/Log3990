@@ -5,6 +5,7 @@ import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { Session } from '@app/auth/services/session.interface';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { WAIT_STATUS } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
@@ -153,6 +154,7 @@ describe('New Online Game Service', () => {
         const gameSettings = {
             playerNames: ['Max'],
             privateGame: false,
+            gameStatus: WAIT_STATUS,
             id: '1',
             randomBonus: true,
             timePerTurn: 60000,
@@ -253,9 +255,11 @@ describe('New Online Game Service', () => {
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
-            tmpPlayerNames,
-            hasPassword,
-            password,
+            magicCardIds: [],
+            tmpPlayerNames: [],
+            hasPassword: false,
+            password: '',
+            gameStatus: WAIT_STATUS,
         };
         const gameSettings = {
             id: 'a',
@@ -267,9 +271,10 @@ describe('New Online Game Service', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
-            tmpPlayerNames,
-            hasPassword,
-            password,
+            tmpPlayerNames: [],
+            hasPassword: false,
+            password: '',
+            gameStatus: WAIT_STATUS,
         };
         newGameManagerService.launchPendingGame.returns(Promise.resolve('a'));
 
