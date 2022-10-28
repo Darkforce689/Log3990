@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import {
     MAX_NUMBER_OF_MAGIC_CARD,
@@ -45,6 +46,7 @@ describe('MagicServerGame', () => {
             newGameStateSubject,
             endGameSubject,
             [SPLITPOINTS_ID],
+            BotDifficulty.Easy,
         );
         p1 = new Player('Tim');
         p2 = new Player('Paul');

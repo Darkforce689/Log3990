@@ -1,3 +1,4 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { DEFAULT_TIME_PER_TURN } from '@app/game/game-logic/constants';
@@ -34,6 +35,7 @@ describe('PassTurn', () => {
             messagesService,
             mockNewGameState$,
             mockEndGame$,
+            BotDifficulty.Easy,
         );
         game.players.push(player1);
         game.players.push(player2);

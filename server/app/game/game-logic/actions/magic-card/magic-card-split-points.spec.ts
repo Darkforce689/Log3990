@@ -1,3 +1,4 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { DEFAULT_TIME_PER_TURN } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
@@ -34,6 +35,7 @@ describe('SplitPoints', () => {
             messagesService,
             mockNewGameState$,
             mockEndGame$,
+            BotDifficulty.Easy,
         );
         game.players.push(player1);
         game.players.push(player2);

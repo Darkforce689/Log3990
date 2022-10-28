@@ -38,7 +38,7 @@ export interface PlayerRef {
 @Service()
 export class GameManagerService {
     activeGames = new Map<string, ServerGame>();
-    activePlayers = new Map<string, PlayerRef>(); // gameToken => PlayerRef[]
+    activePlayers = new Map<string, PlayerRef>(); // socketId => PlayerRef[]
     linkedClients = new Map<string, BindedSocket[]>(); // gameToken => BindedSocket[]
 
     private endGame$ = new Subject<EndOfGame>(); // gameToken
@@ -169,13 +169,13 @@ export class GameManagerService {
             return;
         }
         const playerNames: string[] = [];
-        this.activePlayers.forEach((playerReference) => playerNames.push(playerReference.player.name));
+        game.players.forEach((player) => playerNames.push(player.name));
         this.activePlayers.delete(playerId);
         if (this.activePlayers.size <= 0) {
             this.deleteGame(gameToken);
             return;
         }
-        const newPlayer = await this.createNewBotPlayer(playerRef, playerNames);
+        const newPlayer = await this.createNewBotPlayer(playerRef, playerNames, game.botDifficulty);
         const index = game.players.findIndex((player) => player.name === playerRef.player.name);
         game.players[index] = newPlayer;
         this.sendForfeitPlayerInfo(gameToken, newPlayer, playerRef.player.name);
@@ -184,9 +184,9 @@ export class GameManagerService {
             game.forcePlay();
         }
     }
-    // TODO GL3A22107-32 : Update bot difficulty to what is specified when game created by player.
-    private async createNewBotPlayer(playerRef: PlayerRef, playerNames: string[]) {
-        const newPlayer = await this.gameCreator.createBotPlayer(BotDifficulty.Easy, playerNames);
+
+    private async createNewBotPlayer(playerRef: PlayerRef, playerNames: string[], botDifficulty: BotDifficulty) {
+        const newPlayer = await this.gameCreator.createBotPlayer(botDifficulty, playerNames);
         newPlayer.letterRack = playerRef.player.letterRack;
         newPlayer.points = playerRef.player.points;
         return newPlayer;

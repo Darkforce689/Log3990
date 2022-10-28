@@ -1,3 +1,4 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Direction } from '@app/game/game-logic/actions/direction.enum';
 import { PlaceLetter } from '@app/game/game-logic/actions/place-letter';
@@ -60,6 +61,7 @@ describe('PlaceLetter', () => {
             messagesService,
             mockNewGameState$,
             mockEndGame$,
+            BotDifficulty.Easy,
         );
         game.players.push(player1);
         game.players.push(player2);
