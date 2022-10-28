@@ -28,7 +28,9 @@ import com.example.polyscrabbleclient.game.model.GridTileModel
 import com.example.polyscrabbleclient.game.model.RowChar
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
+import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
+import com.example.polyscrabbleclient.ui.theme.TransientTileBackgroundColor
 import kotlin.properties.Delegates
 
 const val ThickDividerWidth = Stroke.DefaultMiter
@@ -198,12 +200,19 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         val column = columnIndex + 1
         val row = rowIndex + 1
 
-        drawTileBackground(TileBackgroundColor, column, row)
+        val tileBackgroundColor =
+            if (viewModel.areCoordinatesTransient(TileCoordinates(row, column))) {
+                TransientTileBackgroundColor
+            } else {
+                TileBackgroundColor
+            }
+        drawTileBackground(tileBackgroundColor, column, row)
         val horizontalOffset = column * GridDivisionSize.toPx()
         val verticalOffset = (row + 1) * GridDivisionSize.toPx()
+
         drawIntoCanvas {
             it.nativeCanvas.drawText(
-                tile.content.value?.letter.toString(),
+                tile.content.value?.letter?.uppercaseChar().toString(),
                 horizontalOffset + DivisionCenterOffset.toPx(),
                 verticalOffset - DivisionCenterOffset.toPx(),
                 lettersPaint
@@ -230,7 +239,13 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         }
         val column = columnIndex + 1
         val row = rowIndex + 1
-        drawTileBackground(Color.Green, column, row, HardBackgroundAlpha)
+        val color =
+            if (viewModel.canPlaceTile(TileCoordinates(row, column))) {
+                Color.Green
+            } else {
+                Color.Red
+            }
+        drawTileBackground(color, column, row, HardBackgroundAlpha)
     }
 
     fun DrawScope.drawTiles() {

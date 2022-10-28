@@ -3,6 +3,7 @@ package com.example.polyscrabbleclient.game.model
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.user.User
 
@@ -28,7 +29,12 @@ class GameModel {
         updatePlayers(gameState.players)
         updateActivePlayerIndex(gameState.activePlayerIndex)
         updateRemainingLetters(gameState.lettersRemaining)
+        updateBoardCrawler()
         updateUser()
+    }
+
+    private fun updateBoardCrawler() {
+        BoardCrawler.reset(board)
     }
 
     private fun updateRemainingLetters(updatedLettersRemaining: Int) {
