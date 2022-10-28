@@ -8,25 +8,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import com.example.polyscrabbleclient.auth.AppSocketHandler
+import com.example.polyscrabbleclient.lobby.sources.LobbySocketHandler
 import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.user.User
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
+import kotlin.math.floor
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ScrabbleHttpClient.setCookieManager(this)
-        var startPage: NavPage = NavPage.Registration
+        var startPage: NavPage = NavPage.RegistrationRoute
         if (ScrabbleHttpClient.getAuthCookie() != null) {
             try {
                 val thread = Thread {
                     val response = ScrabbleHttpClient.get(
                         URL(BuildConfig.COMMUNICATION_URL + "/auth/validatesession")
                     )
-                    if (response != null) {
+                    if(response == "OK" ) {
                         connectAppSocket()
                         updateUser()
                         startPage = NavPage.MainPage
@@ -50,6 +52,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+fun Float.roundDownToMultipleOf(base: Double): Double = base * floor(this / base)
 
 fun updateUser() {
     val updateThread = User.updateUser()

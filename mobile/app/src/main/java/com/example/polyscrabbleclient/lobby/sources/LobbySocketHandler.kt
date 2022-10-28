@@ -12,7 +12,7 @@ const val LobbyPath = "/newGame"
 
 private const val URL = BuildConfig.COMMUNICATION_URL
 
-object LobbySocketHandler: SocketHandler(LobbyEventTypes) {
+object LobbySocketHandler : SocketHandler(LobbyEventTypes) {
 
     @Synchronized
     fun setSocket() {

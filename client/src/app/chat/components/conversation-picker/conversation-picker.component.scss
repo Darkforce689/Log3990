@@ -1,0 +1,14 @@
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.convo-list-container {
+    flex: 2;
+    // this is hard coded to prevent overflow
+    max-width: calc(100% - 64px);
+}
+
+.convo-tab-title {
+    // TODO
+}

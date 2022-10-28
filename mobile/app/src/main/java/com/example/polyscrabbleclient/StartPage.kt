@@ -12,8 +12,8 @@ import androidx.navigation.NavController
 import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
 import com.example.polyscrabbleclient.ui.theme.disconnection
 import com.example.polyscrabbleclient.ui.theme.gamePage
+import com.example.polyscrabbleclient.ui.theme.new_game
 import com.example.polyscrabbleclient.user.User
-import com.example.polyscrabbleclient.ui.theme.lobbyPage
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -27,7 +27,7 @@ fun StartView(navController: NavController, startViewModel: StartViewModel) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Prototype(navController = navController)
             GamePage(navController = navController)
-            LobbyPage(navController = navController)
+            NewGamePage(navController)
             Disconnection(navController = navController, startViewModel = startViewModel)
         }
     }
@@ -98,16 +98,16 @@ fun GamePage(navController: NavController) {
 }
 
 @Composable
-fun LobbyPage(navController: NavController) {
+fun NewGamePage(navController: NavController) {
     Button(
         modifier = Modifier.padding(20.dp),
         onClick = {
-            navController.navigate(NavPage.LobbyPage.label) {
+            navController.navigate(NavPage.NewGame.label) {
                 launchSingleTop = true
             }
         }
     )
     {
-        Text(text = lobbyPage)
+        Text(text = new_game)
     }
 }

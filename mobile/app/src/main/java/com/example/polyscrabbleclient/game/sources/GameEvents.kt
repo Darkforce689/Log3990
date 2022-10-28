@@ -34,7 +34,7 @@ val GameEventTypes = mapOf(
     ),
 )
 
-class OnGameEvent (override val eventName: String): OnEvent(eventName) {
+class OnGameEvent(override val eventName: String) : OnEvent(eventName) {
     companion object {
         val GameState = OnGameEvent("gameState")
         val StartTime = OnGameEvent("timerStartingTime")
@@ -43,7 +43,7 @@ class OnGameEvent (override val eventName: String): OnEvent(eventName) {
     }
 }
 
-class EmitGameEvent (override val eventName: String): EmitEvent(eventName) {
+class EmitGameEvent(override val eventName: String) : EmitEvent(eventName) {
     companion object {
         val JoinGame = EmitGameEvent("joinGame")
         val NextAction = EmitGameEvent("nextAction")

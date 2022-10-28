@@ -36,11 +36,11 @@ app.on('ready', () => {
 
             if (
                 details.responseHeaders &&
-                details.responseHeaders['Set-cookie'] &&
-                details.responseHeaders['Set-cookie'].length &&
+                details.responseHeaders['Set-Cookie'] &&
+                details.responseHeaders['Set-Cookie'].length &&
                 !details.responseHeaders['Set-Cookie'][0].includes('SameSite=none')
             ) {
-                details.responseHeaders['Set-cookie'][0] = details.responseHeaders['Set-cookie'][0] + '; SameSite=none; Secure';
+                details.responseHeaders['Set-Cookie'][0] = details.responseHeaders['Set-Cookie'][0] + '; SameSite=none; Secure';
             }
             callback({ cancel: false, responseHeaders: details.responseHeaders });
         },

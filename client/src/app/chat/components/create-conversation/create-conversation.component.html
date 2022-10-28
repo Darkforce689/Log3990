@@ -1,0 +1,12 @@
+<mat-dialog-content>
+    <h2>Nouvelle Conversation</h2>
+    <br />
+    <mat-form-field>
+        <input matInput autocomplete="false" placeholder="Nom de la conversation" [formControl]="conversationNameForm" />
+        <mat-error></mat-error>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button color="accent" (click)="cancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="create()">Créer une conversation</button>
+</mat-dialog-actions>

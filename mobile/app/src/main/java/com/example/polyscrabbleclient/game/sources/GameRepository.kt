@@ -10,6 +10,7 @@ object GameRepository {
     fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
         game.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
         game.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
+        game.createPlayersFrom(gameSettings.playerNames)
         gameSocket.emit(EmitGameEvent.JoinGame, gameSettings.id)
     }
 
@@ -34,10 +35,11 @@ object GameRepository {
         }
     }
 
-    private val onTransitionGameState: (transitionGameState: TransitionGameState?) -> Unit = { transitionGameState ->
-        // TODO
-        println("onTransitionGameState $transitionGameState")
-    }
+    private val onTransitionGameState: (transitionGameState: TransitionGameState?) -> Unit =
+        { transitionGameState ->
+            // TODO
+            println("onTransitionGameState $transitionGameState")
+        }
 
     init {
         gameSocket.setSocket()
@@ -46,5 +48,9 @@ object GameRepository {
         gameSocket.on(OnGameEvent.RemainingTime, onRemainingTime)
         gameSocket.on(OnGameEvent.GameState, onGameState)
         gameSocket.on(OnGameEvent.TransitionGameState, onTransitionGameState)
+    }
+
+    fun emitNextAction(action: OnlineActionType) {
+        gameSocket.emit(EmitGameEvent.NextAction, OnlineAction(action))
     }
 }

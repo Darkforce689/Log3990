@@ -14,13 +14,14 @@ import com.example.polyscrabbleclient.auth.components.SignUpScreen
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.game.view.GameScreen
-import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.view.LobbyScreen
+import com.example.polyscrabbleclient.lobby.view.NewGameScreen
+import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 
 enum class NavPage(val label: String) {
-    Registration("registration"),
+    RegistrationRoute("registration"),
     Login("loginPage"),
     SignUp("signUpPage"),
     MainPage("mainPage"),
@@ -29,7 +30,9 @@ enum class NavPage(val label: String) {
     Prototype("prototype"),
     Room("messageList"),
     Profil("profil"),
-    Account("account")
+    Account("account"),
+    NewGameRoute("newGameRoute"),
+    NewGame("newGame")
 }
 
 @Composable
@@ -51,12 +54,24 @@ fun NavGraph(startPage: NavPage) {
         composable(NavPage.GamePage.label) {
             GameScreen(navController)
         }
+        newGame(navController)
         account(navController)
     }
 }
 
+fun NavGraphBuilder.newGame(navController: NavController) {
+    navigation(startDestination = NavPage.NewGame.label, route = NavPage.NewGameRoute.label) {
+        composable(NavPage.NewGame.label) {
+            NewGameScreen(navController, CreateGameViewModel())
+        }
+        composable(NavPage.LobbyPage.label) {
+            LobbyScreen(navController)
+        }
+    }
+}
+
 fun NavGraphBuilder.loginGraph(navController: NavController) {
-    navigation(startDestination = NavPage.Login.label, route = NavPage.Registration.label) {
+    navigation(startDestination = NavPage.Login.label, route = NavPage.RegistrationRoute.label) {
         composable(NavPage.Login.label) {
             LogInScreen(navController, AuthenticationViewModel())
         }
@@ -71,9 +86,7 @@ fun NavGraphBuilder.account(navController: NavController) {
         composable(NavPage.Profil.label) {
             AccountView(AccountViewmodel(), navController)
         }
-        composable(NavPage.LobbyPage.label) {
-            LobbyScreen(navController)
-        }
+
     }
 }
 

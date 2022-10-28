@@ -2,12 +2,13 @@ package com.example.polyscrabbleclient.game.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableView
 import com.example.polyscrabbleclient.game.viewmodels.LetterRackViewModel
@@ -17,24 +18,32 @@ fun LetterRackView(
     dragState: DragState
 ) {
     val viewModel: LetterRackViewModel = viewModel()
-    dragState.onDropCallbacks.add { viewModel.removeTile(dragState.draggableContent) }
+    dragState.onDropCallbacks.add { viewModel.placeTileOnBoard(dragState.draggableContent) }
 
-    LazyRow (
+    Row(
         modifier = Modifier
             .background(MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom
     ) {
-        val tiles = viewModel.getTiles()
-        items(tiles.size) { index ->
-            val tile = tiles[index]
+        viewModel.game.userLetters.forEachIndexed { index, tile ->
             val select = { tile.isSelected.value = !tile.isSelected.value }
-            DraggableView(
-                dragState,
-                { tiles[index] },
-            ) {
-                TileView(tile, select)
+            DraggableTileView(dragState, select) {
+                viewModel.game.userLetters[index]
             }
         }
+    }
+}
+
+@Composable
+private fun DraggableTileView(
+    dragState: DragState,
+    select: () -> Unit,
+    getTile: () -> TileModel,
+) {
+    DraggableView(
+        dragState, getTile
+    ) {
+        TileView(getTile(), select)
     }
 }
