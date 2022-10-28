@@ -1,6 +1,8 @@
 package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.example.polyscrabbleclient.game.domain.BoardCrawler
+import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.*
 
 class GameViewModel : ViewModel() {
@@ -17,7 +19,34 @@ class GameViewModel : ViewModel() {
     }
 
     private fun isActivePlayer(): Boolean {
-        return GameRepository.game.getActivePlayer() === GameRepository.game.getUser()
+        return game.getActivePlayer() === game.getUser()
+    }
+
+    private fun isAtLeastOneLetterSelected(): Boolean {
+        return getLetterRackTiles().count { letter -> letter.isSelected.value } > 0
+    }
+
+    private fun isAtLeastOneLetterUsedOnBoard(): Boolean {
+        return getLetterRackTiles().count { letter -> letter.isUsedOnBoard.value } > 0
+    }
+
+    private fun restoreBoard() {
+        game.board.removeTransientTilesContent()
+    }
+
+    private fun restoreLetterRack() {
+        getLetterRackTiles().forEach { tile ->
+            tile.isUsedOnBoard.value = false
+            tile.isSelected.value = false
+        }
+    }
+
+    private fun getLetterRackTiles() : MutableList<TileModel> {
+        return game.userLetters
+    }
+
+    private fun getSelectedTiles(): List<TileModel> {
+        return getLetterRackTiles().filter { letter -> letter.isSelected.value }
     }
 
     fun canPassTurn(): Boolean {
@@ -25,33 +54,52 @@ class GameViewModel : ViewModel() {
     }
 
     fun canPlaceLetter(): Boolean {
-        // TODO
-        return false
+        return isActivePlayer() && isAtLeastOneLetterUsedOnBoard()
     }
 
     fun canExchangeLetter(): Boolean {
-        // TODO
-        return false
+        return isActivePlayer() && isAtLeastOneLetterSelected()
     }
 
     fun canCancel(): Boolean {
-        // TODO
-        return false
+        return canExchangeLetter() || canPlaceLetter()
     }
 
     fun passTurn() {
-        GameRepository.emitNextAction(OnlineActionType.Pass)
+        GameRepository.emitNextAction(OnlineAction(OnlineActionType.Pass))
     }
 
     fun placeLetter() {
-        TODO("Not yet implemented")
+        val letterRack = ArrayList(
+            getLetterRackTiles().map { tileModel ->
+                Letter(tileModel.letter.toString(), tileModel.points)
+            }
+        )
+        val placement = BoardCrawler.getPlacement()
+        if (placement === null) {
+            cancel()
+            return
+        }
+        val (placementSetting, word) = placement
+        GameRepository.emitNextAction(
+            OnlineAction(
+                OnlineActionType.Place,
+                letters = word,
+                letterRack = letterRack,
+                placementSettings = placementSetting.adjustPlacementSetting()
+            )
+        )
     }
 
     fun exchangeLetter() {
-        TODO("Not yet implemented")
+        val letters = getSelectedTiles()
+            .map { tileModel -> tileModel.letter.toString() }
+            .reduce { lettersString, letter -> lettersString + letter }
+        GameRepository.emitNextAction(OnlineAction(OnlineActionType.Exchange, letters = letters))
     }
 
     fun cancel() {
-        TODO("Not yet implemented")
+        restoreLetterRack()
+        restoreBoard()
     }
 }

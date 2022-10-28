@@ -2,9 +2,9 @@ package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
-import com.example.polyscrabbleclient.game.domain.TileCreator
-import com.example.polyscrabbleclient.game.model.BoardModel
+import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.model.BoardRange
+import com.example.polyscrabbleclient.game.model.TileContent
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.game.view.ThickDividerWidth
@@ -69,7 +69,6 @@ class BoardViewModel : ViewModel() {
         // Dividers 0 and 1 are larger than the rest of the Grid
         val gridX = tapOffset.x + ThickDividerWidth
         val gridY = tapOffset.y + ThickDividerWidth
-        println("getTileFromLocalPosition -> tapOffset:$tapOffset")
         if (gridX < 0 || gridY < 0) {
             return null
         }
@@ -91,7 +90,7 @@ class BoardViewModel : ViewModel() {
             return
         }
         if (draggableContent is TileModel) {
-            board[column, row] = draggableContent
+            board.setTransient(TileCoordinates(row, column), draggableContent)
         }
     }
 
@@ -99,7 +98,14 @@ class BoardViewModel : ViewModel() {
         if (tileCoordinates === null) {
             return false
         }
-        board.debugPrint()
+        return isTileEmpty(tileCoordinates)
+    }
+
+    private fun isTileEmpty(tileCoordinates: TileCoordinates): Boolean {
         return board[tileCoordinates] === null
+    }
+
+    fun areCoordinatesTransient(tileCoordinates: TileCoordinates): Boolean {
+        return board.transientTilesCoordinates.contains(tileCoordinates)
     }
 }

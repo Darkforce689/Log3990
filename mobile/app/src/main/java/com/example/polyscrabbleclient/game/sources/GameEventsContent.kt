@@ -21,7 +21,6 @@ data class LightPlayer(
     val letterRack: ArrayList<Letter>,
 )
 
-
 data class Position(
     val x: Int,
     val y: Int
@@ -36,10 +35,15 @@ enum class Direction(value: String) {
 }
 
 data class PlacementSetting(
-    val x: Int,
-    val y: Int,
+    val x: Int, // Column
+    val y: Int, // Row
     val direction: Direction
-)
+) {
+    fun adjustPlacementSetting(): PlacementSetting {
+        // Indexes have to be adjusted for server board
+        return PlacementSetting(x-1, y-1, direction)
+    }
+}
 
 data class OnlineAction(
     val type: OnlineActionType,
@@ -73,7 +77,7 @@ enum class OnlineActionType(value: String) {
 
     @SerializedName("exchangeHorse")
     ExchangeHorse("exchangeHorse"),
-    
+
     // TODO : ADD OTHERS
 }
 

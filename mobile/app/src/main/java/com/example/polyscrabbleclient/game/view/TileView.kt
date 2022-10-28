@@ -57,7 +57,7 @@ fun TileView(
             )
             .padding(16.dp),
             text = buildAnnotatedString {
-                append(tileModel.letter)
+                append(tileModel.letter.uppercaseChar())
                 withStyle(subscript) {
                     append(tileModel.points.toString())
                 }

@@ -10,12 +10,15 @@ typealias TileGrid = Array<TileContainerRow>
 
 const val BoardDimension = 15
 val BoardRange = 1..BoardDimension
+const val CenterIndex = BoardDimension / 2 + 1
 
 enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 
 class BoardModel {
     var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { GridTileModel() } }
         private set
+
+    var transientTilesCoordinates = mutableSetOf<TileCoordinates>()
 
     fun updateGrid(grid: ArrayList<ArrayList<Tile>>) {
         requireBoardDimensions(grid)
@@ -25,6 +28,14 @@ class BoardModel {
                 this[column, row] = TileCreator.createTileFromRawTile(tile)
             }
         }
+        transientTilesCoordinates.clear()
+    }
+
+    fun removeTransientTilesContent() {
+        transientTilesCoordinates.toMutableList().forEach {
+            this.setTransient(it, null)
+        }
+        transientTilesCoordinates.clear()
     }
 
     fun debugPrint() {
@@ -83,6 +94,35 @@ class BoardModel {
 
     operator fun set(tileCoordinates: TileCoordinates, tile: TileContent) {
         set(tileCoordinates.column, tileCoordinates.row, tile)
+    }
+
+    fun isInsideOfBoard(column: Int, row: Int): Boolean {
+        return column in BoardRange && row in BoardRange
+    }
+
+    fun isInsideOfBoard(tilesCoordinates: TileCoordinates): Boolean {
+        return isInsideOfBoard(tilesCoordinates.column, tilesCoordinates.row)
+    }
+
+    fun isCenterTileEmpty(): Boolean {
+        return this[CenterIndex, CenterIndex] === null
+    }
+
+    fun isCenterTileTransient(): Boolean {
+        return transientTilesCoordinates.contains(TileCoordinates(CenterIndex, CenterIndex))
+    }
+
+    fun setTransient(tileCoordinates: TileCoordinates, tile: TileContent) {
+        this[tileCoordinates] = tile
+        if (tile === null) {
+            transientTilesCoordinates.remove(tileCoordinates)
+        } else {
+            transientTilesCoordinates.add(tileCoordinates)
+        }
+    }
+
+    fun isBoardTransient(): Boolean {
+        return transientTilesCoordinates.isNotEmpty()
     }
 
     private fun requireBoardIndexes(column: Int, row: Int) {
