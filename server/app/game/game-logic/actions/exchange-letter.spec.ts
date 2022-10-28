@@ -1,3 +1,4 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
@@ -36,6 +37,7 @@ describe('ExchangeLetter', () => {
             messagesService,
             mockNewGameState$,
             mockEndGame$,
+            BotDifficulty.Easy,
         );
         game.players.push(player1);
         game.players.push(player2);

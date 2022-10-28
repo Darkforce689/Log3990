@@ -50,7 +50,7 @@ object GameRepository {
         gameSocket.on(OnGameEvent.TransitionGameState, onTransitionGameState)
     }
 
-    fun emitNextAction(action: OnlineActionType) {
-        gameSocket.emit(EmitGameEvent.NextAction, OnlineAction(action))
+    fun emitNextAction(onlineAction: OnlineAction) {
+        gameSocket.emit(EmitGameEvent.NextAction, onlineAction)
     }
 }

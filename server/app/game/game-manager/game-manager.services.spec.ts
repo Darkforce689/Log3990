@@ -25,6 +25,7 @@ import { GameManagerService, PlayerRef } from '@app/game/game-manager/game-manag
 import { GameMode } from '@app/game/game-mode.enum';
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction, OnlineActionType } from '@app/game/online-action.interface';
+import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
@@ -53,6 +54,7 @@ describe('GameManagerService', () => {
     let stubActionCreatorService: ActionCreatorService;
     let clock: sinon.SinonFakeTimers;
     let stubActionNotifier: GameActionNotifierService;
+    let stubConversationService: ConversationService;
     before(() => {
         stubPointCalculator = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
         stubMessageService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
@@ -66,6 +68,7 @@ describe('GameManagerService', () => {
         stubBotManager = {} as BotManager;
         stubActionCreatorService = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
         stubActionNotifier = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
+        stubConversationService = createSinonStubInstance(ConversationService);
     });
 
     afterEach(() => {
@@ -84,6 +87,7 @@ describe('GameManagerService', () => {
             stubLeaderboardService,
             stubDictionaryService,
             stubBotManager,
+            stubConversationService,
             stubActionNotifier,
             stubActionCreatorService,
         );

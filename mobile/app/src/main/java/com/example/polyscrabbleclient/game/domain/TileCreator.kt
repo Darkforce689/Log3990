@@ -36,11 +36,12 @@ object TileCreator {
 
     fun createTileFromLetter(letter: Char): TileModel {
         var points = 0;
-        val letterIndex = letter.uppercaseChar().code - 'A'.code;
+        val lowerCaseLetter = letter.lowercaseChar()
+        val letterIndex = lowerCaseLetter.code - 'a'.code;
         if (letterIndex >= 0 && letterIndex < letterValues.size) {
             points = letterValues[letterIndex]
         }
-        return TileModel(letter, points)
+        return TileModel(lowerCaseLetter, points)
     }
 
     fun createTileFromRawTile(tile: Tile): TileModel? {

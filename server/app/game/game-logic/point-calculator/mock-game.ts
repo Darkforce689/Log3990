@@ -1,3 +1,4 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Board } from '@app/game/game-logic/board/board';
 import { MAX_CONSECUTIVE_PASS } from '@app/game/game-logic/constants';
@@ -28,6 +29,7 @@ export class MockGame extends ServerGame {
         messagesService: SystemMessagesService,
         newGameStateSubject: Subject<GameStateToken>,
         endGameSubject: Subject<EndOfGame>,
+        botDifficulty: BotDifficulty,
     ) {
         super(
             timerController,
@@ -39,6 +41,7 @@ export class MockGame extends ServerGame {
             messagesService,
             newGameStateSubject,
             endGameSubject,
+            botDifficulty,
         );
         this.players = [this.activePlayer, this.otherPlayer];
         this.board = new Board();

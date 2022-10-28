@@ -1,3 +1,4 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { MagicCard } from '@app/game/game-logic/actions/magic-card/magic-card';
@@ -8,16 +9,16 @@ import {
     REDUCETIMER_ID,
     SKIPNEXTTURN_ID,
 } from '@app/game/game-logic/actions/magic-card/magic-card-constants';
+import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
+import { NOT_FOUND } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken, IMagicCard } from '@app/game/game-logic/interface/game-state.interface';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
-import { NOT_FOUND } from '@app/game/game-logic/constants';
 import { getRandomInt } from '@app/game/game-logic/utils';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { Subject } from 'rxjs';
-import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 
 export class MagicServerGame extends ServerGame {
     drawableMagicCards: IMagicCard[];
@@ -36,6 +37,7 @@ export class MagicServerGame extends ServerGame {
         newGameStateSubject: Subject<GameStateToken>,
         endGameSubject: Subject<EndOfGame>,
         drawableMagicCardIds: string[],
+        public botDifficulty: BotDifficulty,
     ) {
         super(
             timerController,
@@ -47,6 +49,7 @@ export class MagicServerGame extends ServerGame {
             messagesService,
             newGameStateSubject,
             endGameSubject,
+            botDifficulty,
         );
         this.drawableMagicCards = drawableMagicCardIds.map((id) => ({ id } as IMagicCard));
     }

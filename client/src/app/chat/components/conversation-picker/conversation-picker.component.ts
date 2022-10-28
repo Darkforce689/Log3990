@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateConversationComponent } from '@app/chat/components/create-conversation/create-conversation.component';
 import { JoinConversationComponent } from '@app/chat/components/join-conversation/join-conversation.component';
-import { GENERAL_CHANNEL } from '@app/chat/constants';
+import { GAME_CONVO_NAME, GENERAL_CHANNEL } from '@app/chat/constants';
 import { Conversation } from '@app/chat/interfaces/conversation.interface';
 import { ConversationService } from '@app/chat/services/conversation/conversation.service';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -38,6 +38,8 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
             .pipe(map((conversations) => this.arrangeConversations(conversations)))
             .subscribe((arrangedConvos) => {
                 this.conversations$.next(arrangedConvos);
+                // TODO does not work all the time need to investigate
+                this.setSelectedConversation(arrangedConvos[0]);
             });
     }
 
@@ -70,7 +72,7 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
     }
 
     isConversationLeavable(conversation: Conversation) {
-        return conversation.name !== GENERAL_CHANNEL;
+        return conversation.name !== GAME_CONVO_NAME && conversation.name !== GENERAL_CHANNEL;
     }
 
     leaveConversation(conversation: Conversation) {
@@ -92,14 +94,18 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
     }
 
     private arrangeConversations(conversations: Conversation[]): Conversation[] {
-        const generalIndex = conversations.findIndex((conversation) => conversation.name === GENERAL_CHANNEL);
-        if (generalIndex < 0) {
-            // To ensure that this function returns a copy of the array in all paths
-            return [...conversations];
+        // arrange conversations with this priority: [ game, general, ...]
+        const general = conversations.find(({ name }) => name === GENERAL_CHANNEL);
+        const game = conversations.find(({ name }) => name === GAME_CONVO_NAME);
+        const otherConvos = conversations.filter(({ name }) => name !== GAME_CONVO_NAME && name !== GENERAL_CHANNEL);
+        const arrangedConvos = [] as Conversation[];
+        if (game) {
+            arrangedConvos.push(game);
         }
-        const left = conversations.slice(0, generalIndex);
-        const right = conversations.slice(generalIndex + 1, conversations.length);
-        const general = conversations[generalIndex];
-        return [general].concat(left, right);
+        if (general) {
+            arrangedConvos.push(general);
+        }
+        arrangedConvos.push(...otherConvos);
+        return arrangedConvos;
     }
 }

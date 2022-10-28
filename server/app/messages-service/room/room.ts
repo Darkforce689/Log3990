@@ -1,4 +1,6 @@
-import { Conversation } from '@app/messages-service/interfaces/conversation.interface';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable no-underscore-dangle */
+import { Conversation, ConversationType } from '@app/messages-service/interfaces/conversation.interface';
 import { ConvoMessage, Message } from '@app/messages-service/message.interface';
 import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { MessageService } from '@app/messages-service/services/messages-service';
@@ -11,18 +13,15 @@ export class Room {
     constructor(private messageService: MessageService, private conversationService: ConversationService, private conversation?: Conversation) {}
 
     async addMessage(message: Message) {
-        const isTmpConversation = !this.conversation;
-        if (isTmpConversation) {
+        if (this.isTmpConversation) {
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, no-underscore-dangle
-        const isUserInConvo = await this.conversationService.isUserInConversation(this.conversation!._id, message.from);
+        const isUserInConvo = await this.isUserInConvo(message.from);
         if (!isUserInConvo) {
             throw Error("Can't join the room: You have not joined the conversation");
         }
 
-        // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-non-null-assertion
         const conversation = new ObjectId(this.conversation!._id);
         const from = new ObjectId(message.from);
         const { content, date } = message;
@@ -41,14 +40,22 @@ export class Room {
 
     async addUser(userId: string, socketId: string) {
         if (!this.isTmpConversation) {
-            // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-non-null-assertion
-            const isUserInConvo = await this.conversationService.isUserInConversation(this.conversation!._id, userId);
+            const isUserInConvo = await this.isUserInConvo(userId);
             if (!isUserInConvo) {
                 throw Error("Can't join the room: You have not joined the conversation");
             }
         }
         this.userIds.add(userId);
         this.userIdToSocketId.set(userId, socketId);
+    }
+
+    async isUserInConvo(userId: string) {
+        if (this.isTmpConversation) {
+            throw Error('There is no conversation bound to this room');
+        }
+
+        const { type: convoType } = this.conversation!;
+        return convoType === ConversationType.Game ? true : await this.conversationService.isUserInConversation(this.conversation!._id, userId);
     }
 
     async deleteUser(userId: string) {

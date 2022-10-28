@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@app/game-logic/actions/action';
-import { SplitPoints } from '@app/game-logic/actions/magic-card/magic-card-split-points';
+import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
+import { ExchangeHorseAll } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse-all';
 import { ExchangeALetter } from '@app/game-logic/actions/magic-card/magic-card-exchange-letter';
+import { ExtraTurn } from '@app/game-logic/actions/magic-card/magic-card-extra-turn';
+import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
+import { ReduceTimer } from '@app/game-logic/actions/magic-card/magic-card-reduce-timer';
+import { SkipNextTurn } from '@app/game-logic/actions/magic-card/magic-card-skip-next-turn';
+import { SplitPoints } from '@app/game-logic/actions/magic-card/magic-card-split-points';
 import { PassTurn } from '@app/game-logic/actions/pass-turn';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
@@ -12,12 +18,6 @@ import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
-import { PlaceBonus } from '@app/game-logic/actions/magic-card/magic-card-place-bonus';
-import { ExchangeHorse } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse';
-import { ExchangeHorseAll } from '@app/game-logic/actions/magic-card/magic-card-exchange-horse-all';
-import { SkipNextTurn } from '@app/game-logic/actions/magic-card/magic-card-skip-next-turn';
-import { ExtraTurn } from '@app/game-logic/actions/magic-card/magic-card-extra-turn';
-import { ReduceTimer } from '@app/game-logic/actions/magic-card/magic-card-reduce-timer';
 
 @Injectable({
     providedIn: 'root',
@@ -57,6 +57,7 @@ export class UIInputControllerService {
         }
         const newAction: Action | null = this.activeAction.create();
         if (!newAction) {
+            this.cancel();
             return;
         }
         this.discardAction();
