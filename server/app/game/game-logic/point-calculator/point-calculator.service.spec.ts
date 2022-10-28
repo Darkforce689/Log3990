@@ -1,5 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable max-lines */
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DictionaryServerService } from '@app/dictionary-manager/dictionary-server.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Direction } from '@app/game/game-logic/actions/direction.enum';
@@ -94,6 +95,7 @@ describe('PointCalculatorService', () => {
             messagesService,
             newGameStateSubject,
             endGameSubject,
+            BotDifficulty.Easy,
         );
         player1 = new Player('Tim');
         player2 = new Player('Max');
@@ -444,6 +446,7 @@ describe('PointCalculatorService', () => {
             messagesService,
             newGameStateSubject,
             endGameSubject,
+            BotDifficulty.Easy,
         );
         game.activePlayer.points = 100;
         game.otherPlayer.points = 100;

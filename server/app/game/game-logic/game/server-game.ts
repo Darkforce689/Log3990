@@ -1,3 +1,4 @@
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
@@ -38,6 +39,7 @@ export class ServerGame {
         protected messagesService: SystemMessagesService,
         private newGameStateSubject: Subject<GameStateToken>,
         private endGameSubject: Subject<EndOfGame>,
+        public botDifficulty: BotDifficulty,
     ) {
         this.timer = new Timer(gameToken, timerController);
         this.board = new Board(randomBonus);

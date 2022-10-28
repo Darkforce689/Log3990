@@ -2,8 +2,8 @@ import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
-import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
+import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
@@ -67,6 +67,7 @@ export class GameCreator {
             this.messagesService,
             this.newGameStateSubject,
             this.endGameSubject,
+            gameSettings.botDifficulty,
         );
     }
 
@@ -82,6 +83,7 @@ export class GameCreator {
             this.newGameStateSubject,
             this.endGameSubject,
             gameSettings.magicCardIds,
+            gameSettings.botDifficulty,
         );
     }
 

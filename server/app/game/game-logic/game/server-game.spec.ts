@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
+import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
@@ -42,6 +43,7 @@ describe('ServerGame', () => {
             messagesService,
             newGameStateSubject,
             endGameSubject,
+            BotDifficulty.Easy,
         );
         p1 = new Player('Tim');
         p2 = new Player('Paul');
