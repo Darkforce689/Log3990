@@ -90,7 +90,13 @@ export class NewGameSocketHandler {
                     if (user === undefined) {
                         return;
                     }
+                    if (typeof id !== 'string' || typeof user.name !== 'string') {
+                        throw Error('Impossible de rejoindre la partie, les paramètres sont invalides.');
+                    }
                     const gameSettings = this.getPendingGame(id);
+                    if (!gameSettings) {
+                        throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
+                    }
                     if (gameSettings.hasPassword && gameSettings.password !== password) {
                         throw Error('Mauvais mot de passe');
                     }
@@ -227,9 +233,6 @@ export class NewGameSocketHandler {
         gameSettings: OnlineGameSettings,
         socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,
     ) {
-        if (typeof id !== 'string' || typeof name !== 'string') {
-            throw Error('Impossible de rejoindre la partie, les paramètres sont invalides.');
-        }
         const gameToken = this.newGameManagerService.joinPendingGame(id, name);
         if (!gameToken) {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");

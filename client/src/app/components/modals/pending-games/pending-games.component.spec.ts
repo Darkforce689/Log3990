@@ -29,6 +29,7 @@ describe('PendingGamesComponent', () => {
     let fixture: ComponentFixture<PendingGamesComponent>;
     let onlineSocketHandlerSpy: jasmine.SpyObj<'NewOnlineGameSocketHandler'>;
     const testPendingGames$ = new Subject<OnlineGameSettings[]>();
+    const testObservableGames$ = new Subject<OnlineGameSettings[]>();
     let matDialog: jasmine.SpyObj<MatDialog>;
 
     const pendingGames = [
@@ -70,7 +71,7 @@ describe('PendingGamesComponent', () => {
             onlineSocketHandlerSpy = jasmine.createSpyObj(
                 'NewOnlineGameSocketHandler',
                 ['createGameMulti', 'listenForPendingGames', 'disconnect', 'joinPendingGames'],
-                ['pendingGames$'],
+                ['pendingGames$', 'observableGames$'],
             );
 
             TestBed.configureTestingModule({
@@ -88,6 +89,11 @@ describe('PendingGamesComponent', () => {
             (
                 Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'pendingGames$')?.get as jasmine.Spy<() => Observable<OnlineGameSettings[]>>
             ).and.returnValue(testPendingGames$);
+            (
+                Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'observableGames$')?.get as jasmine.Spy<
+                    () => Observable<OnlineGameSettings[]>
+                >
+            ).and.returnValue(testObservableGames$);
         }),
     );
 
@@ -164,9 +170,10 @@ describe('PendingGamesComponent', () => {
     it('should be an empty table ', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const tables = dom.querySelectorAll('tr');
-        expect(tables.length).toBe(2);
+        const numberTable = 4;
+        expect(tables.length).toBe(numberTable);
 
-        const numberHeaders = 7;
+        const numberHeaders = 6;
         const tableGames = tables[0];
         expect(tableGames.cells.length).toBe(numberHeaders);
 
@@ -176,7 +183,7 @@ describe('PendingGamesComponent', () => {
 
     it('should be a full table ', () => {
         testPendingGames$.next(pendingGames);
-        const tableLength = 4;
+        const tableLength = 6;
         const dom = fixture.nativeElement as HTMLElement;
         const tables = dom.querySelectorAll('tr');
         expect(tables.length).toBe(tableLength);
@@ -187,7 +194,7 @@ describe('PendingGamesComponent', () => {
         fixture.detectChanges();
         const dom = fixture.debugElement.nativeElement;
         const tableNotSort = dom.querySelectorAll('tr');
-        expect(tableNotSort[1].cells[0].innerHTML).toBe(' 4 ');
+        expect(tableNotSort[1].cells[0].innerHTML).toBe(' Jerry ');
 
         component.dataSource.sort = component.tableSort;
         const sortState: Sort = { active: 'Id', direction: 'asc' };

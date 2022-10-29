@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-vars */
@@ -226,10 +227,11 @@ describe('New Online Game Service', () => {
             tmpPlayerNames,
             hasPassword,
             password,
+            gameStatus: WAIT_STATUS,
         } as OnlineGameSettings;
 
         newGameManagerService.createPendingGame.returns('a');
-        newGameManagerService.joinPendingGame.returns('id');
+        newGameManagerService.joinPendingGame.returns('a');
         newGameManagerService.getPendingGame.returns(gameSettings);
 
         const clientSocket2 = Client(`http://localhost:${port}`, { path: '/newGame', multiplex: false });
@@ -246,7 +248,7 @@ describe('New Online Game Service', () => {
         });
     });
 
-    it('should delete pending game on game launch if private game', (done) => {
+    it('should delete pending game on game launch', (done) => {
         const gameSettingsUI = {
             playerNames: [user.name],
             randomBonus: true,
@@ -259,7 +261,6 @@ describe('New Online Game Service', () => {
             tmpPlayerNames: [],
             hasPassword: false,
             password: '',
-            gameStatus: WAIT_STATUS,
         };
         const gameSettings = {
             id: 'a',
@@ -276,8 +277,8 @@ describe('New Online Game Service', () => {
             password: '',
             gameStatus: WAIT_STATUS,
         };
+        newGameManagerService.activeGameSettingMap = new Map<string, OnlineGameSettings>();
         newGameManagerService.launchPendingGame.returns(Promise.resolve('a'));
-
         newGameManagerService.createPendingGame.returns('a');
         newGameManagerService.joinPendingGame.returns('a');
         newGameManagerService.getPendingGame.returns(gameSettings as OnlineGameSettings);

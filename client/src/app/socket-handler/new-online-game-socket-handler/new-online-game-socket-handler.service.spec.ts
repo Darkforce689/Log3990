@@ -1,8 +1,10 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { WAIT_STATUS } from '@app/game-logic/constants';
 import { SocketMock } from '@app/game-logic/socket-mock';
+import { AccountService } from '@app/services/account.service';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
@@ -28,9 +30,10 @@ describe('NewOnlineGameSocketHandler', () => {
         hasPassword: false,
         password: '',
     } as OnlineGameSettingsUI;
+    const accountService = { account: { name: 'Tim' } };
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({ providers: [{ provide: AccountService, useValue: accountService }], imports: [HttpClientTestingModule] });
         service = TestBed.inject(NewOnlineGameSocketHandler);
         createSocketFunction = service['connectToSocket'];
         service['connectToSocket'] = jasmine.createSpy().and.returnValue(new SocketMock());
