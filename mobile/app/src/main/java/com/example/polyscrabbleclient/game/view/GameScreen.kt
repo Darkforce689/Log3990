@@ -12,12 +12,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.game.view.draganddrop.DragShadow
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 
 @Composable
-fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/) {
+fun GameScreen(navController: NavController) {
     val viewModel: GameViewModel = viewModel()
 
     // TODO : USE CompositionLocalProvider ?
@@ -39,7 +40,7 @@ fun GameScreen(navController: NavController?/*, gameViewModel: GameViewModel?*/)
                 GameInfoView(viewModel)
             }
             Box {
-                GameActionsView(viewModel)
+                GameActionsView(viewModel, navController)
             }
         }
         EvenlySpacedSubColumn {
@@ -84,5 +85,5 @@ fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun GameScreenPreview() {
-    GameScreen(null)
+    GameScreen(navController = rememberNavController())
 }

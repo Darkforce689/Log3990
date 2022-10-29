@@ -1,5 +1,6 @@
 package com.example.polyscrabbleclient.lobby.sources
 
+import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
 
 enum class GameMode(val value: String) {
@@ -52,5 +53,8 @@ data class CreateGame (
 typealias LaunchGame = GameToken
 
 typealias JoinGame = GameToken
+
+// TODO
+typealias HostQuit = Nullable
 
 typealias GameToken = String

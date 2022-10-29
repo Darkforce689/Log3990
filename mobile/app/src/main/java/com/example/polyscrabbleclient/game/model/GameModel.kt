@@ -19,6 +19,7 @@ class GameModel {
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
     val userLetters = mutableStateListOf<TileModel>()
+    var isGameActive = mutableStateOf(false)
 
     fun getUser(): Player? {
         return players.value.find { it.name == User.name }
@@ -29,8 +30,13 @@ class GameModel {
         updatePlayers(gameState.players)
         updateActivePlayerIndex(gameState.activePlayerIndex)
         updateRemainingLetters(gameState.lettersRemaining)
+        updateEndOfGame(gameState.winnerIndex)
         updateBoardCrawler()
         updateUser()
+    }
+
+    private fun updateEndOfGame(winnerIndex: ArrayList<Int>) {
+        isGameActive.value = winnerIndex.isEmpty()
     }
 
     private fun updateBoardCrawler() {
@@ -72,5 +78,9 @@ class GameModel {
 
     fun createPlayersFrom(playerNames: ArrayList<String>) {
         players.value = playerNames.map { Player(it, 0) }
+    }
+
+    fun hasGameEnded(): Boolean {
+        return !isGameActive.value
     }
 }
