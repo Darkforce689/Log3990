@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient
 
 import android.os.Bundle
+import android.os.Message
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ripple.LocalRippleTheme
@@ -16,6 +17,8 @@ import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 import kotlin.math.floor
 
+data class ValidationResponse(val message: String, val errors : String)
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,9 +29,10 @@ class MainActivity : ComponentActivity() {
             try {
                 val thread = Thread {
                     val response = ScrabbleHttpClient.get(
-                        URL(BuildConfig.COMMUNICATION_URL + "/auth/validatesession")
-                    )
-                    if(response == "OK" ) {
+                        URL(BuildConfig.COMMUNICATION_URL + "/auth/validatesession"),
+                        ValidationResponse::class.java
+                    ) ?: return@Thread
+                    if (response.message == "OK") {
                         connectAppSocket()
                         updateUser()
                         startPage = NavPage.MainPage
