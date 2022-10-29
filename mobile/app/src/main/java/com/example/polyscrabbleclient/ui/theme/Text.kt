@@ -35,6 +35,8 @@ const val passButtonFR = "Passer"
 const val placeButtonFR = "Placer"
 const val exchangeButtonFR = "Échanger"
 const val cancelButtonFR = "Annuler"
+const val quitButtonFR = "Abandonner la partie"
+const val leaveButtonFR = "Quitter"
 
 // GameCreation
 const val new_game_creation = "Nouvelle Partie Multijoueurs"

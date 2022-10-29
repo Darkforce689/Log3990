@@ -21,6 +21,10 @@ val LobbyEventTypes = mapOf(
         PendingGameId::class.java
     ),
     Pair(
+        OnLobbyEvent.HostQuit,
+        HostQuit::class.java
+    ),
+    Pair(
         OnLobbyEvent.Error,
         Error::class.java
     ),
@@ -44,6 +48,7 @@ class OnLobbyEvent(override val eventName: String) : OnEvent(eventName) {
         val GameStarted = OnLobbyEvent("gameStarted")
         val PendingGames = OnLobbyEvent("pendingGames")
         val PendingGameId = OnLobbyEvent("pendingGameId")
+        val HostQuit = OnLobbyEvent("hostQuit")
         val Error = OnLobbyEvent("error")
     }
 }
