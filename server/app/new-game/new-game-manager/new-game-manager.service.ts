@@ -31,16 +31,10 @@ export class NewGameManagerService {
     }
 
     getObservableGames(): OnlineGameSettings[] {
-        const games: OnlineGameSettings[] = [];
-        this.gameMaster.activeGames.forEach((game, gameToken) => {
-            const gameSetting = this.activeGameSettingMap.get(gameToken);
-            if (!gameSetting) {
-                return;
-            }
-            if (!gameSetting.privateGame) {
-                games.push(gameSetting);
-            }
-        });
+        const gameTokens = [...this.gameMaster.activeGames.keys()];
+        const games: OnlineGameSettings[] = gameTokens
+            .map((gameToken) => this.activeGameSettingMap.get(gameToken))
+            .filter((gameSettings: OnlineGameSettings) => gameSettings !== undefined && !gameSettings.privateGame) as OnlineGameSettings[];
         return games;
     }
 
