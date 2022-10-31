@@ -86,25 +86,20 @@ fun PendingGamesView(
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun PendingGamesPreview() {
-    val a = mutableStateOf<PendingGames?>(
-        listOf(
-            OnlineGameSettings(
-                id = "123",
-                gameMode = GameMode.Classic,
-                botDifficulty = BotDifficulty.Easy,
-                numberOfPlayers = 2,
-                playerNames = ArrayList(listOf("A", "B")),
-                randomBonus = false,
-                timePerTurn = 60,
-                tmpPlayerNames = ArrayList(),
-                gameStatus = "En attente",
-                hasPassword = false,
-                password = "",
-                privateGame = false,
-            )
-        ).toTypedArray()
+    val b = OnlineGameSettings(
+        id = "123",
+        gameMode = GameMode.Classic,
+        botDifficulty = BotDifficulty.Easy,
+        numberOfPlayers = 2,
+        playerNames = ArrayList(listOf("A", "B")),
+        randomBonus = false,
+        timePerTurn = 60,
+        tmpPlayerNames = ArrayList(),
+        gameStatus = "En attente",
+        password = "",
+        privateGame = false,
     )
     PendingGamesView(
-        a
+        mutableStateOf(null)
     ) {}
 }

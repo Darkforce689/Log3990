@@ -12,8 +12,7 @@ export interface OnlineGameSettingsUI {
     botDifficulty: BotDifficulty;
     numberOfPlayers: number;
     magicCardIds: string[];
-    hasPassword: boolean;
-    password: string;
+    password?: string;
 }
 
 export interface OnlineGameSettings extends OnlineGameSettingsUI {

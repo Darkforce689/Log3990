@@ -35,8 +35,7 @@ describe('New Online Game Service', () => {
     let newGameManagerService: StubbedClass<NewGameManagerService>;
     let dictionaryService: StubbedClass<DictionaryService>;
     const tmpPlayerNames: string[] = [];
-    const hasPassword = false;
-    const password = '';
+    const password = undefined;
 
     const user: User = {
         name: 'Max',
@@ -101,7 +100,6 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames: [],
-            hasPassword: false,
             password: '',
         };
         serverSocket.on('createGame', (gameSettings) => {
@@ -129,7 +127,6 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames: [],
-            hasPassword: false,
             password: '',
         };
 
@@ -160,7 +157,6 @@ describe('New Online Game Service', () => {
             randomBonus: true,
             timePerTurn: 60000,
             tmpPlayerNames,
-            hasPassword,
             password,
         };
         newGameManagerService.getPendingGames.returns([gameSettings as OnlineGameSettings]);
@@ -210,7 +206,6 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames,
-            hasPassword,
             password,
         } as OnlineGameSettingsUI;
 
@@ -225,7 +220,6 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames,
-            hasPassword,
             password,
             gameStatus: WAIT_STATUS,
         } as OnlineGameSettings;
@@ -259,7 +253,6 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames: [],
-            hasPassword: false,
             password: '',
         };
         const gameSettings = {
@@ -273,7 +266,6 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames: [],
-            hasPassword: false,
             password: '',
             gameStatus: WAIT_STATUS,
         };

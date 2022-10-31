@@ -32,8 +32,7 @@ describe('GameCreator', () => {
     let numberOfPlayers: number;
     let magicCardIds: string[];
     let tmpPlayerNames: string[];
-    let hasPassword: boolean;
-    let password: string;
+    let password: string | undefined;
 
     const pointCalculatorStub = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompilerStub = createSinonStubInstance<GameCompiler>(GameCompiler);
@@ -58,8 +57,7 @@ describe('GameCreator', () => {
         numberOfPlayers = playerNames.length;
         magicCardIds = [];
         tmpPlayerNames = [];
-        hasPassword = false;
-        password = '';
+        password = undefined;
         onlineGameSettings = {
             id,
             playerNames,
@@ -71,7 +69,6 @@ describe('GameCreator', () => {
             numberOfPlayers,
             magicCardIds,
             tmpPlayerNames,
-            hasPassword,
             password,
         };
         gameCreator = new GameCreator(

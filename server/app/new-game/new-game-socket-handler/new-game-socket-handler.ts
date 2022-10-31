@@ -52,7 +52,10 @@ export class NewGameSocketHandler {
 
         this.ioServer.on('connection', async (socket) => {
             let gameId: string;
-            socket.emit(pendingGames, this.newGameManagerService.getPendingGames(), this.newGameManagerService.getObservableGames());
+            socket.emit(pendingGames, {
+                pendingGamesSettings: this.newGameManagerService.getPendingGames(),
+                observableGamesSettings: this.newGameManagerService.getObservableGames(),
+            });
 
             socket.on(createGame, async (gameSettings: OnlineGameSettingsUI) => {
                 try {
@@ -83,8 +86,10 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(joinGame, async (id: string, password: string) => {
+            socket.on(joinGame, async (joinGameParams) => {
                 try {
+                    const id = joinGameParams.id;
+                    const password = joinGameParams.password;
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
@@ -97,7 +102,7 @@ export class NewGameSocketHandler {
                     if (!gameSettings) {
                         throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
                     }
-                    if (gameSettings.hasPassword && gameSettings.password !== password) {
+                    if (gameSettings.password !== undefined && gameSettings.password !== password) {
                         throw Error('Mauvais mot de passe');
                     }
                     this.addToSocketMap(id, user.name, socket, false);
@@ -319,6 +324,10 @@ export class NewGameSocketHandler {
     }
 
     private emitPendingGamesToAll() {
-        this.ioServer.emit(pendingGames, this.newGameManagerService.getPendingGames(), this.newGameManagerService.getObservableGames());
+        const pendingAndObservableGames = {
+            pendingGamesSettings: this.newGameManagerService.getPendingGames(),
+            observableGamesSettings: this.newGameManagerService.getObservableGames(),
+        };
+        this.ioServer.emit(pendingGames, pendingAndObservableGames);
     }
 }

@@ -66,8 +66,7 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
-            hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
@@ -87,8 +86,7 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
-            hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
@@ -108,8 +106,7 @@ describe('NewOnlineGameFormComponent', () => {
             randomBonus: true,
             numberOfPlayers: 4,
             timePerTurn: 60000,
-            hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Easy,
         });
         fixture.detectChanges();
@@ -128,8 +125,7 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
-            hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Easy,
         };
         component.onlineGameSettingsUIForm.setValue(settings);
@@ -143,8 +139,7 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
-            hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Easy,
         });
         component.playGame();
@@ -157,8 +152,7 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
-            hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Expert,
         };
         component.onlineGameSettingsUIForm.setValue(setting);
@@ -170,8 +164,7 @@ describe('NewOnlineGameFormComponent', () => {
             privateGame: false,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
-            hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Easy,
         });
     });

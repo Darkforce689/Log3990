@@ -1,7 +1,9 @@
 package com.example.polyscrabbleclient.lobby.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.example.polyscrabbleclient.lobby.sources.JoinGame
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
+
 
 class LobbyViewModel : ViewModel() {
     private val lobby = LobbyRepository
@@ -15,6 +17,11 @@ class LobbyViewModel : ViewModel() {
         if (pendingGameToken === null) {
             return
         }
-        lobby.emitJoinGame(pendingGameToken, navigateToGameScreen)
+        lobby.emitJoinGame(
+            JoinGame(
+                gameToken = pendingGameToken,
+            ),
+            navigateToGameScreen
+        )
     }
 }

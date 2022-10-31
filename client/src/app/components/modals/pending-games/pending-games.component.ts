@@ -62,7 +62,7 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
             {
                 columnDef: 'hasPassword',
                 header: 'Mot de passe',
-                cell: (form: OnlineGameSettings) => `${form.hasPassword ? 'Oui' : 'Non'}`,
+                cell: (form: OnlineGameSettings) => `${form.password !== undefined ? 'Oui' : 'Non'}`,
                 tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
             {

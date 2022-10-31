@@ -10,7 +10,7 @@ import {
     MAX_TIME_PER_TURN,
     MIN_NUMBER_OF_PLAYERS,
     MIN_TIME_PER_TURN,
-    STEP_TIME_PER_TURN,
+    STEP_TIME_PER_TURN
 } from '@app/game-logic/constants';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
@@ -69,6 +69,9 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
 
     playGame(): void {
         const form = this.onlineGameSettingsUIForm.value;
+        if (!form.hasPassword) {
+            form.password = undefined;
+        }
         this.dialogRef.close(form);
     }
 
@@ -81,7 +84,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
             magicCardIds: [],
             hasPassword: false,
-            password: '',
+            password: undefined,
             botDifficulty: BotDifficulty.Easy,
         });
     }

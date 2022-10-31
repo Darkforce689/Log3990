@@ -8,6 +8,5 @@ export interface GameSettings {
     randomBonus: boolean;
     numberOfPlayers: number;
     magicCardIds: string[];
-    hasPassword: boolean;
-    password: string;
+    password?: string;
 }

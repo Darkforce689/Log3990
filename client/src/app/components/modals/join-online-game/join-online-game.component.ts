@@ -66,6 +66,6 @@ export class JoinOnlineGameComponent implements AfterContentChecked, OnInit {
     }
 
     get hasPassword() {
-        return this.data.hasPassword;
+        return this.data.password !== undefined;
     }
 }

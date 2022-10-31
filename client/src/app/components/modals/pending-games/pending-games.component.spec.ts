@@ -45,8 +45,7 @@ describe('PendingGamesComponent', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames: [],
-            hasPassword: false,
-            password: '',
+            password: undefined,
         },
         {
             id: '1',
@@ -60,8 +59,7 @@ describe('PendingGamesComponent', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames: [],
-            hasPassword: false,
-            password: '',
+            password: undefined,
         },
     ];
 

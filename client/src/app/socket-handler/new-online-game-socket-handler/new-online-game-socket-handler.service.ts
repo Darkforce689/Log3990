@@ -45,9 +45,9 @@ export class NewOnlineGameSocketHandler {
 
     listenForPendingGames() {
         this.connect();
-        this.socket.on('pendingGames', (pendingGames: OnlineGameSettings[], observableGames: OnlineGameSettings[]) => {
-            this.pendingGames$.next(pendingGames);
-            this.observableGames$.next(observableGames);
+        this.socket.on('pendingGames', (pendingAndObservableGames) => {
+            this.pendingGames$.next(pendingAndObservableGames.pendingGamesSettings);
+            this.observableGames$.next(pendingAndObservableGames.observableGamesSettings);
         });
         this.deletedGame$.next(false);
     }
@@ -56,7 +56,8 @@ export class NewOnlineGameSocketHandler {
         if (!this.socket.connected) {
             throw Error("Can't join game, not connected to server");
         }
-        this.socket.emit('joinGame', id, password);
+        const joinGameParams = { id, password };
+        this.socket.emit('joinGame', joinGameParams);
         this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
         this.listenForGameStart();

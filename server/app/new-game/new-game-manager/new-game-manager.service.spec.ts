@@ -16,8 +16,7 @@ describe('NewGameManagerService', () => {
     let dictionaryServiceStub: StubbedClass<DictionaryService>;
     let service: NewGameManagerService;
     const tmpPlayerNames: string[] = [];
-    const hasPassword = false;
-    const password = '';
+    const password = undefined;
 
     before(() => {
         gameManagerStub = createSinonStubInstance<GameManagerService>(GameManagerService);
@@ -38,7 +37,6 @@ describe('NewGameManagerService', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames,
-            hasPassword,
             password,
         };
         service.createPendingGame(gameSettings);
@@ -104,7 +102,6 @@ describe('NewGameManagerService', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames,
-            hasPassword,
             password,
         };
         service.pendingGames.set('abc', gameSettings);
