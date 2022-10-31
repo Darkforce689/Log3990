@@ -95,7 +95,12 @@ fun PendingGamesPreview() {
                 numberOfPlayers = 2,
                 playerNames = ArrayList(listOf("A", "B")),
                 randomBonus = false,
-                timePerTurn = 60
+                timePerTurn = 60,
+                tmpPlayerNames = ArrayList(),
+                gameStatus = "En attente",
+                hasPassword = false,
+                password = "",
+                privateGame = false,
             )
         ).toTypedArray()
     )

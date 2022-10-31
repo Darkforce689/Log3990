@@ -24,9 +24,14 @@ data class OnlineGameSettings(
     val gameMode: GameMode,
     val timePerTurn: Int,
     val playerNames: ArrayList<String>,
+    val tmpPlayerNames: ArrayList<String>,
+    val privateGame: Boolean,
+    val gameStatus: String,
     val randomBonus: Boolean,
     val botDifficulty: BotDifficulty,
     val numberOfPlayers: Int,
+    val hasPassword: Boolean,
+    val password: String,
 )
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
