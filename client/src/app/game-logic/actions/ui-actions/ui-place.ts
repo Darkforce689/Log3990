@@ -247,9 +247,8 @@ export class UIPlace implements UIAction {
         }
         const centerTilePosition: number = Math.floor(BOARD_DIMENSION / 2);
         const hasCenterTile = this.grid[centerTilePosition][centerTilePosition].letterObject.char !== EMPTY_CHAR;
-        if (this.isAddingToAWord(tempPosition, direction)) {
-            return true;
-        }
+        const firstCoord = tempPosition[0];
+        let [previousX, previousY] = [firstCoord.x - 1, firstCoord.y - 1];
 
         for (const pos of tempPosition) {
             const { x, y } = pos;
@@ -259,8 +258,17 @@ export class UIPlace implements UIAction {
             if (this.hasNeighbour(x, y, direction)) {
                 return true;
             }
+            const indexIsAdjacent = direction === Direction.Horizontal ? x === previousX + 1 : y === previousY + 1;
+            if (!indexIsAdjacent) {
+                if (!this.isAdjacentTileEmpty(x, y, direction, nextTile)) {
+                    return true;
+                }
+            }
+            [previousX, previousY] = [x, y];
         }
-
+        if (this.isAddingToAWord(tempPosition, direction)) {
+            return true;
+        }
         if (!hasCenterTile) {
             // TODO GL3A22107-146 : add message to chat
             // this.sendErrorMessage("Commande impossible à réaliser : Aucun mot n'est pas placé sur la tuile centrale");
