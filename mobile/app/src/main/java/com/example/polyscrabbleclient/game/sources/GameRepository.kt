@@ -53,4 +53,8 @@ object GameRepository {
     fun emitNextAction(onlineAction: OnlineAction) {
         gameSocket.emit(EmitGameEvent.NextAction, onlineAction)
     }
+
+    fun quitGame() {
+        gameSocket.closeConnection()
+    }
 }

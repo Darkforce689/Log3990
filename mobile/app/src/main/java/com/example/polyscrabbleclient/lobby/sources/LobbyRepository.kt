@@ -33,6 +33,11 @@ object LobbyRepository {
         println("onPendingGameId $pendingGameId")
     }
 
+    private val onHostQuit: (hostQuit: HostQuit?) -> Unit = { hostQuit ->
+        // TODO
+        println("onHostQuit $hostQuit")
+    }
+
     private val onError: (error: Error?) -> Unit = { error ->
         println("LobbyRepository -> Error : $error")
     }
@@ -51,6 +56,7 @@ object LobbyRepository {
         lobbySocket.on(OnLobbyEvent.GameStarted, onGameStarted)
         lobbySocket.on(OnLobbyEvent.PendingGames, onPendingGames)
         lobbySocket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
+        lobbySocket.on(OnLobbyEvent.HostQuit, onHostQuit)
         lobbySocket.on(OnLobbyEvent.Error, onError)
         lobbySocket.ensureConnection()
     }

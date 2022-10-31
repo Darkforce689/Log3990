@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.*
+import com.example.polyscrabbleclient.ui.theme.leaveButtonFR
+import com.example.polyscrabbleclient.ui.theme.quitButtonFR
 
 class GameViewModel : ViewModel() {
     val game = GameRepository.game
@@ -65,6 +67,14 @@ class GameViewModel : ViewModel() {
         return canExchangeLetter() || canPlaceLetter()
     }
 
+    fun getQuitLabel(): String {
+        return if (game.hasGameEnded()) {
+            leaveButtonFR
+        } else {
+            quitButtonFR
+        }
+    }
+
     fun passTurn() {
         GameRepository.emitNextAction(OnlineAction(OnlineActionType.Pass))
     }
@@ -101,5 +111,9 @@ class GameViewModel : ViewModel() {
     fun cancel() {
         restoreLetterRack()
         restoreBoard()
+    }
+
+    fun quitGame() {
+        GameRepository.quitGame()
     }
 }
