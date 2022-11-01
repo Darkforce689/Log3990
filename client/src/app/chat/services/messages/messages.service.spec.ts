@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ChatMessage, Message, MessageType } from '@app/chat/interfaces/message.interface';
+import { ChatMessage, Message, MessageType, SystemMessage } from '@app/chat/interfaces/message.interface';
 import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { OnlineChatHandlerService } from '@app/chat/services/online-chat-handler/online-chat-handler.service';
 import { Observable, Subject } from 'rxjs';
@@ -47,11 +47,18 @@ describe('Service: Messages', () => {
 
     it('should receive system message', () => {
         const content = 'test';
-        service.receiveSystemMessage(content);
+        const date = new Date();
+        const sysMessage: SystemMessage = {
+            content,
+            date,
+            conversation: 'abc',
+        };
+        service.receiveSystemMessage(sysMessage);
         const expectedMesssage: Message = {
             from: 'System',
             content,
             type: MessageType.System,
+            date,
         };
         const log = service.messages;
         const lastMessage = log[log.length - 1];
@@ -89,12 +96,5 @@ describe('Service: Messages', () => {
         const spy = spyOn(service, 'receiveErrorMessage');
         mockErrorMessage$.next(errorContent);
         expect(spy).toHaveBeenCalledOnceWith(errorContent);
-    });
-
-    it('should receive online system message properly', () => {
-        const spy = spyOn(service, 'receiveSystemMessage');
-        const content = 'this is a string';
-        mockSystemMessage$.next(content);
-        expect(spy).toHaveBeenCalledOnceWith(content);
     });
 });

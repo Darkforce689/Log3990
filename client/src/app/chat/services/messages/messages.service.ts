@@ -2,7 +2,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GAME_CONVO_NAME, N_MESSAGE_TO_FETCH } from '@app/chat/constants';
-import { ChatMessage, Message, MessageType } from '@app/chat/interfaces/message.interface';
+import { ChatMessage, Message, MessageType, SystemMessage } from '@app/chat/interfaces/message.interface';
 import { ConversationService } from '@app/chat/services/conversation/conversation.service';
 import { MessageFactoryService } from '@app/chat/services/message-factory/message-factory.service';
 import { OnlineChatHandlerService } from '@app/chat/services/online-chat-handler/online-chat-handler.service';
@@ -61,8 +61,17 @@ export class MessagesService {
             this.receiveErrorMessage(errorContent);
         });
 
-        this.onlineChat.systemMessage$.subscribe((content: string) => {
-            this.receiveSystemMessage(content);
+        this.onlineChat.systemMessage$.subscribe((message: SystemMessage) => {
+            if (!this.conversationService.currentConversation) {
+                return;
+            }
+
+            const { name, _id } = this.conversationService.currentConversation;
+            const convoIdentifier = name === GAME_CONVO_NAME ? _id : name;
+            if (convoIdentifier !== message.conversation) {
+                return;
+            }
+            this.receiveSystemMessage(message);
         });
     }
 
@@ -132,7 +141,11 @@ export class MessagesService {
     }
 
     leaveGameConversation() {
-        const { _id: roomId } = this.conversationService.leaveGameConversation();
+        const conversation = this.conversationService.leaveGameConversation();
+        if (!conversation) {
+            return;
+        }
+        const { _id: roomId } = conversation;
         this.onlineChat.leaveChatRoom(roomId);
     }
 
@@ -165,9 +178,11 @@ export class MessagesService {
         });
     }
 
-    receiveSystemMessage(content: string) {
+    receiveSystemMessage(sysMessage: SystemMessage) {
+        const { date, content } = sysMessage;
         const systemMessage: Message = {
             content,
+            date,
             from: MessagesService.sysName,
             type: MessageType.System,
         };

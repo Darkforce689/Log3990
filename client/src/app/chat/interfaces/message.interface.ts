@@ -18,6 +18,10 @@ export interface ChatMessage {
     date: Date;
 }
 
+export interface SystemMessage extends BaseMessage {
+    date: Date;
+}
+
 export interface BaseMessage {
     content: string;
     conversation: string;

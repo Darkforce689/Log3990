@@ -49,16 +49,6 @@ describe('online chat handler', () => {
         expect(test).toEqual('Huston we got a problem');
     });
 
-    it('receiveSystemMessage shoudl set sysMessage', () => {
-        let test = '';
-        service.systemMessage$.pipe(take(1)).subscribe((value) => {
-            test = value;
-        });
-        const message = 'Dont look directly on the sun';
-        service['receiveSystemMessage'](message);
-        expect(test).toEqual(message);
-    });
-
     it('should not throw when joining two time a game', () => {
         (service.socket as unknown) = undefined;
         expect(() => {

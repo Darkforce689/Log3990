@@ -239,32 +239,38 @@ export class MessagesSocketHandler {
         const content = globalMessage.content;
         const message: SystemMessageDTO = {
             content,
-            roomId,
+            conversation: roomId,
+            date: new Date(),
         };
         this.sio.to(roomId).emit(SYSTEM_MESSAGES, message);
     }
 
-    private sendIndividualSystemMessage(individualMessage: IndividualSystemMessage) {
-        const userId = individualMessage.playerName;
-        const roomId = individualMessage.gameToken;
-        const socketID = this.getSocketId(userId, roomId);
+    private async sendIndividualSystemMessage(individualMessage: IndividualSystemMessage) {
+        const userName = individualMessage.playerName;
+        const conversation = individualMessage.gameToken;
+        const socketID = await this.getSocketId(userName, conversation);
         if (!socketID) {
             return;
         }
         const content = individualMessage.content;
         const message: SystemMessageDTO = {
             content,
-            roomId,
+            conversation,
+            date: new Date(),
         };
         this.sio.to(socketID).emit(SYSTEM_MESSAGES, message);
     }
 
-    private getSocketId(userId: string, roomID: string) {
-        const room = this.activeRooms.get(roomID);
+    private async getSocketId(name: string, roomId: string) {
+        const room = this.activeRooms.get(roomId);
         if (!room) {
             return;
         }
-
+        const user = await this.userService.getUser({ name });
+        if (!user) {
+            return;
+        }
+        const { _id: userId } = user;
         const socketID = room.userIdToSocketId.get(userId);
         return socketID;
     }

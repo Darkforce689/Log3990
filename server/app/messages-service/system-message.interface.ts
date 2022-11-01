@@ -12,5 +12,6 @@ export interface IndividualSystemMessage extends GlobalSystemMessage {
 
 export interface SystemMessageDTO {
     content: string;
-    roomId: string;
+    conversation: string;
+    date: Date;
 }
