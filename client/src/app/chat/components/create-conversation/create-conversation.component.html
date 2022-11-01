@@ -3,7 +3,9 @@
     <br />
     <mat-form-field>
         <input matInput autocomplete="false" placeholder="Nom de la conversation" [formControl]="conversationNameForm" />
-        <mat-error></mat-error>
+        <mat-error *ngIf="conversationNameForm.hasError('alreadyExists')">Cette conversation existe déjà</mat-error>
+        <mat-error *ngIf="!conversationValid">Nom de conversation invalide</mat-error>
+        <mat-error *ngIf="conversationEmpty">Vous devez remplir ce champ</mat-error>
     </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>

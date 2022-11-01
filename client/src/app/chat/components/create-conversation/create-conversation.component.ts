@@ -22,6 +22,7 @@ export class CreateConversationComponent {
     }
 
     create() {
+        this.conversationNameForm.markAllAsTouched();
         if (!this.conversationNameForm.valid) {
             return;
         }
@@ -45,5 +46,13 @@ export class CreateConversationComponent {
                 });
             },
         );
+    }
+
+    get conversationValid() {
+        return !this.conversationNameForm.hasError('pattern') || this.conversationNameForm.hasError('required');
+    }
+
+    get conversationEmpty() {
+        return this.conversationNameForm.hasError('required');
     }
 }
