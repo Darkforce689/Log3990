@@ -30,12 +30,15 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             Validators.min(MIN_TIME_PER_TURN),
             Validators.max(MAX_TIME_PER_TURN),
         ]),
+        privateGame: new FormControl(false, [Validators.required]),
         randomBonus: new FormControl(false, [Validators.required]),
         numberOfPlayers: new FormControl(DEFAULT_NUMBER_OF_PLAYERS, [
             Validators.required,
             Validators.min(MIN_NUMBER_OF_PLAYERS),
             Validators.max(MAX_NUMBER_OF_PLAYERS),
         ]),
+        hasPassword: new FormControl(false, [Validators.required]),
+        password: new FormControl('', []),
         botDifficulty: new FormControl(BotDifficulty.Easy, [Validators.required]),
     });
 
@@ -66,6 +69,9 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
 
     playGame(): void {
         const form = this.onlineGameSettingsUIForm.value;
+        if (!form.hasPassword) {
+            form.password = undefined;
+        }
         this.dialogRef.close(form);
     }
 
@@ -73,9 +79,12 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
         this.dialogRef.close();
         this.onlineGameSettingsUIForm.reset({
             timePerTurn: DEFAULT_TIME_PER_TURN,
+            privateGame: false,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
             magicCardIds: [],
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Easy,
         });
     }

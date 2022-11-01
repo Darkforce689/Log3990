@@ -79,8 +79,12 @@ fun PendingGamePreview() {
             botDifficulty = BotDifficulty.Easy,
             numberOfPlayers = 2,
             playerNames = ArrayList(listOf("A", "B")),
+            tmpPlayerNames = ArrayList(),
             randomBonus = false,
-            timePerTurn = 60
+            timePerTurn = 60,
+            gameStatus = "En attente",
+            password = "",
+            privateGame = false,
         ),
         listOf(0.1f, 0.2f, 0.2f, 0.2f, 0.1f, 0.2f),
         {}
@@ -98,7 +102,11 @@ fun PendingGamePreview2() {
             numberOfPlayers = 2,
             playerNames = ArrayList(listOf("A", "B")),
             randomBonus = false,
-            timePerTurn = 60
+            timePerTurn = 60,
+            tmpPlayerNames = ArrayList(),
+            gameStatus = "En attente",
+            password = "",
+            privateGame = false,
         ),
         listOf(0.1f, 0.2f, 0.2f, 0.2f, 0.1f, 0.2f),
         {}

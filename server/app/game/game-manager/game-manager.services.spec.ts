@@ -37,6 +37,8 @@ import * as sinon from 'sinon';
 describe('GameManagerService', () => {
     const botDifficulty = BotDifficulty.Easy;
     const numberOfPlayers = 2;
+    const tmpPlayerNames: string[] = [];
+    const password = undefined;
 
     let service: GameManagerService;
     let stubPointCalculator: PointCalculatorService;
@@ -92,6 +94,7 @@ describe('GameManagerService', () => {
 
     it('should create game', async () => {
         const gameToken = '1';
+        const privateGame = false;
         const randomBonus = false;
         const timePerTurn = 60000;
         const playerNames = ['test1', 'test2'];
@@ -101,11 +104,14 @@ describe('GameManagerService', () => {
             id: gameToken,
             timePerTurn,
             playerNames,
+            privateGame,
             randomBonus,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds,
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -125,12 +131,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -162,12 +171,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -188,12 +200,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -214,12 +229,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -242,12 +260,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -269,12 +290,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -300,12 +324,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -326,12 +353,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -358,12 +388,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -384,12 +417,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -406,12 +442,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -432,12 +471,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: '1',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         service.createGame('1', gameSettings).then(() => {
             clock.tick(NEW_GAME_TIMEOUT);
@@ -449,12 +491,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: '1',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         await service.createGame('1', gameSettings);
         service.linkedClients.clear();
@@ -469,12 +514,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         await service.createGame(gameToken, gameSettings);
 
@@ -498,12 +546,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: '1',
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames: ['test1', 'test2'],
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         service.createGame('1', gameSettings).then(() => {
             service.activeGames.delete('1');
@@ -532,12 +583,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         await service.createGame('1', gameSettings);
 
@@ -567,12 +621,15 @@ describe('GameManagerService', () => {
         const gameSettings: OnlineGameSettings = {
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             gameMode: GameMode.Classic,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         await service.createGame(gameToken, gameSettings);
         service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [] });
@@ -609,11 +666,14 @@ describe('GameManagerService', () => {
             gameMode: GameMode.Magic,
             id: gameToken,
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: false,
             playerNames,
             botDifficulty,
             numberOfPlayers,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         await service.createGame(gameToken, gameSettings);
         service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player] });

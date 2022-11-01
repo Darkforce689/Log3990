@@ -3,7 +3,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { BOARD_DIMENSION, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD } from '@app/game-logic/constants';
+import { BOARD_DIMENSION, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD, WAIT_STATUS } from '@app/game-logic/constants';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
 import { Player } from '@app/game-logic/player/player';
@@ -46,12 +46,16 @@ describe('GameManagerService Online Edition', () => {
     const onlineGameSettings: OnlineGameSettings = {
         timePerTurn: DEFAULT_TIME_PER_TURN,
         playerNames: ['p1', 'p2'],
+        privateGame: false,
+        gameStatus: WAIT_STATUS,
         randomBonus: false,
         id: '0',
         gameMode: GameMode.Classic,
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
         magicCardIds: [],
+        tmpPlayerNames: [],
+        password: undefined,
     };
 
     const accountService = { account: { name: 'Tim' } };
@@ -89,12 +93,16 @@ describe('GameManagerService Online Edition', () => {
         const faultyOnlineGameSettings: OnlineGameSettings = {
             timePerTurn: DEFAULT_TIME_PER_TURN,
             playerNames: [],
+            privateGame: false,
+            gameStatus: WAIT_STATUS,
             randomBonus: false,
             id: '0',
             gameMode: GameMode.Classic,
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames: [],
+            password: '',
         };
 
         const gameToken = '0';

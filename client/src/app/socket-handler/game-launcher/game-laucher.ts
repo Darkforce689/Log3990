@@ -24,6 +24,7 @@ export class GameLauncherService {
     waitForOnlineGameStart() {
         this.startGame$$?.unsubscribe();
         const dialogConfig = new MatDialogConfig();
+        dialogConfig.disableClose = true;
         const dialogRef = this.dialog.open(WaitingForOtherPlayersComponent, dialogConfig);
         dialogRef.afterOpened().subscribe(() => {
             this.socketHandler.isDisconnected$.subscribe((isDisconnected) => {

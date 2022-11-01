@@ -9,13 +9,18 @@ import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-m
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { expect } from 'chai';
+import { Subject } from 'rxjs';
 
 describe('NewGameManagerService', () => {
     let gameManagerStub: StubbedClass<GameManagerService>;
     let dictionaryServiceStub: StubbedClass<DictionaryService>;
     let service: NewGameManagerService;
+    const tmpPlayerNames: string[] = [];
+    const password = undefined;
+
     before(() => {
         gameManagerStub = createSinonStubInstance<GameManagerService>(GameManagerService);
+        gameManagerStub.gameDeleted$ = new Subject<string>();
         dictionaryServiceStub = createSinonStubInstance<DictionaryService>(DictionaryService);
         service = new NewGameManagerService(gameManagerStub, dictionaryServiceStub);
     });
@@ -23,6 +28,7 @@ describe('NewGameManagerService', () => {
     it('should createGame', () => {
         const gameSettings = {
             playerNames: ['Max'],
+            privateGame: false,
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
@@ -30,6 +36,8 @@ describe('NewGameManagerService', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         service.createPendingGame(gameSettings);
         expect(service.pendingGames.size).to.equal(1);
@@ -85,6 +93,7 @@ describe('NewGameManagerService', () => {
         service.pendingGames.clear();
         const gameSettings = {
             playerNames: ['Max'],
+            privateGame: false,
             randomBonus: true,
             timePerTurn: 60000,
             gameMode: GameMode.Classic,
@@ -92,6 +101,8 @@ describe('NewGameManagerService', () => {
             botDifficulty: BotDifficulty.Easy,
             numberOfPlayers: 2,
             magicCardIds: [],
+            tmpPlayerNames,
+            password,
         };
         service.pendingGames.set('abc', gameSettings);
         const id = 'abc';

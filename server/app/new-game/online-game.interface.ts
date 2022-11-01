@@ -5,10 +5,14 @@ export interface OnlineGameSettingsUI {
     gameMode: GameMode;
     timePerTurn: number;
     playerNames: string[];
+    tmpPlayerNames: string[];
+    privateGame: boolean;
+    gameStatus?: string;
     randomBonus: boolean;
     botDifficulty: BotDifficulty;
     numberOfPlayers: number;
     magicCardIds: string[];
+    password?: string;
 }
 
 export interface OnlineGameSettings extends OnlineGameSettingsUI {

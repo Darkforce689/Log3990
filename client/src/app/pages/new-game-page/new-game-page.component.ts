@@ -66,6 +66,7 @@ export class NewGamePageComponent {
                 // TODO GL3A22107-32 : Implement new game parameter :
                 botDifficulty: BotDifficulty.Expert,
                 playerNames: [],
+                tmpPlayerNames: [],
             };
             this.socketHandler.createGame(onlineGameSettings);
             this.openWaitingForPlayer();

@@ -13,7 +13,6 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     spinnerStrokeWidth = SPINNER_WIDTH_STROKE;
     spinnerDiameter = SPINNER_DIAMETER;
     botDifficulty: string;
-    isSoloStarted: boolean = false;
     constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler) {}
 
     ngAfterContentChecked() {
@@ -24,6 +23,18 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         this.socketHandler.launchGame();
     }
 
+    kickPlayer(playerId: string) {
+        this.socketHandler.kickPlayer(playerId);
+    }
+
+    acceptPlayer(playerId: string) {
+        this.socketHandler.acceptPlayer(playerId);
+    }
+
+    refusePlayer(playerId: string) {
+        this.socketHandler.refusePlayer(playerId);
+    }
+
     get canLaunchGame() {
         return this.socketHandler.isGameOwner && this.players.length <= this.numberOfPlayers;
     }
@@ -31,6 +42,17 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     cancel() {
         this.socketHandler.isGameOwner = false;
         this.socketHandler.disconnectSocket();
+    }
+
+    isHost(playerId: string) {
+        return this.isThatPlayerHost(playerId) ? false : this.socketHandler.isGameOwner;
+    }
+
+    isThatPlayerHost(playerId: string) {
+        if (!this.players) {
+            return false;
+        }
+        return playerId === this.players[0];
     }
 
     get pendingGameId$(): Observable<string | undefined> {
@@ -44,7 +66,15 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         return this.socketHandler.gameSettings$.value?.numberOfPlayers ?? 0;
     }
 
+    get tmpPlayers() {
+        return this.socketHandler.gameSettings$.value?.tmpPlayerNames;
+    }
+
     get deletedGame(): boolean {
         return this.socketHandler.deletedGame$.value;
+    }
+
+    get isWaiting(): boolean {
+        return this.socketHandler.isWaiting$.value;
     }
 }

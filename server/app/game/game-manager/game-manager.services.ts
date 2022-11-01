@@ -40,6 +40,7 @@ export class GameManagerService {
     activeGames = new Map<string, ServerGame>();
     activePlayers = new Map<string, PlayerRef>(); // socketId => PlayerRef[]
     linkedClients = new Map<string, BindedSocket[]>(); // gameToken => BindedSocket[]
+    gameDeleted$ = new Subject<string>();
 
     private endGame$ = new Subject<EndOfGame>(); // gameToken
 
@@ -246,6 +247,7 @@ export class GameManagerService {
         this.activeGames.delete(gameToken);
         this.linkedClients.delete(gameToken);
         this.dictionaryService.deleteGameDictionary(gameToken);
+        this.gameDeleted$.next(gameToken);
         this.conversationService.deleteGameConversation(gameToken);
     }
 

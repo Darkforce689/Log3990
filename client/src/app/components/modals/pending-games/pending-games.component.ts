@@ -19,14 +19,14 @@ export const DELAY = 100;
 })
 export class PendingGamesComponent implements AfterContentChecked, OnInit, AfterViewInit {
     @ViewChild(MatSort) tableSort: MatSort;
-    columnsToDisplay = ['id', 'playerNames', 'randomBonus', 'timePerTurn'];
+    columnsToDisplay = ['playerNames', 'randomBonus', 'timePerTurn', 'hasPassword', 'privateGame', 'numberOfPlayers'];
     selectedRow: OnlineGameSettings | undefined;
-    dataSource = new MatTableDataSource<OnlineGameSettings>();
+    pendingGameDataSource = new MatTableDataSource<OnlineGameSettings>();
+    observableGameDataSource = new MatTableDataSource<OnlineGameSettings>();
     columns: {
         columnDef: string;
         header: string;
         cell: (form: OnlineGameSettings) => string;
-        tooltip: (form: OnlineGameSettings, columnDef: string) => string;
     }[];
     datePipe = new DatePipe('en_US');
     private isClicked: boolean = false;
@@ -44,25 +44,37 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
                 columnDef: 'id',
                 header: 'Id',
                 cell: (form: OnlineGameSettings) => `${form.id}`,
-                tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
             {
                 columnDef: 'playerNames',
-                header: 'Autres Joueurs',
+                header: 'Joueurs',
                 cell: (form: OnlineGameSettings) => `${form.playerNames}`,
-                tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
             },
             {
                 columnDef: 'randomBonus',
                 header: 'Bonus Aléatoire',
                 cell: (form: OnlineGameSettings) => (form.randomBonus ? 'activé' : 'désactivé'),
-                tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
+            },
+            {
+                columnDef: 'hasPassword',
+                header: 'Mot de passe',
+                cell: (form: OnlineGameSettings) => `${form.password !== undefined ? 'Oui' : 'Non'}`,
+            },
+            {
+                columnDef: 'privateGame',
+                header: 'Type de partie',
+                cell: (form: OnlineGameSettings) => `${form.privateGame ? 'Privée' : 'Publique'}`,
             },
             {
                 columnDef: 'timePerTurn',
                 header: 'Temps par tour',
                 cell: (form: OnlineGameSettings) => `${this.datePipe.transform(form.timePerTurn, 'm:ss')} `,
-                tooltip: (form: OnlineGameSettings, columnDef: string) => this.getToolTip(form, columnDef),
+            },
+            {
+                columnDef: 'numberOfPlayers',
+                header: 'Joueurs : IA / Max',
+                cell: (form: OnlineGameSettings) =>
+                    `${form.playerNames.length} : ${form.numberOfPlayers - form.playerNames.length} / ${form.numberOfPlayers}`,
             },
         ];
     }
@@ -70,13 +82,17 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
     ngOnInit() {
         this.pendingGames$.subscribe((gameSettings) => {
             const filteredGameSettings = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.gameMode);
-            this.dataSource.data = filteredGameSettings;
+            this.pendingGameDataSource.data = filteredGameSettings;
+        });
+        this.observableGames$.subscribe((gameSettings) => {
+            const filteredGameSettings = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.gameMode);
+            this.observableGameDataSource.data = filteredGameSettings;
         });
         this.onlineSocketHandler.listenForPendingGames();
     }
 
     ngAfterViewInit() {
-        this.dataSource.sort = this.tableSort;
+        this.pendingGameDataSource.sort = this.tableSort;
     }
 
     ngAfterContentChecked() {
@@ -117,8 +133,8 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
             return;
         }
         this.isClicked = true;
-        const gameNumber = getRandomInt(this.dataSource.data.length);
-        this.selectedRow = this.dataSource.data[gameNumber];
+        const gameNumber = getRandomInt(this.pendingGameDataSource.data.length);
+        this.selectedRow = this.pendingGameDataSource.data[gameNumber];
         timer(DELAY).subscribe(() => {
             this.joinGame();
         });
@@ -129,22 +145,18 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
     }
 
     get isEmpty(): boolean {
-        return this.dataSource.data.length === 0;
+        return this.pendingGameDataSource.data.length === 0;
     }
 
     get hasOneGame(): boolean {
-        return this.dataSource.data.length === 1;
+        return this.pendingGameDataSource.data.length === 1;
     }
 
     get pendingGames$(): BehaviorSubject<OnlineGameSettings[]> {
         return this.onlineSocketHandler.pendingGames$;
     }
 
-    private getToolTip(form: OnlineGameSettings, columnDef: string): string {
-        // TODO Remove or keep for future tooltips, was only used for legacy dictionary
-        if (columnDef === 'nothing') {
-            return form.gameMode as string;
-        }
-        return '';
+    get observableGames$(): BehaviorSubject<OnlineGameSettings[]> {
+        return this.onlineSocketHandler.observableGames$;
     }
 }

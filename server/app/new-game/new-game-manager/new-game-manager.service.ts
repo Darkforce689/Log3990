@@ -1,7 +1,8 @@
-import { GAME_TOKEN_PREFIX } from '@app/constants';
+import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
+import { Subject } from 'rxjs';
 import { Service } from 'typedi';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,14 +10,31 @@ import { v4 as uuidv4 } from 'uuid';
 export class NewGameManagerService {
     static gameIdCounter: number = 0;
     pendingGames: Map<string, OnlineGameSettingsUI> = new Map<string, OnlineGameSettingsUI>();
+    activeGameSettingMap = new Map<string, OnlineGameSettings>();
+    refreshPendingGame$ = new Subject<void>();
 
-    constructor(private gameMaster: GameManagerService, private dictionaryService: DictionaryService) {}
+    constructor(private gameMaster: GameManagerService, private dictionaryService: DictionaryService) {
+        this.gameMaster.gameDeleted$.subscribe((gameToken) => {
+            if (gameToken) {
+                this.activeGameSettingMap.delete(gameToken);
+                this.refreshPendingGame$.next();
+            }
+        });
+    }
 
     getPendingGames(): OnlineGameSettings[] {
         const games: OnlineGameSettings[] = [];
         this.pendingGames.forEach((game, id) => {
             games.push(this.toOnlineGameSettings(id, game));
         });
+        return games;
+    }
+
+    getObservableGames(): OnlineGameSettings[] {
+        const gameTokens = [...this.gameMaster.activeGames.keys()];
+        const games: OnlineGameSettings[] = gameTokens
+            .map((gameToken) => this.activeGameSettingMap.get(gameToken))
+            .filter((gameSettings: OnlineGameSettings) => gameSettings !== undefined && !gameSettings.privateGame) as OnlineGameSettings[];
         return games;
     }
 
@@ -30,9 +48,10 @@ export class NewGameManagerService {
         if (!gameSettings) {
             gameSettings = this.pendingGames.get(id);
         }
-        const onlineGameSettingsUI = this.toOnlineGameSettings(id, gameSettings);
+        const onlineGameSettings = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken();
-        await this.startGame(gameToken, this.toOnlineGameSettings(id, onlineGameSettingsUI));
+        this.activeGameSettingMap.set(gameToken, onlineGameSettings);
+        await this.startGame(gameToken, onlineGameSettings);
         return gameToken;
     }
 
@@ -44,8 +63,44 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        gameSettings.playerNames.push(name);
+        if (!gameSettings.privateGame) {
+            gameSettings.playerNames.push(name);
+            return id;
+        }
+        if (!gameSettings.tmpPlayerNames) {
+            gameSettings.tmpPlayerNames = [];
+        }
+        gameSettings.tmpPlayerNames.push(name);
         return id;
+    }
+
+    acceptPlayerInPrivatePendingGame(id: string, name: string): OnlineGameSettings | undefined {
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
+            return;
+        }
+        const index = gameSettings.tmpPlayerNames.findIndex((playerName) => playerName === name);
+        if (index === NOT_FOUND) {
+            return;
+        }
+        gameSettings.playerNames.push(name);
+        gameSettings.tmpPlayerNames.splice(index, 1);
+        const onlineGameSetting = this.toOnlineGameSettings(id, gameSettings);
+        return onlineGameSetting;
+    }
+
+    removeTmpPlayer(id: string, name: string): OnlineGameSettings | undefined {
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
+            return;
+        }
+        const index = gameSettings.tmpPlayerNames.findIndex((playerName) => playerName === name);
+        if (index === NOT_FOUND) {
+            return;
+        }
+        gameSettings.tmpPlayerNames.splice(index, 1);
+        const onlineGameSetting = this.toOnlineGameSettings(id, gameSettings);
+        return onlineGameSetting;
     }
 
     quitPendingGame(id: string, nameToRemove: string): string | undefined {
@@ -53,8 +108,16 @@ export class NewGameManagerService {
         if (!gameSettings) {
             return;
         }
-        const index = gameSettings.playerNames.findIndex((name) => name === nameToRemove);
-        gameSettings.playerNames.splice(index, 1);
+        const playerToRemoveIndex = gameSettings.playerNames.findIndex((name) => name === nameToRemove);
+        if (playerToRemoveIndex !== NOT_FOUND) {
+            gameSettings.playerNames.splice(playerToRemoveIndex, 1);
+            return id;
+        }
+        const tmpPlayerToRemoveIndex = gameSettings.tmpPlayerNames.findIndex((name) => name === nameToRemove);
+        if (tmpPlayerToRemoveIndex !== NOT_FOUND) {
+            gameSettings.tmpPlayerNames.splice(tmpPlayerToRemoveIndex, 1);
+            return id;
+        }
         return id;
     }
 

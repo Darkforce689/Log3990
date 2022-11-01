@@ -63,8 +63,11 @@ describe('NewOnlineGameFormComponent', () => {
 
         component.onlineGameSettingsUIForm.setValue({
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
@@ -81,8 +84,11 @@ describe('NewOnlineGameFormComponent', () => {
         component.gameMode = GameMode.Magic;
         component.onlineGameSettingsUIForm.setValue({
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Easy,
         });
         component.onlineGameSettingsUIForm.updateValueAndValidity();
@@ -98,9 +104,12 @@ describe('NewOnlineGameFormComponent', () => {
         const playButton = dom.querySelectorAll('button')[1];
         component.gameMode = GameMode.Magic;
         component.onlineGameSettingsUIForm.setValue({
-            timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            timePerTurn: 60000,
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Easy,
         });
         fixture.detectChanges();
@@ -116,8 +125,11 @@ describe('NewOnlineGameFormComponent', () => {
     it('setting should return group form value', () => {
         const settings = {
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Easy,
         };
         component.onlineGameSettingsUIForm.setValue(settings);
@@ -128,8 +140,11 @@ describe('NewOnlineGameFormComponent', () => {
         spyOn(mockDialog, 'close');
         component.onlineGameSettingsUIForm.setValue({
             timePerTurn: DEFAULT_TIME_PER_TURN,
+            privateGame: false,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Easy,
         });
         component.playGame();
@@ -139,8 +154,11 @@ describe('NewOnlineGameFormComponent', () => {
     it('cancel should close the dialog and reset form', () => {
         const setting = {
             timePerTurn: 60000,
+            privateGame: false,
             randomBonus: true,
             numberOfPlayers: 4,
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Expert,
         };
         component.onlineGameSettingsUIForm.setValue(setting);
@@ -149,8 +167,11 @@ describe('NewOnlineGameFormComponent', () => {
         expect(mockDialog.close).toHaveBeenCalled();
         expect(component.onlineGameSettingsUIForm.value).toEqual({
             timePerTurn: DEFAULT_TIME_PER_TURN,
+            privateGame: false,
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
+            hasPassword: false,
+            password: '',
             botDifficulty: BotDifficulty.Easy,
         });
     });

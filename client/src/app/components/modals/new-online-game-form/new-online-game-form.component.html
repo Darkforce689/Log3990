@@ -1,7 +1,19 @@
 <h2>Nouvelle Partie Multijoueurs</h2>
 <mat-dialog-content [formGroup]="onlineGameSettingsUIForm">
+    <br />
+    <br />
+    <mat-checkbox color="accent" formControlName="privateGame">Partie privée</mat-checkbox>
+    <br />
+    <br />
     <mat-checkbox color="accent" formControlName="randomBonus">Bonus aléatoire</mat-checkbox>
     <br />
+    <br />
+    <mat-checkbox #checkPassword color="accent" formControlName="hasPassword">Mot de passe</mat-checkbox>
+    <br />
+    <mat-form-field *ngIf="checkPassword.checked">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput autocomplete="off" placeholder="Mot de passe" formControlName="password" />
+    </mat-form-field>
     <br />
     <mat-label>Temps par tour </mat-label>
     <mat-label>{{ timer.value | date: 'm:ss' }} min </mat-label> <br />
