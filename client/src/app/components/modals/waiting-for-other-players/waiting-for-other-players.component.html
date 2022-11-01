@@ -1,4 +1,4 @@
-<mat-dialog-content #waitingForPlayer *ngIf="!isSoloStarted && !deletedGame">
+<mat-dialog-content #waitingForPlayer *ngIf="!deletedGame && !isWaiting">
     <div class="title">
         <div>
             <h3>En attente d'autres joueurs</h3>
@@ -6,14 +6,48 @@
         </div>
         <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
     </div>
-    <div *ngFor="let name of players">
-        <li>{{ name }}</li>
+    <div class="players">
+        <div>Joueurs dans la partie:</div>
+        <div class="player" *ngFor="let name of players">
+            <div class="player-name">
+                {{ name }}
+                <mat-icon color="primary" *ngIf="isThatPlayerHost(name)">star</mat-icon>
+                <button mat-icon-button (click)="kickPlayer(name)" *ngIf="isHost(name)">
+                    <mat-icon color="primary">close</mat-icon>
+                </button>
+            </div>
+        </div>
+        <br />
+        <br />
+        <div>Joueurs en attente d'approbation:</div>
+        <div class="player" *ngFor="let name of tmpPlayers">
+            <div class="player-name">
+                {{ name }}
+                <button mat-icon-button (click)="acceptPlayer(name)" *ngIf="isHost(name)">
+                    <mat-icon color="primary">check</mat-icon>
+                </button>
+                <button mat-icon-button (click)="refusePlayer(name)" *ngIf="isHost(name)">
+                    <mat-icon color="primary">close</mat-icon>
+                </button>
+            </div>
+        </div>
     </div>
+</mat-dialog-content>
+
+<mat-dialog-content #waitingForPlayer *ngIf="isWaiting">
+    En attente de la réponse de l'hôte
+    <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
 </mat-dialog-content>
 
 <mat-dialog-content #waitingForPlayer *ngIf="deletedGame"> L'hôte a annulé la partie </mat-dialog-content>
 
-<mat-dialog-actions>
-    <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
-    <button mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>
-</mat-dialog-actions>
+<ng-template [ngIf]="!deletedGame" [ngIfElse]="OkButton">
+    <mat-dialog-actions>
+        <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
+        <button *ngIf="!isWaiting" mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #OkButton>
+    <button mat-raised-button color="primary" [mat-dialog-close]>Ok</button>
+</ng-template>

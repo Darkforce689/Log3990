@@ -24,12 +24,15 @@ describe('GameCreator', () => {
     let id: string;
     let timePerTurn: number;
     let playerNames: string[];
+    let privateGame: boolean;
     let randomBonus: boolean;
     let gameMode: GameMode;
     let gameToken: string;
     let botDifficulty: BotDifficulty;
     let numberOfPlayers: number;
     let magicCardIds: string[];
+    let tmpPlayerNames: string[];
+    let password: string | undefined;
 
     const pointCalculatorStub = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompilerStub = createSinonStubInstance<GameCompiler>(GameCompiler);
@@ -47,12 +50,27 @@ describe('GameCreator', () => {
         gameToken = id + 'token';
         timePerTurn = getRandomInt(Number.MAX_SAFE_INTEGER);
         playerNames = ['p1', 'p2'];
+        privateGame = false;
         randomBonus = getRandomInt(1) === 0;
         botDifficulty = BotDifficulty.Easy;
         gameMode = GameMode.Classic;
         numberOfPlayers = playerNames.length;
         magicCardIds = [];
-        onlineGameSettings = { id, playerNames, randomBonus, timePerTurn, gameMode, botDifficulty, numberOfPlayers, magicCardIds };
+        tmpPlayerNames = [];
+        password = undefined;
+        onlineGameSettings = {
+            id,
+            playerNames,
+            privateGame,
+            randomBonus,
+            timePerTurn,
+            gameMode,
+            botDifficulty,
+            numberOfPlayers,
+            magicCardIds,
+            tmpPlayerNames,
+            password,
+        };
         gameCreator = new GameCreator(
             pointCalculatorStub,
             gameCompilerStub,

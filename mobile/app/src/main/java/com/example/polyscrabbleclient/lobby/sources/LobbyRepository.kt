@@ -7,6 +7,8 @@ object LobbyRepository {
 
     private val lobbySocket = LobbySocketHandler
     val pendingGames = mutableStateOf<PendingGames?>(null)
+    val observableGames = mutableStateOf<ObservableGames?>(null)
+
     private var isGameOwner = false
 
     private val onGameJoined: (gameJoined: GameJoined?) -> Unit = { gameJoined ->
@@ -22,9 +24,10 @@ object LobbyRepository {
         }
     }
 
-    private val onPendingGames: (pendingGames: PendingGames?) -> Unit = { newPendingGames ->
+    private val onPendingGames: (pendingGames: PendingAndObservableGames?) -> Unit = { newPendingGames ->
         newPendingGames?.let {
-            pendingGames.value = newPendingGames
+            pendingGames.value = newPendingGames.pendingGamesSettings
+            observableGames.value = newPendingGames.observableGamesSettings
         }
     }
 

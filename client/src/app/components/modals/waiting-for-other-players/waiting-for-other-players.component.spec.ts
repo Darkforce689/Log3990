@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { WaitingForOtherPlayersComponent } from './waiting-for-other-players.component';
 
 const mockDialogRef = {
@@ -19,13 +19,14 @@ describe('WaitingForOtherPlayersComponent', () => {
     let pendingGameId$: Subject<string>;
     let gameSettings$: Subject<OnlineGameSettings>;
     let deletedGame$: Observable<boolean>;
+    let isWaiting$: BehaviorSubject<boolean>;
 
     beforeEach(async () => {
         matDialog = jasmine.createSpyObj('MatDialog', ['open']);
         onlineSocketHandlerSpy = jasmine.createSpyObj(
             'NewOnlineGameSocketHandler',
             ['createGame', 'listenForPendingGames', 'disconnectSocket', 'joinPendingGame', 'launchGame'],
-            ['pendingGames$', 'pendingGameId$', 'deletedGame$', 'gameSettings$'],
+            ['pendingGames$', 'pendingGameId$', 'deletedGame$', 'gameSettings$', 'isWaiting$'],
         );
         await TestBed.configureTestingModule({
             imports: [BrowserAnimationsModule, AppMaterialModule],
@@ -50,6 +51,10 @@ describe('WaitingForOtherPlayersComponent', () => {
         (
             Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'gameSettings$')?.get as jasmine.Spy<() => Observable<OnlineGameSettings>>
         ).and.returnValue(gameSettings$);
+        isWaiting$ = new BehaviorSubject<boolean>(false);
+        (Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'isWaiting$')?.get as jasmine.Spy<() => BehaviorSubject<boolean>>).and.returnValue(
+            isWaiting$,
+        );
     });
 
     beforeEach(() => {

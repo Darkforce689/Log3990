@@ -1,7 +1,10 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { WAIT_STATUS } from '@app/game-logic/constants';
 import { SocketMock } from '@app/game-logic/socket-mock';
+import { AccountService } from '@app/services/account.service';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
@@ -16,15 +19,20 @@ describe('NewOnlineGameSocketHandler', () => {
         id: '1',
         timePerTurn: 60000,
         playerNames: ['allo1'],
+        privateGame: false,
+        gameStatus: WAIT_STATUS,
         randomBonus: false,
         gameMode: GameMode.Classic,
         botDifficulty: BotDifficulty.Easy,
         numberOfPlayers: 2,
         magicCardIds: [],
+        tmpPlayerNames: [],
+        password: undefined,
     } as OnlineGameSettingsUI;
+    const accountService = { account: { name: 'Tim' } };
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({ providers: [{ provide: AccountService, useValue: accountService }], imports: [HttpClientTestingModule] });
         service = TestBed.inject(NewOnlineGameSocketHandler);
         createSocketFunction = service['connectToSocket'];
         service['connectToSocket'] = jasmine.createSpy().and.returnValue(new SocketMock());
@@ -54,7 +62,7 @@ describe('NewOnlineGameSocketHandler', () => {
     it('join pending game should throw error if socket not connected', () => {
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(false);
         expect(() => {
-            service.joinPendingGame('abc');
+            service.joinPendingGame('abc', '');
         }).toThrowError();
     });
 
@@ -62,7 +70,7 @@ describe('NewOnlineGameSocketHandler', () => {
         spyOnProperty(service.socket, 'connected', 'get').and.returnValue(true);
         spyOn<any>(service, 'listenForUpdatedGameSettings').and.callThrough();
         spyOn(service, 'disconnectSocket').and.callThrough();
-        service.joinPendingGame('abc');
+        service.joinPendingGame('abc', '');
         expect(service['listenForUpdatedGameSettings']).toHaveBeenCalled();
 
         (service.socket as any).peerSideEmit('gameStarted', gameSettings);
@@ -74,13 +82,14 @@ describe('NewOnlineGameSocketHandler', () => {
     });
 
     it('listenForPendingGames should return pending games', () => {
-        const pendingGames = [gameSettings];
+        const pendingGamesSettings = [gameSettings];
+        const observableGamesSettings = [gameSettings];
 
         service.pendingGames$.pipe().subscribe((value) => {
             expect(value).not.toBeUndefined();
         });
         service.listenForPendingGames();
-        (service.socket as any).peerSideEmit('pendingGames', pendingGames as OnlineGameSettings[]);
+        (service.socket as any).peerSideEmit('pendingGames', { pendingGamesSettings, observableGamesSettings });
     });
 
     it('listenForError should return error message', () => {

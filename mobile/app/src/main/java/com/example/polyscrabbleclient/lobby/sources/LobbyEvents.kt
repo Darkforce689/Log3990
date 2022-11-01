@@ -14,7 +14,7 @@ val LobbyEventTypes = mapOf(
     ),
     Pair(
         OnLobbyEvent.PendingGames,
-        PendingGames::class.java
+        PendingAndObservableGames::class.java
     ),
     Pair(
         OnLobbyEvent.PendingGameId,

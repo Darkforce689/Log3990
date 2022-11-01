@@ -35,6 +35,9 @@ import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.com
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
 import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.service';
 import { ConversationPickerComponent } from './chat/components/conversation-picker/conversation-picker.component';
+import { CreateConversationComponent } from './chat/components/create-conversation/create-conversation.component';
+import { JoinConversationComponent } from './chat/components/join-conversation/join-conversation.component';
+import { MessageComponent } from './chat/components/message/message.component';
 import { AlertDialogComponent } from './components/modals/alert-dialog/alert-dialog.component';
 import { LoadingGameComponent } from './components/modals/loading-game/loading-game.component';
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
@@ -43,9 +46,6 @@ import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/mag
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
-import { JoinConversationComponent } from './chat/components/join-conversation/join-conversation.component';
-import { CreateConversationComponent } from './chat/components/create-conversation/create-conversation.component';
-import { MessageComponent } from './chat/components/message/message.component';
 
 /**
  * Main module that is used in main.ts.

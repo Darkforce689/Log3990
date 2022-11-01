@@ -11,7 +11,7 @@ import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-
     styleUrls: ['./join-online-game.component.scss'],
 })
 export class JoinOnlineGameComponent implements AfterContentChecked {
-    myName: FormControl;
+    password: FormControl = new FormControl('', []);
     deleted: boolean = false;
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: OnlineGameSettings,
@@ -35,14 +35,17 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
     cancel(): void {
         this.dialogRef.close();
         this.deleted = false;
-        this.myName.reset();
+        this.password.reset();
     }
 
     sendParameter(): void {
-        this.dialogRef.close();
-        this.socketHandler.joinPendingGame(this.data.id);
+        this.dialogRef.close(this.password.value);
+        this.socketHandler.joinPendingGame(this.data.id, this.password.value);
         this.socketHandler.error$.subscribe((error: string) => {
             if (error) {
+                if (error === 'Mauvais mot de passe' || error === "L'hôte vous a retiré de la partie") {
+                    this.dialog.closeAll();
+                }
                 this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error });
             }
         });
@@ -52,5 +55,13 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
 
     get randomBonusType() {
         return this.data.randomBonus ? 'est activé' : 'est désactivé';
+    }
+
+    get privateGameType() {
+        return this.data.privateGame ? 'Privée' : 'Publique';
+    }
+
+    get hasPassword() {
+        return this.data.password !== undefined;
     }
 }
