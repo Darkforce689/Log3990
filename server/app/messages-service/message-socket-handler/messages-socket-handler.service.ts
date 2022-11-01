@@ -234,15 +234,29 @@ export class MessagesSocketHandler {
         this.sio.to(roomID).emit(ROOM_MESSAGES, message);
     }
 
-    private sendGlobalSystemMessage(globalMessage: GlobalSystemMessage) {
+    private async sendGlobalSystemMessage(globalMessage: GlobalSystemMessage) {
         const roomId = globalMessage.gameToken;
         const content = globalMessage.content;
-        const message: SystemMessageDTO = {
+        const { _id: from } = await this.userService.getSystemUser();
+
+        const room = this.activeRooms.get(roomId);
+        if (!room) {
+            return;
+        }
+
+        const sysMessage: SystemMessageDTO = {
             content,
             conversation: roomId,
             date: new Date(),
         };
-        this.sio.to(roomId).emit(SYSTEM_MESSAGES, message);
+
+        const message = {
+            from,
+            ...sysMessage,
+        };
+        room.addSystemMessage(message);
+
+        this.sio.to(roomId).emit(SYSTEM_MESSAGES, sysMessage);
     }
 
     private async sendIndividualSystemMessage(individualMessage: IndividualSystemMessage) {

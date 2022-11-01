@@ -21,17 +21,15 @@ export class Room {
         if (!isUserInConvo) {
             throw Error("Can't join the room: You have not joined the conversation");
         }
+        await this.addMessageToConversation(message);
+    }
 
-        const conversation = new ObjectId(this.conversation!._id);
-        const from = new ObjectId(message.from);
-        const { content, date } = message;
-        const convoMessage: ConvoMessage = {
-            from,
-            content,
-            date,
-            conversation,
-        };
-        await this.messageService.addMessage(convoMessage);
+    async addSystemMessage(message: Message) {
+        if (this.isTmpConversation) {
+            return;
+        }
+
+        this.addMessageToConversation(message);
     }
 
     private get isTmpConversation() {
@@ -60,5 +58,18 @@ export class Room {
 
     async deleteUser(userId: string) {
         this.userIds.delete(userId);
+    }
+
+    private async addMessageToConversation(message: Message) {
+        const conversation = new ObjectId(this.conversation!._id);
+        const from = new ObjectId(message.from);
+        const { content, date } = message;
+        const convoMessage: ConvoMessage = {
+            from,
+            content,
+            date,
+            conversation,
+        };
+        await this.messageService.addMessage(convoMessage);
     }
 }

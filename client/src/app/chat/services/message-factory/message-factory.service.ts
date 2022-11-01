@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { SYSTEM_USER_NAME } from '@app/chat/constants';
 import { ChatMessage, Message, MessageType } from '@app/chat/interfaces/message.interface';
 import { AccountService } from '@app/services/account.service';
 import { UserCacheService } from '@app/users/user-cache.service';
@@ -31,11 +32,12 @@ export class MessageFactoryService {
 
         this.userCache.getUser(chatMessage.from).subscribe((user) => {
             const from = user === undefined ? 'USER_DOES_NOT_EXIST' : user.name;
+            const type = from === SYSTEM_USER_NAME ? MessageType.System : MessageType.FromOther;
             subject.next({
                 from,
                 content,
                 date,
-                type: MessageType.FromOther,
+                type,
             });
         });
         return subject;

@@ -18,11 +18,8 @@ export class SystemMessagesService {
 
     constructor(private gameActionNotifier: GameActionNotifierService) {
         this.gameActionNotifier.notification$.subscribe((notification: GameActionNotification) => {
-            const playerNames = notification.to;
-            const gameToken = notification.gameToken;
-            for (const playerName of playerNames) {
-                this.sendIndividual(playerName, gameToken, notification.content);
-            }
+            const { gameToken, content } = notification;
+            this.sendGlobal(gameToken, content);
         });
     }
 

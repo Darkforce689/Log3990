@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { USER_COLLECTION } from '@app/constants';
+import { SYSTEM_USER_NAME, USER_COLLECTION } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
 import { ServerLogger } from '@app/logger/logger';
@@ -16,10 +16,24 @@ export enum UserCreationError {
 }
 @Service()
 export class UserService {
+    private systemUser: User | undefined;
+
     constructor(private mongoService: MongoDBClientService) {}
 
     private get collection() {
         return this.mongoService.db.collection(USER_COLLECTION);
+    }
+
+    async getSystemUser() {
+        if (this.systemUser) {
+            return this.systemUser;
+        }
+        const sysUser = await this.collection.findOne({ name: SYSTEM_USER_NAME });
+        if (!sysUser) {
+            throw Error(`No system user please create one in collection: ${USER_COLLECTION}`);
+        }
+        this.systemUser = sysUser as User;
+        return this.systemUser;
     }
 
     async createUser(userCreation: UserCreation): Promise<ObjectCrudResult<User>> {
