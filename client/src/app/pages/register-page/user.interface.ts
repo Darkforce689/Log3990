@@ -4,4 +4,8 @@ export interface User {
     name: string;
     email: string;
     avatar: string;
+    averagePoints: number;
+    nGamePlayed: number;
+    nGameWinned: number;
+    averageTimePerGame: number;
 }

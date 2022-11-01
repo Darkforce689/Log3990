@@ -9,13 +9,21 @@ import { UserCreationError } from '@app/services/auth-errors';
 import { first } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-account-page',
-    templateUrl: './account-page.component.html',
-    styleUrls: ['./account-page.component.scss'],
+    selector: 'app-profil',
+    templateUrl: './profil.component.html',
+    styleUrls: ['./profil.component.scss'],
 })
-export class AccountPageComponent implements OnInit {
-    user: User = { _id: '', name: '', email: '', avatar: 'default' };
-
+export class ProfilComponent implements OnInit {
+    user: User = {
+        _id: '',
+        name: '',
+        email: '',
+        avatar: 'default',
+        averagePoints: 0,
+        nGamePlayed: 0,
+        nGameWinned: 0,
+        averageTimePerGame: 0,
+    };
     name = new FormControl('', [
         Validators.required,
         Validators.minLength(MIN_NAME_LENGTH),

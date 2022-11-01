@@ -1,0 +1,56 @@
+mat-card {
+    padding: 3%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+    mat-card-content {
+        p {
+            margin-top: 3%;
+        }
+    }
+    .mat-divider-horizontal {
+        position: unset;
+        left: 0;
+        width: 80%;
+        padding-bottom: 4%;
+    
+    }
+}
+
+.container {
+    width : 80vw;
+    padding-left: 5%;
+}
+
+h1 {
+    padding-bottom: 5%;
+    padding-top: 5%;
+    font-size: xx-large;
+    font-weight: 600;
+    justify-content: start;
+}
+
+table {
+    width: 500px;
+    height: 325px;
+}
+
+.mat-header-cell {
+    font-size: 16px !important;
+    padding: 2%;
+    padding-left: 3%;
+    border-bottom: 2px solid !important;
+}
+
+.mat-cell {
+    padding: 2%;
+    padding-left: 3%;
+}
+
+.stats-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-right: 15%;
+}

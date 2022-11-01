@@ -29,6 +29,8 @@ import { ConversationService } from '@app/messages-service/services/conversation
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
+import { GameStats } from '@app/user/interfaces/game-stats.interface';
+import { UserService } from '@app/user/user.service';
 import { expect } from 'chai';
 import { before } from 'mocha';
 import { Observable } from 'rxjs';
@@ -53,6 +55,8 @@ describe('GameManagerService', () => {
     let stubActionCreatorService: ActionCreatorService;
     let clock: sinon.SinonFakeTimers;
     let stubActionNotifier: GameActionNotifierService;
+    let stubUserService: UserService;
+
     let stubConversationService: ConversationService;
     before(() => {
         stubPointCalculator = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
@@ -67,6 +71,7 @@ describe('GameManagerService', () => {
         stubBotManager = {} as BotManager;
         stubActionCreatorService = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
         stubActionNotifier = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
+        stubUserService = createSinonStubInstance<UserService>(UserService);
         stubConversationService = createSinonStubInstance(ConversationService);
     });
 
@@ -89,6 +94,7 @@ describe('GameManagerService', () => {
             stubConversationService,
             stubActionNotifier,
             stubActionCreatorService,
+            stubUserService,
         );
     });
 
@@ -632,7 +638,7 @@ describe('GameManagerService', () => {
             password,
         };
         await service.createGame(gameToken, gameSettings);
-        service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [] });
+        service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [], stats: new Map<string, GameStats>() });
         expect(service.activeGames.size).to.be.equal(0);
     });
 
@@ -655,6 +661,7 @@ describe('GameManagerService', () => {
             gameToken: 'gameToken',
             reason: EndOfGameReason.GameEnded,
             players: game.players,
+            stats: new Map<string, GameStats>(),
         });
     });
 
@@ -676,7 +683,7 @@ describe('GameManagerService', () => {
             password,
         };
         await service.createGame(gameToken, gameSettings);
-        service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player] });
+        service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player], stats: new Map<string, GameStats>() });
         expect(service.activeGames.size).to.be.equal(0);
     });
 });

@@ -1,4 +1,12 @@
-import { CONVERSATION_COLLECTION, DATABASE_URL, GENERAL_CHANNEL, MESSAGE_COLLECTION, USER_COLLECTION, USER_CREDS_COLLECTION } from '@app/constants';
+import {
+    CONVERSATION_COLLECTION,
+    DATABASE_URL,
+    GENERAL_CHANNEL,
+    LOGS_COLLECTION,
+    MESSAGE_COLLECTION,
+    USER_COLLECTION,
+    USER_CREDS_COLLECTION,
+} from '@app/constants';
 import {
     DEFAULT_LEADERBOARD_CLASSIC,
     DEFAULT_LEADERBOARD_LOG,
@@ -30,6 +38,7 @@ export class DatabaseService {
         this.createUserCredentialsCollection();
         this.createConversationCollection();
         this.createMessagesCollection();
+        this.createLogsCollection();
         await this.redisService.start();
     }
 
@@ -127,6 +136,18 @@ export class DatabaseService {
         } catch (error) {
             ServerLogger.logError(error);
             throw Error('Data base collection creation error');
+        }
+    }
+
+    private async createLogsCollection() {
+        try {
+            const isCollectionExist = await this.isCollectionInDb(LOGS_COLLECTION);
+            if (isCollectionExist) {
+                return;
+            }
+            await this.db.createCollection(LOGS_COLLECTION);
+        } catch (e) {
+            throw Error('Data base logs collection creation error');
         }
     }
 

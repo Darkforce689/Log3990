@@ -1,0 +1,35 @@
+<div class="container">
+    <h1 class="primary-color">Statistiques</h1>
+    <div class="stats-container"> 
+        <mat-card>
+            <h2>Statistiques de jeux</h2>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <p>Parties jouées: {{ nGamePlayed }}</p>
+                <p>Parties gagnées: {{ nGameWinned }}</p>
+                <p>Moyenne de points par partie: {{ averagePoints | number: roundRules }}</p>
+                <p>Moyenne de temps par partie: {{ timeFormatted }} </p>
+            </mat-card-content>
+        </mat-card>
+  
+        <mat-card>
+            <h2>Historique de connexions</h2>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <table mat-table [dataSource]="logsSource" class="mat-elevation-z8">
+                    <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+                        <th mat-header-cell *matHeaderCellDef>
+                            {{ column.header }}
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                            {{ column.cell(row) }}
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+                    <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+                </table>
+                <mat-paginator (page)="getLogHistory()" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons> </mat-paginator>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

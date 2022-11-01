@@ -4,6 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AvatarListComponent } from '@app/account/components/avatar-list/avatar-list.component';
+import { AvatarComponent } from '@app/account/components/avatar/avatar.component';
+import { ProfilComponent } from '@app/account/components/profil/profil.component';
 import { ChatBoxComponent } from '@app/chat/components/chat-box/chat-box.component';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
@@ -21,9 +24,7 @@ import { PreventContextMenuDirective } from '@app/directives/prevent-context-men
 import { AuthInterceptor } from '@app/interceptors/auth.interceptor';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { AccountPageComponent } from '@app/pages/account/account-page/account-page.component';
-import { AvatarListComponent } from '@app/pages/account/avatar-list/avatar-list.component';
-import { AvatarComponent } from '@app/pages/account/avatar/avatar.component';
+import { AccountPageComponent } from '@app/pages/account-page/account-page.component';
 import { AppComponent } from '@app/pages/app/app.component';
 import { BoardComponent } from '@app/pages/game-page/board/board.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
@@ -34,6 +35,7 @@ import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
 import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.service';
+import { GameStatsPageComponent } from './account/components/game-stats-page/game-stats-page.component';
 import { ConversationPickerComponent } from './chat/components/conversation-picker/conversation-picker.component';
 import { CreateConversationComponent } from './chat/components/create-conversation/create-conversation.component';
 import { JoinConversationComponent } from './chat/components/join-conversation/join-conversation.component';
@@ -92,10 +94,12 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         AccountPageComponent,
         AvatarListComponent,
         AvatarComponent,
+        GameStatsPageComponent,
         ConversationPickerComponent,
         JoinConversationComponent,
         CreateConversationComponent,
         MessageComponent,
+        ProfilComponent,
     ],
     imports: [
         AppMaterialModule,

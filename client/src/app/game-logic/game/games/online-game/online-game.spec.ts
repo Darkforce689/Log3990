@@ -34,6 +34,10 @@ describe('OnlineGame', () => {
             _id: '1',
             email: 'a@b.c',
             avatar: 'frite',
+            averagePoints: 0,
+            nGamePlayed: 0,
+            nGameWinned: 0,
+            averageTimePerGame: 0,
         });
 
         TestBed.configureTestingModule({
