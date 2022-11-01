@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BaseMessage, ChatMessage } from '@app/chat/interfaces/message.interface';
+import { BaseMessage, ChatMessage, SystemMessage } from '@app/chat/interfaces/message.interface';
 import { isSocketConnected } from '@app/game-logic/utils';
 import { AccountService } from '@app/services/account.service';
 import { AuthService } from '@app/services/auth.service';
@@ -14,7 +14,7 @@ export class OnlineChatHandlerService {
     socket: Socket;
     private newRoomMessageSubject = new Subject<ChatMessage>();
     private errorSubject = new Subject<string>();
-    private sysMessageSubject = new Subject<string>();
+    private sysMessageSubject = new Subject<SystemMessage>();
     private joinedRooms = new Set<string>();
 
     // TODO refactor remove accountService
@@ -85,8 +85,8 @@ export class OnlineChatHandlerService {
             this.receiveServerMessage(message);
         });
 
-        this.socket.on('systemMessages', (content: string) => {
-            this.receiveSystemMessage(content);
+        this.socket.on('systemMessages', (message: SystemMessage) => {
+            this.receiveSystemMessage(message);
         });
     }
 
@@ -103,8 +103,8 @@ export class OnlineChatHandlerService {
         this.newRoomMessageSubject.next(message);
     }
 
-    private receiveSystemMessage(content: string) {
-        this.sysMessageSubject.next(content);
+    private receiveSystemMessage(message: SystemMessage) {
+        this.sysMessageSubject.next(message);
     }
 
     get isConnected(): boolean {
@@ -123,7 +123,7 @@ export class OnlineChatHandlerService {
         return this.errorSubject;
     }
 
-    get systemMessage$(): Observable<string> {
+    get systemMessage$(): Observable<SystemMessage> {
         return this.sysMessageSubject;
     }
 }

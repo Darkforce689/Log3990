@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
@@ -12,6 +13,7 @@ import { RoomFactory } from '@app/messages-service/room/room-factory.service';
 import { GlobalSystemMessage, IndividualSystemMessage, SystemMessageDTO } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
+import { User } from '@app/user/interfaces/user.interface';
 import { UserService } from '@app/user/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -28,6 +30,12 @@ describe('MessagesService', () => {
     let port: number;
     let httpServer: Server;
     let room: StubbedClass<Room>;
+    const mockUser = {
+        _id: 'abcdefghijklmnop',
+        name: 'abc',
+    } as unknown as User;
+
+    const playerName = 'abc';
 
     const mockGlobalSystemMessages$ = new Subject<GlobalSystemMessage>();
     const mockIndividualSystemMessages$ = new Subject<IndividualSystemMessage>();
@@ -42,6 +50,7 @@ describe('MessagesService', () => {
             const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
             const authService = createSinonStubInstance(AuthService);
             const userService = createSinonStubInstance(UserService);
+            userService.getUser.resolves(mockUser);
             const roomFactory = createSinonStubInstance(RoomFactory);
 
             room = createSinonStubInstance(Room);
@@ -286,17 +295,16 @@ describe('MessagesService', () => {
         };
         clientSocket.on(SYSTEM_MESSAGES, (message: SystemMessageDTO) => {
             expect(message.content).to.deep.equal(sysMessage.content);
-            expect(message.roomId).to.deep.equal(sysMessage.gameToken);
+            expect(message.conversation).to.deep.equal(sysMessage.gameToken);
             done();
         });
     });
 
     it('should send individual system message', (done) => {
-        const playerName = 'abc';
         clientSocket.emit('userName', playerName);
         const gameToken = 'def';
         clientSocket.emit('joinRoom', gameToken);
-        room.userIdToSocketId.set(playerName, clientSocket.id);
+        room.userIdToSocketId.set(mockUser._id, clientSocket.id);
         serverSocket.on('joinRoom', () => {
             setTimeout(() => mockIndividualSystemMessages$.next(sysMessage), 50);
         });
@@ -307,13 +315,12 @@ describe('MessagesService', () => {
         };
         clientSocket.on(SYSTEM_MESSAGES, (message: SystemMessageDTO) => {
             expect(message.content).to.deep.equal(sysMessage.content);
-            expect(message.roomId).to.deep.equal(sysMessage.gameToken);
+            expect(message.conversation).to.deep.equal(sysMessage.gameToken);
             done();
         });
     });
 
     it('should throws when sending individual system message to unconnected client', (done) => {
-        const playerName = 'abc';
         clientSocket.emit('userName', playerName);
         const sysMessage: IndividualSystemMessage = {
             content: 'allo',

@@ -94,10 +94,10 @@ export class ConversationService {
         this.setJoinedConversations(currentJoinedConvos);
     }
 
-    leaveGameConversation() {
+    leaveGameConversation(): Conversation | undefined {
         const gameConvo = this.gameConversation;
         if (!gameConvo) {
-            throw Error('You have not joined a game convo yet');
+            return;
         }
         const currentJoinedConvos = this.joinedConversations$.value;
         const gameConvoIndex = currentJoinedConvos.indexOf(gameConvo);
