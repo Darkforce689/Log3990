@@ -3,6 +3,7 @@ import { USER_COLLECTION } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
 import { ServerLogger } from '@app/logger/logger';
+import { GameStats } from '@app/user/interfaces/game-stats.interface';
 import { UserCreation } from '@app/user/interfaces/user-creation.interface';
 import { User } from '@app/user/interfaces/user.interface';
 import { UserQuery } from '@app/user/user-query.interface';
@@ -106,6 +107,36 @@ export class UserService {
                 throw Error('No user found.');
             }
             this.collection.updateOne({ _id: query._id }, { $set: { avatar } });
+        } catch (error) {
+            ServerLogger.logError(error);
+            return ['UNEXPECTED_ERROR'];
+        }
+        return [];
+    }
+
+    async updateStatistics(gameStats: GameStats, name: string): Promise<string[]> {
+        try {
+            const { isWinner, points, totalTime } = gameStats;
+            if (!this.collection.find({ name })) {
+                throw Error('No user found.');
+            }
+            const user = (await this.collection.findOne({ name: { $eq: name } })) as unknown as User;
+            const averagePoints = user.averagePoints ? user.averagePoints : 0;
+            const nGamePlayed = user.nGamePlayed ? user.nGamePlayed : 0;
+            const nGameWinned = user.nGameWinned ? user.nGameWinned : 0;
+            const averageTimePerGame = user.averageTimePerGame ? user.averageTimePerGame : 0;
+
+            this.collection.updateOne(
+                { name },
+                {
+                    $set: {
+                        averagePoints: (averagePoints * nGamePlayed + points) / (nGamePlayed + 1),
+                        nGamePlayed: nGamePlayed + 1,
+                        nGameWinned: isWinner ? nGameWinned + 1 : nGameWinned,
+                        averageTimePerGame: (averageTimePerGame * nGamePlayed + totalTime) / (nGamePlayed + 1),
+                    },
+                },
+            );
         } catch (error) {
             ServerLogger.logError(error);
             return ['UNEXPECTED_ERROR'];

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '@app/guards/auth.guard';
-import { AccountPageComponent } from '@app/pages/account/account-page/account-page.component';
+import { AccountPageComponent } from '@app/pages/account-page/account-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { LoginPageComponent } from '@app/pages/login-page/login-page.component';

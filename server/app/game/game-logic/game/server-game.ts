@@ -25,6 +25,7 @@ export class ServerGame {
     consecutivePass: number = 0;
     board: Board;
     timer: Timer;
+    startTime: number;
 
     isEnded$ = new Subject<undefined>();
     endReason: EndOfGameReason;
@@ -52,6 +53,7 @@ export class ServerGame {
         this.drawGameLetters();
         this.pickFirstPlayer();
         this.emitGameState();
+        this.startTime = Date.now();
         this.startTurn();
     }
 
@@ -185,10 +187,12 @@ export class ServerGame {
     }
 
     protected onEndOfGame(reason: EndOfGameReason) {
+        const totalGameTime = Date.now() - this.startTime;
         this.pointCalculator.endOfGamePointDeduction(this);
         this.displayLettersLeft();
         this.emitGameState();
-        this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players });
+        const stats = this.gameCompiler.compileGameStatistics(this.players, this.getWinner(), totalGameTime);
+        this.endGameSubject.next({ gameToken: this.gameToken, reason, players: this.players, stats });
     }
 
     private nextPlayer(delta: number = 1) {

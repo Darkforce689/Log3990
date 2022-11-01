@@ -37,6 +37,10 @@ describe('New Online Game Service', () => {
         _id: '1',
         email: '',
         avatar: '',
+        averagePoints: 0,
+        nGamePlayed: 0,
+        nGameWinned: 0,
+        averageTimePerGame: 0,
     };
     before((done) => {
         httpServer = createServer();

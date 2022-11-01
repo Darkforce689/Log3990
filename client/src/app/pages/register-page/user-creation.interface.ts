@@ -3,4 +3,8 @@ export interface UserCreation {
     email: string;
     password: string;
     avatar: string;
+    averagePoints: number;
+    averageTimePerGame: number;
+    nGamePlayed: number;
+    nGameWinned: number;
 }

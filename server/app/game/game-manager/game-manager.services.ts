@@ -27,6 +27,8 @@ import { ServerLogger } from '@app/logger/logger';
 import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
+import { GameStats } from '@app/user/interfaces/game-stats.interface';
+import { UserService } from '@app/user/user.service';
 import { Observable, Subject } from 'rxjs';
 import { Service } from 'typedi';
 
@@ -76,6 +78,7 @@ export class GameManagerService {
         private conversationService: ConversationService,
         protected actionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
+        protected userService: UserService,
     ) {
         this.gameCreator = new GameCreator(
             this.pointCalculator,
@@ -94,6 +97,7 @@ export class GameManagerService {
             if (endOfGame.reason === EndOfGameReason.GameEnded) {
                 this.updateLeaderboard(endOfGame.players, gameToken);
             }
+            this.updateGameStatistics(endOfGame.stats);
             this.deleteGame(gameToken);
         });
     }
@@ -258,5 +262,9 @@ export class GameManagerService {
                 const score = { name: player.name, point: player.points };
                 this.leaderboardService.updateLeaderboard(score, gameMode);
             });
+    }
+
+    private updateGameStatistics(stats: Map<string, GameStats>) {
+        stats.forEach(async (gameStats, name) => this.userService.updateStatistics(gameStats, name));
     }
 }

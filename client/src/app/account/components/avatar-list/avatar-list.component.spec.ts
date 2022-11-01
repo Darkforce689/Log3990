@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AvatarListComponent } from '@app/pages/account/avatar-list/avatar-list.component';
+import { AvatarListComponent } from '@app/account/components/avatar-list/avatar-list.component';
+import { AppMaterialModule } from '@app/modules/material.module';
 
 describe('AvatarComponent', () => {
     let component: AvatarListComponent;
@@ -8,6 +9,7 @@ describe('AvatarComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [AvatarListComponent],
+            imports: [AppMaterialModule],
         }).compileComponents();
     });
 

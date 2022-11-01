@@ -2,7 +2,9 @@ import { Tile } from '@app/game/game-logic/board/tile';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { ForfeitPlayerInfo, GameState, LightPlayer, MagicGameState } from '@app/game/game-logic/interface/game-state.interface';
+import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { Player } from '@app/game/game-logic/player/player';
+import { GameStats } from '@app/user/interfaces/game-stats.interface';
 import { Service } from 'typedi';
 
 @Service()
@@ -17,6 +19,18 @@ export class GameCompiler {
 
     compilePlayerInfo(playerInfo: Player, previousPlayerName: string): ForfeitPlayerInfo {
         return { name: playerInfo.name, previousPlayerName };
+    }
+
+    compileGameStatistics(players: Player[], winners: Player[], totalTime: number): Map<string, GameStats> {
+        const gameStats = new Map<string, GameStats>();
+        winners
+            .filter((player) => !(player instanceof BotPlayer))
+            .forEach((winner) => gameStats.set(winner.name, { isWinner: true, points: winner.points, totalTime }));
+        players
+            .filter((player) => !(player instanceof BotPlayer))
+            .filter((player) => !gameStats.has(player.name))
+            .forEach((player) => gameStats.set(player.name, { isWinner: false, points: player.points, totalTime }));
+        return gameStats;
     }
 
     private compileGameState(game: ServerGame): GameState {

@@ -1,3 +1,4 @@
+import { UserLogService } from '@app/account/user-log/user-log.service';
 import { Application } from '@app/app';
 import { AppSocketHandler } from '@app/auth/app-socket-handler.service';
 import { AuthService } from '@app/auth/services/auth.service';
@@ -37,6 +38,7 @@ export class Server {
         private authService: AuthService,
         private userService: UserService,
         private roomFactory: RoomFactory,
+        private userLogService: UserLogService,
     ) {}
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -91,7 +93,7 @@ export class Server {
         );
         this.messageHandler.handleSockets();
 
-        this.appSocketHandler = new AppSocketHandler(this.server, this.sessionMiddlewareService, this.authService);
+        this.appSocketHandler = new AppSocketHandler(this.server, this.sessionMiddlewareService, this.authService, this.userLogService);
         this.appSocketHandler.handleSockets();
 
         this.server.listen(Server.appPort);
