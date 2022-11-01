@@ -4,6 +4,7 @@ import {
     GENERAL_CHANNEL,
     LOGS_COLLECTION,
     MESSAGE_COLLECTION,
+    SYSTEM_USER_NAME,
     USER_COLLECTION,
     USER_CREDS_COLLECTION,
 } from '@app/constants';
@@ -51,6 +52,7 @@ export class DatabaseService {
             const collection = await this.db.createCollection(USER_COLLECTION);
             await collection.createIndex({ email: 1 }, { unique: true });
             await collection.createIndex({ name: 1 }, { unique: true });
+            await collection.insertOne({ email: 'system@scrabble.com', name: SYSTEM_USER_NAME, avatar: 'elephant' });
         } catch (e) {
             throw Error('Data base users collection creation error');
         }

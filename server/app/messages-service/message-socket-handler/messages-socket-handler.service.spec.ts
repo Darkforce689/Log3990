@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
-import { MAX_MESSAGE_LENGTH } from '@app/constants';
+import { MAX_MESSAGE_LENGTH, SYSTEM_USER_NAME } from '@app/constants';
 import { MessagesSocketHandler, SYSTEM_MESSAGES } from '@app/messages-service/message-socket-handler/messages-socket-handler.service';
 import { Message } from '@app/messages-service/message.interface';
 import { Room } from '@app/messages-service/room/room';
@@ -51,6 +51,7 @@ describe('MessagesService', () => {
             const authService = createSinonStubInstance(AuthService);
             const userService = createSinonStubInstance(UserService);
             userService.getUser.resolves(mockUser);
+            userService.getSystemUser.resolves({ name: SYSTEM_USER_NAME, _id: 'system-very-long-id' } as unknown as User);
             const roomFactory = createSinonStubInstance(RoomFactory);
 
             room = createSinonStubInstance(Room);
@@ -287,7 +288,7 @@ describe('MessagesService', () => {
         serverSocket.on('joinRoom', () => {
             setTimeout(() => {
                 mockGlobalSystemMessages$.next(sysMessage);
-            }, 50);
+            }, 15);
         });
         const sysMessage: GlobalSystemMessage = {
             content: 'allo',
