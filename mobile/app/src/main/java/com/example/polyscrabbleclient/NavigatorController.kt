@@ -14,7 +14,7 @@ import com.example.polyscrabbleclient.auth.components.SignUpScreen
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.game.view.GameScreen
-import com.example.polyscrabbleclient.lobby.view.LobbyScreen
+import com.example.polyscrabbleclient.lobby.view.JoinGameView
 import com.example.polyscrabbleclient.lobby.view.NewGameScreen
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
@@ -26,7 +26,7 @@ enum class NavPage(val label: String) {
     SignUp("signUpPage"),
     MainPage("mainPage"),
     GamePage("gamePage"),
-    LobbyPage("lobbyPage"),
+    JoinGamePage("joinGamePage"),
     Prototype("prototype"),
     Room("messageList"),
     Profil("profil"),
@@ -63,9 +63,6 @@ fun NavGraphBuilder.newGame(navController: NavController) {
     navigation(startDestination = NavPage.NewGame.label, route = NavPage.NewGameRoute.label) {
         composable(NavPage.NewGame.label) {
             NewGameScreen(navController, CreateGameViewModel())
-        }
-        composable(NavPage.LobbyPage.label) {
-            LobbyScreen(navController)
         }
     }
 }

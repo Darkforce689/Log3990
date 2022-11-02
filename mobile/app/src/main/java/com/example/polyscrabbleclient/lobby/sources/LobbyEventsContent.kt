@@ -37,6 +37,7 @@ typealias PendingGames = ArrayList<OnlineGameSettings>
 
 typealias ObservableGames = ArrayList<OnlineGameSettings>
 
+typealias PendingGameId = String
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
 
@@ -49,8 +50,6 @@ data class PendingAndObservableGames(
     val observableGamesSettings: ObservableGames
 )
 
-typealias PendingGameId = GameToken
-
 typealias Error = String
 
 data class CreateGame (
@@ -62,14 +61,11 @@ data class CreateGame (
     val numberOfPlayers: Int,
 )
 
+typealias LaunchGame = PendingGameId
+
 data class JoinGame(
-    val id: GameToken,
+    val id: PendingGameId,
     val password: String? = null,
 )
 
-typealias LaunchGame = GameToken
-
-// TODO
-typealias HostQuit = Nullable
-
-typealias GameToken = String
+typealias HostQuit = Unit
