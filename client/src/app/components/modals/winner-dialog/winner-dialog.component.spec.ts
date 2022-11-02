@@ -45,9 +45,9 @@ describe('WinnerDialogComponent', () => {
 
     it('should get the correct winner names', () => {
         data.winnerNames = ['a', 'b'];
-        expect(component.getWinnerMessage()).toBe('Les gagnants de la partie sont a et b');
+        expect(component.getWinnerMessage()).toBe('Les gagnants de la partie sont a et b.');
         data.winnerNames = ['a'];
-        expect(component.getWinnerMessage()).toBe('Le gagnant de la partie est a');
+        expect(component.getWinnerMessage()).toBe('Le gagnant de la partie est a.');
     });
 
     it('should get the correct congratulation message', () => {

@@ -89,19 +89,29 @@ export class ServerGame {
         }
     }
 
-    getWinner(): Player[] {
+    getWinnerIndexes(): number[] {
         let highestScore = Number.MIN_SAFE_INTEGER;
-        let winners: Player[] = [];
+        let winners: number[] = [];
 
-        for (const player of this.players) {
+        this.players.forEach((player, index) => {
             if (player.points === highestScore) {
-                winners.push(player);
+                winners.push(index);
             }
             if (player.points > highestScore) {
                 highestScore = player.points;
-                winners = [player];
+                winners = [index];
             }
-        }
+        });
+        return winners;
+    }
+
+    getWinner(): Player[] {
+        const winners: Player[] = [];
+        const winnerIndexes = this.getWinnerIndexes();
+
+        winnerIndexes.forEach((index) => {
+            winners.push(this.players[index]);
+        });
         return winners;
     }
 
@@ -212,6 +222,7 @@ export class ServerGame {
     }
 
     private displayLettersLeft() {
+        // TODO: Fix systeme message
         let message = 'Fin de partie - lettres restantes';
         this.messagesService.sendGlobal(this.gameToken, message);
         for (const player of this.players) {
