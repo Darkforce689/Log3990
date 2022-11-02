@@ -6,15 +6,15 @@ import androidx.compose.material.Card
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
-import com.example.polyscrabbleclient.NavPage
+import com.example.polyscrabbleclient.lobby.domain.ModalResult
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.view.createGame.CreateGameModalContent
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
@@ -24,12 +24,17 @@ import com.example.polyscrabbleclient.ui.theme.*
 @Composable
 fun NewGameScreen(
     navController: NavController,
-    createGameViewModel: CreateGameViewModel
+    createGameViewModel: CreateGameViewModel,
 ) {
-    val dialogState = remember { mutableStateOf(false) }
+    val createGameDialogOpened = remember { mutableStateOf(false) }
+    val joinGameDialogOpened = remember { mutableStateOf(false) }
+    val waitingForOtherPlayersDialogOpened = remember { mutableStateOf(false) }
+
     val isToggled = remember { mutableStateOf(false) }
     val gameText = if (isToggled.value) magic_cards else classic
+
     HeaderBar(navController)
+
     CenteredContainer {
         Card(
             modifier = Modifier
@@ -48,30 +53,118 @@ fun NewGameScreen(
                         println(createGameViewModel.gameMode.value)
                     },
                 )
-                Button(onClick = { dialogState.value = true }) {
+
+                Button(onClick = { createGameDialogOpened.value = true }) {
                     Text(text = create_game_multiplayers)
                 }
+
                 Button(
                     modifier = Modifier.padding(20.dp),
-                    onClick = {
-                        navController.navigate(NavPage.LobbyPage.label) {
-                            launchSingleTop = true
-                        }
-                    }
+                    onClick = { joinGameDialogOpened.value = true }
                 ) {
                     Text(text = join_game_multiplayers)
                 }
-                if (dialogState.value) {
-                    Dialog(
-                        onDismissRequest = { },
-                        content = {
-                            CreateGameModalContent(
-                                updateState = { value -> dialogState.value = value },
-                                createGameViewModel
-                            )
-                        }
-                    )
+
+                CreateGameModal(
+                    createGameDialogOpened,
+                    waitingForOtherPlayersDialogOpened,
+                    createGameViewModel
+                )
+
+                JoinAGameModal(
+                    joinGameDialogOpened,
+                    waitingForOtherPlayersDialogOpened,
+                    navController
+                )
+
+                WaitingForOtherPlayersModal(waitingForOtherPlayersDialogOpened, navController)
+
+                HostHasJustQuitModal(createGameViewModel, waitingForOtherPlayersDialogOpened)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CreateGameModal(
+    createGameDialogOpened: MutableState<Boolean>,
+    waitingForOtherPlayersDialogOpened: MutableState<Boolean>,
+    createGameViewModel: CreateGameViewModel
+) {
+    if (createGameDialogOpened.value) {
+        ModalView(
+            closeModal = { result ->
+                createGameDialogOpened.value = false
+                if (result == ModalResult.Primary) {
+                    waitingForOtherPlayersDialogOpened.value = true
                 }
+            },
+            title = new_game_creation
+        ) { modalButtons ->
+            CreateGameModalContent(createGameViewModel) { modalActions ->
+                modalButtons(modalActions)
+            }
+        }
+    }
+}
+
+@Composable
+private fun JoinAGameModal(
+    joinGameDialogOpened: MutableState<Boolean>,
+    waitingForOtherPlayersDialogOpened: MutableState<Boolean>,
+    navController: NavController
+) {
+    if (joinGameDialogOpened.value) {
+        ModalView(
+            closeModal = { result ->
+                joinGameDialogOpened.value = false
+                if (result == ModalResult.Primary) {
+                    waitingForOtherPlayersDialogOpened.value = true
+                }
+            },
+            width = 700.dp,
+            title = joinAGameFR
+        ) { modalButtons ->
+            JoinGameView(navController = navController) { modalActions ->
+                modalButtons(modalActions)
+            }
+        }
+    }
+}
+
+@Composable
+private fun WaitingForOtherPlayersModal(
+    waitingForOtherPlayersDialogOpened: MutableState<Boolean>,
+    navController: NavController
+) {
+    if (waitingForOtherPlayersDialogOpened.value) {
+        ModalView(
+            closeModal = { waitingForOtherPlayersDialogOpened.value = false },
+            title = waitingForOtherPlayersFR,
+            hasSpinner = true
+        ) { modalButtons ->
+            WaitingForOtherPlayersView(navController = navController) { modalActions ->
+                modalButtons(modalActions)
+            }
+        }
+    }
+}
+
+@Composable
+private fun HostHasJustQuitModal(
+    createGameViewModel: CreateGameViewModel,
+    waitingForOtherPlayersDialogOpened: MutableState<Boolean>
+) {
+    if (createGameViewModel.hostHasJustQuitTheGame.value) {
+        ModalView(
+            closeModal = {
+                createGameViewModel.hostHasJustQuitTheGame.value = false
+                waitingForOtherPlayersDialogOpened.value = false
+            },
+            title = hostQuitGameFR
+        ) { modalButtons ->
+            HostQuitGameView { modalActions ->
+                modalButtons(modalActions)
             }
         }
     }

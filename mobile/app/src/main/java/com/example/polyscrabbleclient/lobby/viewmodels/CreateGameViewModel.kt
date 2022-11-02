@@ -15,12 +15,14 @@ const val MIN_PLAYER_NUMBER = 2
 const val MAX_PLAYER_NUMBER = 4
 
 class CreateGameViewModel : ViewModel() {
+
+    val hostHasJustQuitTheGame = LobbyRepository.hostHasJustQuitTheGame
+
     val timePerTurn = mutableStateOf(DEFAULT_TIMER)
     val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)
     val randomBonus = mutableStateOf(false)
     val botDifficulty = mutableStateOf(BotDifficulty.Easy)
     val gameMode = mutableStateOf(GameMode.Classic)
-
 
     fun sendCreateGameRequest() {
         val newGameParam = CreateGame(
@@ -32,8 +34,6 @@ class CreateGameViewModel : ViewModel() {
             numberOfPlayers = numberOfPlayer.value,
         )
         LobbyRepository.emitCreateGame(newGameParam)
-
-        // TODO: Open wait for other player
     }
 }
 

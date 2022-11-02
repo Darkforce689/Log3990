@@ -62,8 +62,21 @@ fun RowScope.TableCell(
 ) {
     Text(
         text = text,
-        Modifier
-            .border(1.dp, Color.Black)
+        modifier = Modifier
+            .weight(weight)
+            .padding(8.dp)
+    )
+}
+
+@Composable
+fun RowScope.HeaderTableCell(
+    text: String,
+    weight: Float
+) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .border(1.dp, MaterialTheme.colors.primary)
             .weight(weight)
             .padding(8.dp)
     )
@@ -71,7 +84,7 @@ fun RowScope.TableCell(
 
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
-fun PendingGamePreview() {
+fun SelectedPendingGamePreview() {
     PendingGameView(
         OnlineGameSettings(
             id = "123",
@@ -93,7 +106,7 @@ fun PendingGamePreview() {
 
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
-fun PendingGamePreview2() {
+fun UnselectedPendingGamePreview() {
     PendingGameView(
         OnlineGameSettings(
             id = "123",

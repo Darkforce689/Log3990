@@ -56,6 +56,12 @@ const val magic_cards = "Carte de pouvoirs"
 // Lobby
 const val joinGameButtonFR = "Rejoindre la partie"
 const val joinGameButtonEN = "Join game"
+const val launchGameButtonFR = "Démarrer la partie"
+const val waitingForOtherPlayersFR = "En attente d'autres joueurs"
+const val joinAGameFR = "Joindre une partie"
+const val hostQuitGameFR = "L'hôte a quitté la partie"
+const val Ok = "Ok"
+val pendingGameIdFR: (id: String?) -> String = { id -> "Id de la partie: ${id ?: ""}"}
 
 
 

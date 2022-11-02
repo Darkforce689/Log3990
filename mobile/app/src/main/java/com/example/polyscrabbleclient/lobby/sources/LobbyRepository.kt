@@ -8,17 +8,20 @@ object LobbyRepository {
     private val lobbySocket = LobbySocketHandler
     val pendingGames = mutableStateOf<PendingGames?>(null)
     val observableGames = mutableStateOf<ObservableGames?>(null)
+    val currentPendingGameId = mutableStateOf<PendingGameId?>(null)
+    val pendingGamePlayerNames = mutableStateOf(listOf<String>())
+    val isPendingGameHost = mutableStateOf(false)
 
-    private var isGameOwner = false
+    val hostHasJustQuitTheGame = mutableStateOf(false)
 
     private val onGameJoined: (gameJoined: GameJoined?) -> Unit = { gameJoined ->
-        // TODO
-        println("onGameJoined $gameJoined")
+        gameJoined?.let {
+            currentPendingGameId.value = it.id
+            pendingGamePlayerNames.value = it.playerNames
+        }
     }
 
     private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
-        // TODO : REMOVE NEXT LINE
-        println("onGameStarted $gameStarted")
         gameStarted?.let {
             GameRepository.receiveInitialGameSettings(it)
         }
@@ -26,34 +29,37 @@ object LobbyRepository {
 
     private val onPendingGames: (pendingGames: PendingAndObservableGames?) -> Unit = { newPendingGames ->
         newPendingGames?.let {
-            pendingGames.value = newPendingGames.pendingGamesSettings
-            observableGames.value = newPendingGames.observableGamesSettings
+            pendingGames.value = it.pendingGamesSettings
+            observableGames.value = it.observableGamesSettings
         }
     }
 
     private val onPendingGameId: (pendingGameId: PendingGameId?) -> Unit = { pendingGameId ->
-        // TODO
-        println("onPendingGameId $pendingGameId")
+        pendingGameId?.let {
+            currentPendingGameId.value = it
+        }
     }
 
-    private val onHostQuit: (hostQuit: HostQuit?) -> Unit = { hostQuit ->
-        // TODO
-        println("onHostQuit $hostQuit")
+    private val onHostQuit: (hostQuit: HostQuit?) -> Unit = {
+        hostHasJustQuitTheGame.value = true
     }
 
     private val onError: (error: Error?) -> Unit = { error ->
         println("LobbyRepository -> Error : $error")
     }
 
-    fun emitJoinGame(gameToken: JoinGame, navigateToGameScreen: () -> Unit) {
-        lobbySocket.emit(EmitLobbyEvent.JoinGame, gameToken)
-        // TODO : IS THIS ACCEPTABLE ?
+    fun emitJoinGame(joinGame: JoinGame, navigateToGameScreen: () -> Unit) {
         lobbySocket.on(OnLobbyEvent.GameStarted) { _: GameStarted? ->
             navigateToGameScreen()
         }
+        lobbySocket.emit(EmitLobbyEvent.JoinGame, joinGame)
     }
 
     init {
+        setupSocket()
+    }
+
+    private fun setupSocket() {
         lobbySocket.setSocket()
         lobbySocket.on(OnLobbyEvent.GameJoined, onGameJoined)
         lobbySocket.on(OnLobbyEvent.GameStarted, onGameStarted)
@@ -64,8 +70,31 @@ object LobbyRepository {
         lobbySocket.ensureConnection()
     }
 
-    fun emitCreateGame(newGameParam : CreateGame) {
+    fun emitCreateGame(newGameParam: CreateGame) {
+        isPendingGameHost.value = true
         lobbySocket.emit(EmitLobbyEvent.CreateGame, newGameParam)
-        isGameOwner = true
+    }
+
+    fun emitLaunchGame(navigateToGameScreen: () -> Unit) {
+        currentPendingGameId.value.let {
+            lobbySocket.on(OnLobbyEvent.GameStarted) { _: GameStarted? ->
+                resetPendingGame()
+                navigateToGameScreen()
+            }
+            lobbySocket.emit(EmitLobbyEvent.LaunchGame, it)
+        }
+    }
+
+    fun quitPendingGame() {
+        lobbySocket.disconnect()
+        resetPendingGame()
+        setupSocket()
+    }
+
+    private fun resetPendingGame() {
+        currentPendingGameId.value = null
+        isPendingGameHost.value = false
+        pendingGamePlayerNames.value = listOf()
+        hostHasJustQuitTheGame.value = false
     }
 }
