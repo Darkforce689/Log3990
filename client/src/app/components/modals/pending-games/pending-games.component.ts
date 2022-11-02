@@ -5,11 +5,10 @@ import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angu
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
-import { getRandomInt } from '@app/game-logic/utils';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { BehaviorSubject, timer } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export const DELAY = 100;
 @Component({
@@ -29,7 +28,6 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
         cell: (form: OnlineGameSettings) => string;
     }[];
     datePipe = new DatePipe('en_US');
-    private isClicked: boolean = false;
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public gameMode: GameMode,
@@ -119,25 +117,12 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
 
         const joinPendingGame = this.dialog.open(JoinOnlineGameComponent, joinPendingGameRef);
         joinPendingGame.beforeClosed().subscribe(() => {
-            this.isClicked = false;
             this.dialogRef.close();
         });
     }
 
     isSelectedRow(row: OnlineGameSettings): boolean {
         return row === this.selectedRow;
-    }
-
-    pickRandomGame(): void {
-        if (this.isClicked) {
-            return;
-        }
-        this.isClicked = true;
-        const gameNumber = getRandomInt(this.pendingGameDataSource.data.length);
-        this.selectedRow = this.pendingGameDataSource.data[gameNumber];
-        timer(DELAY).subscribe(() => {
-            this.joinGame();
-        });
     }
 
     announceSortChange(sortState: Sort) {
