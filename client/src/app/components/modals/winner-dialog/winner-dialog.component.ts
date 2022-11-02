@@ -5,7 +5,7 @@ export interface WinnerDialogData {
     winnerNames: string[];
     isWinner: boolean;
 }
-
+const arrayOffset = -1;
 @Component({
     templateUrl: './winner-dialog.component.html',
     styleUrls: ['./winner-dialog.component.scss'],
@@ -15,10 +15,16 @@ export class WinnerDialogComponent {
 
     getWinnerMessage(): string {
         const winnerNames = this.winnerData.winnerNames;
-        if (winnerNames.length !== 1) {
-            return `Les gagnants de la partie sont ${winnerNames[0]} et ${winnerNames[1]}`;
+        if (winnerNames.length === 1) {
+            return `Le gagnant de la partie est ${winnerNames[0]}.`;
         }
-        return `Le gagnant de la partie est ${winnerNames[0]}`;
+        const winners = 'Les gagnants de la partie sont ';
+        return winners.concat(
+            winnerNames
+                .slice(0, arrayOffset)
+                .join(', ')
+                .concat(' et ' + winnerNames[winnerNames.length - 1] + '.'),
+        );
     }
 
     getCongratulationMessage(): string {

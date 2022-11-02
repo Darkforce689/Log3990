@@ -40,7 +40,7 @@ describe('GameCompilerService', () => {
 
     it('should return two winner on endOfGame if getWinner was 2 players', () => {
         game.isEndOfGame.returns(true);
-        game.getWinner.returns(game.players);
+        game.getWinnerIndexes.returns([0, 1]);
 
         const compiledGame = gameCompilerService.compile(game);
         expect(compiledGame.winnerIndex.length).to.equal(2);
@@ -48,7 +48,7 @@ describe('GameCompilerService', () => {
 
     it('should return correct winner on endOfGame', () => {
         game.isEndOfGame.returns(true);
-        game.getWinner.returns([game.players[0]]);
+        game.getWinnerIndexes.returns([0]);
 
         const compiledGame = gameCompilerService.compile(game);
         expect(compiledGame.winnerIndex[0]).to.equal(0);
@@ -56,7 +56,7 @@ describe('GameCompilerService', () => {
 
     it('should return correct winner on endOfGame', () => {
         game.isEndOfGame.returns(true);
-        game.getWinner.returns([game.players[1]]);
+        game.getWinnerIndexes.returns([1]);
 
         const compiledGame = gameCompilerService.compile(game);
         expect(compiledGame.winnerIndex[0]).to.equal(1);

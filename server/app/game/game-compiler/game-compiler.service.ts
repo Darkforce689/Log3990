@@ -41,13 +41,7 @@ export class GameCompiler {
         let lightWinnerIndex: number[] = [];
         if (game.isEndOfGame()) {
             lightEndOfGame = true;
-            if (game.getWinner().length === 2) {
-                lightWinnerIndex = [0, 1];
-            } else if (game.getWinner()[0].name === game.players[0].name) {
-                lightWinnerIndex = [0];
-            } else {
-                lightWinnerIndex = [1];
-            }
+            lightWinnerIndex = game.getWinnerIndexes();
         } else {
             lightEndOfGame = false;
         }
