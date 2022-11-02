@@ -30,7 +30,7 @@
             ></tr>
 
             <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" colspan="4">Aucune partie en attente</td>
+                <td class="mat-cell" colspan="6">Aucune partie en attente</td>
             </tr>
         </table>
     </div>
@@ -64,7 +64,7 @@
             ></tr>
 
             <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" colspan="4">Aucune partie en cours</td>
+                <td class="mat-cell" colspan="6">Aucune partie en cours</td>
             </tr>
         </table>
     </div>
@@ -74,7 +74,4 @@
         <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
         <button mat-raised-button color="primary" [disabled]="!selectedRow" (click)="joinGame()">Rejoindre la partie</button>
     </div>
-    <button mat-flat-button color="accent" [ngClass]="{ hidden: isEmpty }" [disabled]="hasOneGame" (click)="pickRandomGame()">
-        Placement aléatoire
-    </button>
 </mat-dialog-actions>
