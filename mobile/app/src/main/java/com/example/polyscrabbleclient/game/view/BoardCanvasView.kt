@@ -44,6 +44,10 @@ val GridDivisionSize = GridSize / GridDimension
 val HeaderRange = (BoardRange.first + 1)..(BoardRange.last + 1)
 val HeaderTextSize = BoardSize.div(GridDimension).div(1.8f)
 val DivisionCenterOffset = GridDivisionSize.times(0.3f)
+const val DoubleMultiplierLabel = "x2"
+const val TripleMultiplierLabel = "x3"
+const val LetterMultiplierLabel = "Lettre"
+const val WordMultiplierLabel = "Mot"
 
 @Composable
 fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
@@ -90,13 +94,13 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         val horizontalTextOffset =
             currentDivisionOffset +
                 DivisionCenterOffset.toPx() -
-                // TODO : WARNING -> TWEAK
+                // WARNING -> TWEAK
                 (gridDivisionIndex / 10) * (HeaderTextSize.toPx() / 3)
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 gridDivisionIndex.toString(),
                 horizontalTextOffset,
-                // TODO : WARNING -> TWEAK
+                // WARNING -> TWEAK
                 2.4f * DivisionCenterOffset.toPx(),
                 headerTextPaint
             )
@@ -221,7 +225,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 tile.content.value?.points.toString(),
-                // TODO : WARNING -> TWEAK
+                // WARNING -> TWEAK
                 horizontalOffset + 2.2f * DivisionCenterOffset.toPx(),
                 verticalOffset - 0.5f * DivisionCenterOffset.toPx(),
                 pointsPaint
@@ -257,6 +261,46 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         }
     }
 
+    fun DrawScope.drawTileMultiplierIndicator(
+        column: Int,
+        row: Int,
+        type: MultiplierType,
+        value: MultiplierValue
+    ) {
+        val horizontalOffset = column * GridDivisionSize.toPx()
+        val verticalOffset = (row + 1) * GridDivisionSize.toPx()
+
+        val multiplierPaint = Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            textSize = HeaderTextSize.toPx() * 0.45f
+            color = tileTextColor.toArgb()
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+            alpha = 150
+        }
+
+        val typeLabel = if (type === MultiplierType.Letter) LetterMultiplierLabel else WordMultiplierLabel
+        val valueLabel = if (value === MultiplierValue.Double) DoubleMultiplierLabel else TripleMultiplierLabel
+
+        drawIntoCanvas {
+            it.nativeCanvas.drawText(
+                typeLabel,
+                // WARNING -> TWEAK
+                horizontalOffset + (1.75f - 0.27f * typeLabel.length) * DivisionCenterOffset.toPx(),
+                verticalOffset - 1.8f * DivisionCenterOffset.toPx(),
+                multiplierPaint
+            )
+        }
+        drawIntoCanvas {
+            it.nativeCanvas.drawText(
+                valueLabel,
+                // WARNING -> TWEAK
+                horizontalOffset + 1.2f * DivisionCenterOffset.toPx(),
+                verticalOffset - 0.7f * DivisionCenterOffset.toPx(),
+                multiplierPaint
+            )
+        }
+    }
+
     fun DrawScope.drawMultipliers() {
         for (multiplier in Multipliers) {
             val color =
@@ -270,6 +314,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
                 else
                     SoftBackgroundAlpha
             drawTileBackground(color, multiplier.column, multiplier.row.ordinal + 1, alpha)
+            drawTileMultiplierIndicator(multiplier.column, multiplier.row.ordinal + 1, multiplier.type, multiplier.value)
         }
     }
 
