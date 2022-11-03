@@ -118,6 +118,7 @@ fun PendingGamesPreview() {
         gameStatus = "En attente",
         password = "",
         privateGame = false,
+        drawableMagicCards = ArrayList(listOf()),
     )
     PendingGamesView(
         mutableStateOf(ArrayList(listOf(b)))

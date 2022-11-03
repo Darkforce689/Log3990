@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.game.view.draganddrop.DragShadow
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
+import com.example.polyscrabbleclient.ui.theme.game_mode
 
 @Composable
 fun GameScreen(navController: NavController) {
@@ -46,6 +47,11 @@ fun GameScreen(navController: NavController) {
         EvenlySpacedSubColumn {
             Box {
                 BoardView(dragState)
+            }
+            if (viewModel.isMagicGame()) {
+                Box {
+                    MagicCardsView(viewModel)
+                }
             }
             Box {
                 LetterRackView(dragState)

@@ -78,7 +78,17 @@ enum class OnlineActionType(value: String) {
     @SerializedName("exchangeHorse")
     ExchangeHorse("exchangeHorse"),
 
-    // TODO : ADD OTHERS
+    @SerializedName("exchangeHorseAll")
+    ExchangeHorseAll("exchangeHorseAll"),
+
+    @SerializedName("skipNextTurn")
+    SkipNextTurn("skipNextTurn"),
+
+    @SerializedName("extraTurn")
+    ExtraTurn("extraTurn"),
+
+    @SerializedName("reduceTimer")
+    ReduceTimer("reduceTimer"),
 }
 
 
@@ -95,6 +105,12 @@ data class GameState(
     val lettersRemaining: Int,
     val isEndOfGame: Boolean,
     val winnerIndex: ArrayList<Int>,
+    val drawableMagicCards: ArrayList<IMagicCard>,
+    val drawnMagicCards: ArrayList<ArrayList<IMagicCard>>,
+)
+
+data class IMagicCard(
+    val id:String,
 )
 
 // TODO

@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.TileContent
@@ -54,11 +55,13 @@ class BoardViewModel : ViewModel() {
         hoveredTileCoordinates = null
     }
 
-    // TODO : REMOVE
     fun touchBoard(gridDivisionSize: Float, tapOffset: Offset) {
         val coordinates = getTileFromLocalPosition(gridDivisionSize, tapOffset)
         if (coordinates != null && coordinates.row in BoardRange && coordinates.column in BoardRange) {
-            board.toggleTileHover(coordinates.column, coordinates.row)
+            board.setSelected(coordinates.column, coordinates.row)
+        } else {
+            // TODO: add a way to call unselect when clicking outside the canvas
+            board.unselect()
         }
     }
 
