@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.sources.*
+import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.user.User
 
 const val defaultTurnTime = 60
@@ -20,6 +21,9 @@ class GameModel {
     var activePlayerIndex = mutableStateOf(0)
     val userLetters = mutableStateListOf<TileModel>()
     var isGameActive = mutableStateOf(false)
+    var gameMode: MutableState<GameMode> = mutableStateOf(GameMode.Classic)
+    var drawnMagicCards: MutableState<List<List<IMagicCard>>> =
+        mutableStateOf(listOf(listOf(), listOf(), listOf(), listOf()))
 
     fun getUser(): Player? {
         return players.value.find { it.name == User.name }
@@ -31,6 +35,7 @@ class GameModel {
         updateActivePlayerIndex(gameState.activePlayerIndex)
         updateRemainingLetters(gameState.lettersRemaining)
         updateEndOfGame(gameState.winnerIndex)
+        updateDrawnMagicCards(gameState.drawnMagicCards)
         updateBoardCrawler()
         updateUser()
     }
@@ -55,6 +60,10 @@ class GameModel {
         players.value = updatedPlayers.map { player -> Player.fromLightPlayer(player) }
     }
 
+    private fun updateDrawnMagicCards(drawnMagicCard: ArrayList<ArrayList<IMagicCard>>) {
+        drawnMagicCards.value = drawnMagicCard
+    }
+
     private fun updateUser() {
         val updatedUser = players.value.find { player -> player.name == User.name }
         if (updatedUser === null) {
@@ -72,6 +81,11 @@ class GameModel {
         }
     }
 
+    fun getUserIndex(): Int {
+        val user = getUser() ?: return -1
+        return players.value.indexOf(user)
+    }
+
     fun getActivePlayer(): Player? {
         return getPlayer(activePlayerIndex.value)
     }
@@ -84,3 +98,8 @@ class GameModel {
         return !isGameActive.value
     }
 }
+
+data class PlayerWithIndex(
+    val player: Player,
+    val index: Number,
+)

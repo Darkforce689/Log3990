@@ -17,5 +17,7 @@ data class TileModel(
 
 data class GridTileModel(
     val content: MutableState<TileModel?> = mutableStateOf(null),
-    var isHighlighted: MutableState<Boolean> = mutableStateOf(false)
+    var isHighlighted: MutableState<Boolean> = mutableStateOf(false),
+    var letterMultiplier: Int= 1,
+    var wordMultiplier: Int= 1,
 )

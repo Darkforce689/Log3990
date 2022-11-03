@@ -7,10 +7,17 @@ const val millisecondsInSecond = 1000
 
 object GameRepository {
 
+    fun createPlayers(playerNames: ArrayList<String>): List<Player>{
+        return playerNames.map { playerName -> Player(playerName) }
+    }
+
     fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
         game.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
         game.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
         game.createPlayersFrom(gameSettings.playerNames)
+        game.gameMode.value = gameSettings.gameMode
+        game.board.gameMode = game.gameMode.value
+        game.players.value = createPlayers(gameSettings.playerNames)
         gameSocket.emit(EmitGameEvent.JoinGame, gameSettings.id)
     }
 

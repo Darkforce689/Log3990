@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.lobby.sources
 
 import androidx.annotation.Nullable
+import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.google.gson.annotations.SerializedName
 
 enum class GameMode(val value: String) {
@@ -31,6 +32,7 @@ data class OnlineGameSettings(
     val botDifficulty: BotDifficulty,
     val numberOfPlayers: Int,
     val password: String,
+    val drawableMagicCards: ArrayList<IMagicCard>,
 )
 
 typealias PendingGames = ArrayList<OnlineGameSettings>

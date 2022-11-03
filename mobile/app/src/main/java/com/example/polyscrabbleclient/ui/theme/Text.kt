@@ -53,6 +53,16 @@ const val game_mode ="Mode de jeu"
 const val classic = "Classique"
 const val magic_cards = "Carte de pouvoirs"
 
+// Magic Card
+const val exchange_a_letter_name = "Échanger une lettre"
+const val split_points_name = "Vole des points"
+const val place_random_bonus_name = "Place un bonus"
+const val exchange_horse_name = "Échanger son chevalet"
+const val exchange_horse_all_name = "Échanger tous les chevalets"
+const val skip_next_turn_name = "Passe le prochain tour"
+const val extra_turn_name = "Prend un tour supplémentaire"
+const val reduce_timer_name = "Réduit le temps des autres joueurs"
+
 // Lobby
 const val joinGameButtonFR = "Rejoindre la partie"
 const val joinGameButtonEN = "Join game"

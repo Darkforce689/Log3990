@@ -1,8 +1,11 @@
 package com.example.polyscrabbleclient.game.model
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.sources.Tile
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
+import com.example.polyscrabbleclient.lobby.sources.GameMode
 
 typealias TileContent = TileModel?
 typealias TileContainerRow = Array<GridTileModel>
@@ -17,8 +20,9 @@ enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 class BoardModel {
     var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { GridTileModel() } }
         private set
-
+    var gameMode: GameMode? = null
     var transientTilesCoordinates = mutableSetOf<TileCoordinates>()
+    var selectedCoordinates: MutableState<TileCoordinates?> = mutableStateOf(null)
 
     fun updateGrid(grid: ArrayList<ArrayList<Tile>>) {
         requireBoardDimensions(grid)
@@ -26,6 +30,7 @@ class BoardModel {
             for (column in BoardRange) {
                 val tile = grid[row - 1][column - 1]
                 this[column, row] = TileCreator.createTileFromRawTile(tile)
+                setMultipliers(column, row, tile.letterMultiplicator, tile.wordMultiplicator)
             }
         }
         transientTilesCoordinates.clear()
@@ -51,14 +56,21 @@ class BoardModel {
         }
     }
 
-    fun toggleTileHover(column: Int, row: Int) {
-        requireBoardIndexes(column, row)
-        val isHighlighted = tileGrid[row - 1][column - 1].isHighlighted;
-        isHighlighted.value = !isHighlighted.value;
+    fun setSelected(column: Int, row: Int) {
+        val cantSelectTile =
+            gameMode != GameMode.Magic || (selectedCoordinates.value?.row == row && selectedCoordinates.value?.column == column)
+        unselect()
+        if (cantSelectTile) return
+        tileGrid[row - 1][column - 1].isHighlighted.value = true
+        selectedCoordinates.value = TileCoordinates(row, column)
     }
 
-    fun toggleTileHover(coordinates: TileCoordinates) {
-        toggleTileHover(coordinates.column, coordinates.row)
+    // TODO: add a way to call unselect when clicking outside the canvas
+    fun unselect() {
+        val coordinates = selectedCoordinates.value ?: return
+        val tile = tileGrid[coordinates.row - 1][coordinates.column - 1]
+        tile.isHighlighted.value = false;
+        selectedCoordinates.value = null
     }
 
     fun setTileHover(column: Int, row: Int, isHighlighted: Boolean) {
@@ -94,6 +106,16 @@ class BoardModel {
 
     operator fun set(tileCoordinates: TileCoordinates, tile: TileContent) {
         set(tileCoordinates.column, tileCoordinates.row, tile)
+    }
+
+    private fun setMultipliers(
+        column: Int,
+        row: Int,
+        letterMultiplicator: Int,
+        wordMultiplicator: Int
+    ) {
+        tileGrid[row - 1][column - 1].letterMultiplier = letterMultiplicator
+        tileGrid[row - 1][column - 1].wordMultiplier = wordMultiplicator
     }
 
     fun isInsideOfBoard(column: Int, row: Int): Boolean {

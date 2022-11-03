@@ -98,6 +98,7 @@ fun SelectedPendingGamePreview() {
             gameStatus = "En attente",
             password = "",
             privateGame = false,
+            drawableMagicCards = ArrayList(listOf())
         ),
         listOf(0.1f, 0.2f, 0.2f, 0.2f, 0.1f, 0.2f),
         {}
@@ -120,6 +121,7 @@ fun UnselectedPendingGamePreview() {
             gameStatus = "En attente",
             password = "",
             privateGame = false,
+            drawableMagicCards = ArrayList(listOf())
         ),
         listOf(0.1f, 0.2f, 0.2f, 0.2f, 0.1f, 0.2f),
         {}
