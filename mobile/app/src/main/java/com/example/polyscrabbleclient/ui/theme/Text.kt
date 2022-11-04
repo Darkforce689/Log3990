@@ -37,6 +37,11 @@ const val exchangeButtonFR = "Échanger"
 const val cancelButtonFR = "Annuler"
 const val quitButtonFR = "Abandonner la partie"
 const val leaveButtonFR = "Quitter"
+const val endGameWinnerFR = "Félicitation!"
+const val endGameLoserFR = "Dommage..."
+const val winnersAreFR = "Les gagnants de la partie sont"
+const val winnerIsFR = "Le gagnant de la partie est"
+const val andFR = "et"
 
 // GameCreation
 const val new_game_creation = "Nouvelle Partie Multijoueurs"

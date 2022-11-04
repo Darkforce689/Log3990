@@ -1,9 +1,11 @@
 package com.example.polyscrabbleclient.game.viewmodels
 
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.*
+import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.ui.theme.leaveButtonFR
 import com.example.polyscrabbleclient.ui.theme.quitButtonFR
 import com.example.polyscrabbleclient.lobby.sources.GameMode
@@ -93,12 +95,38 @@ class GameViewModel : ViewModel() {
         return canExchangeLetter() || canPlaceLetter()
     }
 
+    fun hasGameJustEnded(): MutableState<Boolean> {
+        return game.hasGameJustEnded
+    }
+
     fun getQuitLabel(): String {
         return if (game.hasGameEnded()) {
             leaveButtonFR
         } else {
             quitButtonFR
         }
+    }
+
+    fun getEndOfGameLabel(): String {
+        return if (game.isUserWinner()) {
+            endGameWinnerFR
+        } else {
+            endGameLoserFR
+        }
+    }
+
+    fun getFormattedWinners(): String {
+        val winnerNames = game.getWinnerNames()
+        if (winnerNames.size == 1) {
+            return "$winnerIsFR ${winnerNames[0]}"
+        }
+
+        val lastName = winnerNames.removeLast()
+        val namesExceptLast = winnerNames.reduce { acc, current -> "$acc, $current"}
+        if (winnerNames.size > 2) {
+            namesExceptLast.removeRange(namesExceptLast.length - 2, namesExceptLast.length)
+        }
+        return "$winnersAreFR $namesExceptLast $andFR $lastName"
     }
 
     fun isMagicGame(): Boolean {
