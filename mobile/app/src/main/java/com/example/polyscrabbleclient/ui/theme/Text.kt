@@ -12,11 +12,22 @@ const val disconnection = "Déconnexion"
 const val gamePage = "Page de jeu Scrabble"
 const val lobbyPage = "Créer/Rejoindre une partie"
 const val no_Account = "Vous n'avez pas de compte?"
+
+// Account
 const val my_profil = "Mon profil"
 const val my_account = "Mon compte"
 const val save = "Sauvegarder"
 const val avatars = "Avatar"
-
+const val user_statisics = "Statistiques"
+const val game_statistics = "Statistiques de jeux"
+const val connection_history = "Historique de connexions"
+const val my_statistics = "Mes statistiques"
+const val gamePlayed = "Parties jouées"
+const val gameWinned = "Parties gagnées"
+const val averagePointsPerGame = "Moyenne de points par partie"
+const val averageTimePerGame = "Moyenne de temps par partie"
+const val date = "Date"
+const val connection_type = "Type de connexions"
 // Errors
 const val missing_field = "Veuillez remplir tous les champs."
 const val invalid_password = "Mot de passe invalide."

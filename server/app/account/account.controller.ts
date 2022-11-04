@@ -30,9 +30,7 @@ export class AccountController {
         this.router.get('/logHistory', async (req, res) => {
             const { userId } = req.session as unknown as Session;
             const { perPage, page } = req.query;
-
             const pagination = this.getLogsPagination(perPage as string | undefined, page as string | undefined);
-
             const logs = (await this.userLogService.getLogHistory(pagination, userId)) as ConnectionLog[];
             return res.send({ pagination, logs });
         });

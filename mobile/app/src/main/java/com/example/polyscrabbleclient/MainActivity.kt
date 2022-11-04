@@ -1,7 +1,6 @@
 package com.example.polyscrabbleclient
 
 import android.os.Bundle
-import android.os.Message
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ripple.LocalRippleTheme
@@ -9,13 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import com.example.polyscrabbleclient.auth.AppSocketHandler
-import com.example.polyscrabbleclient.lobby.sources.LobbySocketHandler
 import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.user.User
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 import kotlin.math.floor
+import kotlin.math.round
 
 data class ValidationResponse(val message: String, val errors : String)
 
@@ -58,7 +57,11 @@ class MainActivity : ComponentActivity() {
 }
 
 fun Float.roundDownToMultipleOf(base: Double): Double = base * floor(this / base)
-
+fun Double.round(decimals: Int): Double {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return round(this * multiplier) / multiplier
+}
 fun updateUser() {
     val updateThread = User.updateUser()
     updateThread.start()

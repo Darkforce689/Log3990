@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
 
-data class UserUpdate(
+data class UserUpdate (
     var name: String = "",
     var avatar: String = ""
 )
