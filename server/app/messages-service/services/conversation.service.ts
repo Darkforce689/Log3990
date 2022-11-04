@@ -11,10 +11,16 @@ import { ConversationGetQuery, ConversationSearchQuery } from '@app/messages-ser
 import { MessageService } from '@app/messages-service/services/messages-service';
 import { isGameToken } from '@app/messages-service/utils';
 import { ObjectId } from 'mongodb';
+import { Observable, Subject } from 'rxjs';
 import { Service } from 'typedi';
 
 @Service()
 export class ConversationService {
+    private deletedConvoSubject = new Subject<Conversation>();
+    get deletedConversation$(): Observable<Conversation> {
+        return this.deletedConvoSubject;
+    }
+
     constructor(private mongoService: MongoDBClientService, private messageService: MessageService) {}
 
     private get collection() {
@@ -57,8 +63,19 @@ export class ConversationService {
         });
     }
 
+    async getCreatedConversations(creator: string) {
+        const conversations = await this.collection
+            .find({ creator: new ObjectId(creator) })
+            .project({ participants: 0, type: 0 })
+            .toArray();
+        return conversations.map((conversation) => {
+            conversation._id = conversation._id.toString();
+            return conversation as Conversation;
+        });
+    }
+
     async createConversation(conversationCreation: ConversationCreation): Promise<ObjectCrudResult<Conversation>> {
-        const { name } = conversationCreation;
+        const { name, creator } = conversationCreation;
 
         if (isGameToken(name)) {
             return {
@@ -73,10 +90,12 @@ export class ConversationService {
                 errors: [ConversationCrudError.ConversationAlreadyExist],
             };
         }
+
         const conversation = {
             participants: [],
             type: ConversationType.Chat,
-            ...conversationCreation,
+            name,
+            creator: new ObjectId(creator),
         };
         try {
             await this.collection.insertOne(conversation);
@@ -120,7 +139,7 @@ export class ConversationService {
         }
     }
 
-    async deleteConversation(id: string): Promise<ObjectCrudResult<Conversation>> {
+    async deleteConversation(id: string, deleter: string): Promise<ObjectCrudResult<Conversation>> {
         const conversation = (await this.getConversation({ _id: id })) as Conversation | null;
         if (!conversation) {
             return {
@@ -129,9 +148,19 @@ export class ConversationService {
             };
         }
 
+        const { creator: creatorObjectId } = conversation as unknown as { creator: ObjectId };
+        const creator = creatorObjectId === undefined ? undefined : creatorObjectId.toString();
+        if (creator !== deleter) {
+            return {
+                object: undefined,
+                errors: [ConversationCrudError.ConversationDeletionForbiden],
+            };
+        }
+
         try {
             await this.collection.deleteOne({ _id: new ObjectId(id) });
             await this.messageService.deleteMessagesFromConversation(id);
+            this.deletedConvoSubject.next(conversation);
             return {
                 object: conversation,
                 errors: [],

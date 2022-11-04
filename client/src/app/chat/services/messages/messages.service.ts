@@ -37,6 +37,7 @@ export class MessagesService {
 
     private joinedConversation$$: Subscription | undefined;
     private currentConversation$$: Subscription | undefined;
+
     constructor(
         private onlineChat: OnlineChatHandlerService,
         private http: HttpClient,
@@ -101,14 +102,7 @@ export class MessagesService {
                 if (!account) {
                     return;
                 }
-                conversations.forEach((conversation) => {
-                    if (conversation.name === GAME_CONVO_NAME) {
-                        const gameToken = conversation._id;
-                        this.onlineChat.joinChatRoomWithUser(gameToken);
-                        return;
-                    }
-                    this.onlineChat.joinChatRoomWithUser(conversation.name);
-                });
+                this.onlineChat.joinChatRooms(conversations);
             });
         });
 
@@ -162,20 +156,25 @@ export class MessagesService {
             page: 0,
             offset: this.messages.length,
         };
-        this.http.get(`${environment.serverUrl}/conversations/${conversationId}/messages`, { params }).subscribe((body) => {
-            const { messages: chatMessages } = body as { messages: ChatMessage[] };
-            if (this.currentConversation && this.currentConversation._id !== conversationId) {
-                return;
-            }
-            zip(...chatMessages.map((chatMessage) => this.messageFactory.createMessage(chatMessage))).subscribe((messages) => {
-                this.messages.reverse();
-                messages.forEach((message) => {
-                    this.messages.push(message);
+        this.http.get(`${environment.serverUrl}/conversations/${conversationId}/messages`, { params }).subscribe(
+            (body) => {
+                const { messages: chatMessages } = body as { messages: ChatMessage[] };
+                if (this.currentConversation && this.currentConversation._id !== conversationId) {
+                    return;
+                }
+                zip(...chatMessages.map((chatMessage) => this.messageFactory.createMessage(chatMessage))).subscribe((messages) => {
+                    this.messages.reverse();
+                    messages.forEach((message) => {
+                        this.messages.push(message);
+                    });
+                    this.messages.reverse();
+                    this.messages$.next({ messages: this.messages, reason: MessageUpdateReason.Other });
                 });
-                this.messages.reverse();
-                this.messages$.next({ messages: this.messages, reason: MessageUpdateReason.Other });
-            });
-        });
+            },
+            () => {
+                return;
+            },
+        );
     }
 
     receiveSystemMessage(sysMessage: SystemMessage) {

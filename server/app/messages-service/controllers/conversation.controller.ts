@@ -27,14 +27,20 @@ export class ConversationController {
         this.router = Router();
 
         this.router.get('/', async (req, res) => {
-            const { search, perPage, page, joined } = req.query;
+            const { search, perPage, page, joined, created } = req.query;
 
-            // TODO: maybe implement pagination for joined convo
             // if joined true add all result in one page
             if (parseBooleanQueryParam(joined as string | undefined, false)) {
                 const { userId } = req.session as unknown as Session;
                 const myConversations = await this.conversationService.getUserConversations(userId);
                 return res.send({ pagination: { page: 0, perPage: myConversations.length }, conversations: myConversations });
+            }
+
+            // if created true add all result in one page
+            if (parseBooleanQueryParam(created as string | undefined, false)) {
+                const { userId } = req.session as unknown as Session;
+                const createdConversations = await this.conversationService.getCreatedConversations(userId);
+                return res.send({ pagination: { page: 0, perPage: createdConversations.length }, conversations: createdConversations });
             }
 
             const pagination = this.getConversationPagination(perPage as string | undefined, page as string | undefined);
@@ -51,8 +57,8 @@ export class ConversationController {
             if (!name) {
                 return res.status(StatusCodes.BAD_REQUEST).send({ errors: ['No name was given in the body'] });
             }
-
-            const { object: conversation, errors } = await this.conversationService.createConversation({ name });
+            const { userId: creator } = req.session as unknown as Session;
+            const { object: conversation, errors } = await this.conversationService.createConversation({ name, creator });
             if (errors.length !== 0) {
                 return res.status(StatusCodes.CONFLICT).send({ errors });
             }
@@ -72,8 +78,8 @@ export class ConversationController {
             if (conversation.name === GENERAL_CHANNEL) {
                 return res.status(StatusCodes.BAD_REQUEST).send({ errors: ['You cannot delete the general channel'] });
             }
-
-            const { errors } = await this.conversationService.deleteConversation(conversationId as string);
+            const { userId } = req.session as unknown as Session;
+            const { errors } = await this.conversationService.deleteConversation(conversationId as string, userId);
             if (errors.length !== 0) {
                 return res.status(StatusCodes.NOT_FOUND).send({ errors });
             }

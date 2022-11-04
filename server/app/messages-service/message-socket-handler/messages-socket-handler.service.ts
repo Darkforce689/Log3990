@@ -7,6 +7,7 @@ import { ChatUser } from '@app/messages-service/chat-user.interface';
 import { BaseMessage, Message } from '@app/messages-service/message.interface';
 import { Room } from '@app/messages-service/room/room';
 import { RoomFactory } from '@app/messages-service/room/room-factory.service';
+import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { GlobalSystemMessage, IndividualSystemMessage, SystemMessageDTO } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { UserService } from '@app/user/user.service';
@@ -30,6 +31,7 @@ export class MessagesSocketHandler {
         server: http.Server,
         private systemMessagesService: SystemMessagesService,
         private sessionMiddleware: SessionMiddlewareService,
+        private conversationService: ConversationService,
         private authService: AuthService,
         private userService: UserService,
         private roomFactory: RoomFactory,
@@ -45,6 +47,11 @@ export class MessagesSocketHandler {
 
         this.systemMessagesService.individualSystemMessages$.subscribe((message) => {
             this.sendIndividualSystemMessage(message);
+        });
+
+        this.conversationService.deletedConversation$.subscribe((deletedConvo) => {
+            const { name: roomId } = deletedConvo;
+            this.deleteRoom(roomId);
         });
     }
 
@@ -106,7 +113,7 @@ export class MessagesSocketHandler {
                 try {
                     const room = this.activeRooms.get(roomId);
                     if (!room) {
-                        throw Error('The room you are trying to leave is not active');
+                        return;
                     }
                     room.deleteUser(user.id);
                     if (room.userIds.size === 0) {

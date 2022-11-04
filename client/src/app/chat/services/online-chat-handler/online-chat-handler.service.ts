@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { GAME_CONVO_NAME } from '@app/chat/constants';
+import { Conversation } from '@app/chat/interfaces/conversation.interface';
 import { BaseMessage, ChatMessage, SystemMessage } from '@app/chat/interfaces/message.interface';
 import { isSocketConnected } from '@app/game-logic/utils';
 import { AccountService } from '@app/services/account.service';
@@ -61,6 +63,37 @@ export class OnlineChatHandlerService {
             throw Error('No socket to send message from');
         }
         this.socket.emit('newMessage', message);
+    }
+
+    joinChatRooms(conversations: Conversation[]) {
+        if (!this.socket) {
+            this.socket = this.connectToSocket();
+            this.bindRoomChannels();
+        }
+
+        const getRoomId = (conversation: Conversation) => {
+            // eslint-disable-next-line no-underscore-dangle
+            return conversation.name === GAME_CONVO_NAME ? conversation._id : conversation.name;
+        };
+
+        const roomIds = conversations.map((conversation) => getRoomId(conversation));
+
+        roomIds.forEach((roomId) => {
+            if (this.joinedRooms.has(roomId)) {
+                return;
+            }
+            this.socket.emit('joinRoom', roomId);
+        });
+
+        const roomIdsSet = new Set(roomIds);
+        this.joinedRooms.forEach((roomId) => {
+            if (roomIdsSet.has(roomId)) {
+                return;
+            }
+            this.socket.emit('leaveRoom', roomId);
+        });
+
+        this.joinedRooms = roomIdsSet;
     }
 
     joinChatRoom(roomId: string) {
