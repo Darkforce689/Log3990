@@ -15,7 +15,7 @@ private const val URL = BuildConfig.COMMUNICATION_URL
 object LobbySocketHandler : SocketHandler(LobbyEventTypes) {
 
     @Synchronized
-    fun setSocket() {
+    override fun setSocket() {
         val opts = IO.Options()
         opts.path = LobbyPath
         val cookie = ScrabbleHttpClient.getAuthCookie()
@@ -37,7 +37,7 @@ object LobbySocketHandler : SocketHandler(LobbyEventTypes) {
     }
 
     @Synchronized
-    fun ensureConnection() {
+    override fun ensureConnection() {
         if (socket.connected()) {
             return
         }
@@ -45,7 +45,7 @@ object LobbySocketHandler : SocketHandler(LobbyEventTypes) {
     }
 
     @Synchronized
-    fun disconnect() {
+    override fun disconnect() {
         socket.disconnect()
     }
 }

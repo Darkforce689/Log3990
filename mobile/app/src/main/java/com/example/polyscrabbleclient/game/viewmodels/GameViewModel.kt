@@ -9,7 +9,7 @@ import com.example.polyscrabbleclient.ui.theme.quitButtonFR
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 
 class GameViewModel : ViewModel() {
-    val game = GameRepository.game
+    val game = GameRepository.model
     var remainingLettersCount = game.remainingLettersCount
     var turnRemainingTime = game.turnRemainingTime
     var turnTotalTime = game.turnTotalTime

@@ -12,18 +12,18 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
     }
 
     fun canLaunchGame(): Boolean {
-        return lobby.isPendingGameHost.value
+        return lobby.model.isPendingGameHost.value
     }
 
     fun leavePendingGame() {
-        LobbyRepository.quitPendingGame()
+        lobby.quitPendingGame()
     }
 
     fun getPendingGameId(): String? {
-        return LobbyRepository.currentPendingGameId.value
+        return lobby.model.currentPendingGameId.value
     }
 
     fun getPendingGamePlayerNames(): List<String> {
-        return LobbyRepository.pendingGamePlayerNames.value
+        return lobby.model.pendingGamePlayerNames.value
     }
 }

@@ -9,6 +9,7 @@ import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.user.User
 
 const val defaultTurnTime = 60
+const val millisecondsInSecond = 1000
 
 class GameModel {
 
