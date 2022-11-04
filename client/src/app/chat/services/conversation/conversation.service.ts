@@ -5,7 +5,7 @@ import { ConversationGetQuery } from '@app/chat/interfaces/conversation-get-quer
 import { Conversation, ConversationCreation } from '@app/chat/interfaces/conversation.interface';
 import { Pagination } from '@app/chat/interfaces/pagination.interface';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 export interface ConversationsGetRes {
@@ -41,6 +41,32 @@ export class ConversationService {
         this.currentConversationSubject.next(conversation);
     }
 
+    getCreatedConversations() {
+        return this.http.get<ConversationsGetRes>(`${environment.serverUrl}/conversations?created=true`).pipe(
+            map((body) => {
+                return body.conversations;
+            }),
+        );
+    }
+
+    deleteConversation(conversationId: string) {
+        return this.http.delete(`${environment.serverUrl}/conversations/${conversationId}`).pipe(
+            tap(
+                () => {
+                    // eslint-disable-next-line no-underscore-dangle
+                    const isCurrentConvoDeleted = this.currentConversation?._id === conversationId;
+                    if (isCurrentConvoDeleted) {
+                        this.currentConversationSubject.next(undefined);
+                    }
+                    this.refreshJoinedConversations();
+                },
+                () => {
+                    return;
+                },
+            ),
+        );
+    }
+
     refreshJoinedConversations() {
         this.http.get(`${environment.serverUrl}/conversations?joined=true`).subscribe(
             (body) => {
@@ -58,9 +84,14 @@ export class ConversationService {
 
     leaveConversation(conversationId: string) {
         return this.http.get(`${environment.serverUrl}/conversations/${conversationId}/quit`).pipe(
-            tap(() => {
-                this.refreshJoinedConversations();
-            }),
+            tap(
+                () => {
+                    this.refreshJoinedConversations();
+                },
+                () => {
+                    this.refreshJoinedConversations();
+                },
+            ),
         );
     }
 

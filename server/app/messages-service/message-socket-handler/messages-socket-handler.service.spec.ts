@@ -5,11 +5,13 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
+import { Conversation } from '@app/messages-service/interfaces/conversation.interface';
 import { MAX_MESSAGE_LENGTH, SYSTEM_USER_NAME } from '@app/constants';
 import { MessagesSocketHandler, SYSTEM_MESSAGES } from '@app/messages-service/message-socket-handler/messages-socket-handler.service';
 import { Message } from '@app/messages-service/message.interface';
 import { Room } from '@app/messages-service/room/room';
 import { RoomFactory } from '@app/messages-service/room/room-factory.service';
+import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { GlobalSystemMessage, IndividualSystemMessage, SystemMessageDTO } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
@@ -40,6 +42,8 @@ describe('MessagesService', () => {
     const mockGlobalSystemMessages$ = new Subject<GlobalSystemMessage>();
     const mockIndividualSystemMessages$ = new Subject<IndividualSystemMessage>();
 
+    const mockDeletedConvo$ = new Subject<Conversation>();
+
     before((done) => {
         httpServer = createServer();
         httpServer.listen(() => {
@@ -53,12 +57,21 @@ describe('MessagesService', () => {
             userService.getUser.resolves(mockUser);
             userService.getSystemUser.resolves({ name: SYSTEM_USER_NAME, _id: 'system-very-long-id' } as unknown as User);
             const roomFactory = createSinonStubInstance(RoomFactory);
-
+            const conversationService = createSinonStubInstance(ConversationService);
+            sinon.stub(conversationService, 'deletedConversation$').get(() => mockDeletedConvo$);
             room = createSinonStubInstance(Room);
             room.userIds = new Set();
             room.userIdToSocketId = new Map();
             roomFactory.createRoom.resolves(room);
-            handler = new MessagesSocketHandler(httpServer, systemMessagesService, sessionMiddleware, authService, userService, roomFactory);
+            handler = new MessagesSocketHandler(
+                httpServer,
+                systemMessagesService,
+                sessionMiddleware,
+                conversationService,
+                authService,
+                userService,
+                roomFactory,
+            );
             handler.handleSockets(false, false);
             handler.sio.on('connection', (socket) => {
                 serverSocket = socket;

@@ -88,7 +88,7 @@ export class JoinConversationComponent implements AfterViewInit {
                 });
             },
             () => {
-                this.snackBarRef.open("Vous n'avez pas pu rejoindre la conversation: une erreur s'est produite", 'OK');
+                this.snackBarRef.open("Vous n'avez pas pu rejoindre la conversation: une erreur s'est produite", 'OK', { duration: 3000 });
             },
         );
     }

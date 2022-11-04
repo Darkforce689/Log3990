@@ -11,6 +11,7 @@ export interface Conversation extends ConversationCreation {
 
 export interface ConversationCreation {
     name: string;
+    creator: string;
 }
 
 export interface ConversationDTO {

@@ -69,6 +69,7 @@ export class DatabaseService {
             await collection.createIndex({ name: 1 }, { unique: true });
             await collection.createIndex({ participants: 1 }, { unique: true });
             await collection.createIndex({ type: 1 });
+            await collection.createIndex({ creator: 1 });
             await collection.insertOne({ name: GENERAL_CHANNEL, participants: [] });
             const isUserCollectionExists = await this.isCollectionInDb(USER_COLLECTION);
             if (isUserCollectionExists) {

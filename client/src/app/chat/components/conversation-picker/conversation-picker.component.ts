@@ -1,6 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { CreateConversationComponent } from '@app/chat/components/create-conversation/create-conversation.component';
+import { DeleteConversationComponent } from '@app/chat/components/delete-conversation/delete-conversation.component';
 import { JoinConversationComponent } from '@app/chat/components/join-conversation/join-conversation.component';
 import { GAME_CONVO_NAME, GENERAL_CHANNEL } from '@app/chat/constants';
 import { Conversation } from '@app/chat/interfaces/conversation.interface';
@@ -16,7 +18,7 @@ import { map, takeUntil } from 'rxjs/operators';
 export class ConversationPickerComponent implements OnInit, OnDestroy {
     selectedConversationIndex = 0;
     readonly conversations$ = new BehaviorSubject<Conversation[]>([]);
-    options = ['Rejoindre', 'Créer'];
+    options = ['Rejoindre', 'Créer', 'Supprimer'];
 
     private destroy$ = new Subject<void>();
 
@@ -32,16 +34,12 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
         return this.conversationService.currentConversation$;
     }
 
-    constructor(private conversationService: ConversationService, private matDialog: MatDialog) {
-        this.conversationService.joinedConversations$
-            .pipe(takeUntil(this.destroy$))
-            .pipe(map((conversations) => this.arrangeConversations(conversations)))
-            .subscribe((arrangedConvos) => {
-                this.conversations$.next(arrangedConvos);
-                // TODO does not work all the time need to investigate
-                this.setSelectedConversation(arrangedConvos[0]);
-            });
-    }
+    constructor(
+        private conversationService: ConversationService,
+        private matDialog: MatDialog,
+        private snackBarRef: MatSnackBar,
+        private cdRef: ChangeDetectorRef,
+    ) {}
 
     ngOnDestroy(): void {
         this.destroy$.next();
@@ -51,10 +49,26 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.currentConversation$.subscribe((currentConversation) => {
             if (!currentConversation) {
+                this.selectedConversationIndex = 0;
+                this.changeSelectedConversation();
                 return;
             }
+            this.cdRef.detectChanges();
             this.focusOnConversation(currentConversation);
         });
+
+        this.conversationService.joinedConversations$
+            .pipe(takeUntil(this.destroy$))
+            .pipe(map((conversations) => this.arrangeConversations(conversations)))
+            .subscribe((arrangedConvos) => {
+                if (this.selectedConversationIndex >= arrangedConvos.length) {
+                    const selected = this.conversations[this.selectedConversationIndex];
+                    this.selectedConversationIndex = arrangedConvos.findIndex(({ name }) => name === selected.name);
+                    this.changeSelectedConversation();
+                }
+                this.conversations$.next(arrangedConvos);
+                this.cdRef.detectChanges();
+            });
     }
 
     focusOnConversation(conversation: Conversation) {
@@ -77,7 +91,15 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
 
     leaveConversation(conversation: Conversation) {
         // eslint-disable-next-line no-underscore-dangle
-        this.conversationService.leaveConversation(conversation._id).subscribe();
+        this.conversationService.leaveConversation(conversation._id).subscribe(
+            () => {
+                this.selectedConversationIndex = 0;
+                this.changeSelectedConversation();
+            },
+            () => {
+                this.snackBarRef.open("Les/La conversation(s) supprimée(s) ont été retirées de l'affichage", 'Ok', { duration: 4000 });
+            },
+        );
     }
 
     openAddConversationMenu(option: string) {
@@ -86,10 +108,18 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
             autoFocus: true,
         };
 
-        if (option === 'Rejoindre') {
-            this.matDialog.open(JoinConversationComponent, dialogOption);
-        } else {
-            this.matDialog.open(CreateConversationComponent, dialogOption);
+        switch (option) {
+            case 'Rejoindre':
+                this.matDialog.open(JoinConversationComponent, dialogOption);
+                break;
+            case 'Créer':
+                this.matDialog.open(CreateConversationComponent, dialogOption);
+                break;
+            case 'Supprimer':
+                this.matDialog.open(DeleteConversationComponent, dialogOption);
+                break;
+            default:
+                throw Error(`No modal bound to option: ${option}`);
         }
     }
 
