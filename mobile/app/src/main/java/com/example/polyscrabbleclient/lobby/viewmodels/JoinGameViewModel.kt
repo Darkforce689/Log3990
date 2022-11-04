@@ -7,18 +7,17 @@ import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.sources.PendingGames
 
 class JoinGameViewModel : ViewModel() {
-    private val lobby = LobbyRepository
-    val pendingGames = lobby.pendingGames
+    val pendingGames = LobbyRepository.model.pendingGames
 
     fun joinGame(
         pendingGameIndex: Int,
         navigateToGameScreen: () -> Unit
     ) {
-        val pendingGameId = pendingGames.value?.get(pendingGameIndex)?.id
+        val pendingGameId = LobbyRepository.model.pendingGames.value?.get(pendingGameIndex)?.id
         if (pendingGameId === null) {
             return
         }
-        lobby.emitJoinGame(
+        LobbyRepository.emitJoinGame(
             JoinGame(id = pendingGameId),
             navigateToGameScreen
         )

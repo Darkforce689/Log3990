@@ -15,7 +15,7 @@ private const val URL = BuildConfig.COMMUNICATION_URL
 object GameSocketHandler : SocketHandler(GameEventTypes) {
 
     @Synchronized
-    fun setSocket() {
+    override fun setSocket() {
         val opts = IO.Options()
         opts.path = GamePath
         val cookie = ScrabbleHttpClient.getAuthCookie()
@@ -35,7 +35,7 @@ object GameSocketHandler : SocketHandler(GameEventTypes) {
     }
 
     @Synchronized
-    fun ensureConnection() {
+    override fun ensureConnection() {
         if (socket.connected()) {
             return
         }
@@ -43,7 +43,7 @@ object GameSocketHandler : SocketHandler(GameEventTypes) {
     }
 
     @Synchronized
-    fun closeConnection() {
+    override fun disconnect() {
         socket.disconnect()
     }
 }

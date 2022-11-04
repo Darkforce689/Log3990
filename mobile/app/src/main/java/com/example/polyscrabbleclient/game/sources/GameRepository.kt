@@ -1,44 +1,44 @@
 package com.example.polyscrabbleclient.game.sources
 
 import com.example.polyscrabbleclient.game.model.GameModel
+import com.example.polyscrabbleclient.game.model.millisecondsInSecond
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
+import com.example.polyscrabbleclient.utils.Repository
 
-const val millisecondsInSecond = 1000
 
-object GameRepository {
+object GameRepository : Repository<GameModel, GameSocketHandler>() {
 
-    fun createPlayers(playerNames: ArrayList<String>): List<Player>{
+    override lateinit var model: GameModel
+    override val socket = GameSocketHandler
+
+    private fun createPlayers(playerNames: ArrayList<String>): List<Player>{
         return playerNames.map { playerName -> Player(playerName) }
     }
 
     fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
-        game.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
-        game.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
-        game.createPlayersFrom(gameSettings.playerNames)
-        game.gameMode.value = gameSettings.gameMode
-        game.board.gameMode = game.gameMode.value
-        game.players.value = createPlayers(gameSettings.playerNames)
-        gameSocket.emit(EmitGameEvent.JoinGame, gameSettings.id)
+        model.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
+        model.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
+        model.players.value = createPlayers(gameSettings.playerNames)
+        model.gameMode.value = gameSettings.gameMode
+        model.board.gameMode = model.gameMode.value
+        socket.emit(EmitGameEvent.JoinGame, gameSettings.id)
     }
-
-    private val gameSocket = GameSocketHandler
-    val game = GameModel()
 
     private val onStartTime: (startTime: StartTime?) -> Unit = { startTime ->
         startTime?.let {
-            game.turnTotalTime.value = it / millisecondsInSecond
+            model.turnTotalTime.value = it / millisecondsInSecond
         }
     }
 
     private val onRemainingTime: (remainingTime: RemainingTime?) -> Unit = { remainingTime ->
         remainingTime?.let {
-            game.turnRemainingTime.value = it / millisecondsInSecond
+            model.turnRemainingTime.value = it / millisecondsInSecond
         }
     }
 
     private val onGameState: (gameState: GameState?) -> Unit = { gameState ->
         gameState?.let {
-            game.update(it)
+            model.update(it)
         }
     }
 
@@ -48,20 +48,28 @@ object GameRepository {
             println("onTransitionGameState $transitionGameState")
         }
 
-    init {
-        gameSocket.setSocket()
-        gameSocket.ensureConnection()
-        gameSocket.on(OnGameEvent.StartTime, onStartTime)
-        gameSocket.on(OnGameEvent.RemainingTime, onRemainingTime)
-        gameSocket.on(OnGameEvent.GameState, onGameState)
-        gameSocket.on(OnGameEvent.TransitionGameState, onTransitionGameState)
-    }
 
     fun emitNextAction(onlineAction: OnlineAction) {
-        gameSocket.emit(EmitGameEvent.NextAction, onlineAction)
+        socket.emit(EmitGameEvent.NextAction, onlineAction)
     }
 
     fun quitGame() {
-        gameSocket.closeConnection()
+        reset()
+    }
+
+    init {
+        setup()
+    }
+
+    override fun setup() {
+        model = GameModel()
+        super.setup()
+    }
+
+    override fun setupEvents() {
+        socket.on(OnGameEvent.StartTime, onStartTime)
+        socket.on(OnGameEvent.RemainingTime, onRemainingTime)
+        socket.on(OnGameEvent.GameState, onGameState)
+        socket.on(OnGameEvent.TransitionGameState, onTransitionGameState)
     }
 }

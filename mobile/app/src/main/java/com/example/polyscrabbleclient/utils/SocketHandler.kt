@@ -1,6 +1,5 @@
 package com.example.polyscrabbleclient.utils
 
-import com.example.polyscrabbleclient.lobby.sources.EmitLobbyEvent
 import com.google.gson.Gson
 import io.socket.client.Socket
 import org.json.JSONObject
@@ -9,8 +8,11 @@ abstract class SocketEvent (open val eventName: String)
 abstract class OnEvent (override val eventName: String) : SocketEvent(eventName)
 abstract class EmitEvent (override val eventName: String) : SocketEvent(eventName)
 
-open class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>>) {
+abstract class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>>) {
 
+    abstract fun setSocket()
+    abstract fun ensureConnection()
+    abstract fun disconnect()
     protected lateinit var socket: Socket
 
     @JvmName("onObject") // To prevent platform declaration clash

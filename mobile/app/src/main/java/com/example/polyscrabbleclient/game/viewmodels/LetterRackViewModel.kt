@@ -8,7 +8,7 @@ import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 
 class LetterRackViewModel : ViewModel() {
-    val game = GameRepository.game
+    val game = GameRepository.model
 
     fun placeTileOnBoard(draggableContent: DraggableContent?) {
         if (draggableContent == null || draggableContent.type !== DraggableContentType.TileModel) {

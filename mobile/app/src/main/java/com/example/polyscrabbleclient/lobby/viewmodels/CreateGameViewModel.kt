@@ -16,7 +16,7 @@ const val MAX_PLAYER_NUMBER = 4
 
 class CreateGameViewModel : ViewModel() {
 
-    val hostHasJustQuitTheGame = LobbyRepository.hostHasJustQuitTheGame
+    val hostHasJustQuitTheGame = LobbyRepository.model.hostHasJustQuitTheGame
 
     val timePerTurn = mutableStateOf(DEFAULT_TIMER)
     val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)

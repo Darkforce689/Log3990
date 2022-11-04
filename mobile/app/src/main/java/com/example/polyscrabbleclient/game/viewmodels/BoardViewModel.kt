@@ -18,7 +18,7 @@ data class TileCoordinates(
 )
 
 class BoardViewModel : ViewModel() {
-    var board = GameRepository.game.board
+    var board = GameRepository.model.board
 
     var hoveredTileCoordinates: TileCoordinates? = null
 
