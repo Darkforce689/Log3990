@@ -260,7 +260,7 @@ export class UIPlace implements UIAction {
             }
             const indexIsAdjacent = direction === Direction.Horizontal ? x === previousX + 1 : y === previousY + 1;
             if (!indexIsAdjacent) {
-                if (!this.isAdjacentTileEmpty(x, y, direction, nextTile)) {
+                if (!this.isAdjacentTileEmpty(x, y, direction, previousTile)) {
                     return true;
                 }
             }
