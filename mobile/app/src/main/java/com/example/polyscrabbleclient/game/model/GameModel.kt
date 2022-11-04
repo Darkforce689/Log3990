@@ -18,9 +18,11 @@ class GameModel {
     var turnRemainingTime = mutableStateOf(defaultTurnTime)
     var turnTotalTime = mutableStateOf(defaultTurnTime)
     var players: MutableState<List<Player>> = mutableStateOf(listOf())
+    var winnerIndexes: MutableState<List<Int>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
     val userLetters = mutableStateListOf<TileModel>()
     var isGameActive = mutableStateOf(false)
+    var hasGameJustEnded = mutableStateOf(false)
     var gameMode: MutableState<GameMode> = mutableStateOf(GameMode.Classic)
     var drawnMagicCards: MutableState<List<List<IMagicCard>>> =
         mutableStateOf(listOf(listOf(), listOf(), listOf(), listOf()))
@@ -42,6 +44,10 @@ class GameModel {
 
     private fun updateEndOfGame(winnerIndex: ArrayList<Int>) {
         isGameActive.value = winnerIndex.isEmpty()
+        if (winnerIndex.isNotEmpty()) {
+            hasGameJustEnded.value = true
+            winnerIndexes.value = winnerIndex
+        }
     }
 
     private fun updateBoardCrawler() {
@@ -96,6 +102,16 @@ class GameModel {
 
     fun hasGameEnded(): Boolean {
         return !isGameActive.value
+    }
+
+    fun isUserWinner(): Boolean {
+        val user = getUser() ?: return false
+        val userIndex = players.value.indexOf(user)
+        return winnerIndexes.value.contains(userIndex)
+    }
+
+    fun getWinnerNames(): ArrayList<String> {
+        return ArrayList(winnerIndexes.value.map { playerIndex -> players.value[playerIndex].name })
     }
 }
 

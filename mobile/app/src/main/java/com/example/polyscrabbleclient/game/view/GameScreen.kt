@@ -16,6 +16,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.game.view.draganddrop.DragShadow
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
+import com.example.polyscrabbleclient.lobby.view.ModalView
+import com.example.polyscrabbleclient.lobby.view.WaitingForOtherPlayersView
 import com.example.polyscrabbleclient.ui.theme.game_mode
 
 @Composable
@@ -61,6 +63,18 @@ fun GameScreen(navController: NavController) {
             Box {
                 // TODO : RIGHT PANEL
                 Text("RIGHT PANEL")
+            }
+        }
+    }
+
+    val endOfGameDialogOpened = viewModel.hasGameJustEnded()
+    if (endOfGameDialogOpened.value) {
+        ModalView(
+            closeModal = { endOfGameDialogOpened.value = false },
+            title = viewModel.getEndOfGameLabel()
+        ) { modalButtons ->
+            EndOfGameView (viewModel) { modalActions ->
+                modalButtons(modalActions)
             }
         }
     }
