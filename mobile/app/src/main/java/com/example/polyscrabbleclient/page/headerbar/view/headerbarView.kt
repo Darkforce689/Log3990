@@ -51,7 +51,7 @@ fun Account(navController: NavController, avatar: String) {
             modifier = Modifier
                 .padding(horizontal = 50.dp)
                 .clickable {
-                    navController.navigate(NavPage.Profil.label) {
+                    navController.navigate(NavPage.Account.label) {
                         popUpTo(NavPage.MainPage.label) {
                             inclusive = true
                         }

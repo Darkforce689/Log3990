@@ -29,10 +29,9 @@ enum class NavPage(val label: String) {
     JoinGamePage("joinGamePage"),
     Prototype("prototype"),
     Room("messageList"),
-    Profil("profil"),
     Account("account"),
     NewGameRoute("newGameRoute"),
-    NewGame("newGame")
+    NewGame("newGame"),
 }
 
 @Composable
@@ -55,7 +54,9 @@ fun NavGraph(startPage: NavPage) {
             GameScreen(navController)
         }
         newGame(navController)
-        account(navController)
+        composable(NavPage.Account.label) {
+            AccountView(AccountViewmodel(), navController)
+        }
     }
 }
 
@@ -77,16 +78,5 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
         }
     }
 }
-
-fun NavGraphBuilder.account(navController: NavController) {
-    navigation(startDestination = NavPage.Profil.label, route = NavPage.Account.label) {
-        composable(NavPage.Profil.label) {
-            AccountView(AccountViewmodel(), navController)
-        }
-
-    }
-}
-
-
 
 

@@ -5,6 +5,7 @@ import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ServerLogger } from '@app/logger/logger';
 import { Service } from 'typedi';
 
+const filterDate = -1;
 @Service()
 export class UserLogService {
     constructor(private mongoService: MongoDBClientService) {}
@@ -27,9 +28,11 @@ export class UserLogService {
         const { perPage, page } = pagination;
         const result = await this.collection
             .find({ userId })
+            .sort('date', filterDate)
             .skip(perPage * page)
             .limit(perPage)
             .toArray();
+
         return result as ConnectionLog[];
     }
 }
