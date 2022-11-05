@@ -41,7 +41,7 @@ data class PlacementSetting(
 ) {
     fun adjustPlacementSetting(): PlacementSetting {
         // Indexes have to be adjusted for server board
-        return PlacementSetting(x-1, y-1, direction)
+        return PlacementSetting(x - 1, y - 1, direction)
     }
 }
 

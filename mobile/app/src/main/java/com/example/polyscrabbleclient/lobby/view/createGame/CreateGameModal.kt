@@ -22,7 +22,7 @@ fun CreateGameModalContent(
 ) {
     Card(
         modifier = Modifier
-            .width(400.dp)
+            .defaultMinSize(400.dp)
             .background(Color.White),
     ) {
         Column(
@@ -39,7 +39,7 @@ fun CreateGameModalContent(
         ModalActions(
             ModalAction(
                 label = create_game,
-                canAction = { true },
+                canAction = { createGameViewModel.canCreateGame() },
                 action = { createGameViewModel.sendCreateGameRequest() }
             )
         )

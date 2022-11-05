@@ -21,7 +21,6 @@ import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.domain.ModalResult
 import com.example.polyscrabbleclient.ui.theme.SpinnerView
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
-import com.example.polyscrabbleclient.ui.theme.waitingForOtherPlayersFR
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -30,7 +29,7 @@ fun ModalView(
     closeModal: (modalResult: ModalResult) -> Unit,
     title: String,
     hasSpinner: Boolean = false,
-    width: Dp = 400.dp,
+    minWidth: Dp = 400.dp,
     content: @Composable (
         modalButtons: @Composable (
             modalActions: ModalActions
@@ -44,7 +43,7 @@ fun ModalView(
             Card {
                 Column (
                     modifier = Modifier
-                        .width(width)
+                        .defaultMinSize(minWidth)
                         .padding(18.dp)
                         .background(Color.White)
                 ) {

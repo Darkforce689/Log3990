@@ -33,15 +33,17 @@ const val missing_field = "Veuillez remplir tous les champs."
 const val invalid_password = "Mot de passe invalide."
 const val invalid_email = "Aucun utilisateur n'a cet email."
 const val wrong_form_email = "Veuillez saisir un e-mail valide."
-val invalid_username_creation: (minLength : Int, maxLength: Int) -> String = { minLength, maxLength -> "Entrer un pseudonyme entre $minLength et $maxLength caractères"}
+val invalid_username_creation: (minLength: Int, maxLength: Int) -> String =
+    { minLength, maxLength -> "Entrer un pseudonyme entre $minLength et $maxLength caractères" }
 const val userName_not_unique = "Un compte utilise déjà ce pseudonyme"
 const val email_not_unique = "Un compte utilise déjà cet e-mail."
-val invalid_password_creation : (minLength : Int, maxLength: Int) -> String = { minLength, maxLength -> "Entrer un mot de passe entre $minLength et $maxLength caractères"}
+val invalid_password_creation: (minLength: Int, maxLength: Int) -> String =
+    { minLength, maxLength -> "Entrer un mot de passe entre $minLength et $maxLength caractères" }
 const val already_auth = "Vous êtes déjà connecté sur un autre client"
 
 // GameScreen
-val lettersRemainingFR: (count: Int) -> String = { count -> "$count lettres restantes"}
-val lettersRemainingEN: (count: Int) -> String = { count -> "$count letters remaining"}
+val lettersRemainingFR: (count: Int) -> String = { count -> "$count lettres restantes" }
+val lettersRemainingEN: (count: Int) -> String = { count -> "$count letters remaining" }
 const val passButtonFR = "Passer"
 const val placeButtonFR = "Placer"
 const val exchangeButtonFR = "Échanger"
@@ -60,12 +62,12 @@ const val time_per_turn = "Temps par tour"
 const val random_bonus = "Bonus aléatoire"
 const val cancel = "Annuler"
 const val create_game = "Créer la partie"
-const val number_of_player ="Nombre de joueurs"
+const val number_of_player = "Nombre de joueurs"
 const val create_game_multiplayers = "Créer une partie multijoueurs"
 const val join_game_multiplayers = "Joindre une partie multijoueurs"
 const val new_game = "Nouvelle Partie"
 const val choose_bot_difficulty = "Difficulté du joueur virtuel"
-const val game_mode ="Mode de jeu"
+const val game_mode = "Mode de jeu"
 const val classic = "Classique"
 const val magic_cards = "Carte de pouvoirs"
 
