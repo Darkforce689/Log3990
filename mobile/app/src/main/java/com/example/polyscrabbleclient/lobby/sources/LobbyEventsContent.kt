@@ -61,6 +61,7 @@ data class CreateGame (
     val randomBonus: Boolean,
     val botDifficulty: BotDifficulty,
     val numberOfPlayers: Int,
+    val magicCardIds: ArrayList<String>?,
 )
 
 typealias LaunchGame = PendingGameId

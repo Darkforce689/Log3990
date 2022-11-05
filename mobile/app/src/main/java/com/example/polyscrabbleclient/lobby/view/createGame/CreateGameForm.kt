@@ -3,6 +3,7 @@ package com.example.polyscrabbleclient.lobby.view.createGame
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -10,12 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
+import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.viewmodels.*
 import com.example.polyscrabbleclient.roundDownToMultipleOf
-import com.example.polyscrabbleclient.ui.theme.choose_bot_difficulty
-import com.example.polyscrabbleclient.ui.theme.number_of_player
-import com.example.polyscrabbleclient.ui.theme.random_bonus
-import com.example.polyscrabbleclient.ui.theme.time_per_turn
+import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.utils.constants.magic_card_map
 
 @Preview(showBackground = true)
 @Composable
@@ -25,38 +25,70 @@ fun Preview() {
 
 @Composable
 fun NewGameForm(createGameViewModel: CreateGameViewModel) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.Start
-    ) {
-        PlayerSlider(
-            progress = createGameViewModel.numberOfPlayer.value.toFloat(),
-            onSeek = { value -> createGameViewModel.numberOfPlayer.value = value.toInt() }
-        )
-        TimeSlider(
-            progress = createGameViewModel.timePerTurn.value.toFloat(),
-            onSeek = { value -> createGameViewModel.timePerTurn.value = value.toInt() }
-        )
-        Row(
-            Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
-            verticalAlignment = Alignment.CenterVertically
+    Row(
+        Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
+        verticalAlignment = Alignment.CenterVertically
+    )
+    {
+        Column(
+            Modifier.width(200.dp),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.Start
         ) {
-            Checkbox(checked = createGameViewModel.randomBonus.value,
-                onCheckedChange = { value ->
-                    createGameViewModel.randomBonus.value = value
-                }
+            PlayerSlider(
+                progress = createGameViewModel.numberOfPlayer.value.toFloat(),
+                onSeek = { value -> createGameViewModel.numberOfPlayer.value = value.toInt() }
             )
-            Text(text = random_bonus)
+            TimeSlider(
+                progress = createGameViewModel.timePerTurn.value.toFloat(),
+                onSeek = { value -> createGameViewModel.timePerTurn.value = value.toInt() }
+            )
+            Row(
+                Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(checked = createGameViewModel.randomBonus.value,
+                    onCheckedChange = { value ->
+                        createGameViewModel.randomBonus.value = value
+                    }
+                )
+                Text(text = random_bonus)
+            }
+            BotDifficultyMenu(
+                updateBotDifficulty = { newValue ->
+                    createGameViewModel.botDifficulty.value = newValue
+                },
+            )
         }
-        BotDifficultyMenu(
-            updateBotDifficulty = { newValue ->
-                createGameViewModel.botDifficulty.value = newValue
-            },
-        )
-        // TODO: put magic card choice
+        if (createGameViewModel.gameMode.value == GameMode.Magic) {
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .width(400.dp)
+            ) {
+                magic_card_map.forEach { entry ->
+                    Row(
+                        Modifier
+                            .padding(0.dp, 0.dp, 5.dp, 0.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = createGameViewModel.containsMagicCard(entry.key),
+                            onCheckedChange = { _ ->
+                                if (createGameViewModel.containsMagicCard(entry.key))
+                                    createGameViewModel.magicCardIds.remove(entry.key)
+                                else
+                                    createGameViewModel.magicCardIds.add(entry.key)
+                            }
+                        )
+                        Text(text = entry.value)
+                    }
+                }
+            }
+        }
     }
 }
-
 
 @Composable
 fun TimeSlider(
