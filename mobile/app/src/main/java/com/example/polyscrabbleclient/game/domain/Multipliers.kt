@@ -3,7 +3,7 @@ package com.example.polyscrabbleclient.game.domain
 import com.example.polyscrabbleclient.game.model.RowChar
 
 enum class MultiplierType { Word, Letter }
-enum class MultiplierValue(value: Int) { Double(2), Triple(3) }
+enum class MultiplierValue(val value: Int) { Double(2), Triple(3) }
 
 
 data class Multiplier(

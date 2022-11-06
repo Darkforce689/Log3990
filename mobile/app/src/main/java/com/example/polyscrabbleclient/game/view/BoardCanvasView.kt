@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.polyscrabbleclient.game.domain.Multiplier
 import com.example.polyscrabbleclient.game.domain.MultiplierType
 import com.example.polyscrabbleclient.game.domain.MultiplierValue
 import com.example.polyscrabbleclient.game.domain.Multipliers
@@ -301,20 +302,50 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         }
     }
 
+    fun DrawScope.drawMultiplier(
+        column: Int,
+        row: Int,
+        value: MultiplierValue,
+        type: MultiplierType
+    ) {
+        val color =
+            if (type === MultiplierType.Letter)
+                themeColors[0]
+            else
+                themeColors[1]
+        val alpha =
+            if (value == MultiplierValue.Triple)
+                HardBackgroundAlpha
+            else
+                SoftBackgroundAlpha
+        drawTileBackground(color, column, row, alpha)
+        drawTileMultiplierIndicator(column, row, type, value)
+    }
+
+    fun multiplierValueFromTile(rawValue: Int) =
+        if (rawValue == MultiplierValue.Double.value) {
+            MultiplierValue.Double
+        } else {
+            MultiplierValue.Triple
+        }
+
     fun DrawScope.drawMultipliers() {
-        for (multiplier in Multipliers) {
-            val color =
-                if (multiplier.type === MultiplierType.Letter)
-                    themeColors[0]
-                else
-                    themeColors[1]
-            val alpha =
-                if (multiplier.value == MultiplierValue.Triple)
-                    HardBackgroundAlpha
-                else
-                    SoftBackgroundAlpha
-            drawTileBackground(color, multiplier.column, multiplier.row.ordinal + 1, alpha)
-            drawTileMultiplierIndicator(multiplier.column, multiplier.row.ordinal + 1, multiplier.type, multiplier.value)
+
+        viewModel.board.tileGrid.forEachIndexed { rowIndex, row ->
+            row.forEachIndexed { columnIndex, tile ->
+                if (tile.letterMultiplier != tile.wordMultiplier) {
+                    val value: MultiplierValue
+                    val type: MultiplierType
+                    if (tile.letterMultiplier > tile.wordMultiplier) {
+                        type = MultiplierType.Letter
+                        value = multiplierValueFromTile(tile.letterMultiplier)
+                    } else {
+                        type = MultiplierType.Word
+                        value = multiplierValueFromTile(tile.wordMultiplier)
+                    }
+                    drawMultiplier(columnIndex + 1, rowIndex + 1, value, type)
+                }
+            }
         }
     }
 
