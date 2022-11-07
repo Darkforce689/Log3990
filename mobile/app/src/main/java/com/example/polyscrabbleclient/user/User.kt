@@ -11,7 +11,7 @@ object User {
     var avatar: String = "avatardefault"
     var averagePoints: Double = 0.0
     var nGamePlayed: Double = 0.0
-    var nGameWinned: Double = 0.0
+    var nGameWon: Double = 0.0
     var averageTimePerGame: Double = 0.0
 
     fun updateUser(): Thread {
@@ -19,7 +19,7 @@ object User {
             val _id: String, val name: String, val email: String, val avatar: String,
             val averagePoints: Double,
             val nGamePlayed: Double,
-            val nGameWinned: Double,
+            val nGameWon: Double,
             val averageTimePerGame: Double,
         )
 
@@ -33,9 +33,20 @@ object User {
             avatar = account.avatar
             averagePoints = account.averagePoints
             nGamePlayed = account.nGamePlayed
-            nGameWinned = account.nGameWinned
+            nGameWon = account.nGameWon
             averageTimePerGame = account.averageTimePerGame
         }
         return thread
+    }
+
+    fun resetUserInfo() {
+        name = ""
+        email = ""
+        _id = ""
+        avatar = "avatardefault"
+        averagePoints = 0.0
+        nGamePlayed = 0.0
+        nGameWon = 0.0
+        averageTimePerGame = 0.0
     }
 }

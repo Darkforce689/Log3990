@@ -50,7 +50,7 @@ fun UserStatistics(viewModel: StatisticsViewModel = StatisticsViewModel()) {
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(text = "$gamePlayed : ${User.nGamePlayed.toInt()}")
-                    Text(text = "$gameWinned : ${User.nGameWinned.toInt()}")
+                    Text(text = "$gameWon : ${User.nGameWon.toInt()}")
                     Text(text = "$averagePointsPerGame : ${User.averagePoints.round(2)}")
                     Text(text = "$averageTimePerGame : ${formatTime(User.averageTimePerGame)}")
                 }
