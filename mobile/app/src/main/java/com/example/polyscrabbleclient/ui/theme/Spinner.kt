@@ -1,5 +1,6 @@
 package com.example.polyscrabbleclient.ui.theme
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -29,8 +31,8 @@ fun SpinnerView(
     slowness: Int = 600,
 
     circleColors: List<Color> = listOf(
-        MaterialTheme.colors.background,
-        MaterialTheme.colors.background,
+        MaterialTheme.colors.surface,
+        MaterialTheme.colors.surface,
         MaterialTheme.colors.secondary,
         MaterialTheme.colors.primary,
         MaterialTheme.colors.error,
@@ -92,3 +94,14 @@ fun SpinnerPreview() {
 fun SpinnerPreviewWithPadding() {
     SpinnerView(padding = 10.dp)
 }
+@SuppressLint("UnrememberedMutableState")
+@Preview(showBackground = true)
+@Composable
+fun DarkSpinnerPreviewWithPadding() {
+    PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
+        Surface {
+            SpinnerView(padding = 10.dp)
+        }
+    }
+}
+

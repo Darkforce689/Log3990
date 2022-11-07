@@ -23,7 +23,6 @@ fun CreateGameModalContent(
     Card(
         modifier = Modifier
             .defaultMinSize(400.dp)
-            .background(Color.White),
     ) {
         Column(
             Modifier.padding(20.dp),

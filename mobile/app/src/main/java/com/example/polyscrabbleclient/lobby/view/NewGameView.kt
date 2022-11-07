@@ -18,7 +18,6 @@ import com.example.polyscrabbleclient.lobby.domain.ModalResult
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.view.createGame.CreateGameModalContent
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
-import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
 import com.example.polyscrabbleclient.ui.theme.*
 
 @Composable
@@ -32,8 +31,6 @@ fun NewGameScreen(
 
     val isToggled = remember { mutableStateOf(false) }
     val gameText = if (isToggled.value) magic_cards else classic
-
-    HeaderBar(navController)
 
     CenteredContainer {
         Card(

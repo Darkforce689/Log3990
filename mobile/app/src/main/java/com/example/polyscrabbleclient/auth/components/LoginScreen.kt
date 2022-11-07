@@ -117,8 +117,7 @@ fun AuthForm(
     Box(
         Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
-            .background(Color.White),
+            .fillMaxHeight(),
         contentAlignment = Alignment.Center
     ) {
         Card(

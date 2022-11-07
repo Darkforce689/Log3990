@@ -26,8 +26,9 @@ import com.example.polyscrabbleclient.game.model.RowChar
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
-import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
-import com.example.polyscrabbleclient.ui.theme.TransientTileBackgroundColor
+import com.example.polyscrabbleclient.ui.theme.grayedOutTileBackground
+import com.example.polyscrabbleclient.ui.theme.tileBackground
+import com.example.polyscrabbleclient.ui.theme.transientTileBackground
 import kotlin.properties.Delegates
 
 const val ThickDividerWidth = Stroke.DefaultMiter
@@ -58,6 +59,8 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     val rowChars = RowChar.values()
     val rowCharsColor = MaterialTheme.colors.primary
     val tileTextColor = MaterialTheme.colors.onBackground
+    val tileBackground = MaterialTheme.colors.tileBackground
+    val transientTileBackground = MaterialTheme.colors.transientTileBackground
 
     fun DrawScope.drawColumnDivider(
         currentDivisionOffset: Float,
@@ -203,9 +206,9 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
 
         val tileBackgroundColor =
             if (viewModel.areCoordinatesTransient(TileCoordinates(row, column))) {
-                TransientTileBackgroundColor
+                transientTileBackground
             } else {
-                TileBackgroundColor
+                tileBackground
             }
         drawTileBackground(tileBackgroundColor, column, row)
         val horizontalOffset = column * GridDivisionSize.toPx()

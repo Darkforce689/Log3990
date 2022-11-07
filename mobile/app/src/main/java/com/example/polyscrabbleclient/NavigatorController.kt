@@ -1,8 +1,12 @@
 package com.example.polyscrabbleclient
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,11 +18,13 @@ import com.example.polyscrabbleclient.auth.components.SignUpScreen
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.game.view.GameScreen
-import com.example.polyscrabbleclient.lobby.view.JoinGameView
 import com.example.polyscrabbleclient.lobby.view.NewGameScreen
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
+import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
+import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
+import com.example.polyscrabbleclient.utils.PageSurface
 
 enum class NavPage(val label: String) {
     RegistrationRoute("registration"),
@@ -35,13 +41,15 @@ enum class NavPage(val label: String) {
 }
 
 @Composable
-fun NavGraph(startPage: NavPage) {
+fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController, startDestination = startPage.label) {
 
         composable(NavPage.MainPage.label) {
-            StartView(navController, StartViewModel())
+            PageWithHeader(navController, themeSelectorViewModel) {
+                StartView(navController, StartViewModel())
+            }
         }
         composable(NavPage.Room.label) {
             val chatBoxViewModel = ChatBoxViewModel()
@@ -51,19 +59,39 @@ fun NavGraph(startPage: NavPage) {
         }
         loginGraph(navController)
         composable(NavPage.GamePage.label) {
-            GameScreen(navController)
+            PageSurface {
+                GameScreen(navController)
+            }
         }
-        newGame(navController)
+        newGame(navController, themeSelectorViewModel)
         composable(NavPage.Account.label) {
-            AccountView(AccountViewmodel(), navController)
+            PageSurface {
+                AccountView(AccountViewmodel(), navController)
+            }
         }
     }
 }
 
-fun NavGraphBuilder.newGame(navController: NavController) {
+@Composable
+private fun PageWithHeader(
+    navController: NavController,
+    themeSelectorViewModel: ThemeSelectorViewModel,
+    pageContent: @Composable () -> Unit
+) {
+    PageSurface {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            HeaderBar(navController, themeSelectorViewModel)
+            pageContent()
+        }
+    }
+}
+
+fun NavGraphBuilder.newGame(navController: NavController, themeSelectorViewModel: ThemeSelectorViewModel) {
     navigation(startDestination = NavPage.NewGame.label, route = NavPage.NewGameRoute.label) {
         composable(NavPage.NewGame.label) {
-            NewGameScreen(navController, CreateGameViewModel())
+            PageWithHeader(navController, themeSelectorViewModel) {
+                NewGameScreen(navController, CreateGameViewModel())
+            }
         }
     }
 }
@@ -71,12 +99,14 @@ fun NavGraphBuilder.newGame(navController: NavController) {
 fun NavGraphBuilder.loginGraph(navController: NavController) {
     navigation(startDestination = NavPage.Login.label, route = NavPage.RegistrationRoute.label) {
         composable(NavPage.Login.label) {
-            LogInScreen(navController, AuthenticationViewModel())
+            PageSurface {
+                LogInScreen(navController, AuthenticationViewModel())
+            }
         }
         composable(NavPage.SignUp.label) {
-            SignUpScreen(navController, SignUpViewModel())
+            PageSurface {
+                SignUpScreen(navController, SignUpViewModel())
+            }
         }
     }
 }
-
-

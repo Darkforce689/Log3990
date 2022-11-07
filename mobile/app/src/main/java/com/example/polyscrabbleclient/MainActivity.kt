@@ -11,7 +11,9 @@ import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.auth.AppSocketHandler
+import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
 import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.user.User
@@ -53,9 +55,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            PolyScrabbleClientTheme {
+            val themeSelectorViewModel: ThemeSelectorViewModel = viewModel()
+            PolyScrabbleClientTheme(themeSelectorViewModel.isDarkTheme) {
                 CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
-                    NavGraph(startPage)
+                    NavGraph(startPage, themeSelectorViewModel)
                 }
             }
         }

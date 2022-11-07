@@ -1,8 +1,10 @@
 package com.example.polyscrabbleclient
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
+import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
 import com.example.polyscrabbleclient.ui.theme.disconnection
 import com.example.polyscrabbleclient.ui.theme.gamePage
 import com.example.polyscrabbleclient.ui.theme.new_game
 import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.utils.PageSurface
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -21,15 +25,15 @@ import kotlinx.coroutines.launch
 import java.net.URL
 
 @Composable
-fun StartView(navController: NavController, startViewModel: StartViewModel) {
+fun StartView(
+    navController: NavController,
+    startViewModel: StartViewModel,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        HeaderBar(navController)
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Prototype(navController = navController)
-            GamePage(navController = navController)
-            NewGamePage(navController)
-            Disconnection(navController = navController, startViewModel = startViewModel)
-        }
+        Prototype(navController = navController)
+        GamePage(navController = navController)
+        NewGamePage(navController)
+        Disconnection(navController = navController, startViewModel = startViewModel)
     }
 }
 
