@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.polyscrabbleclient.game.model.TileModel
-import com.example.polyscrabbleclient.ui.theme.TileBackgroundColor
-import com.example.polyscrabbleclient.ui.theme.TileGrayedOutBackgroundColor
+import com.example.polyscrabbleclient.ui.theme.grayedOutTileBackground
+import com.example.polyscrabbleclient.ui.theme.tileBackground
 
 val subscript = SpanStyle(
     baselineShift = BaselineShift.Subscript,
@@ -43,9 +43,9 @@ fun TileView(
     Surface(
         color =
             if (tileModel.isUsedOnBoard.value) {
-                TileGrayedOutBackgroundColor
+                MaterialTheme.colors.grayedOutTileBackground
             } else {
-                TileBackgroundColor
+                MaterialTheme.colors.tileBackground
             },
         modifier = Modifier
             .border(width = 4.dp, targetColor)

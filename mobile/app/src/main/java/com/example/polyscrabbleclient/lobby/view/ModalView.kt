@@ -1,9 +1,11 @@
 package com.example.polyscrabbleclient.lobby.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -19,6 +21,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.polyscrabbleclient.lobby.domain.ModalAction
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.domain.ModalResult
+import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.ui.theme.SpinnerView
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 
@@ -41,43 +44,45 @@ fun ModalView(
         onDismissRequest = { },
         content = {
             Card {
-                Column (
-                    modifier = Modifier
-                        .defaultMinSize(minWidth)
-                        .padding(18.dp)
-                        .background(Color.White)
-                ) {
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically,
+                Surface {
+                    Column(
+                        modifier = Modifier
+                            .defaultMinSize(minWidth)
+                            .padding(18.dp)
                     ) {
-                        Text(
-                            text = title,
-                            fontStyle = MaterialTheme.typography.h1.fontStyle,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp
-                        )
-                        if (hasSpinner) {
-                            SpinnerView()
-                        }
-                    }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
 
-                    content { modalActions ->
-                        Row {
-                            modalActions.cancel.let {
-                                ModalButton(
-                                    { closeModal(ModalResult.Cancel) },
-                                    it.canAction,
-                                    it.action,
-                                    it.label
-                                )
+                            Text(
+                                text = title,
+                                fontStyle = MaterialTheme.typography.h1.fontStyle,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 25.sp
+                            )
+                            if (hasSpinner) {
+                                SpinnerView()
                             }
-                            modalActions.primary?.let {
-                                ModalButton(
-                                    { closeModal(ModalResult.Primary) },
-                                    it.canAction,
-                                    it.action,
-                                    it.label
-                                )
+                        }
+
+                        content { modalActions ->
+                            Row {
+                                modalActions.cancel.let {
+                                    ModalButton(
+                                        { closeModal(ModalResult.Cancel) },
+                                        it.canAction,
+                                        it.action,
+                                        it.label
+                                    )
+                                }
+                                modalActions.primary?.let {
+                                    ModalButton(
+                                        { closeModal(ModalResult.Primary) },
+                                        it.canAction,
+                                        it.action,
+                                        it.label
+                                    )
+                                }
                             }
                         }
                     }
@@ -108,7 +113,27 @@ private fun ModalButton(
 
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
-fun SpinnerModalPreview() {
+fun ModalPreview() {
+    ModalView(
+        closeModal = { },
+        title = "This is a modal title",
+        hasSpinner = false
+    ) {
+        it(
+            ModalActions(
+                primary = ModalAction(
+                    label = joinGameButtonFR,
+                    canAction = { false },
+                    action = {}
+                )
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Composable
+fun ModalWithSpinnerPreview() {
     ModalView(
         closeModal = { },
         title = "This is a modal title",
@@ -126,22 +151,48 @@ fun SpinnerModalPreview() {
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
-fun NoSpinnerModalPreview() {
-    ModalView(
-        closeModal = { },
-        title = "This is a modal title",
-        hasSpinner = false
-    ) {
-        it(
-            ModalActions(
-                primary = ModalAction(
-                    label = joinGameButtonFR,
-                    canAction = { false },
-                    action = {}
+fun DarkModalPreview() {
+    PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
+        ModalView(
+            closeModal = { },
+            title = "This is a modal title",
+            hasSpinner = false
+        ) {
+            it(
+                ModalActions(
+                    primary = ModalAction(
+                        label = joinGameButtonFR,
+                        canAction = { false },
+                        action = {}
+                    )
                 )
             )
-        )
+        }
+    }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Composable
+fun DarkModalWithSpinnerPreview() {
+    PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
+        ModalView(
+            closeModal = { },
+            title = "This is a modal title",
+            hasSpinner = true
+        ) {
+            it(
+                ModalActions(
+                    primary = ModalAction(
+                        label = joinGameButtonFR,
+                        canAction = { false },
+                        action = {}
+                    )
+                )
+            )
+        }
     }
 }
