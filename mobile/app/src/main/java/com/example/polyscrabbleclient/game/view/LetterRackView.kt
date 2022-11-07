@@ -44,6 +44,6 @@ private fun DraggableTileView(
     DraggableView(
         dragState, getTile
     ) {
-        TileView(getTile(), select)
+        TileView(getTile()) { select() }
     }
 }

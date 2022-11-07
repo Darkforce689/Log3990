@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.polyscrabbleclient.lobby.domain.ModalAction
+import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.ui.theme.create_game
@@ -36,8 +36,8 @@ fun CreateGameModalContent(
     }
     modalButtons(
         ModalActions(
-            ModalAction(
-                label = create_game,
+            ActionButton(
+                label = { create_game },
                 canAction = { createGameViewModel.canCreateGame() },
                 action = { createGameViewModel.sendCreateGameRequest() }
             )

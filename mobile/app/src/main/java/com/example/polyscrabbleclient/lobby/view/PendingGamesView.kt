@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.polyscrabbleclient.lobby.domain.ModalAction
+import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.sources.*
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
@@ -59,8 +59,8 @@ fun PendingGamesView(
 
         modalButtons(
             ModalActions(
-                primary = ModalAction(
-                    label = joinGameButtonFR,
+                primary = ActionButton(
+                    label = { joinGameButtonFR },
                     canAction = { selectedPendingGameIndex !== null },
                     action = { joinGame(selectedPendingGameIndex!!) }
                 )

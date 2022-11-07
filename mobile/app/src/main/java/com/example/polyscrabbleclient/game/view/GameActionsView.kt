@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
+import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.ui.theme.*
 
 @Composable
@@ -20,51 +21,51 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        FlexedRow (2) { width ->
-            GameActionButton(width, passButtonFR, { viewModel.canPassTurn() }) {
-                viewModel.passTurn()
-            }
-            GameActionButton(width, placeButtonFR, { viewModel.canPlaceLetter() }) {
-                viewModel.placeLetter()
-            }
-        }
-        FlexedRow ( 2) { width ->
-            GameActionButton(width, exchangeButtonFR, { viewModel.canExchangeLetter() }) {
-                viewModel.exchangeLetter()
-            }
-            GameActionButton(width, cancelButtonFR, { viewModel.canCancel() }) {
-                viewModel.cancel()
-            }
-        }
-        FlexedRow (1) { width ->
-            GameActionButton(width, viewModel.getQuitLabel(), { true }) {
-                viewModel.quitGame()
-                navController.navigate(NavPage.MainPage.label) {
-                    launchSingleTop = true
+        val gameButtonsContents = listOf(
+            ActionButton(
+                label = { passButtonFR },
+                canAction = { viewModel.canPassTurn() },
+                action = { viewModel.passTurn() }
+            ),
+            ActionButton(
+                label = { placeButtonFR },
+                canAction = { viewModel.canPlaceLetter() },
+                action = { viewModel.placeLetter() }
+            ),
+            ActionButton(
+                label = { exchangeButtonFR },
+                canAction = { viewModel.canExchangeLetter() },
+                action = { viewModel.exchangeLetter() }
+            ),
+            ActionButton(
+                label = { cancelButtonFR },
+                canAction = { viewModel.canCancel() },
+                action = { viewModel.cancel() }
+            ),
+            ActionButton(
+                label = { viewModel.getQuitLabel() },
+                canAction = { true },
+                action = {
+                    viewModel.quitGame()
+                    navController.navigate(NavPage.MainPage.label) {
+                        launchSingleTop = true
+                    }
                 }
-            }
-        }
+            )
+        )
+
+        FlexedSquaredContainer(
+            contentCount = 2,
+            contents = gameButtonsContents,
+            view = GameActionButton
+        )
     }
 }
 
-@Composable
-fun FlexedRow (
-    contentSize: Int,
-    width: Dp = 270.dp,
-    content: @Composable (width: Dp) -> Unit
-) {
-    Row {
-        content(width = width.div(contentSize))
-    }
-}
-
-@Composable
-fun GameActionButton(
+val GameActionButton: @Composable (
     width: Dp,
-    label: String,
-    enabled: () -> Boolean,
-    click: () -> Unit
-) {
+    actionButton: ActionButton
+) -> Unit = { width, actionButton ->
     Button(
         modifier = Modifier
             .size(
@@ -75,10 +76,10 @@ fun GameActionButton(
                 vertical = 15.dp,
                 horizontal = 15.dp
             ),
-        onClick = click,
-        enabled = enabled()
+        onClick = actionButton.action,
+        enabled = actionButton.canAction()
     ) {
-        Text(label)
+        Text(actionButton.label())
     }
 }
 

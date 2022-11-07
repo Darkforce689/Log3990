@@ -216,7 +216,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
 
         drawIntoCanvas {
             it.nativeCanvas.drawText(
-                tile.content.value?.letter?.uppercaseChar().toString(),
+                tile.content.value?.displayedLetter?.uppercaseChar().toString(),
                 horizontalOffset + DivisionCenterOffset.toPx(),
                 verticalOffset - DivisionCenterOffset.toPx(),
                 lettersPaint

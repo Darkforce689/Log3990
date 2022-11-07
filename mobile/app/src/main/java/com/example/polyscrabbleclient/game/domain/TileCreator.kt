@@ -3,6 +3,8 @@ package com.example.polyscrabbleclient.game.domain
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.Tile
 
+val alphabetRange = 'A'..'Z'
+val JokerChar = '*'
 
 object TileCreator {
     private val letterValues = arrayListOf(
@@ -34,14 +36,19 @@ object TileCreator {
         10
     )
 
-    fun createTileFromLetter(letter: Char): TileModel {
-        var points = 0;
+    fun createTileFromLetter(letter: Char, value: Int? = null): TileModel {
         val lowerCaseLetter = letter.lowercaseChar()
         val letterIndex = lowerCaseLetter.code - 'a'.code;
+        val points = value ?: getLetterValue(letterIndex)
+        return TileModel(lowerCaseLetter, points)
+    }
+
+    private fun getLetterValue(letterIndex: Int): Int {
+        var points = 0
         if (letterIndex >= 0 && letterIndex < letterValues.size) {
             points = letterValues[letterIndex]
         }
-        return TileModel(lowerCaseLetter, points)
+        return points
     }
 
     fun createTileFromRawTile(tile: Tile): TileModel? {
@@ -51,7 +58,7 @@ object TileCreator {
         return if (isNullTile) {
             null
         } else {
-            createTileFromLetter(tile.letterObject.char[0])
+            createTileFromLetter(tile.letterObject.char[0], tile.letterObject.value)
         }
     }
 }

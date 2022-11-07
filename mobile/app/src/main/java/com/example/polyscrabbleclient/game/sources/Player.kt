@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateListOf
 import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.model.TileModel
 
-
 data class Player(
     var name: String,
     var points: Int = 0,
@@ -13,7 +12,7 @@ data class Player(
     companion object {
         fun fromLightPlayer(player: LightPlayer): Player {
             val letters = player.letterRack.map { letter ->
-                TileCreator.createTileFromLetter(letter.char[0])
+                TileCreator.createTileFromLetter(letter.char[0], letter.value)
             }.toTypedArray()
             return Player(
                 player.name,

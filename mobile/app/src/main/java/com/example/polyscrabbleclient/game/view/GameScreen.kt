@@ -11,12 +11,14 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.game.view.draganddrop.DragShadow
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.view.ModalView
+import com.example.polyscrabbleclient.ui.theme.chooseJokerFR
 import com.example.polyscrabbleclient.lobby.view.WaitingForOtherPlayersView
 import com.example.polyscrabbleclient.ui.theme.game_mode
 
@@ -34,8 +36,8 @@ fun GameScreen(navController: NavController) {
         DragShadow(dragState)
     }
 
-    EvenlySpacedRowContainer {
-        EvenlySpacedSubColumn {
+    EvenlySpacedRowContainer(modifier = Modifier.fillMaxSize()) {
+        EvenlySpacedSubColumn(modifier = Modifier.fillMaxHeight()) {
             Box {
                 PlayersInfoView(viewModel)
             }
@@ -46,7 +48,7 @@ fun GameScreen(navController: NavController) {
                 GameActionsView(viewModel, navController)
             }
         }
-        EvenlySpacedSubColumn {
+        EvenlySpacedSubColumn(modifier = Modifier.fillMaxHeight()) {
             Box {
                 BoardView(dragState)
             }
@@ -59,12 +61,26 @@ fun GameScreen(navController: NavController) {
                 LetterRackView(dragState)
             }
         }
-        EvenlySpacedSubColumn {
+        EvenlySpacedSubColumn(modifier = Modifier.fillMaxHeight()) {
             Box {
                 // TODO : RIGHT PANEL
                 Text("RIGHT PANEL")
             }
         }
+
+        val jokerSelectionDialogOpened = viewModel.hasToChooseForJoker()
+        if (jokerSelectionDialogOpened.value) {
+            ModalView(
+                closeModal = { jokerSelectionDialogOpened.value = false },
+                title = chooseJokerFR,
+                minWidth = 800.dp
+            ) { modalButtons ->
+                JokerSelectionView(viewModel) { modalActions ->
+                    modalButtons(modalActions)
+                }
+            }
+        }
+
     }
 
     val endOfGameDialogOpened = viewModel.hasGameJustEnded()
@@ -81,9 +97,9 @@ fun GameScreen(navController: NavController) {
 }
 
 @Composable
-fun EvenlySpacedSubColumn(content: @Composable ColumnScope.() -> Unit) {
+fun EvenlySpacedSubColumn(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Column(
-        modifier = Modifier.fillMaxHeight(),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -92,9 +108,9 @@ fun EvenlySpacedSubColumn(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
+fun EvenlySpacedRowContainer(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
     Row(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {

@@ -3,6 +3,7 @@ package com.example.polyscrabbleclient.game.viewmodels
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
+import com.example.polyscrabbleclient.game.model.TileContent
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.ui.theme.*
@@ -233,5 +234,17 @@ class GameViewModel : ViewModel() {
                 position = position
             )
         )
+    }
+
+    fun hasToChooseForJoker(): MutableState<Boolean> {
+        return game.board.jokerModel.hasToChooseForJoker
+    }
+
+    fun removeJoker() {
+        return game.board.jokerModel.removeJoker()
+    }
+
+    fun chooseJoker(selectedTile: TileContent) {
+        return game.board.jokerModel.chooseJoker(selectedTile!!)
     }
 }
