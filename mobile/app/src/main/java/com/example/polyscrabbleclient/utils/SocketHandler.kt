@@ -2,6 +2,10 @@ package com.example.polyscrabbleclient.utils
 
 import com.google.gson.Gson
 import io.socket.client.Socket
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 abstract class SocketEvent (open val eventName: String)
@@ -16,22 +20,38 @@ abstract class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out 
     protected lateinit var socket: Socket
 
     @JvmName("onObject") // To prevent platform declaration clash
+    @OptIn(DelicateCoroutinesApi::class)
     @Synchronized
     fun <T> on(event: OnEvent, callback: (formattedContent: T?) -> Unit) {
         socket.on(event.eventName) { args ->
             val contentType = EventTypes[event]!!
             val formattedContent = formatObjectResponse(args, contentType as Class<T>)
-            callback(formattedContent)
+            try {
+                GlobalScope.launch(Dispatchers.Main) {
+                    callback(formattedContent)
+                }
+            } catch (e: Exception) {
+                println("SocketHandler -> onObject -> Error")
+                e.printStackTrace()
+            }
         }
     }
 
     @JvmName("onArray") // To prevent platform declaration clash
+    @OptIn(DelicateCoroutinesApi::class)
     @Synchronized
     fun <T> on(event: OnEvent, callback: (formattedContent: List<T>?) -> Unit) {
         socket.on(event.eventName) { args ->
             val contentType = EventTypes[event]
             val formattedContent = formatArrayResponse(args, contentType as Class<Array<T>>)
-            callback(formattedContent)
+            try {
+                GlobalScope.launch(Dispatchers.Main) {
+                    callback(formattedContent)
+                }
+            } catch (e: Exception) {
+                println("SocketHandler -> onArray -> Error")
+                e.printStackTrace()
+            }
         }
     }
 
