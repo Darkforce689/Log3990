@@ -16,7 +16,7 @@ import java.net.URL
 import kotlin.math.floor
 import kotlin.math.round
 
-data class ValidationResponse(val message: String, val errors : String)
+data class ValidationResponse(val message: String, val errors : ArrayList<String>)
 
 class MainActivity : ComponentActivity() {
 
