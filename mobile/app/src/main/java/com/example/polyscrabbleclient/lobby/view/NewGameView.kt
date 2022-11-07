@@ -50,7 +50,6 @@ fun NewGameScreen(
                         isToggled.value = value
                         createGameViewModel.gameMode.value =
                             if (isToggled.value) GameMode.Magic else GameMode.Classic
-                        println(createGameViewModel.gameMode.value)
                     },
                 )
 

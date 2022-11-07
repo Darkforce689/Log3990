@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_widget_background"
+    android:theme="@style/Theme.PolyScrabbleClient.AppWidgetContainerParent"
+    android:orientation="vertical">
+    <!--    Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="6dp"
+        android:theme="@style/Theme.PolyScrabbleClient.AppWidgetContainer">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            >
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="4dp"
+                android:contentDescription="@string/image"
+                android:rotation="0"
+                android:rotationY="0"
+                android:scaleType="centerInside"
+                android:src="@drawable/favicon" />
+
+            <TextView
+                android:id="@+id/appwidget_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/app_name"
+                android:fontFamily="sans-serif-condensed"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/container_padding">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/app_name"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <!-- Content-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <!--    #1-->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/circle_padding"
+                android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle">
+
+
+                <LinearLayout
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/app_widget_circle"
+                    android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle">
+
+                    <TextView
+                        android:id="@+id/game_played_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text=""
+                        android:textAlignment="center"
+                        android:textSize="11sp"
+                        android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/n_game_played"
+                    android:textAlignment="center"
+                    android:textSize="11sp"
+                    android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle"
+                    tools:ignore="TextContrastCheck" />
+            </LinearLayout>
+            <!--    #2-->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/circle_padding"
+                android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle">
+
+                <LinearLayout
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/app_widget_circle"
+                    android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle">
+
+                    <TextView
+                        android:id="@+id/game_winned_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text=""
+                        android:textAlignment="center"
+                        android:textSize="11sp"
+                        android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/game_won"
+                    android:textAlignment="center"
+                    android:textSize="11sp"
+                    android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle"
+                    tools:ignore="TextContrastCheck" />
+            </LinearLayout>
+            <!--    #3-->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/circle_padding"
+                android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle">
+
+                    <TextView
+                        android:id="@+id/level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/app_name"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/app_name"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="@string/max_level"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/experience_level"
+                    android:textAlignment="center"
+                    android:textSize="11sp"
+                    android:theme="@style/Theme.PolyScrabbleClient.AppWidgetCircle"
+                    tools:ignore="TextContrastCheck" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PolyScrabble</string>
+    <string name="description">PolyWidget</string>
+    <string name="game_stats">Statistiques de jeu</string>
+    <string name="image">Image</string>
+
+    <string name="n_game_played">Parties</string>
+    <string name="game_won">Gagnées</string>
+    <string name="experience_level">Expérience</string>
+    <string name="max_level">/15</string>
+
 </resources>

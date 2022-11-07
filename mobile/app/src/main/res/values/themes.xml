@@ -4,4 +4,30 @@
     <style name="Theme.PolyScrabbleClient" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/purple_700</item>
     </style>
+
+    <style name="Theme.PolyScrabbleClient.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault">
+        <!-- Radius of the outer bound of widgets to make the rounded corners -->
+        <item name="appWidgetRadius">16dp</item>
+        <!--
+        Radius of the inner view's bound of widgets to make the rounded corners.
+        It needs to be 8dp or less than the value of appWidgetRadius
+        -->
+        <item name="appWidgetInnerRadius">8dp</item>
+        <item name="colorBackground">@color/cardview_dark_background</item>
+    </style>
+
+    <style name="Theme.PolyScrabbleClient.AppWidgetContainer" parent="Theme.PolyScrabbleClient.AppWidgetContainerParent">
+        <!-- Apply padding to avoid the content of the widget colliding with the rounded corners -->
+        <item name="appWidgetPadding">8dp</item>
+        <item name="appWidgetInnerRadius">8dp</item>
+        <item name="colorBackground">@color/cardview_shadow_start_color</item>
+        <item name="colorText">@color/white</item>
+    </style>
+
+    <style name="Theme.PolyScrabbleClient.AppWidgetCircle" parent="Theme.PolyScrabbleClient.AppWidgetContainer">
+        <item name="padding">8dp</item>
+        <item name="appWidgetInnerRadius">8dp</item>
+        <item name="colorBackground">@color/purple_500</item>
+        <item name="colorText">@color/white</item>
+    </style>
 </resources>

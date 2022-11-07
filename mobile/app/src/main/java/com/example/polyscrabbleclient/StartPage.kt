@@ -68,6 +68,7 @@ fun Disconnection(navController: NavController, startViewModel: StartViewModel) 
             thread.join()
             startViewModel.disconnectAppSocket()
             ScrabbleHttpClient.clearCookies()
+            User.resetUserInfo()
             navController.navigate(NavPage.Login.label) {
                 popUpTo(NavPage.MainPage.label) {
                     inclusive = true
