@@ -23,7 +23,7 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
         model.board.gameMode = model.gameMode.value
         socket.emit(EmitGameEvent.JoinGame, gameSettings.id)
     }
-
+    
     private val onStartTime: (startTime: StartTime?) -> Unit = { startTime ->
         startTime?.let {
             model.turnTotalTime.value = it / millisecondsInSecond
