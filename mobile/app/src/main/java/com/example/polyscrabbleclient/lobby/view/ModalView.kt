@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.polyscrabbleclient.lobby.domain.ModalAction
+import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.domain.ModalResult
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
@@ -67,20 +67,14 @@ fun ModalView(
 
                         content { modalActions ->
                             Row {
-                                modalActions.cancel.let {
-                                    ModalButton(
-                                        { closeModal(ModalResult.Cancel) },
-                                        it.canAction,
-                                        it.action,
-                                        it.label
-                                    )
-                                }
+                                ModalButton(
+                                    { closeModal(ModalResult.Cancel) },
+                                    modalActions.cancel
+                                )
                                 modalActions.primary?.let {
                                     ModalButton(
                                         { closeModal(ModalResult.Primary) },
-                                        it.canAction,
-                                        it.action,
-                                        it.label
+                                        it
                                     )
                                 }
                             }
@@ -95,19 +89,17 @@ fun ModalView(
 @Composable
 private fun ModalButton(
     closeModal: () -> Unit,
-    canAction: () -> Boolean,
-    action: () -> Unit,
-    buttonLabel: String
+    actionButton: ActionButton
 ) {
     Button(
         modifier = Modifier.padding(end = 8.dp),
         onClick = {
-            action()
+            actionButton.action()
             closeModal()
         },
-        enabled = canAction()
+        enabled = actionButton.canAction()
     ) {
-        Text(text = buttonLabel)
+        Text(text = actionButton.label())
     }
 }
 
@@ -117,12 +109,11 @@ fun ModalPreview() {
     ModalView(
         closeModal = { },
         title = "This is a modal title",
-        hasSpinner = false
     ) {
         it(
             ModalActions(
-                primary = ModalAction(
-                    label = joinGameButtonFR,
+                primary = ActionButton(
+                    label = { joinGameButtonFR },
                     canAction = { false },
                     action = {}
                 )
@@ -141,8 +132,8 @@ fun ModalWithSpinnerPreview() {
     ) {
         it(
             ModalActions(
-                primary = ModalAction(
-                    label = joinGameButtonFR,
+                primary = ActionButton(
+                    label = { joinGameButtonFR },
                     canAction = { false },
                     action = {}
                 )
@@ -163,8 +154,8 @@ fun DarkModalPreview() {
         ) {
             it(
                 ModalActions(
-                    primary = ModalAction(
-                        label = joinGameButtonFR,
+                    primary = ActionButton(
+                        label = { joinGameButtonFR },
                         canAction = { false },
                         action = {}
                     )
@@ -186,8 +177,8 @@ fun DarkModalWithSpinnerPreview() {
         ) {
             it(
                 ModalActions(
-                    primary = ModalAction(
-                        label = joinGameButtonFR,
+                    primary = ActionButton(
+                        label = { joinGameButtonFR },
                         canAction = { false },
                         action = {}
                     )

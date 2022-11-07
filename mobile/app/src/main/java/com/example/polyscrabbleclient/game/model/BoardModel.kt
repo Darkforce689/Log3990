@@ -24,6 +24,8 @@ class BoardModel {
     var transientTilesCoordinates = mutableSetOf<TileCoordinates>()
     var selectedCoordinates: MutableState<TileCoordinates?> = mutableStateOf(null)
 
+    val jokerModel: JokerModel = JokerModel(this)
+
     fun updateGrid(grid: ArrayList<ArrayList<Tile>>) {
         requireBoardDimensions(grid)
         for (row in BoardRange) {
@@ -47,7 +49,7 @@ class BoardModel {
         for (row in tileGrid) {
             for (tile in row) {
                 if (tile.content.value !== null) {
-                    print(tile.content.value!!.letter)
+                    print(tile.content.value!!.displayedLetter)
                 } else {
                     print("-")
                 }
@@ -140,11 +142,8 @@ class BoardModel {
             transientTilesCoordinates.remove(tileCoordinates)
         } else {
             transientTilesCoordinates.add(tileCoordinates)
+            jokerModel.checkOpenForJokerSelection(tile, tileCoordinates)
         }
-    }
-
-    fun isBoardTransient(): Boolean {
-        return transientTilesCoordinates.isNotEmpty()
     }
 
     private fun requireBoardIndexes(column: Int, row: Int) {

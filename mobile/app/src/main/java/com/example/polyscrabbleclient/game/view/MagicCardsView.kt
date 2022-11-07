@@ -7,6 +7,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
+import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.utils.constants.*
 
 @Composable
@@ -47,15 +48,16 @@ fun MagicCardsView(viewModel: GameViewModel = GameViewModel()) {
     @Composable
     fun getGameActionButton(i: Int): Unit {
         return if (magicCards.size < i + 1) {
-            GameActionButton(270.dp, "", { false }) {}
+            GameActionButton(270.dp, ActionButton({ "" }, { false }))
         } else {
             GameActionButton(
                 270.dp,
-                getName(magicCards[i].id),
-                getEnabled(magicCards[i].id)
-            ) {
-                getFun(magicCards[i].id)
-            }
+                ActionButton(
+                    { getName(magicCards[i].id) },
+                    getEnabled(magicCards[i].id),
+                    { getFun(magicCards[i].id) }
+                )
+            )
         }
     }
 

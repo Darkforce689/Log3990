@@ -115,8 +115,3 @@ class GameModel {
         return ArrayList(winnerIndexes.value.map { playerIndex -> players.value[playerIndex].name })
     }
 }
-
-data class PlayerWithIndex(
-    val player: Player,
-    val index: Number,
-)

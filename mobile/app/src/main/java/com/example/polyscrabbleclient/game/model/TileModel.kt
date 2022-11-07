@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.game.model
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.game.domain.JokerChar
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 
@@ -9,7 +10,8 @@ data class TileModel(
     val letter: Char,
     val points: Int,
     var isSelected: MutableState<Boolean> = mutableStateOf(false),
-    var isUsedOnBoard: MutableState<Boolean> = mutableStateOf(false)
+    var isUsedOnBoard: MutableState<Boolean> = mutableStateOf(false),
+    var displayedLetter: Char = letter,
 ) : DraggableContent(
     type = DraggableContentType.TileModel,
     canBeDragged = { !isUsedOnBoard.value }

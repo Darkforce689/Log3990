@@ -146,12 +146,23 @@ object BoardCrawler {
             return null
         }
 
-        val pivotLetter = getTileSafely(pivotCoordinates.row, pivotCoordinates.column)?.letter
+        val pivotLetter = getLetter(getTileSafely(pivotCoordinates.row, pivotCoordinates.column))
         val placementSetting = getPlacementSetting(pivotCoordinates, backwardSubWord, direction)
         return PlaceLetterSetting(
             placementSetting = placementSetting,
             word = mergeWord(pivotLetter, forwardSubWord, backwardSubWord)
         )
+    }
+
+    private fun getLetter(tileModel: TileContent): Char? {
+        if (tileModel == null) {
+            return null
+        }
+        return if (tileModel.letter == JokerChar) {
+            tileModel.displayedLetter.uppercaseChar()
+        } else {
+            tileModel.letter
+        }
     }
 
     private fun getPlacementSetting(
@@ -213,7 +224,7 @@ object BoardCrawler {
         var subWord = ""
 
         while (currentTile !== null) {
-            subWord += currentTile.letter
+            subWord += getLetter(currentTile)
             if (coordinates.contains(currentCoordinates)) {
                 coordinates.remove(currentCoordinates)
             }
