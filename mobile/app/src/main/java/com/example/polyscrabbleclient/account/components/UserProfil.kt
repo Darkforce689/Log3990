@@ -41,8 +41,7 @@ fun ProfilContent(
         )
         Box(
             Modifier
-                .fillMaxWidth(0.6f)
-                .fillMaxHeight(0.6f)
+                .fillMaxHeight()
         ) {
             AvatarList { updateAvatar(it) }
         }
@@ -61,10 +60,11 @@ private fun UserInfo(
     Column(
         Modifier
             .fillMaxHeight()
+            .fillMaxWidth(0.5f)
             .padding(horizontal = 40.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
+        Column (Modifier.fillMaxWidth(0.7f).padding(0.dp,0.dp,22.dp,0.dp)){
             Text(
                 text = userName_string,
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 15.dp),

@@ -1,19 +1,16 @@
 package com.example.polyscrabbleclient.account.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Numbers
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -29,11 +26,25 @@ import com.example.polyscrabbleclient.account.viewmodel.AccountViewmodel
 import com.example.polyscrabbleclient.getAssetsId
 import com.example.polyscrabbleclient.ui.theme.my_profil
 import com.example.polyscrabbleclient.ui.theme.my_statistics
+import kotlinx.coroutines.launch
 
 @Composable
 fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
     val inputFocusRequester = LocalFocusManager.current
     val selectedPage = remember { mutableStateOf(AccountPage.Profil) }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    if (viewmodel.updateSuccessful.value) {
+        viewmodel.updateSuccessful.value = false
+        LaunchedEffect("") {
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    "Modification réussie!",
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
     Row(Modifier.clickable { inputFocusRequester.clearFocus() }) {
         SideNavigation(
             name = viewmodel.userName.value,
@@ -66,6 +77,23 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
             }
         }
     }
+    SnackbarHost(
+        modifier = Modifier.fillMaxWidth(),
+        hostState = snackbarHostState,
+        snackbar = { snackbarData: SnackbarData ->
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Card(
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(2.dp, Color.White),
+                    modifier = Modifier
+                        .padding(25.dp)
+                        .wrapContentSize()
+                ) {
+                    Text(text = snackbarData.message, modifier = Modifier.padding(8.dp),)
+                }
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)

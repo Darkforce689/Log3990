@@ -151,7 +151,7 @@ fun SignUpForm(
                 Text(create_account, fontSize = 25.sp)
                 Spacer(modifier = Modifier.height(15.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Column(Modifier.padding(horizontal = 25.dp)) {
+                    Column(Modifier.fillMaxWidth(0.4f).padding(horizontal = 25.dp)) {
                         UserNameInput(
                             name = username,
                             onUsernameChanged = {

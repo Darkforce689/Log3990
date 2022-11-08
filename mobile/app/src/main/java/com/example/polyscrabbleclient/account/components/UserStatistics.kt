@@ -80,7 +80,7 @@ private fun ConnectionLogs(userLogs: LazyPagingItems<ConnectionLog>) {
     val columnsHeaders = listOf(date, connection_type)
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.9f)
+            .fillMaxWidth()
             .padding(25.dp, 0.dp)
     ) {
         Row {

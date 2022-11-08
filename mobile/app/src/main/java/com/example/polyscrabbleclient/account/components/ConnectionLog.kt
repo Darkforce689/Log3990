@@ -44,7 +44,7 @@ fun RowScope.ConnectionCell(
         Modifier
             .border(1.dp, color)
             .weight(weight)
-            .padding(15.dp, 10.dp)
+            .padding(10.dp, 10.dp)
     ) {
         Text(text = text)
     }
