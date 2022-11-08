@@ -5,7 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import com.example.polyscrabbleclient.game.model.TileModel
 
 // ADAPTED FROM https://github.com/microsoft/surface-duo-compose-sdk/blob/main/DragAndDrop/library/src/main/java/com/microsoft/device/dualscreen/draganddrop/DragContainer.kt
-class DragState {
+object DragState {
     var isDragging: Boolean by mutableStateOf(false)
     var startingPosition by mutableStateOf(Offset.Zero)
     var offsetFromStartingPosition by mutableStateOf(Offset.Zero)

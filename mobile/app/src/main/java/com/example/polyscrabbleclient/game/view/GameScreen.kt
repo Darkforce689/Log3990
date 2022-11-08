@@ -28,7 +28,7 @@ fun GameScreen(navController: NavController) {
 
     // TODO : USE CompositionLocalProvider ?
     // (https://developer.android.com/jetpack/compose/compositionlocal)
-    val dragState = DragState()
+    val dragState = DragState
 
     Box(
         modifier = Modifier.zIndex(1f)

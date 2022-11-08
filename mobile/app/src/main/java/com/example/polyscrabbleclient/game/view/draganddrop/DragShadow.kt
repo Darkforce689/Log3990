@@ -45,7 +45,7 @@ fun DragShadow(
 @Preview(showBackground = true)
 @Composable
 fun PreviewDragShadow() {
-    val d = DragState()
+    val d = DragState
     d.isDragging = true
     d.startingPosition = Offset(100f, 100f)
     d.draggableView = {
