@@ -1,7 +1,6 @@
 package com.example.polyscrabbleclient.lobby.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 class WaitingForOtherPlayersViewModel : ViewModel() {
@@ -13,6 +12,7 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
 
     fun canLaunchGame(): Boolean {
         return lobby.model.isPendingGameHost.value
+            && lobby.model.currentPendingGameId.value !== null
     }
 
     fun leavePendingGame() {
