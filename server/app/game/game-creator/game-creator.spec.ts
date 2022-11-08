@@ -1,3 +1,4 @@
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -42,7 +43,7 @@ describe('GameCreator', () => {
     const botManagerStub = {} as BotManager;
     const actionNotifierStub = createSinonStubInstance(GameActionNotifierService);
     const actionCreatorStub = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
-
+    const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     const newGameStateSubject = new Subject<GameStateToken>();
     const endGameSubject = new Subject<EndOfGame>();
     beforeEach(() => {
@@ -81,6 +82,7 @@ describe('GameCreator', () => {
             botManagerStub,
             actionNotifierStub,
             actionCreatorStub,
+            gameHistoryService,
         );
     });
 

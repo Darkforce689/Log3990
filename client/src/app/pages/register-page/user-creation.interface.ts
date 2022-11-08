@@ -6,5 +6,5 @@ export interface UserCreation {
     averagePoints: number;
     averageTimePerGame: number;
     nGamePlayed: number;
-    nGameWinned: number;
+    nGameWon: number;
 }

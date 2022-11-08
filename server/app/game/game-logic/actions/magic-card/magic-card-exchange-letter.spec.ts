@@ -1,3 +1,4 @@
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ExchangeALetter } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-letter';
@@ -24,6 +25,7 @@ describe('ExchangeALetter', () => {
     const mockNewGameState$ = new Subject<GameStateToken>();
     const messagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const timerController = createSinonStubInstance<TimerController>(TimerController);
+    const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     const mockEndGame$ = new Subject<EndOfGame>();
     beforeEach(() => {
         game = new ServerGame(
@@ -37,6 +39,7 @@ describe('ExchangeALetter', () => {
             mockNewGameState$,
             mockEndGame$,
             BotDifficulty.Easy,
+            gameHistoryService,
         );
         game.players.push(player1);
         game.players.push(player2);

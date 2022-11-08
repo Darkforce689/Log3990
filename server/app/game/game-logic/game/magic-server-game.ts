@@ -1,3 +1,4 @@
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
@@ -38,6 +39,7 @@ export class MagicServerGame extends ServerGame {
         endGameSubject: Subject<EndOfGame>,
         drawableMagicCardIds: string[],
         public botDifficulty: BotDifficulty,
+        gameHistoryService: GameHistoryService,
     ) {
         super(
             timerController,
@@ -50,6 +52,7 @@ export class MagicServerGame extends ServerGame {
             newGameStateSubject,
             endGameSubject,
             botDifficulty,
+            gameHistoryService,
         );
         this.drawableMagicCards = drawableMagicCardIds.map((id) => ({ id } as IMagicCard));
     }

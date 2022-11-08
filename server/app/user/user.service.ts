@@ -137,7 +137,7 @@ export class UserService {
             const user = (await this.collection.findOne({ name: { $eq: name } })) as unknown as User;
             const averagePoints = user.averagePoints ? user.averagePoints : 0;
             const nGamePlayed = user.nGamePlayed ? user.nGamePlayed : 0;
-            const nGameWinned = user.nGameWinned ? user.nGameWinned : 0;
+            const nGameWon = user.nGameWon ? user.nGameWon : 0;
             const averageTimePerGame = user.averageTimePerGame ? user.averageTimePerGame : 0;
 
             this.collection.updateOne(
@@ -146,7 +146,7 @@ export class UserService {
                     $set: {
                         averagePoints: (averagePoints * nGamePlayed + points) / (nGamePlayed + 1),
                         nGamePlayed: nGamePlayed + 1,
-                        nGameWinned: isWinner ? nGameWinned + 1 : nGameWinned,
+                        nGameWon: isWinner ? nGameWon + 1 : nGameWon,
                         averageTimePerGame: (averageTimePerGame * nGamePlayed + totalTime) / (nGamePlayed + 1),
                     },
                 },

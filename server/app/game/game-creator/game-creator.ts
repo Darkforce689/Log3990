@@ -1,3 +1,4 @@
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -29,6 +30,7 @@ export class GameCreator {
         private botManager: BotManager,
         protected gameActionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
+        private gameHistoryService: GameHistoryService,
     ) {}
 
     async createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): Promise<ServerGame> {
@@ -68,6 +70,7 @@ export class GameCreator {
             this.newGameStateSubject,
             this.endGameSubject,
             gameSettings.botDifficulty,
+            this.gameHistoryService,
         );
     }
 
@@ -84,6 +87,7 @@ export class GameCreator {
             this.endGameSubject,
             gameSettings.magicCardIds,
             gameSettings.botDifficulty,
+            this.gameHistoryService,
         );
     }
 

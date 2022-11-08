@@ -6,6 +6,7 @@ import { AccountService } from '@app/services/account.service';
 const enum AccountPage {
     Profil = 'profil',
     StatsGame = 'stats',
+    GameHistory = 'games',
 }
 @Component({
     selector: 'app-account-page',
@@ -20,7 +21,7 @@ export class AccountPageComponent implements OnInit {
         avatar: 'default',
         averagePoints: 0,
         nGamePlayed: 0,
-        nGameWinned: 0,
+        nGameWon: 0,
         averageTimePerGame: 0,
     };
     showPage: AccountPage = AccountPage.Profil;
@@ -46,5 +47,9 @@ export class AccountPageComponent implements OnInit {
 
     get showStats() {
         return this.showPage === AccountPage.StatsGame;
+    }
+
+    get showGames() {
+        return this.showPage === AccountPage.GameHistory;
     }
 }

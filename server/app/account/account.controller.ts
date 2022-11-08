@@ -1,3 +1,5 @@
+import { GameHistory, GameStateHistory } from '@app/account/user-game-history/game-history.interface';
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { ConnectionLog } from '@app/account/user-log/connection-logs.interface';
 import { UserLogService } from '@app/account/user-log/user-log.service';
 import { Session } from '@app/auth/services/session.interface';
@@ -13,7 +15,7 @@ import { Service } from 'typedi';
 @Service()
 export class AccountController {
     router: Router;
-    constructor(private userService: UserService, private userLogService: UserLogService) {
+    constructor(private userService: UserService, private userLogService: UserLogService, private gameHistoryServivce: GameHistoryService) {
         this.configureRouter();
     }
 
@@ -53,6 +55,20 @@ export class AccountController {
                 }
             }
             res.status(StatusCodes.OK).send({ message: 'OK' });
+        });
+
+        this.router.get('/gameStates', async (req, res) => {
+            const { gameToken } = req.body;
+            const gameStates = (await this.gameHistoryServivce.getGameStates(gameToken as string)) as GameStateHistory[];
+            return res.send({ gameStates });
+        });
+
+        this.router.get('/gamesHistory', async (req, res) => {
+            const { userId } = req.session as unknown as Session;
+            const { perPage, page } = req.query;
+            const pagination = this.getLogsPagination(perPage as string | undefined, page as string | undefined);
+            const games = (await this.gameHistoryServivce.getGameHistory(userId, pagination)) as GameHistory[];
+            return res.send({ userId, games });
         });
     }
 

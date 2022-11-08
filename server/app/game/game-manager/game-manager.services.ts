@@ -1,3 +1,4 @@
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { NEW_GAME_TIMEOUT } from '@app/constants';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
@@ -80,6 +81,7 @@ export class GameManagerService {
         protected actionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
         protected userService: UserService,
+        protected gameHistoryService: GameHistoryService,
     ) {
         this.gameCreator = new GameCreator(
             this.pointCalculator,
@@ -91,6 +93,7 @@ export class GameManagerService {
             this.botManager,
             this.actionNotifier,
             this.actionCreator,
+            this.gameHistoryService,
         );
 
         this.endGame$.subscribe((endOfGame: EndOfGame) => {
@@ -98,6 +101,7 @@ export class GameManagerService {
             if (endOfGame.reason === EndOfGameReason.GameEnded) {
                 this.updateLeaderboard(endOfGame.players, gameToken);
             }
+            this.insertGameInHistory(endOfGame.gameToken);
             this.updateGameStatistics(endOfGame.stats);
             this.deleteGame(gameToken);
         });
@@ -268,5 +272,16 @@ export class GameManagerService {
 
     private updateGameStatistics(stats: Map<string, GameStats>) {
         stats.forEach(async (gameStats, name) => this.userService.updateStatistics(gameStats, name));
+    }
+
+    private insertGameInHistory(gameToken: string) {
+        const game = this.activeGames.get(gameToken);
+        if (!game) {
+            return;
+        }
+        const startTime = game.startTime;
+        const userNames = game.players.map((player) => player.name);
+        const winnerNames = game.getWinnerIndexes().map((index) => userNames[index]);
+        this.gameHistoryService.insertGame(gameToken, userNames, winnerNames, startTime);
     }
 }

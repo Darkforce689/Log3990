@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { NEW_GAME_TIMEOUT } from '@app/constants';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
@@ -56,6 +57,7 @@ describe('GameManagerService', () => {
     let clock: sinon.SinonFakeTimers;
     let stubActionNotifier: GameActionNotifierService;
     let stubUserService: UserService;
+    let stubGameHistoryService: GameHistoryService;
 
     let stubConversationService: ConversationService;
     before(() => {
@@ -73,6 +75,7 @@ describe('GameManagerService', () => {
         stubActionNotifier = createSinonStubInstance<GameActionNotifierService>(GameActionNotifierService);
         stubUserService = createSinonStubInstance<UserService>(UserService);
         stubConversationService = createSinonStubInstance(ConversationService);
+        stubGameHistoryService = createSinonStubInstance(GameHistoryService);
     });
 
     afterEach(() => {
@@ -95,6 +98,7 @@ describe('GameManagerService', () => {
             stubActionNotifier,
             stubActionCreatorService,
             stubUserService,
+            stubGameHistoryService,
         );
     });
 
