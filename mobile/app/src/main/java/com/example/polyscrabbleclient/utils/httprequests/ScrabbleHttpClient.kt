@@ -48,6 +48,7 @@ object ScrabbleHttpClient {
             val inputStream: InputStream = BufferedInputStream(urlConnectionBodyStream)
             inputStream.readTextAndClose()
         } catch (e: Exception) {
+            e.printStackTrace()
             null
         } finally {
             urlConnection.disconnect()

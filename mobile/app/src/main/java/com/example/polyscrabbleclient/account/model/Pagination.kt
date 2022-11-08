@@ -1,3 +1,3 @@
 package com.example.polyscrabbleclient.account.model
 
-data class Pagination(val page: Int, val perPage: Int)
+data class Pagination(val page: Int, val perPage: Int, val offset: Int?)

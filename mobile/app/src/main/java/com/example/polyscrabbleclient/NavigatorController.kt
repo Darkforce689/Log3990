@@ -54,7 +54,7 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
         composable(NavPage.Room.label) {
             val chatBoxViewModel = ChatBoxViewModel()
             // Todo : place in other function somewhere else with room id
-            chatBoxViewModel.joinRoom(NavPage.Prototype.label)
+            chatBoxViewModel.joinRoom("general")
             ChatRoomScreen(navController, chatBoxViewModel)
         }
         loginGraph(navController)

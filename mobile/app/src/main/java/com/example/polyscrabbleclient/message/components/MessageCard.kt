@@ -9,18 +9,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.polyscrabbleclient.message.model.*
+import com.example.polyscrabbleclient.message.model.Message
+import com.example.polyscrabbleclient.message.model.MessageType
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun MessageCard(messageInfo: Message) {
-    val dateFormatter = DateTimeFormatter.ofPattern("hh:mm:ss")
+    val dateFormatter = DateTimeFormatter.ofPattern("MMM d, y, HH:mm")
     val dateStr = messageInfo.date?.format(dateFormatter) ?: ""
 
     val isMessageFromMe = messageInfo.type == MessageType.ME
@@ -42,7 +41,7 @@ fun MessageCard(messageInfo: Message) {
             backgroundColor = if (isMessageFromMe) MaterialTheme.colors.secondary
             else MaterialTheme.colors.primary
         ) {
-            Row(Modifier.padding(10.dp, 15.dp,15.dp, 15.dp)) {
+            Row(Modifier.padding(10.dp, 15.dp, 15.dp, 15.dp)) {
                 Text(
                     text = "${messageInfo.from}: ",
 

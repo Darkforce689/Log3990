@@ -2,11 +2,14 @@ package com.example.polyscrabbleclient.message
 
 import android.webkit.CookieManager
 import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.message.model.BaseMessage
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
+import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
+import org.json.JSONObject
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.*
@@ -22,7 +25,7 @@ enum class EventType (val event: String){
 
 private const val URL = BuildConfig.COMMUNICATION_URL
 
- object SocketHandler {
+ object ChatSocketHandler {
 
     private lateinit var webSocket: Socket
 
@@ -70,8 +73,9 @@ private const val URL = BuildConfig.COMMUNICATION_URL
 
 
     @Synchronized
-    fun sendMessage(content: String ) {
-        webSocket.emit(EventType.NEW_MESSAGE.event, content)
+    fun sendMessage(baseMessage: BaseMessage) {
+        val baseMessageJSON = JSONObject(Gson().toJson(baseMessage))
+        webSocket.emit(EventType.NEW_MESSAGE.event, baseMessageJSON)
     }
 
     @Synchronized

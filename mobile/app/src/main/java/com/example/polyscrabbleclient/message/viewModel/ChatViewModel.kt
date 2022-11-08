@@ -1,64 +1,102 @@
 package com.example.polyscrabbleclient.message.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.net.Uri
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.message.ChatSocketHandler
 import com.example.polyscrabbleclient.message.EventType
-import com.example.polyscrabbleclient.message.SocketHandler
+import com.example.polyscrabbleclient.message.N_MESSAGE_TO_FETCH
 import com.example.polyscrabbleclient.message.model.*
-import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.message.sources.MessageRepository
+import com.example.polyscrabbleclient.message.sources.MessageSource
+import com.example.polyscrabbleclient.message.utils.MessageFactory
+import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
+import com.google.gson.Gson
 import io.socket.emitter.Emitter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONException
-import org.json.JSONObject
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
+import java.net.URL
 
 
 class ChatBoxViewModel : ViewModel() {
-    private var _messages: MutableLiveData<List<Message>> = MutableLiveData<List<Message>>(listOf())
-    var messages:LiveData<List<Message>> = _messages
+    var currentConversation: MutableState<Conversation?> = mutableStateOf(Conversation("634a17afffd19bae95f4eba8" ,"general"))
+    private val historySource = MessageSource()
+
+    init {
+        if (currentConversation.value !== null) {
+            historySource.setCurrentConversation(currentConversation.value!!._id)
+        }
+    }
+
+    val messages = mutableStateListOf<Message>()
+    val historyPager = Pager(PagingConfig(pageSize = 50)) {
+        historySource
+    }.flow.cachedIn(viewModelScope)
+
     private var isInRoom : Boolean = false
 
-    fun sendMessage(message: Message) {
-        SocketHandler.sendMessage(message.content)
-        addMessage(message)
+    fun sendMessage(content: String) {
+        if (currentConversation.value == null) {
+            throw RuntimeException("You need to be in a conversation before sending a message")
+        }
+        val baseMessage = BaseMessage(content, currentConversation.value!!.name)
+        ChatSocketHandler.sendMessage(baseMessage)
     }
 
     fun reset() {
-        _messages.value = emptyList()
+        messages.clear()
         isInRoom = false
     }
 
     private var onNewMessage = Emitter.Listener { args ->
-        val data = args[0] as JSONObject
-        val content: String
-        val from: String
-        val date : ZonedDateTime
+        val data = args[0].toString()
         try {
-            content = data.getString("content")
-            from = data.getString("from")
-            val dateString = data.getString("date")
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSX")
-            date = ZonedDateTime.parse(dateString.replace('T',' '), formatter)
-                .withZoneSameInstant(TimeZone.getDefault().toZoneId())
-
-            val type = if (from == User.name) MessageType.ME else MessageType.OTHER
-            addMessage(content, from, date, type)
+            val messageDTO = Gson().fromJson(data, MessageDTO::class.java)
+            MessageFactory.createMessage(messageDTO) { message -> addMessage(message) }
         } catch (e: JSONException) {
+            e.printStackTrace()
         }
     }
 
-    private fun addMessage(content: String, from: String, date:ZonedDateTime, type: MessageType) {
-        val message = Message(content, from, type, date)
-        val newList = _messages.value?.plus(message)
-        _messages.postValue(newList)
+    private fun addMessage(newMessage: Message) {
+        fun findMessageInsertionIndex(): Int {
+            var insertIndex = messages.size
+            var skips = 1
+            for (message in messages.reversed()) {
+                if (message.date === null) {
+                    skips++
+                    continue
+                }
+                if (message.date <= newMessage.date) {
+                    break
+                }
+                insertIndex -= skips
+                skips = 1
+            }
+            return insertIndex
+        }
+        // This is worst case O(n) but will be O(1) 99.9999% of the time. This is used as an Insurance
+        val insertionIndex = findMessageInsertionIndex()
+        messages.add(insertionIndex, newMessage)
+        historySource.offset++;
     }
-    private fun addMessage(message : Message) {
-        val newList = _messages.value?.plus(message)
-        _messages.postValue(newList)
 
+    private var isFirstMessageLoaded = false;
+    fun setCurrentConversation() {
+        if (isFirstMessageLoaded) {
+            return
+        }
+        isFirstMessageLoaded = true
     }
+
 
     fun joinRoom(roomId: String) {
         if(isInRoom) {
@@ -66,12 +104,12 @@ class ChatBoxViewModel : ViewModel() {
         }
         isInRoom = true
         val connectThread = Thread {
-            SocketHandler.setSocket()
-            SocketHandler.socketConnection()
+            ChatSocketHandler.setSocket()
+            ChatSocketHandler.socketConnection()
         }
         connectThread.start()
         connectThread.join()
-        SocketHandler.joinRoom(roomId)
-        SocketHandler.on(EventType.ROOM_MESSAGES, onNewMessage)
+        ChatSocketHandler.joinRoom(roomId)
+        ChatSocketHandler.on(EventType.ROOM_MESSAGES, onNewMessage)
     }
 }
