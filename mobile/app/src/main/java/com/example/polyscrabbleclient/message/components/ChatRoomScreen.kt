@@ -26,16 +26,11 @@ import androidx.navigation.NavController
 import com.example.polyscrabbleclient.message.model.*
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.NavPage
-import com.example.polyscrabbleclient.message.SocketHandler
-import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.message.ChatSocketHandler
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewModel) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val messages by chatBoxViewModel.messages.observeAsState()
-    val inputFocusRequester = LocalFocusManager.current
-
+fun ChatRoomScreen(navController: NavController, chatBoxViewModel: ChatBoxViewModel) {
     Box {
         Column() {
             Icon(imageVector = Icons.Default.ArrowBack,
@@ -43,7 +38,7 @@ fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewMod
                 modifier = Modifier
                     .padding(6.dp)
                     .clickable {
-                        SocketHandler.closeConnection()
+                        ChatSocketHandler.closeConnection()
                         chatBoxViewModel.reset()
                         navController.navigate(NavPage.MainPage.label) {
                             popUpTo(NavPage.Room.label) {
@@ -52,82 +47,7 @@ fun ChatRoomScreen(navController: NavController,chatBoxViewModel: ChatBoxViewMod
                             launchSingleTop = true
                         }
                     })
-            Card(modifier = Modifier
-                .padding(25.dp, 0.dp, 25.dp, 10.dp),
-                elevation = 2.dp,
-                onClick = { keyboardController?.hide(); inputFocusRequester.clearFocus() }) {
-                Column {
-                    Box(Modifier.weight(5f)) {
-                        MessageList(messages as List<Message>)
-                    }
-                    Box(Modifier.weight(1f)) {
-                        MessageInput()
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-fun MessageList(messages : List<Message>) {
-    val scrollState = rememberLazyListState()
-    LaunchedEffect(messages.size) {
-        scrollState.animateScrollToItem(messages.size)
-    }
-    LazyColumn(
-        modifier = Modifier
-            .padding(vertical = 4.dp, horizontal = 2.dp)
-            .fillMaxHeight()
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.Bottom,
-        state = scrollState
-    ) {
-        items(messages) { message ->
-            MessageCard(message)
-        }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
-@Composable
-fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
-    var input by remember { mutableStateOf("") }
-    fun sendMessage() {
-        if (input.isNotBlank()) {
-            viewModel.sendMessage(Message(input, User.name, MessageType.ME, null))
-        }
-        input = ""
-//        keyboardController?.hide()
-    }
-
-    Row(
-        Modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .height(65.dp),
-            value = input,
-            onValueChange = { input = it },
-            keyboardOptions = KeyboardOptions(keyboardType= KeyboardType.Password, imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(
-                onSend = { sendMessage() }
-            ),
-            placeholder = { Text(text = "Aa") },
-            singleLine = true,
-
-        )
-        Button(
-            modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .height(55.dp),
-            onClick = { sendMessage() },
-            enabled = input.isNotBlank()
-        ) {
-            Text(text = "Send")
+            ChatBox(chatBoxViewModel = chatBoxViewModel)
         }
     }
 }
