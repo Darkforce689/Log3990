@@ -39,33 +39,31 @@ fun UserNameInput(
 ) {
     val focusRequester = FocusRequester()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val displayErrorModifier =
-
-        TextField(
-            value = name,
-            onValueChange = { onUsernameChanged(it.filter { char -> !char.isWhitespace() }) },
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .onFocusChanged { focusState ->
-                    if (!focusState.isFocused && name.isNotBlank()) validateUsername(
-                        name
-                    )
-                },
-            isError = error.isNotEmpty(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.None
-            ),
-            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-            label = { Text(userName_string) },
-            singleLine = true,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = null
+    TextField(
+        value = name,
+        onValueChange = { onUsernameChanged(it.filter { char -> !char.isWhitespace() }) },
+        modifier = Modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState ->
+                if (!focusState.isFocused && name.isNotBlank()) validateUsername(
+                    name
                 )
-            }
-        )
+            },
+        isError = error.isNotEmpty(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.None
+        ),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+        label = { Text(userName_string) },
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = null
+            )
+        }
+    )
     Requirement(
         showError = error.isNotEmpty(),
         message = error

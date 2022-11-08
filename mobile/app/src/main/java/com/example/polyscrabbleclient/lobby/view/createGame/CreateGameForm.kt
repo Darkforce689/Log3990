@@ -3,19 +3,20 @@ package com.example.polyscrabbleclient.lobby.view.createGame
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.polyscrabbleclient.account.viewmodel.*
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.viewmodels.*
 import com.example.polyscrabbleclient.roundDownToMultipleOf
 import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.utils.constants.magic_card_map
+import kotlin.math.floor
 
 @Preview(showBackground = true)
 @Composable
@@ -99,7 +100,7 @@ fun TimeSlider(
     Column {
         Text(
             text = "$time_per_turn : ${
-                (sliderPosition.value / DEFAULT_TIMER).roundDownToMultipleOf(0.5)
+                formatTime(sliderPosition.value.roundDownToMultipleOf(30000.0))
             }"
         ) // TODO display time in min sec
         Slider(
@@ -195,4 +196,11 @@ fun icon(
     ExposedDropdownMenuDefaults.TrailingIcon(
         expanded = expanded
     )
+}
+
+fun formatTime(time: Double): String {
+    val timeInSec = time / 1000
+    val minutes = floor((timeInSec / SEC_IN_MIN)).toInt()
+    val seconds = (timeInSec - minutes * SEC_IN_MIN).toInt()
+    return "${minutes}m " + "${seconds}s"
 }

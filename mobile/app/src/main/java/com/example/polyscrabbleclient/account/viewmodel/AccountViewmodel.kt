@@ -29,6 +29,7 @@ class AccountViewmodel : ViewModel() {
     val avatar = mutableStateOf(User.avatar)
     val userInfoField = mutableStateOf(UserUpdate(User.name, User.avatar))
     var usernameError: MutableState<String?> = mutableStateOf(null)
+    val updateSuccessful = mutableStateOf(false)
 
     fun updateUsername(username: String) {
         usernameError.value = null
@@ -87,6 +88,7 @@ class AccountViewmodel : ViewModel() {
                     viewModelScope.launch {
                         withContext(Dispatchers.IO) {
                             updateUserInfo()
+                            updateSuccessful.value = true
                         }
                     }
                     return@withContext

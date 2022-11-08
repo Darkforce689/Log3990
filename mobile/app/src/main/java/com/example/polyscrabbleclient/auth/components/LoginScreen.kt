@@ -125,12 +125,12 @@ fun AuthForm(
             backgroundColor = MaterialTheme.colors.background
         ) {
             Column(
-                modifier = Modifier.padding(10.dp),
+                modifier = Modifier.padding(horizontal = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = connection, fontSize = 25.sp)
                 Spacer(modifier = Modifier.height(15.dp))
-                Column {
+                Column (Modifier.fillMaxWidth().padding(horizontal = 30.dp)) {
                     EmailInput(
                         email = authState.email,
                         onEmailChanged = { onEmailChanged(it) },
