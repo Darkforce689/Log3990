@@ -1,3 +1,4 @@
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Board } from '@app/game/game-logic/board/board';
@@ -30,6 +31,7 @@ export class MockGame extends ServerGame {
         newGameStateSubject: Subject<GameStateToken>,
         endGameSubject: Subject<EndOfGame>,
         botDifficulty: BotDifficulty,
+        gameHistoryService: GameHistoryService,
     ) {
         super(
             timerController,
@@ -42,6 +44,7 @@ export class MockGame extends ServerGame {
             newGameStateSubject,
             endGameSubject,
             botDifficulty,
+            gameHistoryService,
         );
         this.players = [this.activePlayer, this.otherPlayer];
         this.board = new Board();

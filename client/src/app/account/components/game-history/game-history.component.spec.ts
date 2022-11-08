@@ -3,21 +3,21 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
 
-import { AccountPageComponent } from './account-page.component';
+import { GameHistoryComponent } from './game-history.component';
 
-describe('AccountPageComponent', () => {
-    let component: AccountPageComponent;
-    let fixture: ComponentFixture<AccountPageComponent>;
+describe('GameHistoryComponent', () => {
+    let component: GameHistoryComponent;
+    let fixture: ComponentFixture<GameHistoryComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [AccountPageComponent],
+            declarations: [GameHistoryComponent],
             imports: [HttpClientTestingModule, AppMaterialModule, BrowserAnimationsModule],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(AccountPageComponent);
+        fixture = TestBed.createComponent(GameHistoryComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

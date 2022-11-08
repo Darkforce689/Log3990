@@ -1,6 +1,7 @@
 import {
     CONVERSATION_COLLECTION,
     DATABASE_URL,
+    GAMES_COLLECTION,
     GENERAL_CHANNEL,
     LOGS_COLLECTION,
     MESSAGE_COLLECTION,
@@ -40,6 +41,7 @@ export class DatabaseService {
         this.createConversationCollection();
         this.createMessagesCollection();
         this.createLogsCollection();
+        this.createGamesCollection();
         await this.redisService.start();
     }
 
@@ -151,6 +153,18 @@ export class DatabaseService {
             await this.db.createCollection(LOGS_COLLECTION);
         } catch (e) {
             throw Error('Data base logs collection creation error');
+        }
+    }
+    private async createGamesCollection() {
+        try {
+            const isCollectionExist = await this.isCollectionInDb(GAMES_COLLECTION);
+            if (isCollectionExist) {
+                return;
+            }
+            const collection = await this.db.createCollection(GAMES_COLLECTION);
+            await collection.createIndex({ date: -1 }, { unique: false });
+        } catch (e) {
+            throw Error('Data base games collection creation error');
         }
     }
 

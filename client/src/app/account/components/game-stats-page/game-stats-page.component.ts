@@ -25,7 +25,7 @@ export class GameStatsPageComponent implements OnInit, AfterViewInit {
         avatar: 'default',
         averagePoints: 0,
         nGamePlayed: 0,
-        nGameWinned: 0,
+        nGameWon: 0,
         averageTimePerGame: 0,
     };
     columnsToDisplay: string[] = ['date', 'type'];
@@ -90,7 +90,7 @@ export class GameStatsPageComponent implements OnInit, AfterViewInit {
         return this.user.nGamePlayed ? this.user.nGamePlayed : 0;
     }
 
-    get nGameWinned() {
-        return this.user.nGameWinned ? this.user.nGameWinned : 0;
+    get nGameWon() {
+        return this.user.nGameWon ? this.user.nGameWon : 0;
     }
 }

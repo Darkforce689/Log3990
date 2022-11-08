@@ -17,7 +17,7 @@ export class HeaderBarComponent {
         avatar: 'default',
         averagePoints: 0,
         nGamePlayed: 0,
-        nGameWinned: 0,
+        nGameWon: 0,
         averageTimePerGame: 0,
     };
 

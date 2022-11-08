@@ -1,5 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable max-lines */
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DictionaryServerService } from '@app/dictionary-manager/dictionary-server.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -81,6 +82,7 @@ describe('PointCalculatorService', () => {
     const timerController = createSinonStubInstance<TimerController>(TimerController);
     const gameCompiler = createSinonStubInstance<GameCompiler>(GameCompiler);
     const messagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
+    const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     let newGameStateSubject: Subject<GameStateToken>;
     let endGameSubject: Subject<EndOfGame>;
 
@@ -96,6 +98,7 @@ describe('PointCalculatorService', () => {
             newGameStateSubject,
             endGameSubject,
             BotDifficulty.Easy,
+            gameHistoryService,
         );
         player1 = new Player('Tim');
         player2 = new Player('Max');
@@ -447,6 +450,7 @@ describe('PointCalculatorService', () => {
             newGameStateSubject,
             endGameSubject,
             BotDifficulty.Easy,
+            gameHistoryService,
         );
         game.activePlayer.points = 100;
         game.otherPlayer.points = 100;

@@ -6,6 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AvatarListComponent } from '@app/account/components/avatar-list/avatar-list.component';
 import { AvatarComponent } from '@app/account/components/avatar/avatar.component';
+import { GameHistoryComponent } from '@app/account/components/game-history/game-history.component';
 import { ProfilComponent } from '@app/account/components/profil/profil.component';
 import { ChatBoxComponent } from '@app/chat/components/chat-box/chat-box.component';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
@@ -38,6 +39,7 @@ import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.
 import { GameStatsPageComponent } from './account/components/game-stats-page/game-stats-page.component';
 import { ConversationPickerComponent } from './chat/components/conversation-picker/conversation-picker.component';
 import { CreateConversationComponent } from './chat/components/create-conversation/create-conversation.component';
+import { DeleteConversationComponent } from './chat/components/delete-conversation/delete-conversation.component';
 import { JoinConversationComponent } from './chat/components/join-conversation/join-conversation.component';
 import { MessageComponent } from './chat/components/message/message.component';
 import { AlertDialogComponent } from './components/modals/alert-dialog/alert-dialog.component';
@@ -48,7 +50,6 @@ import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/mag
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
-import { DeleteConversationComponent } from './chat/components/delete-conversation/delete-conversation.component';
 
 /**
  * Main module that is used in main.ts.
@@ -102,6 +103,7 @@ import { DeleteConversationComponent } from './chat/components/delete-conversati
         MessageComponent,
         ProfilComponent,
         DeleteConversationComponent,
+        GameHistoryComponent,
     ],
     imports: [
         AppMaterialModule,

@@ -44,7 +44,7 @@ describe('New Online Game Service', () => {
         avatar: '',
         averagePoints: 0,
         nGamePlayed: 0,
-        nGameWinned: 0,
+        nGameWon: 0,
         averageTimePerGame: 0,
     };
 

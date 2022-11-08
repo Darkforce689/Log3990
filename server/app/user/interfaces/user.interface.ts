@@ -7,6 +7,6 @@ export interface User extends UserCreation {
     avatar: string;
     averagePoints: number;
     nGamePlayed: number;
-    nGameWinned: number;
+    nGameWon: number;
     averageTimePerGame: number;
 }

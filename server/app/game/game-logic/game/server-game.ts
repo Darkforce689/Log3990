@@ -1,3 +1,4 @@
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { Action } from '@app/game/game-logic/actions/action';
@@ -41,6 +42,7 @@ export class ServerGame {
         private newGameStateSubject: Subject<GameStateToken>,
         private endGameSubject: Subject<EndOfGame>,
         public botDifficulty: BotDifficulty,
+        private gameHistoryService: GameHistoryService,
     ) {
         this.timer = new Timer(gameToken, timerController);
         this.board = new Board(randomBonus);
@@ -52,8 +54,8 @@ export class ServerGame {
         }
         this.drawGameLetters();
         this.pickFirstPlayer();
-        this.emitGameState();
         this.startTime = Date.now();
+        this.emitGameState();
         this.startTurn();
     }
 
@@ -180,6 +182,7 @@ export class ServerGame {
     protected emitGameState() {
         const gameState = this.gameCompiler.compile(this);
         const gameStateToken: GameStateToken = { gameState, gameToken: this.gameToken };
+        this.gameHistoryService.insertGameState(gameStateToken);
         this.newGameStateSubject.next(gameStateToken);
     }
 

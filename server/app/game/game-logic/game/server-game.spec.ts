@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
+import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
@@ -29,6 +30,7 @@ describe('ServerGame', () => {
     const pointCalculator = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompiler = createSinonStubInstance<GameCompiler>(GameCompiler);
     const messagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
+    const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     const newGameStateSubject = new Subject<GameStateToken>();
     const endGameSubject = new Subject<EndOfGame>();
 
@@ -44,6 +46,7 @@ describe('ServerGame', () => {
             newGameStateSubject,
             endGameSubject,
             BotDifficulty.Easy,
+            gameHistoryService,
         );
         p1 = new Player('Tim');
         p2 = new Player('Paul');

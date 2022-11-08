@@ -1,5 +1,8 @@
 <mat-drawer-container>
     <mat-drawer mode="side" opened>
+        <a [routerLink]="['/']">
+            <mat-icon mat-list-icon >arrow_back</mat-icon>
+        </a>
         <div class="user-sidenav"> 
             <app-avatar [src]="user.avatar" [size]="100"></app-avatar>
             <h2>{{user.name}}</h2>
@@ -15,11 +18,16 @@
 				<span class="full-width" >Mes statistiques</span>
 				<mat-icon mat-list-icon>analytics</mat-icon>
             </mat-list-option>
+            <mat-list-option class="parent" [value]="'games'">
+				<span class="full-width" >Mon historique de jeux</span>
+				<mat-icon mat-list-icon>analytics</mat-icon>
+            </mat-list-option>
         </mat-selection-list>
     </mat-drawer>
     <mat-drawer-content >
     <app-profil *ngIf="showProfil"></app-profil>  
     <app-game-stats-page *ngIf="showStats"></app-game-stats-page>
+    <app-game-history *ngIf="showGames"></app-game-history>
     </mat-drawer-content>
   </mat-drawer-container>
 
