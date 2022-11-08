@@ -373,6 +373,6 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
 @Composable
 fun BoardPreview() {
     val v: BoardViewModel = viewModel()
-    val d = DragState()
+    val d = DragState
     BoardCanvasView(d, v)
 }
