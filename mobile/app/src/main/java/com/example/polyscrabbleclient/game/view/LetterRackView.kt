@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,7 +18,11 @@ fun LetterRackView(
     dragState: DragState
 ) {
     val viewModel: LetterRackViewModel = viewModel()
-    dragState.onDropCallbacks.add { viewModel.placeTileOnBoard(dragState.draggableContent) }
+    dragState.onDropActions.providerAction =
+        { viewModel.markTileAsUsed(dragState.draggableContent) }
+
+    dragState.onRaiseActions.rackAction =
+        { viewModel.raiseTile(it) }
 
     Row(
         modifier = Modifier
@@ -27,10 +31,13 @@ fun LetterRackView(
         verticalAlignment = Alignment.Bottom
     ) {
         viewModel.game.userLetters.forEachIndexed { index, tile ->
+            val getTile = { viewModel.game.userLetters[index] }
+            tile.canBeDragged = viewModel.canBeDragged(getTile())
             val select = { tile.isSelected.value = !tile.isSelected.value }
-            DraggableTileView(dragState, select) {
-                viewModel.game.userLetters[index]
-            }
+            DraggableTileView(
+                dragState,
+                select,
+            ) { getTile() }
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.example.polyscrabbleclient.game.view
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DroppableView
@@ -11,7 +11,8 @@ fun BoardView(
     dragState: DragState,
 ) {
     val viewModel: BoardViewModel = viewModel()
-    dragState.onDropCallbacks.add { viewModel.drop(dragState.draggableContent) }
+    dragState.onDropActions.receiverAction = { viewModel.drop(it) }
+    dragState.onRaiseActions.boardAction = { viewModel.raise(it) }
 
     DroppableView(
         dragState = dragState,

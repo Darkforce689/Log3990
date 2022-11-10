@@ -4,7 +4,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
-import com.example.polyscrabbleclient.game.sources.*
+import com.example.polyscrabbleclient.game.sources.GameState
+import com.example.polyscrabbleclient.game.sources.IMagicCard
+import com.example.polyscrabbleclient.game.sources.LightPlayer
+import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.user.User
 
@@ -97,8 +100,8 @@ class GameModel {
         return getPlayer(activePlayerIndex.value)
     }
 
-    fun createPlayersFrom(playerNames: ArrayList<String>) {
-        players.value = playerNames.map { Player(it, 0) }
+    fun isActivePlayer(): Boolean {
+        return getActivePlayer() === getUser()
     }
 
     fun hasGameEnded(): Boolean {

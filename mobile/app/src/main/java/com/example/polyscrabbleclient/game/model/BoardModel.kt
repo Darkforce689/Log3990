@@ -137,12 +137,20 @@ class BoardModel {
     }
 
     fun setTransient(tileCoordinates: TileCoordinates, tile: TileContent) {
+        markPreviousTileAsUnused(tileCoordinates)
         this[tileCoordinates] = tile
         if (tile === null) {
             transientTilesCoordinates.remove(tileCoordinates)
         } else {
             transientTilesCoordinates.add(tileCoordinates)
             jokerModel.checkOpenForJokerSelection(tile, tileCoordinates)
+        }
+    }
+
+    private fun markPreviousTileAsUnused(tileCoordinates: TileCoordinates) {
+        val previousTile = this[tileCoordinates]
+        if (previousTile != null) {
+            previousTile.isUsedOnBoard.value = false
         }
     }
 

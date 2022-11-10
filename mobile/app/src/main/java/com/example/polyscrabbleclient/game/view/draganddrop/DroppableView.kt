@@ -14,7 +14,7 @@ fun DroppableView(
     modifier: Modifier = Modifier,
     dragState: DragState,
     canViewReceiveDrop: () -> Boolean,
-    content: @Composable() (BoxScope.() -> Unit),
+    content: @Composable (BoxScope.() -> Unit),
 ) {
     var isInBounds by remember { mutableStateOf(false) }
     var dragGlobalPosition by remember { mutableStateOf(Offset.Zero) }
@@ -28,13 +28,24 @@ fun DroppableView(
             isInBounds = rect.contains(dragGlobalPosition)
         }
     }) {
-        val canBeDropped =
-            dragState.draggableContent !== null &&
-                !dragState.isDragging &&
-                isInBounds &&
-                canViewReceiveDrop()
-        if (canBeDropped) {
-            dragState.onDrop()
+        val isDropHappening = dragState.draggableContent !== null && !dragState.isDragging
+        if (isDropHappening) {
+            if (isInBounds) {
+                // View can process the drop since it is in bounds
+                if (canViewReceiveDrop()) {
+                    // View can accept the drop since the new tile
+                    // will replace a null tile or a transient tile
+                    dragState.onDrop()
+                } else {
+                    // View cannot accept the drop since the new tile
+                    // would replace a permanent tile
+                    dragState.cancelDrop()
+                }
+            } else {
+                // View cannot accept the drop since the new tile
+                // is outside of bounds
+                dragState.cancelDrop()
+            }
         }
         content()
     }
