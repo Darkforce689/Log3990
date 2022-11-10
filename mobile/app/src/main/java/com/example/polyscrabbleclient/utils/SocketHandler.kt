@@ -117,6 +117,9 @@ abstract class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out 
 
     private fun <T> formatArrayResponse(args: Array<Any>, type: Class<Array<T>>): List<T>? {
         return try {
+            if (args.isEmpty()) {
+                return null
+            }
             Gson().fromJson(args[0].toString(), type).toList()
         } catch (e: Exception) {
             println("Error -> formatArrayResponse -> $type")
@@ -127,6 +130,9 @@ abstract class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out 
 
     private fun <T> formatObjectResponse(args: Array<Any>, type: Class<T>): T? {
         return try {
+            if (args.isEmpty()) {
+                return null
+            }
             Gson().fromJson(args[0].toString(), type) as T
         } catch (e: Exception) {
             println("Error -> formatObjectResponse -> $type")
