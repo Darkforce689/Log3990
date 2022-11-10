@@ -24,6 +24,7 @@ class GameModel {
     val userLetters = mutableStateListOf<TileModel>()
     var isGameActive = mutableStateOf(false)
     var hasGameJustEnded = mutableStateOf(false)
+    val disconnected = mutableStateOf(false)
     var gameMode: MutableState<GameMode> = mutableStateOf(GameMode.Classic)
     var drawnMagicCards: MutableState<List<List<IMagicCard>>> =
         mutableStateOf(listOf(listOf(), listOf(), listOf(), listOf()))

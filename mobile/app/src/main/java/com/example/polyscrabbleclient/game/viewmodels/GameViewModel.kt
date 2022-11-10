@@ -2,14 +2,14 @@ package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.model.TileContent
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.*
-import com.example.polyscrabbleclient.ui.theme.*
-import com.example.polyscrabbleclient.ui.theme.leaveButtonFR
-import com.example.polyscrabbleclient.ui.theme.quitButtonFR
 import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.ui.theme.*
 
 class GameViewModel : ViewModel() {
     val game = GameRepository.model
@@ -72,7 +72,7 @@ class GameViewModel : ViewModel() {
         return game.userLetters
     }
 
-    private fun getSelectedCoordinates(): TileCoordinates?{
+    private fun getSelectedCoordinates(): TileCoordinates? {
         return game.board.selectedCoordinates.value
     }
 
@@ -100,11 +100,22 @@ class GameViewModel : ViewModel() {
         return game.hasGameJustEnded
     }
 
+    fun hasGameJustDisconnected(): MutableState<Boolean> {
+        return game.disconnected
+    }
+
     fun getQuitLabel(): String {
         return if (game.hasGameEnded()) {
             leaveButtonFR
         } else {
             quitButtonFR
+        }
+    }
+
+    fun navigateToMainPage(navController: NavController) {
+        this.quitGame()
+        navController.navigate(NavPage.MainPage.label) {
+            launchSingleTop = true
         }
     }
 
@@ -123,7 +134,7 @@ class GameViewModel : ViewModel() {
         }
 
         val lastName = winnerNames.removeLast()
-        val namesExceptLast = winnerNames.reduce { acc, current -> "$acc, $current"}
+        val namesExceptLast = winnerNames.reduce { acc, current -> "$acc, $current" }
         if (winnerNames.size > 2) {
             namesExceptLast.removeRange(namesExceptLast.length - 2, namesExceptLast.length)
         }

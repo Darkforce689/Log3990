@@ -1,23 +1,67 @@
 package com.example.polyscrabbleclient.utils
 
+import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import com.google.gson.Gson
+import io.socket.client.IO
 import io.socket.client.Socket
+import io.socket.engineio.client.transports.WebSocket
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-abstract class SocketEvent (open val eventName: String)
-abstract class OnEvent (override val eventName: String) : SocketEvent(eventName)
-abstract class EmitEvent (override val eventName: String) : SocketEvent(eventName)
+abstract class SocketEvent(open val eventName: String)
+abstract class OnEvent(override val eventName: String) : SocketEvent(eventName)
+abstract class EmitEvent(override val eventName: String) : SocketEvent(eventName)
+
+private const val URL = BuildConfig.COMMUNICATION_URL
 
 abstract class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out Any>>) {
 
-    abstract fun setSocket()
-    abstract fun ensureConnection()
-    abstract fun disconnect()
+    abstract val name: String
+    abstract val path: String
+
     protected lateinit var socket: Socket
+
+    @Synchronized
+    fun setSocket() {
+        val opts = IO.Options()
+        opts.path = path
+        val cookie = ScrabbleHttpClient.getAuthCookie()
+
+        val headers: MutableMap<String, List<String>> = mutableMapOf()
+        headers["Cookie"] = listOf(cookie.toString())
+
+        opts.extraHeaders = headers
+        try {
+            opts.transports = arrayOf(WebSocket.NAME)
+            socket = IO.socket(URL, opts)
+            socket.on(Socket.EVENT_CONNECT) { onEvent(Socket.EVENT_CONNECT) }
+            socket.on(Socket.EVENT_DISCONNECT) { onEvent(Socket.EVENT_DISCONNECT) }
+            socket.on(Socket.EVENT_CONNECT_ERROR) { onEvent(Socket.EVENT_CONNECT_ERROR) }
+        } catch (e: Throwable) {
+            println("$name Error : $e")
+        }
+    }
+
+    open fun onEvent(event: String) {
+        println("$name $event")
+    }
+
+    @Synchronized
+    fun ensureConnection() {
+        if (socket.connected()) {
+            return
+        }
+        socket.connect()
+    }
+
+    @Synchronized
+    fun disconnect() {
+        socket.disconnect()
+    }
 
     @JvmName("onObject") // To prevent platform declaration clash
     @OptIn(DelicateCoroutinesApi::class)

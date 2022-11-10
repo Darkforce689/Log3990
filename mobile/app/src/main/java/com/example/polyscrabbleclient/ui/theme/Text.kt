@@ -28,6 +28,7 @@ const val averagePointsPerGame = "Moyenne de points par partie"
 const val averageTimePerGame = "Moyenne de temps par partie"
 const val date = "Date"
 const val connection_type = "Type de connexions"
+
 // Errors
 const val missing_field = "Veuillez remplir tous les champs."
 const val invalid_password = "Mot de passe invalide."
@@ -57,6 +58,8 @@ const val endGameLoserFR = "Dommage..."
 const val winnersAreFR = "Les gagnants de la partie sont"
 const val winnerIsFR = "Le gagnant de la partie est"
 const val andFR = "et"
+const val disconnectedFromServerFR = "Vous avez été déconnecté du serveur"
+const val backToMainPageButtonFR = "Revenir au menu principal"
 
 // GameCreation
 const val new_game_creation = "Nouvelle Partie Multijoueurs"
@@ -91,7 +94,7 @@ const val waitingForOtherPlayersFR = "En attente d'autres joueurs"
 const val joinAGameFR = "Joindre une partie"
 const val hostQuitGameFR = "L'hôte a quitté la partie"
 const val Ok = "Ok"
-val pendingGameIdFR: (id: String?) -> String = { id -> "Id de la partie: ${id ?: ""}"}
+val pendingGameIdFR: (id: String?) -> String = { id -> "Id de la partie: ${id ?: ""}" }
 
 
 

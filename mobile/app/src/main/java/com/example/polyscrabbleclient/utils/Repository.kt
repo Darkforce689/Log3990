@@ -5,7 +5,7 @@ abstract class Repository<ModelType, SocketType : SocketHandler> {
 
     protected abstract val socket: SocketType
 
-    protected fun reset() {
+    protected open fun reset() {
         socket.disconnect()
         setup()
     }
@@ -16,7 +16,7 @@ abstract class Repository<ModelType, SocketType : SocketHandler> {
 
     protected abstract fun setupEvents()
 
-    protected fun setupSocket() {
+    private fun setupSocket() {
         socket.setSocket()
         setupEvents()
         socket.ensureConnection()
