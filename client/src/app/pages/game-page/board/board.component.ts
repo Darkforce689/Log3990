@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, DoCheck, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
-import { MatSliderChange } from '@angular/material/slider';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 import { ASCII_CODE, NOT_FOUND } from '@app/game-logic/constants';
@@ -7,9 +6,6 @@ import { Board } from '@app/game-logic/game/board/board';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { InputComponent, InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
 import { CanvasDrawer } from '@app/pages/game-page/board/canvas-drawer';
-
-const MAX_FONT_SIZE = 22;
-const MIN_FONT_SIZE = 14;
 
 @Component({
     selector: 'app-board',
@@ -22,16 +18,12 @@ export class BoardComponent implements AfterViewInit, DoCheck {
     @ViewChild('gridCanvas') private canvas!: ElementRef<HTMLCanvasElement>;
     readonly self = InputComponent.Board;
     board: Board;
-    minFontSize = MIN_FONT_SIZE;
-    maxFontSize = MAX_FONT_SIZE;
-    fontSize: number;
     canvasDrawer: CanvasDrawer;
     canvasContext: CanvasRenderingContext2D;
     canvasElement: HTMLElement | null;
 
     constructor(private boardService: BoardService, private inputController: UIInputControllerService) {
         this.board = this.boardService.board;
-        this.fontSize = (this.minFontSize + this.maxFontSize) / 2;
     }
 
     @HostListener('window:resize', ['$event'])
@@ -40,13 +32,12 @@ export class BoardComponent implements AfterViewInit, DoCheck {
     }
 
     ngAfterViewInit() {
-        (this.scrabbleBoard.nativeElement as HTMLParagraphElement).style.fontSize = `${this.fontSize}px`;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.canvasElement = document.getElementById('canvas');
         if (this.canvasElement) {
             this.setupCanvasDrawer();
         }
-        this.canvasDrawer.drawGrid(this.board, this.fontSize);
+        this.canvasDrawer.drawGrid(this.board);
     }
 
     ngDoCheck() {
@@ -64,22 +55,11 @@ export class BoardComponent implements AfterViewInit, DoCheck {
         } else {
             this.canvasDrawer.setIndicator(NOT_FOUND, NOT_FOUND);
         }
-        this.canvasDrawer.drawGrid(this.board, this.fontSize);
-    }
-
-    getFont(): string {
-        return `font-size: ${this.fontSize}px;`;
+        this.canvasDrawer.drawGrid(this.board);
     }
 
     convertASCIIToChar(code: number): string {
         return String.fromCharCode(ASCII_CODE + code);
-    }
-
-    updateSetting(event: MatSliderChange) {
-        if (event.value != null) {
-            this.fontSize = event.value;
-            (this.scrabbleBoard.nativeElement as HTMLParagraphElement).style.fontSize = `${this.fontSize}px`;
-        }
     }
 
     canvasClick(event: MouseEvent): void {

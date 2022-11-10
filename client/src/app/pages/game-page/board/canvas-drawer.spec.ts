@@ -4,7 +4,6 @@ import { CanvasDrawer } from '@app/pages/game-page/board/canvas-drawer';
 describe('Canvas drawer test', () => {
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
-    const FONT_SIZE = 20;
     let ctxStub;
     let canvasDrawer: CanvasDrawer;
     let board: Board;
@@ -24,7 +23,7 @@ describe('Canvas drawer test', () => {
         const fillTextSpy = spyOn(canvasDrawer.canvas, 'fillText');
         const numberCall = 152;
 
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         expect(fillTextSpy).toHaveBeenCalledTimes(numberCall);
     });
 
@@ -32,7 +31,7 @@ describe('Canvas drawer test', () => {
         const fillTextSpy = spyOn(canvasDrawer.canvas, 'fillText');
         const numberCall = 154;
         board.grid[12][13].letterObject = { char: 'A', value: 2 };
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         expect(fillTextSpy).toHaveBeenCalledTimes(numberCall);
     });
 
@@ -41,7 +40,7 @@ describe('Canvas drawer test', () => {
         const fillRectOtherCount = 37;
         const fillRectBonusCount = 61;
         const numberCall = fillRectBonusCount + fillRectOtherCount;
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         expect(fillRectSpy).toHaveBeenCalledTimes(numberCall);
     });
 
@@ -53,7 +52,7 @@ describe('Canvas drawer test', () => {
     it('drawGrid should change pixel on screen', () => {
         let imageData = canvasDrawer.canvas.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data;
         const beforeSize = imageData.filter((x) => x !== 0).length;
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         imageData = canvasDrawer.canvas.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data;
         const afterSize = imageData.filter((x) => x !== 0).length;
         expect(afterSize).toBeGreaterThan(beforeSize);
@@ -64,10 +63,10 @@ describe('Canvas drawer test', () => {
         canvasDrawer.setDirection(Direction.Horizontal);
 
         const drawImageSpy = spyOn(canvasDrawer.canvas, 'fill');
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
 
         canvasDrawer.setDirection(Direction.Vertical);
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         expect(drawImageSpy).toHaveBeenCalled();
         expect(drawImageSpy).toHaveBeenCalledTimes(2);
     });
@@ -78,14 +77,14 @@ describe('Canvas drawer test', () => {
         canvasDrawer.setDirection(Direction.Horizontal);
 
         const drawImageSpy = spyOn(canvasDrawer.canvas, 'fill');
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         expect(drawImageSpy).not.toHaveBeenCalled();
     });
 
     it('if 1 temp letter is placed, should call strokeRect', () => {
         const strokeRectSpy = spyOn(canvasDrawer.canvas, 'strokeRect');
         board.grid[0][0].letterObject = { char: 'A', value: 2, isTemp: true };
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         expect(strokeRectSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -94,7 +93,7 @@ describe('Canvas drawer test', () => {
         const strokeRectCount = 4;
         board.grid[0][0].letterObject = { char: 'A', value: 2, isTemp: true };
         board.grid[0][1].letterObject = { char: 'A', value: 2, isTemp: true };
-        canvasDrawer.drawGrid(board, FONT_SIZE);
+        canvasDrawer.drawGrid(board);
         expect(strokeRectSpy).toHaveBeenCalledTimes(strokeRectCount);
     });
 });
