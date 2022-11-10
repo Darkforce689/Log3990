@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { MatSliderChange } from '@angular/material/slider';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
@@ -37,32 +36,10 @@ describe('BoardComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should call our method that changes the font of the board', () => {
-        const increasedFontSize = 13;
-        const event = new MatSliderChange();
-        event.value = increasedFontSize;
-        component.updateSetting(event);
-        expect(component.fontSize).toBe(increasedFontSize);
-    });
-
-    it('should not change font size if value of slider(event) is undefined', () => {
-        const defaultValue = 18;
-        const event = new MatSliderChange();
-        event.value = null;
-        component.updateSetting(event);
-        expect(component.fontSize).toBe(defaultValue);
-    });
-
     it('onResize should call setupCanvas', () => {
         const spy = spyOn<any>(component, 'setupCanvasDrawer');
         component.onResize();
         expect(spy).toHaveBeenCalled();
-    });
-
-    it('getFont should return the correct font size', () => {
-        const FONT_SIZE = 25;
-        component.fontSize = FONT_SIZE;
-        expect(component.getFont()).toEqual(`font-size: ${FONT_SIZE}px;`);
     });
 
     it('canvasClick should emit input', () => {

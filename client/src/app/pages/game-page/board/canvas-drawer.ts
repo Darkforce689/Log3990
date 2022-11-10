@@ -21,8 +21,9 @@ enum BonusType {
     LetterBonus,
     WordBonus,
 }
+
+const FONT_SIZE = 18;
 export class CanvasDrawer {
-    fontSize = 20;
     private tileSize: number;
     private scale: number = 0.5;
     private offset: number;
@@ -38,7 +39,7 @@ export class CanvasDrawer {
         this.offset = this.tileSize + this.borderWidth;
     }
 
-    drawGrid(board: Board, fontsize: number): void {
+    drawGrid(board: Board): void {
         this.canvas.clearRect(0, 0, this.width, this.height);
         this.canvas.globalAlpha = 0.9;
         this.canvas.fillStyle = BACKGROUND_COLOR;
@@ -49,8 +50,7 @@ export class CanvasDrawer {
             this.height - 2 * this.borderWidth - this.canvas.lineWidth,
         );
         this.canvas.globalAlpha = 1;
-        this.fontSize = fontsize;
-        this.canvas.font = `${this.fontSize}px ${this.font}`;
+        this.canvas.font = `${FONT_SIZE}px ${this.font}`;
         for (let i = 1; i < 17; i++) {
             this.drawRow(i);
             this.drawColumn(i);
@@ -131,7 +131,7 @@ export class CanvasDrawer {
             this.tileSize - this.canvas.lineWidth,
             this.tileSize - this.canvas.lineWidth,
         );
-        this.canvas.font = `${this.fontSize}px ${this.font}`;
+        this.canvas.font = `${FONT_SIZE}px ${this.font}`;
         this.canvas.fillStyle = BLACK_LINE;
 
         this.canvas.textAlign = 'center';
@@ -139,13 +139,13 @@ export class CanvasDrawer {
         const letterWidth = this.canvas.measureText(letter).width;
 
         const offset = this.tileSize / 3;
-        this.canvas.font = `${this.fontSize}px ${this.font}`;
+        this.canvas.font = `${FONT_SIZE}px ${this.font}`;
         pos.x += offset;
         pos.y += this.borderWidth + this.tileSize / 2;
         this.canvas.textBaseline = 'bottom';
         this.canvas.fillText(letter, pos.x, pos.y);
 
-        this.canvas.font = `${this.fontSize * this.scale}px ${this.font}`;
+        this.canvas.font = `${FONT_SIZE * this.scale}px ${this.font}`;
         pos.x += letterWidth * 0.7;
         pos.y -= this.borderWidth;
         this.canvas.textBaseline = 'top';
@@ -161,7 +161,7 @@ export class CanvasDrawer {
     }
 
     private drawColumnIdentifier() {
-        this.canvas.font = `${this.fontSize}px ${this.font}`;
+        this.canvas.font = `${FONT_SIZE}px ${this.font}`;
         this.canvas.fillStyle = IDENTIFIER_COLOR;
 
         for (let i = 0; i < 15; i++) {
@@ -174,7 +174,7 @@ export class CanvasDrawer {
     }
 
     private drawRowIdentifier() {
-        this.canvas.font = `${this.fontSize}px ${this.font}`;
+        this.canvas.font = `${FONT_SIZE}px ${this.font}`;
         this.canvas.fillStyle = IDENTIFIER_COLOR;
 
         for (let i = 0; i < 15; i++) {
@@ -186,7 +186,7 @@ export class CanvasDrawer {
     }
 
     private drawBonus(posBorder: Vec2, type: BonusType, mul: number) {
-        this.canvas.font = `${this.fontSize * this.scale}px ${this.font}`;
+        this.canvas.font = `${FONT_SIZE * this.scale}px ${this.font}`;
         this.canvas.textAlign = 'center';
         let s = '';
         const pos = this.tilePositionToCoord(posBorder.x, posBorder.y);
