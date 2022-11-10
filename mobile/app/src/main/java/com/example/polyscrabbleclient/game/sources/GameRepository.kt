@@ -18,7 +18,7 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
     fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
         model.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
         model.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
-        model.players.value = createPlayers(gameSettings.playerNames)
+        model.players.addAll(createPlayers(gameSettings.playerNames))
         model.gameMode.value = gameSettings.gameMode
         model.board.gameMode = model.gameMode.value
         socket.emit(EmitGameEvent.JoinGame, gameSettings.id)
@@ -45,8 +45,9 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
 
     private val onTransitionGameState: (transitionGameState: TransitionGameState?) -> Unit =
         { transitionGameState ->
-            // TODO
-            println("onTransitionGameState $transitionGameState")
+            transitionGameState?.let {
+                model.updatePlayerName(it.previousPlayerName, it.name)
+            }
         }
 
     private val onGameDisconnected: () -> Unit = {

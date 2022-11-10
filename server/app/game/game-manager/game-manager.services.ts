@@ -223,12 +223,17 @@ export class GameManagerService {
     }
 
     private notifyAction(action: Action, gameToken: string) {
+        const playerNames = this.getPlayerNamesFromGame(gameToken);
+        this.gameActionNotifier.notify(action, playerNames, gameToken);
+    }
+
+    private getPlayerNamesFromGame(gameToken: string) {
         const clientsInGame = this.linkedClients.get(gameToken);
         if (!clientsInGame) {
             throw Error(`GameToken ${gameToken} is not in active game`);
         }
         const clientNames = clientsInGame.map((linkedClient) => linkedClient.name);
-        this.gameActionNotifier.notify(action, clientNames, gameToken);
+        return clientNames;
     }
 
     private endGame(game: ServerGame) {
@@ -239,6 +244,8 @@ export class GameManagerService {
         const playerInfo = this.gameCompiler.compilePlayerInfo(newPlayer, previousName);
         const playerInfoToken: PlayerInfoToken = { playerInfo, gameToken };
         this.forfeitedGameStateSubject.next(playerInfoToken);
+        const remainingPlayerNames = this.getPlayerNamesFromGame(gameToken);
+        this.gameActionNotifier.notifyPlayerLeft(newPlayer, previousName, remainingPlayerNames, gameToken);
     }
 
     private deleteInactiveGame(gameToken: string) {
