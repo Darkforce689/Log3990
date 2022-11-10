@@ -4,13 +4,14 @@ import { Direction } from '@app/game/game-logic/actions/direction.enum';
 import { LetterCreator } from '@app/game/game-logic/board/letter-creator';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { EMPTY_CHAR, JOKER_CHAR, TIME_FOR_REVERT } from '@app/game/game-logic/constants';
-import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
+import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { PlacementSetting } from '@app/game/game-logic/interface/placement-setting.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { isCharUpperCase } from '@app/game/game-logic/utils';
 import { WordSearcher } from '@app/game/game-logic/validator/word-search/word-searcher.service';
+import { ServerLogger } from '@app/logger/logger';
 import { timer } from 'rxjs';
 
 export class PlaceLetter extends Action {
@@ -31,8 +32,15 @@ export class PlaceLetter extends Action {
     protected perform(game: ServerGame) {
         const validWordList = this.wordSearcher.getListOfValidWords({ word: this.word, placement: this.placement }, game.board.grid, game.gameToken);
         const formedWords = validWordList.map((validWord) => validWord.letters);
+        this.updateLettersToRemoveFromRack(game);
+        try {
+            this.player.removeLetterFromRack(this.lettersToRemoveInRack);
+        } catch (error) {
+            ServerLogger.logError(`PlaceLetter -> Error removing letters from letterRack for player ${this.player.name} in game ${game.gameToken}`);
+            this.end();
+            return;
+        }
         this.putLettersOnBoard(game);
-        this.player.removeLetterFromRack(this.lettersToRemoveInRack);
         const wordValid = validWordList.length !== 0;
         if (!wordValid) {
             timer(TIME_FOR_REVERT).subscribe(() => {
@@ -81,6 +89,31 @@ export class PlaceLetter extends Action {
         const startY = this.placement.y;
         const direction = this.placement.direction;
         const grid = game.board.grid;
+        for (let wordIndex = 0; wordIndex < this.word.length; wordIndex++) {
+            let char: string;
+            let x = startX;
+            let y = startY;
+            if (direction === Direction.Horizontal) {
+                x = startX + wordIndex;
+                char = grid[y][x].letterObject.char;
+            } else {
+                y = startY + wordIndex;
+                char = grid[y][x].letterObject.char;
+            }
+
+            if (char === EMPTY_CHAR) {
+                const charToCreate = this.word[wordIndex];
+                const newLetter = this.createNewLetter(charToCreate);
+                grid[y][x].letterObject = newLetter;
+            }
+        }
+    }
+
+    private updateLettersToRemoveFromRack(game: ServerGame) {
+        const startX = this.placement.x;
+        const startY = this.placement.y;
+        const direction = this.placement.direction;
+        const grid = game.board.grid;
         this.lettersToRemoveInRack = [];
         this.affectedCoords = [];
         for (let wordIndex = 0; wordIndex < this.word.length; wordIndex++) {
@@ -99,8 +132,6 @@ export class PlaceLetter extends Action {
                 const charToCreate = this.word[wordIndex];
                 const letterToRemove = this.letterToRemove(charToCreate);
                 this.lettersToRemoveInRack.push(letterToRemove);
-                const newLetter = this.createNewLetter(charToCreate);
-                grid[y][x].letterObject = newLetter;
                 this.affectedCoords.push({ x, y });
             }
         }

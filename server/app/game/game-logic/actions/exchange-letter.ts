@@ -2,6 +2,7 @@ import { Action } from '@app/game/game-logic/actions/action';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { Player } from '@app/game/game-logic/player/player';
+import { ServerLogger } from '@app/logger/logger';
 
 export class ExchangeLetter extends Action {
     constructor(player: Player, readonly lettersToExchange: Letter[]) {
@@ -9,8 +10,15 @@ export class ExchangeLetter extends Action {
     }
 
     protected perform(game: ServerGame) {
+        let rackLettersToExchange;
+        try {
+            rackLettersToExchange = this.player.getLettersFromRack(this.lettersToExchange);
+        } catch (error) {
+            ServerLogger.logError(`ExchangeLetter -> Error getting letters from letterRack for player ${this.player.name} in game ${game.gameToken}`);
+            this.end();
+            return;
+        }
         const lettersFromBag: Letter[] = game.letterBag.drawGameLetters(this.lettersToExchange.length);
-        const rackLettersToExchange = this.player.getLettersFromRack(this.lettersToExchange);
         const exchangeLetterSet = new Set(rackLettersToExchange);
         const nLettersInRack = this.player.letterRack.length;
         let letterToAddIndex = 0;
