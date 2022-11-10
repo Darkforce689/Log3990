@@ -4,12 +4,16 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +29,7 @@ fun PlayersInfoView(viewModel: GameViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        viewModel.game.players.value.forEach { player ->
+        viewModel.game.players.forEach { player ->
             PlayerInfoView(player) {
                 player === viewModel.game.getActivePlayer()
             }
@@ -75,13 +79,11 @@ fun PlayerInfoView(
 @Composable
 fun PlayersInfoPreview() {
     val gvm: GameViewModel = viewModel()
-    gvm.game.players = mutableStateOf(
-        listOf(
-            Player("ABC", 1),
-            Player("DEF", 2),
-            Player("GHI", 32432),
-            Player("012345678901234567890123456789", 86867867),
-        )
+    gvm.game.players = mutableStateListOf(
+        Player("ABC", 1),
+        Player("DEF", 2),
+        Player("GHI", 32432),
+        Player("012345678901234567890123456789", 86867867),
     )
     gvm.game.activePlayerIndex.value = 2
     PlayersInfoView(gvm)
@@ -92,13 +94,11 @@ fun PlayersInfoPreview() {
 @Composable
 fun DarkPlayersInfoPreview() {
     val gvm: GameViewModel = viewModel()
-    gvm.game.players = mutableStateOf(
-        listOf(
-            Player("ABC", 1),
-            Player("DEF", 2),
-            Player("GHI", 32432),
-            Player("012345678901234567890123456789", 86867867),
-        )
+    gvm.game.players = mutableStateListOf(
+        Player("ABC", 1),
+        Player("DEF", 2),
+        Player("GHI", 32432),
+        Player("012345678901234567890123456789", 86867867),
     )
     gvm.game.activePlayerIndex.value = 2
     PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {

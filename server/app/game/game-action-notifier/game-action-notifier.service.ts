@@ -2,6 +2,7 @@ import { Action } from '@app/game/game-logic/actions/action';
 import { ExchangeLetter } from '@app/game/game-logic/actions/exchange-letter';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { PlaceLetter } from '@app/game/game-logic/actions/place-letter';
+import { Player } from '@app/game/game-logic/player/player';
 import { placementSettingsToString } from '@app/game/game-logic/utils';
 import { Observable, Subject } from 'rxjs';
 import { Service } from 'typedi';
@@ -17,6 +18,12 @@ export class GameActionNotifierService {
     private notificationSubject: Subject<GameActionNotification> = new Subject<GameActionNotification>();
     get notification$(): Observable<GameActionNotification> {
         return this.notificationSubject;
+    }
+
+    notifyPlayerLeft(newPlayer: Player, previousName: string, playerNames: string[], gameToken: string) {
+        const content = `${previousName}  a abandonné la partie et sera remplacé par le joueur virtuel ${newPlayer.name}`;
+        const notification: GameActionNotification = { gameToken, content, to: playerNames };
+        this.notificationSubject.next(notification);
     }
 
     notify(action: Action, playerNames: string[], gameToken: string): void {

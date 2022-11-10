@@ -4,6 +4,11 @@ import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
 import com.example.polyscrabbleclient.lobby.sources.PendingGameId
 
+data class PlayerInfoForfeit (
+    val name: String,
+    val previousPlayerName: String
+)
+
 data class Tile(
     val letterMultiplicator: Int,
     val wordMultiplicator: Int,
@@ -113,8 +118,7 @@ data class IMagicCard(
     val id:String,
 )
 
-// TODO
-typealias TransitionGameState = Nullable
+typealias TransitionGameState = PlayerInfoForfeit
 
 typealias JoinGame = PendingGameId
 
