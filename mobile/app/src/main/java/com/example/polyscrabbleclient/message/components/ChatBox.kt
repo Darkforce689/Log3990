@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
@@ -31,19 +30,47 @@ import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 fun ChatBox(chatBoxViewModel: ChatBoxViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val messages = chatBoxViewModel.messages
-    val history = chatBoxViewModel.historyPager.collectAsLazyPagingItems();
-    chatBoxViewModel.setCurrentConversation()
+    val history = chatBoxViewModel.historyPager.collectAsLazyPagingItems()
+    val conversations = chatBoxViewModel.conversations
+
     val inputFocusRequester = LocalFocusManager.current
-    Card(modifier = Modifier
-        .padding(25.dp, 0.dp, 25.dp, 10.dp),
+    LaunchedEffect(true) {
+        chatBoxViewModel.actualizeConversations()
+    }
+
+    LaunchedEffect(chatBoxViewModel.currentConvoId.value) {
+        history.refresh()
+    }
+
+    Card(
+        modifier = Modifier.padding(10.dp, 0.dp, 10.dp, 10.dp),
+
         elevation = 2.dp,
         onClick = { keyboardController?.hide(); inputFocusRequester.clearFocus() }) {
         Column {
-            Box(Modifier.weight(5f)) {
+            ConversationPicker(
+                conversations = conversations,
+                selectedConvoIndex = chatBoxViewModel.selectedConvoIndex.value,
+                onSelectedConvo = { index ->
+                    chatBoxViewModel.onSelectedConvo(index)
+                },
+                onConvoLeave = {},
+                modifier = Modifier.height(70.dp)
+            )
+
+            Divider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+
+            Box(
+                Modifier
+                    .weight(0.5f)
+                    .fillMaxHeight()
+            ) {
                 MessageList(messages, history)
             }
-            Box(Modifier.weight(1f)) {
-                MessageInput()
+            Box(
+                modifier = Modifier.padding(20.dp, 3.dp, 20.dp, 15.dp),
+            ) {
+                MessageInput(chatBoxViewModel)
             }
         }
     }
@@ -58,11 +85,11 @@ fun MessageList(
 
     val scrollState = rememberLazyListState()
     LaunchedEffect(messages.size) {
-        if (messages.size === 0) {
+        if (messages.size == 0) {
             return@LaunchedEffect
         }
 
-        if (scrollState.firstVisibleItemIndex === 0) {
+        if (scrollState.firstVisibleItemIndex == 0) {
             scrollState.animateScrollToItem(0)
             return@LaunchedEffect
         }
@@ -99,7 +126,7 @@ fun MessageList(
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
+fun MessageInput(viewModel: ChatBoxViewModel) {
     var input by remember { mutableStateOf("") }
     fun sendMessage() {
         if (input.isNotBlank()) {
@@ -109,14 +136,14 @@ fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
     }
 
     Row(
-        Modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .height(65.dp),
+                .height(55.dp),
             value = input,
             onValueChange = { input = it },
             keyboardOptions = KeyboardOptions(
@@ -128,11 +155,10 @@ fun MessageInput(viewModel: ChatBoxViewModel = viewModel()) {
             ),
             placeholder = { Text(text = "Aa") },
             singleLine = true,
-
             )
         Button(
             modifier = Modifier
-                .fillMaxWidth(0.7f)
+                .fillMaxWidth()
                 .height(55.dp),
             onClick = { sendMessage() },
             enabled = input.isNotBlank()

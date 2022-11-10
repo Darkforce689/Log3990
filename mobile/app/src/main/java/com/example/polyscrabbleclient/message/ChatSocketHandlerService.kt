@@ -1,6 +1,5 @@
 package com.example.polyscrabbleclient.message
 
-import android.webkit.CookieManager
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.message.model.BaseMessage
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
@@ -10,24 +9,23 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
 import org.json.JSONObject
-import java.net.URI
 import java.net.URISyntaxException
-import java.util.*
-import kotlin.collections.HashMap
 
 
-enum class EventType (val event: String){
+enum class EventType(val event: String) {
     USER_NAME("userName"),
     JOIN_ROOM("joinRoom"),
     NEW_MESSAGE("newMessage"),
-    ROOM_MESSAGES("roomMessages")
+    ROOM_MESSAGES("roomMessages"),
+    LEAVE_ROOM("leaveRoom"),
 }
 
 private const val URL = BuildConfig.COMMUNICATION_URL
 
- object ChatSocketHandler {
+object ChatSocketHandler {
 
     private lateinit var webSocket: Socket
+    private val joinedRooms: MutableSet<String> = HashSet()
 
     @Synchronized
     fun setSocket() {
@@ -35,15 +33,12 @@ private const val URL = BuildConfig.COMMUNICATION_URL
         opts.path = "/messages"
         val cookie = ScrabbleHttpClient.getAuthCookie()
 
-        println("cookie 2: " + cookie)
-
         val headers: MutableMap<String, List<String>> = mutableMapOf()
         headers["Cookie"] = listOf(cookie.toString())
 
         opts.extraHeaders = headers
         try {
             opts.transports = arrayOf(WebSocket.NAME)
-            opts.auth
             webSocket = IO.socket(URL, opts)
             webSocket.on(Socket.EVENT_CONNECT) { println("Connected") }
             webSocket.on(Socket.EVENT_DISCONNECT) { println("Disconnected") }
@@ -54,21 +49,56 @@ private const val URL = BuildConfig.COMMUNICATION_URL
 
     @Synchronized
     fun socketConnection() {
-        if(webSocket.connected()){
+        if (webSocket.connected()) {
             return
         }
         webSocket.connect()
     }
 
+    fun setJoinedRooms(roomToJoin: List<String>) {
+        val roomIds = HashSet(roomToJoin)
+        val roomToLeave = joinedRooms.filter { roomId -> roomIds.contains(roomId) }
+        leaveRooms(roomToLeave)
+        joinRooms(roomToJoin)
+    }
+
     @Synchronized
-    fun joinRoom(roomID: String) {
-        webSocket.emit(EventType.JOIN_ROOM.event, roomID)
+    fun leaveRooms(roomIds: List<String>) {
+        roomIds.forEach {
+            leaveRoom(it)
+        }
+    }
+
+    @Synchronized
+    fun joinRooms(roomIds: List<String>) {
+        roomIds.forEach {
+            joinRoom(it)
+        }
+    }
+
+    @Synchronized
+    fun joinRoom(roomId: String) {
+        if (joinedRooms.contains(roomId)) {
+            return
+        }
+        webSocket.emit(EventType.JOIN_ROOM.event, roomId)
+        joinedRooms.add(roomId)
+    }
+
+    @Synchronized
+    fun leaveRoom(roomId: String) {
+        if (!joinedRooms.contains(roomId)) {
+            return
+        }
+        webSocket.emit(EventType.LEAVE_ROOM.event, roomId)
+        joinedRooms.remove(roomId)
     }
 
     fun on(event: EventType, callback: Emitter.Listener) {
         try {
             webSocket.on(event.event, callback)
-        } catch (e: Exception){}
+        } catch (e: Exception) {
+        }
     }
 
 
