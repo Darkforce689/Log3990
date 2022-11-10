@@ -3,7 +3,6 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { Router } from '@angular/router';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
-import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { WinnerDialogComponent, WinnerDialogData } from '@app/components/modals/winner-dialog/winner-dialog.component';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
@@ -22,7 +21,6 @@ import { Subscription } from 'rxjs';
 export class GamePageComponent implements OnDestroy {
     dialogRef: MatDialogRef<DisconnectedFromServerComponent> | undefined;
     private disconnected$$: Subscription;
-    private forfeited$$: Subscription;
     private endOfGame$$: Subscription;
 
     constructor(
@@ -42,11 +40,6 @@ export class GamePageComponent implements OnDestroy {
             this.openDisconnected();
         });
 
-        this.forfeited$$ = this.gameManager.forfeitGameState$.subscribe(() => {
-            const data = 'Votre adversaire a abandonné la partie et sera remplacé par un joueur virtuel';
-            this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data });
-        });
-
         this.endOfGame$$ = this.info.isEndOfGame$.subscribe(() => {
             const winnerNames = this.info.winner.map((player) => player.name);
             const playerName = this.info.player.name;
@@ -64,7 +57,6 @@ export class GamePageComponent implements OnDestroy {
 
     ngOnDestroy() {
         this.disconnected$$.unsubscribe();
-        this.forfeited$$.unsubscribe();
         this.endOfGame$$.unsubscribe();
     }
 

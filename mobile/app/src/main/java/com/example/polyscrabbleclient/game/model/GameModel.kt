@@ -21,7 +21,7 @@ class GameModel {
     var remainingLettersCount = mutableStateOf(0)
     var turnRemainingTime = mutableStateOf(defaultTurnTime)
     var turnTotalTime = mutableStateOf(defaultTurnTime)
-    var players: MutableState<List<Player>> = mutableStateOf(listOf())
+    var players: MutableList<Player> = mutableStateListOf<Player>()
     var winnerIndexes: MutableState<List<Int>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
     val userLetters = mutableStateListOf<TileModel>()
@@ -33,7 +33,7 @@ class GameModel {
         mutableStateOf(listOf(listOf(), listOf(), listOf(), listOf()))
 
     fun getUser(): Player? {
-        return players.value.find { it.name == User.name }
+        return players.find { it.name == User.name }
     }
 
     fun update(gameState: GameState) {
@@ -68,7 +68,8 @@ class GameModel {
     }
 
     private fun updatePlayers(updatedPlayers: ArrayList<LightPlayer>) {
-        players.value = updatedPlayers.map { player -> Player.fromLightPlayer(player) }
+        players.clear()
+        players.addAll(updatedPlayers.map { player -> Player.fromLightPlayer(player) })
     }
 
     private fun updateDrawnMagicCards(drawnMagicCard: ArrayList<ArrayList<IMagicCard>>) {
@@ -76,7 +77,7 @@ class GameModel {
     }
 
     private fun updateUser() {
-        val updatedUser = players.value.find { player -> player.name == User.name }
+        val updatedUser = players.find { player -> player.name == User.name }
         if (updatedUser === null) {
             return
         }
@@ -86,7 +87,7 @@ class GameModel {
 
     fun getPlayer(position: Int): Player? {
         return try {
-            players.value[position]
+            players[position]
         } catch (e: Exception) {
             null
         }
@@ -94,7 +95,7 @@ class GameModel {
 
     fun getUserIndex(): Int {
         val user = getUser() ?: return -1
-        return players.value.indexOf(user)
+        return players.indexOf(user)
     }
 
     fun getActivePlayer(): Player? {
@@ -109,13 +110,25 @@ class GameModel {
         return !isGameActive.value
     }
 
+    fun updatePlayerName(previousName: String, newName: String) {
+        val updatedPlayers = players.map { player ->
+            if (player.name == previousName) {
+                Player(newName, player.points, player.letters)
+            } else {
+                player
+            }
+        }
+        players.clear()
+        players.addAll(updatedPlayers)
+    }
+
     fun isUserWinner(): Boolean {
         val user = getUser() ?: return false
-        val userIndex = players.value.indexOf(user)
+        val userIndex = players.indexOf(user)
         return winnerIndexes.value.contains(userIndex)
     }
 
     fun getWinnerNames(): ArrayList<String> {
-        return ArrayList(winnerIndexes.value.map { playerIndex -> players.value[playerIndex].name })
+        return ArrayList(winnerIndexes.value.map { playerIndex -> players[playerIndex].name })
     }
 }
