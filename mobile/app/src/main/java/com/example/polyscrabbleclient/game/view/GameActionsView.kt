@@ -47,9 +47,7 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
                 canAction = { true },
                 action = {
                     viewModel.quitGame()
-                    navController.navigate(NavPage.MainPage.label) {
-                        launchSingleTop = true
-                    }
+                    viewModel.navigateToMainPage(navController)
                 }
             )
         )

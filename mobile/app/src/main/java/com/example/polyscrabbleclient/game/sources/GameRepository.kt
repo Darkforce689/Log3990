@@ -11,7 +11,7 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
     override lateinit var model: GameModel
     override val socket = GameSocketHandler
 
-    private fun createPlayers(playerNames: ArrayList<String>): List<Player>{
+    private fun createPlayers(playerNames: ArrayList<String>): List<Player> {
         return playerNames.map { playerName -> Player(playerName) }
     }
 
@@ -22,8 +22,9 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
         model.gameMode.value = gameSettings.gameMode
         model.board.gameMode = model.gameMode.value
         socket.emit(EmitGameEvent.JoinGame, gameSettings.id)
+        socket.onGameDisconnected(onGameDisconnected)
     }
-    
+
     private val onStartTime: (startTime: StartTime?) -> Unit = { startTime ->
         startTime?.let {
             model.turnTotalTime.value = it / millisecondsInSecond
@@ -48,6 +49,10 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
             println("onTransitionGameState $transitionGameState")
         }
 
+    private val onGameDisconnected: () -> Unit = {
+        model.disconnected.value = true
+        model.isGameActive.value = false
+    }
 
     fun emitNextAction(onlineAction: OnlineAction) {
         socket.emit(EmitGameEvent.NextAction, onlineAction)
@@ -59,6 +64,11 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
 
     init {
         setup()
+    }
+
+    override fun reset() {
+        socket.clearEventsCallbacks()
+        super.reset()
     }
 
     override fun setup() {
