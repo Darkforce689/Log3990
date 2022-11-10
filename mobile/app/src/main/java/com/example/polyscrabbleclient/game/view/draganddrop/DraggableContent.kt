@@ -4,5 +4,5 @@ enum class DraggableContentType { TileModel }
 
 open class DraggableContent(
     val type: DraggableContentType,
-    val canBeDragged: () -> Boolean
+    var canBeDragged: () -> Boolean = { true }
 )

@@ -26,7 +26,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun isActivePlayer(): Boolean {
-        return game.getActivePlayer() === game.getUser()
+        return game.isActivePlayer()
     }
 
     private fun isAtLeastOneLetterSelected(): Boolean {

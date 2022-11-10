@@ -2,13 +2,11 @@ package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.model.BoardRange
-import com.example.polyscrabbleclient.game.model.TileContent
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.game.view.ThickDividerWidth
+import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContentType
 
@@ -55,7 +53,7 @@ class BoardViewModel : ViewModel() {
         hoveredTileCoordinates = null
     }
 
-    fun touchBoard(gridDivisionSize: Float, tapOffset: Offset) {
+    fun tapBoard(gridDivisionSize: Float, tapOffset: Offset) {
         val coordinates = getTileFromLocalPosition(gridDivisionSize, tapOffset)
         if (coordinates != null && coordinates.row in BoardRange && coordinates.column in BoardRange) {
             board.setSelected(coordinates.column, coordinates.row)
@@ -63,6 +61,28 @@ class BoardViewModel : ViewModel() {
             // TODO: add a way to call unselect when clicking outside the canvas
             board.unselect()
         }
+    }
+
+    fun longPressBoard(
+        gridDivisionSize: Float,
+        pressOffset: Offset,
+        boardPosition: Offset,
+        dragState: DragState
+    ) {
+        val coordinates = getTileFromLocalPosition(gridDivisionSize, pressOffset)
+        if (coordinates === null) {
+            return
+        }
+        val isThereATransientTile = board.transientTilesCoordinates.contains(coordinates)
+        if (!isThereATransientTile) {
+            return
+        }
+        val transientTile = board[coordinates]
+        if (transientTile === null) {
+            return
+        }
+        val startPosition = boardPosition + pressOffset
+        dragState.onRaise(coordinates, transientTile, startPosition)
     }
 
     private fun getTileFromLocalPosition(
@@ -83,10 +103,10 @@ class BoardViewModel : ViewModel() {
         return null
     }
 
-    fun drop(draggableContent: DraggableContent?) {
+    fun drop(draggableContent: DraggableContent) {
         val column = hoveredTileCoordinates?.column
         val row = hoveredTileCoordinates?.row
-        if (draggableContent == null || column == null || row == null) {
+        if (column == null || row == null) {
             return
         }
         if (draggableContent.type !== DraggableContentType.TileModel) {
@@ -97,11 +117,22 @@ class BoardViewModel : ViewModel() {
         }
     }
 
+
+    fun raise(
+        coordinates: TileCoordinates,
+    ) {
+        board.setTransient(coordinates, null)
+    }
+
     fun canPlaceTile(tileCoordinates: TileCoordinates? = hoveredTileCoordinates): Boolean {
         if (tileCoordinates === null) {
             return false
         }
-        return isTileEmpty(tileCoordinates)
+        return isTileEmpty(tileCoordinates) || isTileTransient(tileCoordinates)
+    }
+
+    private fun isTileTransient(tileCoordinates: TileCoordinates): Boolean {
+        return board.transientTilesCoordinates.contains(tileCoordinates)
     }
 
     private fun isTileEmpty(tileCoordinates: TileCoordinates): Boolean {

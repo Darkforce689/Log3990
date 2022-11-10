@@ -2,11 +2,12 @@ package com.example.polyscrabbleclient.game.view
 
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -14,7 +15,9 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,7 +29,6 @@ import com.example.polyscrabbleclient.game.model.RowChar
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
-import com.example.polyscrabbleclient.ui.theme.grayedOutTileBackground
 import com.example.polyscrabbleclient.ui.theme.tileBackground
 import com.example.polyscrabbleclient.ui.theme.transientTileBackground
 import kotlin.properties.Delegates
@@ -314,12 +316,10 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
                     if (tile.letterMultiplier == 3) {
                         alpha = HardBackgroundAlpha
                         value = 3
-                    }
-                    else if (tile.wordMultiplier == 2) {
+                    } else if (tile.wordMultiplier == 2) {
                         color = themeColors[1]
                         type = 'w'
-                    }
-                    else if (tile.wordMultiplier == 3) {
+                    } else if (tile.wordMultiplier == 3) {
                         color = themeColors[1]
                         alpha = HardBackgroundAlpha
                         type = 'w'
@@ -340,14 +340,37 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     var gridDivisionSize by Delegates.notNull<Float>()
     var boardPadding by Delegates.notNull<Float>()
 
+    var currentPosition by remember { mutableStateOf(Offset.Zero) }
+
     Canvas(
         modifier = Modifier
             .size(BoardSize)
             .padding(BoardPadding)
+            .onGloballyPositioned {
+                currentPosition = it.localToWindow(Offset.Zero)
+            }
+            .pointerInput(Unit) {
+                detectDragGesturesAfterLongPress(
+                    onDragStart = {
+                        viewModel.longPressBoard(
+                            gridDivisionSize,
+                            it,
+                            currentPosition,
+                            dragState
+                        )
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consumeAllChanges()
+                        dragState.onDrag(dragAmount)
+                    },
+                    onDragEnd = { dragState.onDragEnd() },
+                    onDragCancel = { dragState.onDragCancel() },
+                )
+            }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
-                        viewModel.touchBoard(gridDivisionSize, tapOffset)
+                        viewModel.tapBoard(gridDivisionSize, tapOffset)
                     }
                 )
             }
