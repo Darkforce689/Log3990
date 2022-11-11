@@ -99,5 +99,11 @@ const val hostQuitGameFR = "L'hôte a quitté la partie"
 const val Ok = "Ok"
 val pendingGameIdFR: (id: String?) -> String = { id -> "Id de la partie: ${id ?: ""}" }
 
-
-
+// Message
+const val create_convo_button = "Créer"
+const val create_convo_title = "Nouvelle Conversation"
+const val create_already_exist = "Cette conversation existe déjà"
+const val create_name_forbiden = "Ce nom est interdit"
+const val delete_menu_option = "Supprimer"
+const val create_menu_option = "Créer"
+const val join_menu_option = "Rejoindre"
