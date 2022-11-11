@@ -9,12 +9,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.polyscrabbleclient.account.viewmodel.*
+import com.example.polyscrabbleclient.account.viewmodel.SEC_IN_MIN
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.viewmodels.*
 import com.example.polyscrabbleclient.roundDownToMultipleOf
-import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.ui.theme.choose_bot_difficulty
+import com.example.polyscrabbleclient.ui.theme.number_of_player
+import com.example.polyscrabbleclient.ui.theme.random_bonus
+import com.example.polyscrabbleclient.ui.theme.time_per_turn
 import com.example.polyscrabbleclient.utils.constants.magic_card_map
 import kotlin.math.floor
 
@@ -102,7 +105,7 @@ fun TimeSlider(
             text = "$time_per_turn : ${
                 formatTime(sliderPosition.value.roundDownToMultipleOf(30000.0))
             }"
-        ) // TODO display time in min sec
+        )
         Slider(
             modifier = Modifier.fillMaxWidth(0.5f),
             value = sliderPosition.value,
@@ -163,7 +166,7 @@ fun BotDifficultyMenu(
         TextField(
             readOnly = true,
             value = selectedOption.value.value,
-            onValueChange = { updateBotDifficulty(selectedOption.value) },
+            onValueChange = {},
             label = { Text(choose_bot_difficulty) },
             trailingIcon = { icon(expanded.value) },
             colors = ExposedDropdownMenuDefaults.textFieldColors()
@@ -178,6 +181,7 @@ fun BotDifficultyMenu(
                 DropdownMenuItem(
                     onClick = {
                         selectedOption.value = selectionOption
+                        updateBotDifficulty(selectedOption.value)
                         expanded.value = false
                     }
                 ) {
