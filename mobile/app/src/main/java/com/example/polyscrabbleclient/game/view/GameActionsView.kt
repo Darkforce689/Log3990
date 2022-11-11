@@ -1,9 +1,11 @@
 package com.example.polyscrabbleclient.game.view
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -11,13 +13,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
+import com.example.polyscrabbleclient.lobby.view.ModalView
 import com.example.polyscrabbleclient.ui.theme.*
 
 @Composable
 fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: NavController) {
+
+    var playerQuitGameDialogOpened by remember {
+        mutableStateOf(false)
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -46,8 +53,11 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
                 label = { viewModel.getQuitLabel() },
                 canAction = { true },
                 action = {
-                    viewModel.quitGame()
-                    viewModel.navigateToMainPage(navController)
+                    if (viewModel.hasGameEnded()) {
+                        viewModel.navigateToMainPage(navController)
+                    } else {
+                        playerQuitGameDialogOpened = true
+                    }
                 }
             )
         )
@@ -57,6 +67,17 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
             contents = gameButtonsContents,
             view = GameActionButton
         )
+
+        if (playerQuitGameDialogOpened) {
+            ModalView(
+                closeModal = { playerQuitGameDialogOpened = false },
+                title = confirmQuitGameFR
+            ) { modalButtons ->
+                QuitGameView(viewModel, navController) { modalActions ->
+                    modalButtons(modalActions)
+                }
+            }
+        }
     }
 }
 

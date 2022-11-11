@@ -104,11 +104,15 @@ class GameViewModel : ViewModel() {
         return game.disconnected
     }
 
+    fun hasGameEnded(): Boolean {
+        return game.hasGameEnded()
+    }
+
     fun getQuitLabel(): String {
-        return if (game.hasGameEnded()) {
-            leaveButtonFR
+        return if (hasGameEnded()) {
+            leaveGameButtonFR
         } else {
-            quitButtonFR
+            quitGameButtonFR
         }
     }
 
