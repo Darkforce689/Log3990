@@ -26,8 +26,8 @@ h1 {
 }
 
 mat-card{
-    width: 250px;
-    height: 70px;
+    min-width: 250px;
+    min-height: 71px;
     margin-bottom: 5%;
         
     mat-card-content {
