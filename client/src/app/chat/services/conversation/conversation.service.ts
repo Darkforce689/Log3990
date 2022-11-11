@@ -123,6 +123,7 @@ export class ConversationService {
         const currentJoinedConvos = this.joinedConversations$.value;
         currentJoinedConvos.push(gameConvo);
         this.setJoinedConversations(currentJoinedConvos);
+        this.currentConversationSubject.next(gameConvo);
     }
 
     leaveGameConversation(): Conversation | undefined {
