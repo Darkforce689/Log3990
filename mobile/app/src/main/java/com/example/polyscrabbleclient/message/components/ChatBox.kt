@@ -54,7 +54,9 @@ fun ChatBox(chatBoxViewModel: ChatBoxViewModel) {
                 onSelectedConvo = { index ->
                     chatBoxViewModel.onSelectedConvo(index)
                 },
-                onConvoLeave = {},
+                onConvoLeave = { index ->
+                    chatBoxViewModel.leaveConversation(index)
+                },
                 modifier = Modifier.height(70.dp)
             )
 

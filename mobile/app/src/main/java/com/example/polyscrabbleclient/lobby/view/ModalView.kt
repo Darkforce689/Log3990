@@ -38,7 +38,7 @@ fun ModalView(
         modalButtons: @Composable (
             modalActions: ModalActions
         ) -> Unit
-    ) -> Unit
+    ) -> Unit,
 ) {
     Dialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
