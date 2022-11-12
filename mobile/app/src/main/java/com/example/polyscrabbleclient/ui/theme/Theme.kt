@@ -8,7 +8,6 @@ import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
@@ -53,6 +52,10 @@ val Colors.grayedOutTileBackground: Color
     @Composable
     get() = if (isLight) LightTileGrayedOutBackgroundColor else DarkTileGrayedOutBackgroundColor
 
+val Colors.accepted: Color
+    @Composable
+    get() = if (isLight) LightAcceptedColor else DarkAcceptedColor
+
 
 @Composable
 fun PolyScrabbleClientTheme(
@@ -78,5 +81,5 @@ object NoRippleTheme : RippleTheme {
     override fun defaultColor() = Color.Unspecified
 
     @Composable
-    override fun rippleAlpha(): RippleAlpha = RippleAlpha(0.0f,0.0f,0.0f,0.0f)
+    override fun rippleAlpha(): RippleAlpha = RippleAlpha(0.0f, 0.0f, 0.0f, 0.0f)
 }

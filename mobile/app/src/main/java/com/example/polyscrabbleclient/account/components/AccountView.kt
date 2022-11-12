@@ -46,17 +46,19 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
         }
     }
     Row(Modifier.clickable { inputFocusRequester.clearFocus() }) {
-        SideNavigation(
-            name = viewmodel.userName.value,
-            avatar = viewmodel.avatar.value,
-            navController = navController,
-            onSelected = { page: AccountPage -> selectedPage.value = page }
-        )
-        Divider(
-            Modifier
-                .fillMaxHeight()
-                .width(1.dp)
-        )
+        Surface {
+            SideNavigation(
+                name = viewmodel.userName.value,
+                avatar = viewmodel.avatar.value,
+                navController = navController,
+                onSelected = { page: AccountPage -> selectedPage.value = page }
+            )
+            Divider(
+                Modifier
+                    .fillMaxHeight()
+                    .width(1.dp)
+            )
+        }
         when (selectedPage.value) {
             AccountPage.Profil -> {
                 AccountContent(my_profil) {
@@ -76,24 +78,24 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
                 }
             }
         }
-    }
-    SnackbarHost(
-        modifier = Modifier.fillMaxWidth(),
-        hostState = snackbarHostState,
-        snackbar = { snackbarData: SnackbarData ->
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(2.dp, Color.White),
-                    modifier = Modifier
-                        .padding(25.dp)
-                        .wrapContentSize()
-                ) {
-                    Text(text = snackbarData.message, modifier = Modifier.padding(8.dp),)
+        SnackbarHost(
+            modifier = Modifier.fillMaxWidth(),
+            hostState = snackbarHostState,
+            snackbar = { snackbarData: SnackbarData ->
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Card(
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(2.dp, Color.White),
+                        modifier = Modifier
+                            .padding(25.dp)
+                            .wrapContentSize()
+                    ) {
+                        Text(text = snackbarData.message, modifier = Modifier.padding(8.dp))
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -171,6 +173,7 @@ fun AccountContent(title: String, content: @Composable () -> Unit) {
         Text(
             title,
             style = MaterialTheme.typography.h4,
+            color = MaterialTheme.colors.primary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .fillMaxHeight(0.2f)

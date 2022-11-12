@@ -68,7 +68,6 @@ fun UserNameInput(
         showError = error.isNotEmpty(),
         message = error
     )
-
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -178,13 +177,13 @@ fun Requirement(
             modifier = Modifier.size(12.dp),
             imageVector = Icons.Default.Error,
             contentDescription = null,
-            tint = Color.Red
+            tint = MaterialTheme.colors.error
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = message,
             fontSize = 12.sp,
-            color = Color.Red
+            color = MaterialTheme.colors.error
         )
     }
 }

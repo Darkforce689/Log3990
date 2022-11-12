@@ -1,5 +1,6 @@
 package com.example.polyscrabbleclient.game.view
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
@@ -9,7 +10,9 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import com.example.polyscrabbleclient.game.model.TileModel
+import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.ui.theme.grayedOutTileBackground
 import com.example.polyscrabbleclient.ui.theme.tileBackground
 
@@ -49,11 +53,11 @@ fun TileView(
 
     Surface(
         color =
-            if (tileModel.isUsedOnBoard.value) {
-                MaterialTheme.colors.grayedOutTileBackground
-            } else {
-                MaterialTheme.colors.tileBackground
-            },
+        if (tileModel.isUsedOnBoard.value) {
+            MaterialTheme.colors.grayedOutTileBackground
+        } else {
+            MaterialTheme.colors.tileBackground
+        },
         modifier = Modifier
             .selectable(
                 selected = tileModel.isSelected.value,
@@ -64,13 +68,15 @@ fun TileView(
     ) {
         val paddingTop = if (displayPoint) 13.dp else 18.dp
 
-        Text(modifier = Modifier
-            .padding(top = paddingTop),
+        Text(
+            modifier = Modifier
+                .padding(top = paddingTop),
             style = TextStyle(
                 textAlign = TextAlign.Center,
                 fontSize = TextUnit(18f, TextUnitType.Sp),
                 fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.onSurface
             ),
             text = tileInternalContent(tileModel, displayPoint)
         )
@@ -131,4 +137,17 @@ fun TilePreviewWithoutPoints() {
         select = { tileModel.isSelected.value = !tileModel.isSelected.value },
         displayPoint = false
     )
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Preview(showBackground = true)
+@Composable
+fun DarkTilePreview() {
+    val tileModel = TileModel('E', 6)
+    PolyScrabbleClientTheme(mutableStateOf(true)) {
+        TileView(
+            tileModel,
+            select = { tileModel.isSelected.value = !tileModel.isSelected.value },
+        )
+    }
 }

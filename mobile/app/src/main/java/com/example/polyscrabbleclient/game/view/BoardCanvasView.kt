@@ -29,6 +29,7 @@ import com.example.polyscrabbleclient.game.model.RowChar
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
+import com.example.polyscrabbleclient.ui.theme.accepted
 import com.example.polyscrabbleclient.ui.theme.tileBackground
 import com.example.polyscrabbleclient.ui.theme.transientTileBackground
 import kotlin.properties.Delegates
@@ -51,17 +52,17 @@ const val WordMultiplierLabel = "Mot"
 
 @Composable
 fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
-    val themeColors = listOf(
-        MaterialTheme.colors.primary,
-        MaterialTheme.colors.secondary,
-        MaterialTheme.colors.secondary
-    )
     val thickDividerIndexes = listOf(0, 1, GridDimension)
-
+    val surfaceColor = MaterialTheme.colors.surface
+    val onSurfaceColor = MaterialTheme.colors.onSurface
+    val primaryColor = MaterialTheme.colors.primary
+    val secondaryColor = MaterialTheme.colors.secondary
     val rowChars = RowChar.values()
     val rowCharsColor = MaterialTheme.colors.primary
     val tileTextColor = MaterialTheme.colors.onBackground
     val tileBackground = MaterialTheme.colors.tileBackground
+    val errorTileHighlight = MaterialTheme.colors.error
+    val acceptedTileHighlight = MaterialTheme.colors.accepted
     val transientTileBackground = MaterialTheme.colors.transientTileBackground
 
     fun DrawScope.drawColumnDivider(
@@ -69,7 +70,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         strokeWidth: Float
     ) {
         drawLine(
-            brush = Brush.linearGradient(colors = themeColors),
+            color = onSurfaceColor,
             start = Offset(currentDivisionOffset, 0f),
             end = Offset(currentDivisionOffset, GridSize.toPx()),
             strokeWidth = strokeWidth
@@ -81,7 +82,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         strokeWidth: Float
     ) {
         drawLine(
-            brush = Brush.linearGradient(colors = themeColors),
+            color = onSurfaceColor,
             start = Offset(0f, currentDivisionOffset),
             end = Offset(GridSize.toPx(), currentDivisionOffset),
             strokeWidth = strokeWidth
@@ -128,10 +129,10 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
 
     fun DrawScope.drawGridBackground() {
         drawRect(
-            brush = Brush.linearGradient(colors = themeColors),
+            color = surfaceColor,
             topLeft = Offset(0f, 0f),
             size = Size(GridSize.toPx(), GridSize.toPx()),
-            alpha = 0.1f
+            alpha = 0.9f
         )
     }
 
@@ -142,8 +143,6 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
             color = rowCharsColor.toArgb()
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
         }
-
-        drawGridBackground()
 
         for (gridDivisionIndex in 0..GridDimension) {
             val strokeWidth =
@@ -247,9 +246,9 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         val row = rowIndex + 1
         val color =
             if (viewModel.canPlaceTile(TileCoordinates(row, column))) {
-                Color.Green
+                acceptedTileHighlight
             } else {
-                Color.Red
+                errorTileHighlight
             }
         drawTileBackground(color, column, row, HardBackgroundAlpha)
     }
@@ -266,8 +265,8 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     fun DrawScope.drawTileMultiplierIndicator(
         column: Int,
         row: Int,
-        type: Char,
-        value: Int
+        isLetterMultiplier: Boolean,
+        isDoubleMultiplier: Boolean
     ) {
         val horizontalOffset = column * GridDivisionSize.toPx()
         val verticalOffset = (row + 1) * GridDivisionSize.toPx()
@@ -281,9 +280,9 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         }
 
         val typeLabel =
-            if (type == 'l') LetterMultiplierLabel else WordMultiplierLabel
+            if (isLetterMultiplier) LetterMultiplierLabel else WordMultiplierLabel
         val valueLabel =
-            if (value == 2) DoubleMultiplierLabel else TripleMultiplierLabel
+            if (isDoubleMultiplier) DoubleMultiplierLabel else TripleMultiplierLabel
 
         drawIntoCanvas {
             it.nativeCanvas.drawText(
@@ -309,28 +308,24 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         viewModel.board.tileGrid.forEachIndexed { rowIndex, row ->
             row.forEachIndexed { columnIndex, tile ->
                 if (tile.letterMultiplier != tile.wordMultiplier) {
-                    var color = themeColors[0]
-                    var alpha = SoftBackgroundAlpha
-                    var type = 'l'
-                    var value = 2
-                    if (tile.letterMultiplier == 3) {
-                        alpha = HardBackgroundAlpha
-                        value = 3
-                    } else if (tile.wordMultiplier == 2) {
-                        color = themeColors[1]
-                        type = 'w'
-                    } else if (tile.wordMultiplier == 3) {
-                        color = themeColors[1]
-                        alpha = HardBackgroundAlpha
-                        type = 'w'
-                        value = 3
-                    }
+
+                    val isLetterMultiplier = tile.letterMultiplier > tile.wordMultiplier
+                    val isDoubleMultiplier =
+                        if (isLetterMultiplier) {
+                            tile.letterMultiplier == 2
+                        } else {
+                            tile.wordMultiplier == 2
+                        }
+
+                    val color = if (isLetterMultiplier) primaryColor else secondaryColor
+                    val alpha = if (isDoubleMultiplier) SoftBackgroundAlpha else HardBackgroundAlpha
+
                     drawTileBackground(color, columnIndex + 1, rowIndex + 1, alpha)
                     drawTileMultiplierIndicator(
                         columnIndex + 1,
                         rowIndex + 1,
-                        type,
-                        value
+                        isLetterMultiplier,
+                        isDoubleMultiplier
                     )
                 }
             }
@@ -377,9 +372,10 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     ) {
         gridDivisionSize = GridDivisionSize.toPx()
         boardPadding = BoardPadding.toPx()
+
+        drawGridBackground()
         drawMultipliers()
         drawTiles()
-        // drawGrid should be called after all others
         drawGridLayout()
 
         val boardHoverOffset = boardPadding
