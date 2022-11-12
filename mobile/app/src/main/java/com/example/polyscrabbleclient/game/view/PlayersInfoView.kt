@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,15 +53,20 @@ fun PlayerInfoView(
         animationSpec = tween(durationMillis = 200)
     )
 
-    Surface(
+    Card(
         modifier = Modifier
-            .border(width = 4.dp, targetColor)
-            .padding(10.dp)
-            .width(180.dp)
+            .padding(4.dp)
+            .width(200.dp)
+            .border(
+                width = 4.dp,
+                targetColor,
+                shape = RoundedCornerShape(4.dp)
+            )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(12.dp)
         ) {
             Text(
                 text = player.name,

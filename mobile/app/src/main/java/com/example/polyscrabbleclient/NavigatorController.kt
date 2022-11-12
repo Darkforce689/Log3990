@@ -1,12 +1,10 @@
 package com.example.polyscrabbleclient
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -24,6 +22,7 @@ import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
 import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
+import com.example.polyscrabbleclient.utils.Background
 import com.example.polyscrabbleclient.utils.PageSurface
 
 enum class NavPage(val label: String) {
@@ -47,7 +46,7 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
     NavHost(navController, startDestination = startPage.label) {
 
         composable(NavPage.MainPage.label) {
-            PageWithHeader(navController, themeSelectorViewModel) {
+            PageWithHeader(navController, themeSelectorViewModel, Background.Home) {
                 StartView(navController, StartViewModel())
             }
         }
@@ -58,7 +57,7 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
         }
         loginGraph(navController)
         composable(NavPage.GamePage.label) {
-            PageSurface {
+            PageSurface(Background.Game) {
                 GameScreen(navController)
             }
         }
@@ -75,9 +74,10 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
 private fun PageWithHeader(
     navController: NavController,
     themeSelectorViewModel: ThemeSelectorViewModel,
+    background: Background? = Background.Page,
     pageContent: @Composable () -> Unit
 ) {
-    PageSurface {
+    PageSurface(background) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             HeaderBar(navController, themeSelectorViewModel)
             pageContent()
@@ -85,7 +85,10 @@ private fun PageWithHeader(
     }
 }
 
-fun NavGraphBuilder.newGame(navController: NavController, themeSelectorViewModel: ThemeSelectorViewModel) {
+fun NavGraphBuilder.newGame(
+    navController: NavController,
+    themeSelectorViewModel: ThemeSelectorViewModel
+) {
     navigation(startDestination = NavPage.NewGame.label, route = NavPage.NewGameRoute.label) {
         composable(NavPage.NewGame.label) {
             PageWithHeader(navController, themeSelectorViewModel) {
@@ -98,12 +101,12 @@ fun NavGraphBuilder.newGame(navController: NavController, themeSelectorViewModel
 fun NavGraphBuilder.loginGraph(navController: NavController) {
     navigation(startDestination = NavPage.Login.label, route = NavPage.RegistrationRoute.label) {
         composable(NavPage.Login.label) {
-            PageSurface {
+            PageSurface(Background.Home) {
                 LogInScreen(navController, AuthenticationViewModel())
             }
         }
         composable(NavPage.SignUp.label) {
-            PageSurface {
+            PageSurface(Background.Home) {
                 SignUpScreen(navController, SignUpViewModel())
             }
         }

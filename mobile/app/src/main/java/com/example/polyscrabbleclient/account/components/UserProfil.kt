@@ -1,21 +1,19 @@
 package com.example.polyscrabbleclient.account.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.account.viewmodel.UserUpdate
 import com.example.polyscrabbleclient.auth.components.Requirement
 import com.example.polyscrabbleclient.auth.components.UserNameInput
-import com.example.polyscrabbleclient.ui.theme.email_string
-import com.example.polyscrabbleclient.ui.theme.password_string
-import com.example.polyscrabbleclient.ui.theme.save
-import com.example.polyscrabbleclient.ui.theme.userName_string
+import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.user.User
 
 @Composable
@@ -64,13 +62,7 @@ private fun UserInfo(
             .padding(horizontal = 40.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column (Modifier.fillMaxWidth(0.7f).padding(0.dp,0.dp,22.dp,0.dp)){
-            Text(
-                text = userName_string,
-                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 15.dp),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold
-            )
+        InfoCard(label = userName_string, value = "") {
             UserNameInput(
                 name = name,
                 error = usernameError ?: "",
@@ -78,8 +70,8 @@ private fun UserInfo(
                 validateUsername = { validateUsername(it) }
             )
         }
-        DisabledInput(label = email_string, value = User.email)
-        DisabledInput(label = password_string, value = "*****")
+        InfoCard(label = email_string, value = User.email)
+        InfoCard(label = password_string, value = "*****")
         Button(onClick = { updateInfoRequest() }) {
             Text(save)
         }
@@ -87,15 +79,60 @@ private fun UserInfo(
 }
 
 @Composable
-fun DisabledInput(label: String, value: String) {
-    Column {
-        Text(
-            text = label,
-            modifier = Modifier.padding(vertical = 15.dp),
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold
+fun InfoCard(
+    label: String,
+    value: String,
+    enabledInput: (@Composable () -> Unit)? = null
+) {
+    Card(
+        modifier = Modifier.padding(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 48.dp)
+        ) {
+            Text(
+                text = label,
+                modifier = Modifier.padding(12.dp),
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold
+            )
+            if (enabledInput !== null) {
+                enabledInput()
+            } else {
+                DisabledInput(value)
+            }
+        }
+    }
+}
+
+@Composable
+private fun DisabledInput(value: String) {
+    TextField(
+        value = value,
+        onValueChange = {},
+        enabled = false,
+    )
+    Requirement(message = "", showError = false)
+}
+
+@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Composable
+fun UserInfoPreview() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        UserInfo(name = "myName",
+            usernameError = null,
+            updateUsername = {},
+            validateUsername = {},
+            updateInfoRequest = {}
         )
-        TextField(value = value, onValueChange = {}, enabled = false)
-        Requirement(message = "", showError = false)
+    }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Composable
+fun DarkUserInfoPreview() {
+    PolyScrabbleClientTheme(mutableStateOf(true)) {
+        UserInfoPreview()
     }
 }
