@@ -1,12 +1,15 @@
 package com.example.polyscrabbleclient.message.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
@@ -44,14 +47,32 @@ fun CreateConversationModalContent(
     ) -> Unit
 ) {
     val createConvoViewModel: CreateConversationViewModel = viewModel()
-    Column(modifier = Modifier.padding(top = 20.dp).width(300.dp)) {
+    Column(modifier = Modifier
+        .padding(top = 20.dp)
+        .width(300.dp)) {
         TextField(
-            modifier = Modifier.fillMaxWidth().height(60.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
             value = createConvoViewModel.convoName.value,
             onValueChange = {
                 createConvoViewModel.onNameChange(it)
             },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    if (createConvoViewModel.canCreateConversation()) {
+                        createConvoViewModel.createConversation() {
+                            if (it == ErrorState.NotError) {
+                                onClose()
+                            }
+                        }
+                    }
+                }
+            )
         )
 
         if (createConvoViewModel.error.value !== null) {

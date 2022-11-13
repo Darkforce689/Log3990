@@ -91,25 +91,23 @@ class ChatBoxViewModel : ViewModel() {
         }
         connectThread.start()
         connectThread.join()
-
-
     }
 
     fun actualizeConversations() {
-        viewModelScope.launch(Dispatchers.IO) {
+        Thread {
             ConversationsManager.actualizeConversations() {
                 setCurrentConvoAfterUpdate()
             }
-        }
+        }.start()
     }
 
     fun leaveConversation(index: Int) {
         val conversation = conversations[index]
-        viewModelScope.launch(Dispatchers.IO) {
+        Thread {
             ConversationsManager.leaveConversation(conversation._id) {
                 setCurrentConvoAfterUpdate()
             }
-        }
+        }.start()
     }
 
     private fun setCurrentConvoAfterUpdate() {
