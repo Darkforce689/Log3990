@@ -7,7 +7,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -80,7 +79,6 @@ private fun JokerSelectionModal(viewModel: GameViewModel) {
         ModalView(
             closeModal = { jokerSelectionDialogOpened.value = false },
             title = chooseJokerFR,
-            minWidth = 800.dp
         ) { modalButtons ->
             JokerSelectionView(viewModel) { modalActions ->
                 modalButtons(modalActions)

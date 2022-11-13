@@ -52,7 +52,7 @@ fun JokerSelectionView(
         }
     }
 
-    EvenlySpacedSubColumn (modifier = Modifier.padding(30.dp)) {
+    EvenlySpacedSubColumn(modifier = Modifier.padding(30.dp)) {
 
         EvenlySpacedRowContainer(
             modifier = Modifier
@@ -100,14 +100,12 @@ fun JokerSelectionView(
 }
 
 
-
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun JokerSelectionPreview() {
     ModalView(
         closeModal = {},
         title = chooseJokerFR,
-        minWidth = 600.dp
     ) { modalButtons ->
         JokerSelectionView { modalActions ->
             modalButtons(modalActions)
