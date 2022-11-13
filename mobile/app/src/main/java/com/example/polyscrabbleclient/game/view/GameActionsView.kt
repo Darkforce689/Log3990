@@ -17,6 +17,7 @@ import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.view.ModalView
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.utils.PhysicalButtons
 
 @Composable
 fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: NavController) {
@@ -24,6 +25,16 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
     var playerQuitGameDialogOpened by remember {
         mutableStateOf(false)
     }
+
+    val quitAction: () -> Unit = {
+        if (viewModel.hasGameEnded()) {
+            viewModel.navigateToMainPage(navController)
+        } else {
+            playerQuitGameDialogOpened = true
+        }
+    }
+
+    PhysicalButtons.backPressed = quitAction
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -52,13 +63,7 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
             ActionButton(
                 label = { viewModel.getQuitLabel() },
                 canAction = { true },
-                action = {
-                    if (viewModel.hasGameEnded()) {
-                        viewModel.navigateToMainPage(navController)
-                    } else {
-                        playerQuitGameDialogOpened = true
-                    }
-                }
+                action = { quitAction() }
             )
         )
 
@@ -83,7 +88,7 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
 
 val GameActionButton: @Composable (
     width: Dp,
-    actionButton: ActionButton
+    actionButton: ActionButton,
 ) -> Unit = { width, actionButton ->
     Button(
         modifier = Modifier
