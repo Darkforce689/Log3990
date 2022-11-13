@@ -3,8 +3,8 @@ package com.example.polyscrabbleclient.lobby.view
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +33,8 @@ fun ModalView(
     closeModal: (modalResult: ModalResult) -> Unit,
     title: String,
     hasSpinner: Boolean = false,
-    minWidth: Dp = 400.dp,
+    minWidth: Dp = 200.dp,
+    maxWidth: Dp = 700.dp,
     content: @Composable (
         modalButtons: @Composable (
             modalActions: ModalActions
@@ -48,13 +49,13 @@ fun ModalView(
                 Surface {
                     Column(
                         modifier = Modifier
-                            .defaultMinSize(minWidth)
+                            .requiredWidthIn(minWidth, maxWidth)
                             .padding(18.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 18.dp)
                         ) {
-
                             Text(
                                 text = title,
                                 fontStyle = MaterialTheme.typography.h1.fontStyle,
