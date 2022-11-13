@@ -17,14 +17,24 @@ import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorVie
 import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.utils.PhysicalButtons
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 import kotlin.math.floor
 import kotlin.math.round
 
-data class ValidationResponse(val message: String, val errors : ArrayList<String>)
+
+data class ValidationResponse(val message: String, val errors: ArrayList<String>)
 
 class MainActivity : ComponentActivity() {
+
+    override fun onBackPressed() {
+        PhysicalButtons.backPressed?.let {
+            it()
+            return
+        }
+        super.onBackPressed()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

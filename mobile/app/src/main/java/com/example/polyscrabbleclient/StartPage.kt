@@ -18,6 +18,7 @@ import com.example.polyscrabbleclient.ui.theme.gamePage
 import com.example.polyscrabbleclient.ui.theme.new_game
 import com.example.polyscrabbleclient.user.User
 import com.example.polyscrabbleclient.utils.PageSurface
+import com.example.polyscrabbleclient.utils.PhysicalButtons
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -29,6 +30,7 @@ fun StartView(
     navController: NavController,
     startViewModel: StartViewModel,
 ) {
+    PhysicalButtons.reset()
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Prototype(navController = navController)
         GamePage(navController = navController)
