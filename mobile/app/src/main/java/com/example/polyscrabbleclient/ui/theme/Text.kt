@@ -104,6 +104,13 @@ const val create_convo_button = "Créer"
 const val create_convo_title = "Nouvelle Conversation"
 const val create_already_exist = "Cette conversation existe déjà"
 const val create_name_forbiden = "Ce nom est interdit"
+
+const val join_convo_button = "Rejoindre"
+const val join_convo_title = "Joindre une conversation"
 const val delete_menu_option = "Supprimer"
 const val create_menu_option = "Créer"
 const val join_menu_option = "Rejoindre"
+
+const val delete_convo_title = "Supprimer des conversations"
+
+const val no_conversation_to_delete = "Vous n'avez pas créé de conversations"

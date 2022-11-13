@@ -37,10 +37,6 @@ fun ConversationPicker(
         mutableStateOf(false)
     }
 
-    var createModalOpened by remember {
-        mutableStateOf(false)
-    }
-
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         Box(Modifier.fillMaxWidth(0.95f)) {
             ScrollableTabRow(
@@ -82,10 +78,20 @@ fun ConversationPicker(
             }
         }
 
-        Spacer(
-            Modifier
-                .weight(1f)
-                .background(Color.Green))
+        var createModalOpened by remember {
+            mutableStateOf(false)
+        }
+
+        var joinModalOpened by remember {
+            mutableStateOf(false)
+        }
+
+        var deleteModalOpened by remember {
+            mutableStateOf(false)
+        }
+
+        Spacer(Modifier.weight(1f))
+
         Box(modifier = Modifier
             .fillMaxSize()
             .wrapContentSize(Alignment.TopStart)
@@ -104,13 +110,13 @@ fun ConversationPicker(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                DropdownMenuItem(onClick = { /* TODO */ }) {
+                DropdownMenuItem(onClick = { joinModalOpened = true }) {
                     Text(join_menu_option)
                 }
                 DropdownMenuItem(onClick = { createModalOpened = true }) {
                     Text(create_menu_option)
                 }
-                DropdownMenuItem(onClick = { /* TODO */ }) {
+                DropdownMenuItem(onClick = { deleteModalOpened = true }) {
                     Text(delete_menu_option)
                 }
             }
@@ -119,6 +125,16 @@ fun ConversationPicker(
         CreateConversationModal(
             opened = createModalOpened,
             onClose = { createModalOpened = false },
+        )
+
+        JoinConversationModal(
+            opened = joinModalOpened,
+            onClose = { joinModalOpened = false },
+        )
+
+        DeleteConversationViewModal(
+            opened = deleteModalOpened,
+            onClose = { deleteModalOpened = false },
         )
     }
 }
