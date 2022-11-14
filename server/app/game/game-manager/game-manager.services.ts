@@ -187,6 +187,7 @@ export class GameManagerService {
         const playerNames = players.map((player) => player.name);
         this.activePlayers.delete(playerId);
         if (playerNames.length <= 0) {
+            game.forceEndturn();
             this.deleteGame(gameToken);
             return;
         }
@@ -264,11 +265,13 @@ export class GameManagerService {
 
     private deleteGame(gameToken: string) {
         const game = this.activeGames.get(gameToken);
-        game?.stop();
+        if (game) {
+            game.stop();
+            this.gameDeleted$.next(gameToken);
+        }
         this.activeGames.delete(gameToken);
         this.linkedClients.delete(gameToken);
         this.dictionaryService.deleteGameDictionary(gameToken);
-        this.gameDeleted$.next(gameToken);
         this.conversationService.deleteGameConversation(gameToken);
     }
 
