@@ -14,7 +14,7 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class GameManagerService {
-    private userName = '';
+    userName = '';
     private game: OnlineGame | undefined;
 
     private newGameSubject = new Subject<void>();
@@ -102,7 +102,9 @@ export class GameManagerService {
 
         if (player) {
             this.info.receivePlayer(player);
+            return players;
         }
+        this.info.receivePlayer(players[0]);
         return players;
     }
 

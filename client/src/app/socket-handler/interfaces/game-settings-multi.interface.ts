@@ -13,6 +13,8 @@ export interface OnlineGameSettingsUI {
     numberOfPlayers: number;
     magicCardIds: string[];
     password?: string;
+    numberOfBots?: number;
+    observerNames?: string[];
 }
 
 export interface OnlineGameSettings extends OnlineGameSettingsUI {

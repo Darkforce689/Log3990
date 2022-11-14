@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Player } from '@app/game-logic/player/player';
+import { AccountService } from '@app/services/account.service';
 
 @Component({
     selector: 'app-player-info',
@@ -8,7 +9,7 @@ import { Player } from '@app/game-logic/player/player';
     styleUrls: ['./player-info.component.scss'],
 })
 export class PlayerInfoComponent {
-    constructor(private info: GameInfoService) {}
+    constructor(private info: GameInfoService, private account: AccountService) {}
 
     get activePlayerName(): string {
         return this.info.activePlayer.name;
@@ -29,12 +30,29 @@ export class PlayerInfoComponent {
         return orderedPlayers;
     }
 
+    get playersFrozenOrder(): Player[] {
+        const orderedPlayers: Player[] = [...this.info.players];
+        return orderedPlayers;
+    }
+
     get players(): Player[] {
-        return this.info.players;
+        return this.isObserver ? this.playersFrozenOrder : this.playersInOrder;
     }
 
     get lettersRemaining(): number {
         return this.info.numberOfLettersRemaining;
+    }
+
+    get isObserver(): boolean {
+        const clientName = this.account.account?.name;
+        if (clientName) {
+            return this.info.players.find((player) => player.name === clientName) ? false : true;
+        }
+        return false;
+    }
+
+    isWatchedPlayer(playerName: string): boolean {
+        return this.info.player.name === playerName;
     }
 
     isActivePlayer(player: Player) {

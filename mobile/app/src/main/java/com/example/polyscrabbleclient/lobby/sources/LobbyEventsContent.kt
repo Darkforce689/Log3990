@@ -31,8 +31,10 @@ data class OnlineGameSettings(
     val randomBonus: Boolean,
     val botDifficulty: BotDifficulty,
     val numberOfPlayers: Int,
-    val password: String,
+    val password: String? = null,
     val drawableMagicCards: ArrayList<IMagicCard>,
+    val numberOfBots: Int? = null,
+    val observerNames: ArrayList<String>? = null,
 )
 
 typealias PendingGames = ArrayList<OnlineGameSettings>

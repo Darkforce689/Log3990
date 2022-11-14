@@ -5,6 +5,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angu
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
+import { ACTIVE_STATUS, WAIT_STATUS } from '@app/game-logic/constants';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
@@ -70,9 +71,8 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
             },
             {
                 columnDef: 'numberOfPlayers',
-                header: 'Joueurs : IA / Max',
-                cell: (form: OnlineGameSettings) =>
-                    `${form.playerNames.length} : ${form.numberOfPlayers - form.playerNames.length} / ${form.numberOfPlayers}`,
+                header: 'Joueur:IA/Max|Obsrv',
+                cell: (form: OnlineGameSettings) => this.playerCount(form),
             },
         ];
     }
@@ -129,6 +129,18 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
         this.liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
     }
 
+    playerCount(form: OnlineGameSettings): string {
+        if (form.gameStatus === WAIT_STATUS) {
+            return `${form.playerNames.length} : ${form.numberOfPlayers - form.playerNames.length} / ${form.numberOfPlayers} | 0`;
+        }
+        if (form.gameStatus === ACTIVE_STATUS) {
+            return `${form.numberOfBots ? form.playerNames.length - form.numberOfBots : form.playerNames.length} : 
+            ${form.numberOfBots} / ${form.numberOfPlayers} | 
+            ${form.observerNames ? form.observerNames.length : 0}`;
+        }
+        return '';
+    }
+
     get isEmpty(): boolean {
         return this.pendingGameDataSource.data.length === 0;
     }
@@ -143,5 +155,15 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
 
     get observableGames$(): BehaviorSubject<OnlineGameSettings[]> {
         return this.onlineSocketHandler.observableGames$;
+    }
+
+    get isGameFull(): boolean {
+        if (this.selectedRow === undefined) {
+            return false;
+        }
+        if (this.selectedRow.gameStatus === ACTIVE_STATUS) {
+            return false;
+        }
+        return this.selectedRow?.playerNames.length === this.selectedRow?.numberOfPlayers;
     }
 }

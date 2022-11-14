@@ -1,7 +1,10 @@
-<div *ngFor="let player of playersInOrder; index as i">
+<div *ngFor="let player of players; index as i">
     <mat-card class="playerInfo" id="{{ i }}" [ngClass]="{ active: isActivePlayer(player) }">
         <mat-card-header>
-            <span class="name">{{ player.name }} </span>
+            <span class="name">
+                {{ player.name }}
+            </span>
+            <mat-icon class="eyeIcon" *ngIf="isObserver && isWatchedPlayer(player.name)">remove_red_eye</mat-icon>
         </mat-card-header>
         <mat-divider inset></mat-divider>
         <mat-card-content class="grid-container">

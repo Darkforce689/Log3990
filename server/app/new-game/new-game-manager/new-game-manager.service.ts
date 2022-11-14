@@ -1,6 +1,7 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
+import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { Subject } from 'rxjs';
 import { Service } from 'typedi';
@@ -19,6 +20,15 @@ export class NewGameManagerService {
                 this.activeGameSettingMap.delete(gameToken);
                 this.refreshPendingGame$.next();
             }
+        });
+        this.gameMaster.observerLeft$.subscribe((nameAndToken: NameAndToken) => {
+            const { gameToken, name } = nameAndToken;
+            const gameSetting = this.activeGameSettingMap.get(gameToken);
+            if (gameSetting) {
+                gameSetting.observerNames = gameSetting?.observerNames?.filter((observerName) => observerName !== name);
+                this.activeGameSettingMap.set(gameToken, gameSetting);
+            }
+            this.refreshPendingGame$.next();
         });
     }
 
@@ -50,6 +60,7 @@ export class NewGameManagerService {
         }
         const onlineGameSettings = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken();
+        onlineGameSettings.numberOfBots = onlineGameSettings.numberOfPlayers - onlineGameSettings.playerNames.length;
         this.activeGameSettingMap.set(gameToken, onlineGameSettings);
         await this.startGame(gameToken, onlineGameSettings);
         return gameToken;
@@ -130,11 +141,15 @@ export class NewGameManagerService {
     }
 
     getPendingGame(id: string): OnlineGameSettings {
-        if (!this.pendingGames.get(id)) {
+        if (this.pendingGames.get(id)) {
+            const onlineGameSetting = this.toOnlineGameSettings(id, this.pendingGames.get(id));
+            return onlineGameSetting;
+        }
+        const activeGameSettings = this.activeGameSettingMap.get(id);
+        if (!activeGameSettings) {
             throw Error('This game does not exist.');
         }
-        const onlineGameSetting = this.toOnlineGameSettings(id, this.pendingGames.get(id));
-        return onlineGameSetting;
+        return activeGameSettings;
     }
 
     private isPendingGame(id: string): boolean {

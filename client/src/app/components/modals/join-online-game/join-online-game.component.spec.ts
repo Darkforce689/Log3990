@@ -37,6 +37,7 @@ describe('JoinOnlineGameComponent', () => {
         }),
         error$: mockError$,
         pendingGames$: mockPendingGames$,
+        observableGames$: mockPendingGames$,
     };
 
     const mockGameLauncher = jasmine.createSpyObj('GameLauncherService', ['waitForOnlineGameStart']);

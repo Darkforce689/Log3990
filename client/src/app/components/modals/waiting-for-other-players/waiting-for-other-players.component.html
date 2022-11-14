@@ -19,7 +19,7 @@
         </div>
         <br />
         <br />
-        <div>Joueurs en attente d'approbation:</div>
+        <div *ngIf="isPrivateGame">Joueurs en attente d'approbation:</div>
         <div class="player" *ngFor="let name of tmpPlayers">
             <div class="player-name">
                 {{ name }}

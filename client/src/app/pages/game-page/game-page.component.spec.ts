@@ -101,6 +101,7 @@ describe('GamePageComponent', () => {
         fixture = TestBed.createComponent(GamePageComponent);
         uiInput = { type: InputType.LeftClick };
         component = fixture.componentInstance;
+        spyOnProperty(component, 'isObserver').and.returnValue(false);
         fixture.detectChanges();
     });
 

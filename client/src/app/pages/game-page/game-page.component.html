@@ -6,24 +6,37 @@
         <div class="container-objectives-and-chat">
             <app-chat-box (clickChatbox)="receiveInput($event)"></app-chat-box>
         </div>
-        <app-board (clickTile)="receiveInput($event)"></app-board>
-        <app-horse appPreventContextMenu (clickLetter)="receiveInput($event)"></app-horse>
+        <ng-template *ngIf="isObserver; then observerView; else playerView"></ng-template>
+        <ng-template #observerView>
+            <app-board></app-board>
+            <app-horse appPreventContextMenu></app-horse>
+        </ng-template>
+        <ng-template #playerView>
+             <app-board (clickTile)="receiveInput($event)"></app-board>
+             <app-horse appPreventContextMenu (clickLetter)="receiveInput($event)"></app-horse>
+        </ng-template>
         <div class="actions">
-            <div>
+            <div *ngIf="!isObserver">
                 <button mat-raised-button color="primary" [disabled]="!canPass" (click)="pass()">Passer</button>
                 <button mat-raised-button color="primary" [disabled]="!canExchange" (click)="confirm()">Échanger</button>
             </div>
-            <div>
+            <div *ngIf="!isObserver">
                 <button mat-raised-button color="primary" [disabled]="!canPlace" (click)="confirm()">Placer</button>
                 <button mat-raised-button color="primary" [disabled]="!canCancel" (click)="cancel()">Annuler</button>
+            </div>
+            <div>
+                <button class="observerButton" *ngIf="isObserver" mat-raised-button color="primary" (click)="previousPlayer()">
+                    Joueur précédent
+                </button>
+                <button class="observerButton" *ngIf="isObserver" mat-raised-button color="primary" (click)="nextPlayer()">Joueur suivant</button>
             </div>
         </div>
         <div *ngIf="isMagicGame" class="magic-cards">
             <app-magic-card-list></app-magic-card-list>
         </div>
         <div class="abandonner">
-            <button mat-raised-button (click)="abandon()" *ngIf="!isEndOfGame">Abandonner la partie</button>
-            <button mat-raised-button (click)="quit()" *ngIf="isEndOfGame">Quitter</button>
+            <button mat-raised-button (click)="abandon()" *ngIf="!isEndOfGame && !isObserver">Abandonner la partie</button>
+            <button mat-raised-button (click)="quit()" *ngIf="isEndOfGame || isObserver">Quitter</button>
         </div>
     </div>
 </div>
