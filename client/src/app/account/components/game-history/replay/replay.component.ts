@@ -87,11 +87,11 @@ export class ReplayComponent implements OnInit, AfterViewInit {
     }
 
     get leftPlayersMagicCard() {
-        return this.drawnMagicCards.slice(0, Math.ceil(this.playersInOrder.length / 2));
+        return this.drawnMagicCards ? this.drawnMagicCards.slice(0, Math.ceil(this.playersInOrder.length / 2)) : undefined;
     }
 
     get rightPlayersMagicCard() {
-        return this.drawnMagicCards.slice(Math.ceil(this.playersInOrder.length / 2), this.playersInOrder.length);
+        return this.drawnMagicCards ? this.drawnMagicCards.slice(Math.ceil(this.playersInOrder.length / 2), this.playersInOrder.length) : undefined;
     }
 
     get activePlayer() {
@@ -104,6 +104,6 @@ export class ReplayComponent implements OnInit, AfterViewInit {
     }
 
     get drawnMagicCards() {
-        return (this.currentState as MagicGameState).drawnMagicCards;
+        return (this.currentState as MagicGameState).drawnMagicCards ? (this.currentState as MagicGameState).drawnMagicCards : undefined;
     }
 }
