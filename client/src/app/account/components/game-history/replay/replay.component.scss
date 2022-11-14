@@ -1,0 +1,66 @@
+.custom-dialog-container .mat-dialog-container {
+    overflow-y: hidden !important;
+}
+
+.game-container {
+    display: grid;
+    margin-top: 2%;
+    gap: 0px 0px;
+    grid-template-areas:
+        'LeftPlayers Board RightPlayers'
+        'LeftPlayers Board RightPlayers'
+        'LeftPlayers Board RightPlayers'
+        'Quitter Info Other';
+}
+
+.game-info-container {
+    grid-area: Info;
+    display: flex;
+    justify-content: center;
+    padding: 1%;
+    margin-left: 5%;
+}
+
+.board-container {
+    grid-area: Board;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    canvas {
+        width: 63vh;
+    }
+}
+
+.player-left-container {
+    grid-area: LeftPlayers;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 250px;
+    margin-right: 5%;
+}
+
+.player-right-container{
+    grid-area: RightPlayers;
+    display: flex;
+    flex-direction: column;
+    justify-content:  space-evenly;
+    width: 250px;
+    margin-left: 5%;
+}
+
+.player-left-container, .player-right-container {
+    .mat-card {
+        margin: 3%;
+        .mat-card-actions, .mat-card-subtitle, .mat-card-content {
+            margin-bottom: 0%;
+        }
+    }
+}
+
+.mat-dialog-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0%;
+}

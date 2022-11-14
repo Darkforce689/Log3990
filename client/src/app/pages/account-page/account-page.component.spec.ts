@@ -1,4 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -13,6 +14,7 @@ describe('AccountPageComponent', () => {
         await TestBed.configureTestingModule({
             declarations: [AccountPageComponent],
             imports: [HttpClientTestingModule, AppMaterialModule, BrowserAnimationsModule],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     });
 

@@ -6,7 +6,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AvatarListComponent } from '@app/account/components/avatar-list/avatar-list.component';
 import { AvatarComponent } from '@app/account/components/avatar/avatar.component';
-import { GameHistoryComponent } from '@app/account/components/game-history/game-history.component';
+import { GameHistoryComponent } from '@app/account/components/game-history/game-history-page/game-history.component';
+import { ReplayComponent } from '@app/account/components/game-history/replay/replay.component';
 import { ProfilComponent } from '@app/account/components/profil/profil.component';
 import { ChatBoxComponent } from '@app/chat/components/chat-box/chat-box.component';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
@@ -36,6 +37,7 @@ import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
 import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.service';
+import { ReplayPlayersComponent } from './account/components/game-history/replay-players/replay-players.component';
 import { GameStatsPageComponent } from './account/components/game-stats-page/game-stats-page.component';
 import { ConversationPickerComponent } from './chat/components/conversation-picker/conversation-picker.component';
 import { CreateConversationComponent } from './chat/components/create-conversation/create-conversation.component';
@@ -104,6 +106,8 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         ProfilComponent,
         DeleteConversationComponent,
         GameHistoryComponent,
+        ReplayComponent,
+        ReplayPlayersComponent,
     ],
     imports: [
         AppMaterialModule,

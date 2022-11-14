@@ -11,8 +11,8 @@ import {
     EMPTY_CHAR,
     JOKER_CHAR,
     MIN_PLACE_LETTER_ARG_SIZE,
-    nextTile,
-    previousTile,
+    NEXT_INDEX,
+    PREVIOUS_INDEX,
 } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
@@ -260,7 +260,7 @@ export class UIPlace implements UIAction {
             }
             const indexIsAdjacent = direction === Direction.Horizontal ? x === previousX + 1 : y === previousY + 1;
             if (!indexIsAdjacent) {
-                if (!this.isAdjacentTileEmpty(x, y, direction, previousTile)) {
+                if (!this.isAdjacentTileEmpty(x, y, direction, PREVIOUS_INDEX)) {
                     return true;
                 }
             }
@@ -281,7 +281,7 @@ export class UIPlace implements UIAction {
 
     private hasNeighbour(x: number, y: number, direction: Direction): boolean {
         const adjacentDirection = direction === Direction.Horizontal ? Direction.Vertical : Direction.Horizontal;
-        return !this.isAdjacentTileEmpty(x, y, adjacentDirection, previousTile) || !this.isAdjacentTileEmpty(x, y, adjacentDirection, nextTile);
+        return !this.isAdjacentTileEmpty(x, y, adjacentDirection, PREVIOUS_INDEX) || !this.isAdjacentTileEmpty(x, y, adjacentDirection, NEXT_INDEX);
     }
 
     private isAddingToAWord(lettersIndex: { x: number; y: number }[], direction: Direction) {
@@ -289,10 +289,10 @@ export class UIPlace implements UIAction {
         const lastIndex = lettersIndex.length - 1;
         const lastCoord = lettersIndex[lastIndex];
 
-        if (!this.isAdjacentTileEmpty(firstCoord.x, firstCoord.y, direction, previousTile)) {
+        if (!this.isAdjacentTileEmpty(firstCoord.x, firstCoord.y, direction, PREVIOUS_INDEX)) {
             return true;
         }
-        if (!this.isAdjacentTileEmpty(lastCoord.x, lastCoord.y, direction, nextTile)) {
+        if (!this.isAdjacentTileEmpty(lastCoord.x, lastCoord.y, direction, NEXT_INDEX)) {
             return true;
         }
         return false;

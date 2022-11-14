@@ -63,5 +63,5 @@ export const MAX_FILE_LENGTH = 235;
 export const NO_WHITE_SPACE_RGX = /^\S*$/;
 export const WAIT_STATUS = 'En attente';
 export const ACTIVE_STATUS = 'En cours';
-export const previousTile = -1;
-export const nextTile = 1;
+export const PREVIOUS_INDEX = -1;
+export const NEXT_INDEX = 1;

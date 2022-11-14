@@ -289,6 +289,7 @@ export class GameManagerService {
         const startTime = game.startTime;
         const userNames = game.players.map((player) => player.name);
         const winnerNames = game.getWinnerIndexes().map((index) => userNames[index]);
-        this.gameHistoryService.insertGame(gameToken, userNames, winnerNames, startTime);
+        const gameMode = game instanceof MagicServerGame ? GameMode.Magic : GameMode.Classic;
+        this.gameHistoryService.insertGame(gameToken, gameMode, userNames, winnerNames, startTime);
     }
 }
