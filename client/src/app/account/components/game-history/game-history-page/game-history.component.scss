@@ -4,7 +4,7 @@ mat-card {
     flex-direction: column;
     align-items: center;
     height: fit-content;
-    max-width: 60%;
+    width: fit-content;
     mat-card-content {
         p {
             margin-top: 3%;
@@ -13,7 +13,6 @@ mat-card {
     .mat-divider-horizontal {
         position: unset;
         left: 0;
-        width: 80%;
         padding-bottom: 4%;
     }
 }
@@ -51,4 +50,14 @@ table {
 .mat-cell {
     padding: 2%;
     padding-left: 3%;
+}
+
+.mat-row:hover .mat-cell {
+    border-color: currentColor;
+    background-color: var(--primary);
+    color: var(--bg);
+}
+
+mat-paginator {
+    margin-top: 5%;
 }

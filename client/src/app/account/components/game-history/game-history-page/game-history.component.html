@@ -1,9 +1,9 @@
 <div class="container">
     <h1 class="primary-color">Historique de jeux</h1>
     <mat-card>
-        <h2>Parties jouées</h2>
-        <mat-divider></mat-divider>
         <mat-card-content>
+            <h2>Parties jouées</h2>
+            <mat-divider></mat-divider>
             <div class="table-container">
                 <table mat-table [dataSource]="gameSource" class="mat-elevation-z8">
                     <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
@@ -14,8 +14,21 @@
                             {{ column.cell(row) }}
                         </td>
                     </ng-container>
+                    <ng-container matColumnDef="replay">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let row"> 
+                            <button mat-icon-button (click)="replay(row)">
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
                     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
                     <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+                    <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell" [attr.colspan]="columnsToDisplay.length">
+                          Vous n'avez pas terminé de parties
+                        </td>
+                      </tr>
                 </table>
             </div>
             <mat-paginator (page)="getGamesHistory()" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons> </mat-paginator>

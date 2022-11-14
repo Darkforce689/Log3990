@@ -1,0 +1,30 @@
+<div mat-dialog-container>
+    <div class="game-container">
+        <div class='player-left-container'>
+            <app-replay-players 
+                [players]="leftPlayers" 
+                [activePlayer]="activePlayer" 
+                [isEndOfGame]="isEndOfGame" 
+                [magicCards]="leftPlayersMagicCard">
+            </app-replay-players>
+        </div>
+        <div class='player-right-container'>
+            <app-replay-players 
+                [players]="rightPlayers" 
+                [activePlayer]="activePlayer" 
+                [isEndOfGame]="isEndOfGame" 
+                [magicCards]="rightPlayersMagicCard">
+            </app-replay-players> 
+        </div> 
+        <div #ScrabbleBoard class="board-container">
+            <canvas id="canvas" #gridCanvas></canvas>
+        </div>
+        <div class="game-info-container">
+            <p class="game-info">Il reste {{ numberOfLettersRemaining }} lettres dans le sac</p>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions>
+    <button class="abandonner" mat-raised-button [mat-dialog-close]="true">Quitter</button>
+    <mat-paginator (page)="onPageChange($event)"[length]="data.gameStates.length" [hidePageSize]="true" [pageSize]="1" showFirstLastButtons> </mat-paginator>
+</div>

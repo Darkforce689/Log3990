@@ -1,0 +1,88 @@
+mat-card {
+    margin-bottom: 10%;
+}
+
+.mat-card-actions, .mat-card-subtitle, .mat-card-content {
+    margin-bottom: 0%;
+}
+
+.title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.name {
+    font-size: large;
+    font-weight: 700;
+}
+
+.score {
+    font-size: 85%;
+}
+
+.active {
+    box-shadow: 1px 1px 5px 5px var(--fg) !important;
+    background-color: var(--accent);
+}
+
+.rack {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    column-gap: 2%;
+    margin-top: 10%;
+    padding: 2%;
+    min-height: 29px;
+    // TODO GL3A22107-104
+    background-color: rgb(47, 37, 51);
+    border: 3px solid rgb(37, 37, 37);
+    border-radius: 2%;
+}
+
+.tile {
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    font-size: small;
+    color: var(--black-chocolate);
+    border-radius: 10%;
+    // TODO GL3A22107-104
+    background-color: rgb(240, 231, 216);
+    box-shadow: 2px 2px 2px 0.2;
+    background-image: url('^assets/img/tuile.png');
+    background-size: contain;
+
+    span {
+        padding-left: 15%;
+    }
+
+    sub {
+        padding-left: 8%;
+        padding-top: 30%;
+    }
+}
+
+.magic-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 5%;
+    margin-top: 3%;
+    .mat-card {
+        display: flex;
+        justify-content: center;
+        height: 32px;
+        padding: 0px;
+        align-items: center;
+        mat-icon {
+            font-size: x-large;
+        }
+        box-shadow: 1px 1px 1px 1px var(--bg)
+    }
+}
+
+.active-card {
+    background-color: var(--accent);
+}
+
+.card-holder {
+    background-color: rgba(30, 30, 30, 0.639);
+}

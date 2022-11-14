@@ -54,12 +54,6 @@ describe('BoardComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('convertAscii should return correct char value', () => {
-        const CHARCODE_A = 0;
-        const answer = component.convertASCIIToChar(CHARCODE_A);
-        expect(answer).toEqual('A');
-    });
-
     it('ngDoCheck should enter all condition', () => {
         component.canvasDrawer = canvasDrawerMock;
         const dirAnswer: Direction = Direction.Horizontal;

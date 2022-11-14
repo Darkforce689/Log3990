@@ -1,0 +1,22 @@
+<div *ngFor="let player of players" >
+    <mat-card [ngClass]="{ active: isActivePlayer(player) }">
+        <div class="title">
+            <p class="name">{{ player.name }} </p>
+            <p class="score"> {{ player.points }} points </p>
+        </div>
+        <mat-divider inset></mat-divider>
+        <div class="rack">
+            <div class="tile" *ngFor="let letter of player.letterRack">
+                <span>{{ letter.char }}</span>
+                <sub>{{ letter.value }}</sub>
+            </div>
+        </div>
+        <div class="magic-cards" *ngIf="isMagicGame">
+            <div *ngFor="let item of getMagicCards(player)">
+                <mat-card [matTooltip]="getCardName(item)" [matTooltipPosition]="'below'" [ngClass]="canSetIcon(item) ? 'active-card' : 'card-holder'">
+                    <mat-icon *ngIf="canSetIcon(item)">{{getCardIcon(item)}}</mat-icon>
+                </mat-card>
+            </div>
+        </div>
+    </mat-card>
+</div>
