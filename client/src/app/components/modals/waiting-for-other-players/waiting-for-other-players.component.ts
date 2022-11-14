@@ -77,4 +77,8 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     get isWaiting(): boolean {
         return this.socketHandler.isWaiting$.value;
     }
+
+    get isPrivateGame(): boolean {
+        return this.socketHandler.gameSettings$.value?.privateGame ?? false;
+    }
 }

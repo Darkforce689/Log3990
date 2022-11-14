@@ -22,9 +22,13 @@ export class JoinOnlineGameComponent implements AfterContentChecked {
         private gameLaucherService: GameLauncherService,
     ) {
         this.socketHandler.pendingGames$.subscribe((pendingGames) => {
-            if (pendingGames.find((settings) => this.data.id === settings.id) === undefined) {
-                this.deleted = true;
+            if (pendingGames.find((settings) => this.data.id === settings.id) !== undefined) {
+                return;
             }
+            if (this.socketHandler.observableGames$.value.find((settings) => this.data.id === settings.id) !== undefined) {
+                return;
+            }
+            this.deleted = true;
         });
     }
 

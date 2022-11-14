@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -13,10 +14,12 @@ describe('WinnerDialogComponent', () => {
     let component: WinnerDialogComponent;
     let fixture: ComponentFixture<WinnerDialogComponent>;
     let data: WinnerDialogData;
+    const httpClient = jasmine.createSpyObj('HttpClient', ['get']);
     beforeEach(async () => {
         data = {
             winnerNames: [],
             isWinner: false,
+            isObserver: false,
         };
         await TestBed.configureTestingModule({
             imports: [AppMaterialModule],
@@ -24,6 +27,7 @@ describe('WinnerDialogComponent', () => {
             providers: [
                 { provide: MAT_DIALOG_DATA, useValue: data },
                 { provide: MatDialogRef, useValue: mockDialogRef },
+                { provide: HttpClient, useValue: httpClient },
             ],
         }).compileComponents();
     });

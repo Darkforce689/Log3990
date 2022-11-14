@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -16,6 +17,7 @@ describe('AbandonDialogComponent', () => {
     let fixture: ComponentFixture<AbandonDialogComponent>;
     let gameManagerServiceSpy: jasmine.SpyObj<GameManagerService>;
     let cdRefSpy: jasmine.SpyObj<ChangeDetectorRef>;
+    const httpClient = jasmine.createSpyObj('HttpClient', ['get']);
 
     beforeEach(() => {
         gameManagerServiceSpy = jasmine.createSpyObj('GameManagerService', ['stopGame']);
@@ -30,6 +32,7 @@ describe('AbandonDialogComponent', () => {
                 { provide: GameManagerService, useValue: gameManagerServiceSpy },
                 { provide: MatDialogRef, useValue: mockDialogRef },
                 { provide: ChangeDetectorRef, useValue: cdRefSpy },
+                { provide: HttpClient, useValue: httpClient },
             ],
         }).compileComponents();
     });

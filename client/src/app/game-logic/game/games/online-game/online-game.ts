@@ -98,6 +98,9 @@ export class OnlineGame extends Game {
         const player = this.players.find((playerRef: Player) => {
             return playerRef.name === this.userName;
         });
+        if (!player) {
+            return;
+        }
         (player as Player).action$.subscribe((action) => {
             const activePlayerName = this.players[this.activePlayerIndex].name;
             if (activePlayerName !== this.userName) {
@@ -236,8 +239,9 @@ export class OnlineGame extends Game {
 
             const newLetterRack = lightPlayer.letterRack;
             if (this.isLetterRackChanged(newLetterRack, player)) {
-                for (let letterIndex = 0; letterIndex < newLetterRack.length; letterIndex++) {
-                    player.letterRack[letterIndex] = newLetterRack[letterIndex];
+                player.letterRack = [];
+                for (const letter of newLetterRack) {
+                    player.letterRack.push(letter);
                 }
             }
         }

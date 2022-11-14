@@ -22,6 +22,7 @@ import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/tim
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { BindedSocket } from '@app/game/game-manager/binded-client.interface';
 import { GameMode } from '@app/game/game-mode.enum';
+import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction } from '@app/game/online-action.interface';
 import { ServerLogger } from '@app/logger/logger';
@@ -44,6 +45,7 @@ export class GameManagerService {
     activePlayers = new Map<string, PlayerRef>(); // socketId => PlayerRef[]
     linkedClients = new Map<string, BindedSocket[]>(); // gameToken => BindedSocket[]
     gameDeleted$ = new Subject<string>();
+    observerLeft$ = new Subject<NameAndToken>();
 
     private endGame$ = new Subject<EndOfGame>(); // gameToken
 
@@ -105,6 +107,12 @@ export class GameManagerService {
             this.updateGameStatistics(endOfGame.stats);
             this.deleteGame(gameToken);
         });
+        this.observerLeft$.subscribe((nameAndToken: NameAndToken) => {
+            const bindedSocket = this.linkedClients.get(nameAndToken.gameToken)?.filter((client) => client.name !== nameAndToken.name);
+            if (bindedSocket) {
+                this.linkedClients.set(nameAndToken.gameToken, bindedSocket);
+            }
+        });
     }
 
     async createGame(gameToken: string, onlineGameSettings: OnlineGameSettings): Promise<ServerGame> {
@@ -125,11 +133,6 @@ export class GameManagerService {
         }
 
         const playerName = userAuth.playerName;
-        const user = game.players.find((player: Player) => player.name === playerName);
-        if (!user) {
-            throw Error(`Player ${playerName} not created in ${gameToken}`);
-        }
-
         const linkedClientsInGame = this.linkedClients.get(gameToken);
         if (!linkedClientsInGame) {
             throw Error(`Can't add player, GameToken ${gameToken} is not in active game`);
@@ -139,11 +142,14 @@ export class GameManagerService {
             throw Error(`Can't add player, someone else is already linked to ${gameToken} with ${playerName}`);
         }
 
-        const playerRef = { gameToken, player: user };
-        this.activePlayers.set(playerId, playerRef);
         const bindedSocket: BindedSocket = { socketID: playerId, name: playerName };
         linkedClientsInGame.push(bindedSocket);
 
+        const user = game.players.find((player: Player) => player.name === playerName);
+        if (user) {
+            const playerRef = { gameToken, player: user };
+            this.activePlayers.set(playerId, playerRef);
+        }
         const expectedClientCount = this.getExpectedNumberOfClients(game);
         if (linkedClientsInGame.length === expectedClientCount) {
             game.start();
@@ -177,10 +183,10 @@ export class GameManagerService {
         if (!game) {
             return;
         }
-        const playerNames: string[] = [];
-        game.players.forEach((player) => playerNames.push(player.name));
+        const players = game.players.filter((player: Player) => player.name !== playerRef.player.name && !(player instanceof BotPlayer));
+        const playerNames = players.map((player) => player.name);
         this.activePlayers.delete(playerId);
-        if (this.activePlayers.size <= 0) {
+        if (playerNames.length <= 0) {
             this.deleteGame(gameToken);
             return;
         }

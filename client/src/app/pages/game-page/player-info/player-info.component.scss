@@ -10,6 +10,7 @@ mat-card {
     justify-self: center;
     font-size: 150%;
     font-weight: 900;
+    padding-right: 5px;
 }
 
 .score {
@@ -20,4 +21,9 @@ mat-card {
 .active {
     box-shadow: 1px 1px 5px 5px var(--fg) !important;
     background-color: var(--accent);
+}
+
+.eyeIcon {
+    position: relative;
+    top: -1.5px;
 }

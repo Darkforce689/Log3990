@@ -72,6 +72,8 @@
 <mat-dialog-actions>
     <div>
         <button mat-button color="accent" [mat-dialog-close] (click)="cancel()">Annuler</button>
-        <button mat-raised-button color="primary" [disabled]="!selectedRow" (click)="joinGame()">Rejoindre la partie</button>
+        <span matTooltip="La partie sélectionnée est pleine" matTooltipPosition="above" [matTooltipDisabled]="!isGameFull">
+            <button mat-raised-button color="primary" [disabled]="!selectedRow || isGameFull" (click)="joinGame()">Rejoindre la partie</button>
+        </span>
     </div>
 </mat-dialog-actions>

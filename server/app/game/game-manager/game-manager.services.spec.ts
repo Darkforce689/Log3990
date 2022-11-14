@@ -203,35 +203,6 @@ describe('GameManagerService', () => {
         }).to.throw(Error);
     });
 
-    it('should throw error when joining an invalid name', async () => {
-        const gameToken = '1';
-        const playerNames = ['test1', 'test2'];
-        const gameMode = GameMode.Classic;
-        const gameSettings: OnlineGameSettings = {
-            id: gameToken,
-            timePerTurn: 60000,
-            privateGame: false,
-            randomBonus: false,
-            playerNames,
-            gameMode,
-            botDifficulty,
-            numberOfPlayers,
-            magicCardIds: [],
-            tmpPlayerNames,
-            password,
-        };
-
-        await service.createGame(gameToken, gameSettings);
-        const userAuth: UserAuth = {
-            gameToken: '1',
-            playerName: 'test3',
-        };
-        const userId = 'abc';
-        expect(() => {
-            service.addPlayerToGame(userId, userAuth);
-        }).to.throw(Error);
-    });
-
     it('should throw error when joining with a already picked name', async () => {
         const gameToken = '1';
         const playerNames = ['test1', 'test2'];

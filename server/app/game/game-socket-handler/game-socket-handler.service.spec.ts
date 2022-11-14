@@ -7,7 +7,7 @@ import { Session } from '@app/auth/services/session.interface';
 import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
 import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
-import { GameSocketsHandler } from '@app/game/game-socket-handler/game-socket-handler.service';
+import { GameSocketsHandler, NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction, OnlineActionType } from '@app/game/online-action.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
@@ -50,6 +50,8 @@ describe('GameSocketHandler', () => {
             port = (httpServer.address() as AddressInfo).port;
 
             stubGameManager = createSinonStubInstance<GameManagerService>(GameManagerService);
+            stubGameManager.gameDeleted$ = new Subject<string>();
+            stubGameManager.observerLeft$ = new Subject<NameAndToken>();
             const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
             sessionMiddleware.getSocketSessionMiddleware.returns((socket: unknown, next: (err?: ExtendedError | undefined) => void) => {
                 next();

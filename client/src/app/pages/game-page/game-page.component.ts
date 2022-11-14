@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs';
 })
 export class GamePageComponent implements OnDestroy {
     dialogRef: MatDialogRef<DisconnectedFromServerComponent> | undefined;
+    spectatePlayerNbr: number = 0;
     private disconnected$$: Subscription;
     private endOfGame$$: Subscription;
 
@@ -44,7 +45,8 @@ export class GamePageComponent implements OnDestroy {
             const winnerNames = this.info.winner.map((player) => player.name);
             const playerName = this.info.player.name;
             const isWinner = winnerNames.includes(playerName);
-            const data: WinnerDialogData = { winnerNames, isWinner };
+            const isObserver = this.isObserver;
+            const data: WinnerDialogData = { winnerNames, isWinner, isObserver };
             this.dialog.open(WinnerDialogComponent, { disableClose: true, autoFocus: true, data });
         });
     }
@@ -115,6 +117,10 @@ export class GamePageComponent implements OnDestroy {
         return this.info.isMagicGame;
     }
 
+    get isObserver() {
+        return this.info.players.find((player) => player.name === this.gameManager.userName) === undefined;
+    }
+
     pass() {
         this.inputController.pass(this.info.player);
     }
@@ -125,6 +131,16 @@ export class GamePageComponent implements OnDestroy {
 
     cancel() {
         this.inputController.cancel();
+    }
+
+    nextPlayer() {
+        this.spectatePlayerNbr = (this.spectatePlayerNbr + 1) % this.info.players.length;
+        this.info.receivePlayer(this.info.players[this.spectatePlayerNbr]);
+    }
+
+    previousPlayer() {
+        this.spectatePlayerNbr = this.spectatePlayerNbr === 0 ? this.info.players.length - 1 : this.spectatePlayerNbr - 1;
+        this.info.receivePlayer(this.info.players[this.spectatePlayerNbr]);
     }
 
     openDisconnected() {

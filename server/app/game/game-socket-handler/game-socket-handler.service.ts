@@ -9,16 +9,24 @@ import { ServerLogger } from '@app/logger/logger';
 import { UserService } from '@app/user/user.service';
 import * as http from 'http';
 import * as io from 'socket.io';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { UserAuth } from './user-auth.interface';
+
+export interface NameAndToken {
+    name: string;
+    gameToken: string;
+}
 
 export class GameSocketsHandler {
     readonly sio: io.Server;
+    observerSocketMap = new Map<string, string>();
     constructor(
         server: http.Server,
         private gameManager: GameManagerService,
         private sessionMiddleware: SessionMiddlewareService,
         private authService: AuthService,
         private userService: UserService,
+        private lastGameStateMap: Map<string, GameState> = new Map<string, GameState>(),
     ) {
         this.sio = new io.Server(server, {
             path: '/game',
@@ -48,6 +56,15 @@ export class GameSocketsHandler {
             const playerInfo = forfeitedGameState.playerInfo;
             this.emitTransitionGameState(playerInfo, gameToken);
         });
+
+        this.gameManager.gameDeleted$.subscribe((gameToken: string) => {
+            const gameState = this.lastGameStateMap.get(gameToken);
+            if (gameState) {
+                gameState.isEndOfGame = true;
+                this.emitGameState(gameState, gameToken);
+            }
+            this.lastGameStateMap.delete(gameToken);
+        });
     }
 
     handleSockets() {
@@ -67,6 +84,10 @@ export class GameSocketsHandler {
                     const userAuth: UserAuth = { playerName, gameToken };
                     socket.join(gameToken);
                     this.addPlayerToGame(socket.id, userAuth);
+                    const lastGameState = this.lastGameStateMap.get(gameToken);
+                    if (lastGameState) {
+                        socket.emit('gameState', lastGameState);
+                    }
                 } catch (error) {
                     ServerLogger.logError(error);
                     socket.disconnect();
@@ -83,6 +104,7 @@ export class GameSocketsHandler {
             });
 
             socket.on('disconnect', () => {
+                this.removeObserver(socket);
                 this.removePlayer(socket.id);
             });
         });
@@ -97,6 +119,10 @@ export class GameSocketsHandler {
     }
 
     private emitGameState(gameState: GameState, gameToken: string) {
+        this.lastGameStateMap.set(gameToken, gameState);
+        if (gameState.isEndOfGame) {
+            this.lastGameStateMap.delete(gameToken);
+        }
         this.sio.to(gameToken).emit('gameState', gameState);
     }
 
@@ -106,6 +132,8 @@ export class GameSocketsHandler {
 
     private addPlayerToGame(socketId: string, userAuth: UserAuth) {
         const playerId = socketId;
+        const gameToken = userAuth.gameToken;
+        this.observerSocketMap.set(playerId, gameToken);
         this.gameManager.addPlayerToGame(playerId, userAuth);
     }
 
@@ -116,5 +144,20 @@ export class GameSocketsHandler {
 
     private removePlayer(playerId: string) {
         this.gameManager.removePlayerFromGame(playerId);
+    }
+
+    private async removeObserver(socket: io.Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
+        const { userId: _id } = (socket.request as unknown as { session: Session }).session;
+        const user = await this.userService.getUser({ _id });
+        if (user === undefined) {
+            throw Error(`No user found with userId ${_id}`);
+        }
+        const name = user.name;
+        const gameToken = this.observerSocketMap.get(socket.id);
+        if (gameToken) {
+            const nameAndToken: NameAndToken = { name, gameToken };
+            this.gameManager.observerLeft$.next(nameAndToken);
+        }
+        this.observerSocketMap.delete(socket.id);
     }
 }

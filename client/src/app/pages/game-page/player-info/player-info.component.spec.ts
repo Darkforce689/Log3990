@@ -1,12 +1,14 @@
 /* eslint-disable dot-notation */
 /* tslint:disable:no-unused-variable */
 import { CommonModule } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Game } from '@app/game-logic/game/games/game';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { Player } from '@app/game-logic/player/player';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { AccountService } from '@app/services/account.service';
 import { PlayerInfoComponent } from './player-info.component';
 
 describe('PlayerInfoComponent', () => {
@@ -21,17 +23,19 @@ describe('PlayerInfoComponent', () => {
         const mockPlayer = {} as unknown as Player;
         info.players = [mockPlayer, mockPlayer];
         info.player = mockPlayer;
+        const accountService = { account: { name: 'Tim' } };
         const activePlayer = {
             name: 'test',
         } as unknown as Player;
         (Object.getOwnPropertyDescriptor(info, 'numberOfLettersRemaining')?.get as jasmine.Spy<() => number>).and.returnValue(2);
         (Object.getOwnPropertyDescriptor(info, 'activePlayer')?.get as jasmine.Spy<() => Player>).and.returnValue(activePlayer);
         await TestBed.configureTestingModule({
-            imports: [AppMaterialModule, CommonModule],
+            imports: [AppMaterialModule, CommonModule, HttpClientTestingModule],
             declarations: [PlayerInfoComponent],
             providers: [
                 { provide: GameManagerService, useValue: gameManagerSpy },
                 { provide: GameInfoService, useValue: info },
+                { provide: AccountService, useValue: accountService },
             ],
         }).compileComponents();
     });
