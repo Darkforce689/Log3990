@@ -3,7 +3,6 @@ package com.example.polyscrabbleclient.lobby.view
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,7 +20,6 @@ import com.example.polyscrabbleclient.utils.TextView
 @Composable
 fun LobbyGameView(
     lobbyGameSettings: OnlineGameSettings,
-    columnsWeights: List<Float>,
     click: () -> Unit,
     isSelected: () -> Boolean
 ) {
@@ -50,7 +48,7 @@ fun LobbyGameView(
             lobbyGameSettings.botDifficulty.value
         )
         fields.forEachIndexed { index, field ->
-            TableCell(text = field, weight = columnsWeights[index])
+            TableCell(text = field, weight = ColumnsWeights[index])
         }
     }
 }
@@ -63,11 +61,11 @@ fun formatPlayersCounts(lobbyGameSettings: OnlineGameSettings): String {
             lobbyGameSettings.observerNames.size
         else
             0
-    if (lobbyGameSettings.gameStatus === WAIT_STATUS) {
+    if (lobbyGameSettings.gameStatus == WAIT_STATUS) {
         val estimatedBots = lobbyGameSettings.numberOfPlayers - lobbyGameSettings.playerNames.size
         return "$realPlayers : $estimatedBots / $max | 0"
     }
-    if (lobbyGameSettings.gameStatus === ACTIVE_STATUS) {
+    if (lobbyGameSettings.gameStatus == ACTIVE_STATUS) {
         val bots = lobbyGameSettings.numberOfBots
         val adjustedRealPlayers = if (bots !== null) realPlayers - bots else realPlayers
         return "$adjustedRealPlayers : $bots / $max | $observers"
@@ -111,9 +109,9 @@ fun RowScope.HeaderTableCell(
 ) {
     TextView(
         text = text,
+        isBold = true,
         modifier = Modifier
-            .border(1.dp, MaterialTheme.colors.primary)
             .weight(weight)
-            .padding(8.dp)
+            .padding(4.dp)
     )
 }
