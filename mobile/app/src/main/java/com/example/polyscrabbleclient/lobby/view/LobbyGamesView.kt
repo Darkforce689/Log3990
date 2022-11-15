@@ -102,7 +102,7 @@ private fun LobbyGamesTableView(
 ) {
     Card(
         modifier = Modifier
-            .height(300.dp)
+            .height(250.dp)
             .padding(16.dp)
     ) {
         Column {
@@ -154,7 +154,7 @@ private fun LobbyGamesListView(
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p)
 @Composable
-fun PendingGamesPreview() {
+fun LobbyGamesPreview() {
     val a = OnlineGameSettings(
         id = "123",
         gameMode = GameMode.Classic,
