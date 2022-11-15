@@ -11,12 +11,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
@@ -25,6 +23,7 @@ import com.example.polyscrabbleclient.lobby.domain.ModalResult
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.ui.theme.SpinnerView
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
+import com.example.polyscrabbleclient.utils.TitleView
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -56,12 +55,7 @@ fun ModalView(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(bottom = 18.dp)
                         ) {
-                            Text(
-                                text = title,
-                                fontStyle = MaterialTheme.typography.h1.fontStyle,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 25.sp
-                            )
+                            TitleView(title)
                             if (hasSpinner) {
                                 SpinnerView()
                             }

@@ -1,5 +1,8 @@
 package com.example.polyscrabbleclient.ui.theme
 
+import com.example.polyscrabbleclient.account.viewmodel.SEC_IN_MIN
+import com.example.polyscrabbleclient.game.model.millisecondsInSecond
+
 // Authentication System
 const val email_string = "Courriel"
 const val userName_string = "Pseudonyme"
@@ -41,6 +44,19 @@ const val email_not_unique = "Un compte utilise déjà cet e-mail."
 val invalid_password_creation: (minLength: Int, maxLength: Int) -> String =
     { minLength, maxLength -> "Entrer un mot de passe entre $minLength et $maxLength caractères" }
 const val already_auth = "Vous êtes déjà connecté sur un autre client"
+
+// Abstract
+const val Activated = "Activé"
+const val Deactivated = "Désactivé"
+const val Yes = "Oui"
+const val No = "Non"
+val formatTurnTime: (Long) -> String =
+    { ms ->
+        val absoluteSeconds = ms / millisecondsInSecond
+        val minutes = absoluteSeconds / SEC_IN_MIN
+        val seconds = absoluteSeconds - minutes * SEC_IN_MIN
+        String.format("%01d:%02d", minutes, seconds)
+    }
 
 // GameScreen
 val lettersRemainingFR: (count: Int) -> String = { count -> "$count lettres restantes" }
@@ -98,6 +114,14 @@ const val joinAGameFR = "Joindre une partie"
 const val hostQuitGameFR = "L'hôte a quitté la partie"
 const val Ok = "Ok"
 val pendingGameIdFR: (id: String?) -> String = { id -> "Id de la partie: ${id ?: ""}" }
+
+// Public/Private/Observables
+const val Private = "Privée"
+const val Public = "Publique"
+const val WAIT_STATUS = "En attente"
+const val ACTIVE_STATUS = "En cours"
+const val PendingGameSubTitle = "Partie en attente"
+const val ObservableGameSubTitle = "Partie en cours (observable)"
 
 // Message
 const val create_convo_button = "Créer"
