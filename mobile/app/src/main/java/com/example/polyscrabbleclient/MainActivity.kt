@@ -13,6 +13,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.auth.AppSocketHandler
+import com.example.polyscrabbleclient.notifications.NotificationsEmitter
 import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
 import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
@@ -22,7 +23,6 @@ import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 import kotlin.math.floor
 import kotlin.math.round
-
 
 data class ValidationResponse(val message: String, val errors: ArrayList<String>)
 
@@ -77,6 +77,12 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
         updateWidget(this)
+        NotificationsEmitter.startDelayedRemainder(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        NotificationsEmitter.stopDelayedRemainder(this)
     }
 }
 
