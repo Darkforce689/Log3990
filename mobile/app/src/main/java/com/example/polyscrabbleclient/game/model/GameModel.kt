@@ -131,4 +131,9 @@ class GameModel {
     fun getWinnerNames(): ArrayList<String> {
         return ArrayList(winnerIndexes.value.map { playerIndex -> players[playerIndex].name })
     }
+
+    fun getWatchedPlayer(): Player? {
+        // TODO
+        return getPlayer(1)
+    }
 }
