@@ -40,12 +40,13 @@ fun SubTitleView(
 fun TextView(
     text: String,
     fontSize: TextUnit = 14.sp,
+    isBold: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Text(
         text = text,
         fontStyle = MaterialTheme.typography.h1.fontStyle,
-        fontWeight = FontWeight.Bold,
+        fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
         fontSize = fontSize,
         modifier = modifier
     )
