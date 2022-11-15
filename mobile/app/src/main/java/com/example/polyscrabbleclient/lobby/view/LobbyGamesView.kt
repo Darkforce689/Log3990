@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -125,8 +128,19 @@ private fun LobbyGamesListView(
     toggleSelected: (lobbyGameId: String) -> Unit,
     isGameSelected: (lobbyGameId: String) -> Boolean,
 ) {
+    val primary = MaterialTheme.colors.primary
     Column {
-        Row {
+        Row(
+            modifier = Modifier.drawBehind {
+                val borderSize = 4.dp.toPx()
+                drawLine(
+                    color = primary.copy(alpha = 0.2f),
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = borderSize
+                )
+            }
+        ) {
             ColumnsHeaders.forEachIndexed { index, header ->
                 HeaderTableCell(text = header, weight = ColumnsWeights[index])
             }
@@ -140,7 +154,6 @@ private fun LobbyGamesListView(
                     val lobbyGameModel = lobbyGamesList[index]
                     LobbyGameView(
                         lobbyGameSettings = lobbyGamesList[index],
-                        ColumnsWeights,
                         click = { toggleSelected(lobbyGameModel.id) }
                     ) { isGameSelected(lobbyGameModel.id) }
                 }
