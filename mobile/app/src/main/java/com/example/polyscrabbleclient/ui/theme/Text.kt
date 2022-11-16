@@ -29,6 +29,11 @@ const val averageTimePerGame = "Moyenne de temps par partie"
 const val date = "Date"
 const val connection_type = "Type de connexions"
 
+// Notifications
+const val RemainderTitleNotificationFR = "Reviens jouer à PolyScrabble!"
+val RemainderContentNotificationFR: (Int) -> String =
+    { time -> "Déjà $time minutes depuis votre dernière connexion" }
+
 // Errors
 const val missing_field = "Veuillez remplir tous les champs."
 const val invalid_password = "Mot de passe invalide."

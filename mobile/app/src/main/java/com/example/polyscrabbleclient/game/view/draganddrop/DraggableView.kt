@@ -1,6 +1,6 @@
 package com.example.polyscrabbleclient.game.view.draganddrop
 
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -23,7 +23,7 @@ fun DraggableView(
                 currentPosition = it.localToWindow(Offset.Zero)
             }
             .pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(
+                detectDragGestures(
                     onDragStart = {
                         dragState.onDragStart(
                             currentPosition + it,

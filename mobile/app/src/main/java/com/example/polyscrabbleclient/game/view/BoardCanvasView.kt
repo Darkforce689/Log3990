@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.game.view
 
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
@@ -345,7 +346,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
                 currentPosition = it.localToWindow(Offset.Zero)
             }
             .pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(
+                detectDragGestures(
                     onDragStart = {
                         viewModel.longPressBoard(
                             gridDivisionSize,
