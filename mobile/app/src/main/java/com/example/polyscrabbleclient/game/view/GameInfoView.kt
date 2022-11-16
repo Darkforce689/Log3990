@@ -25,6 +25,7 @@ import com.example.polyscrabbleclient.ui.theme.lettersRemainingFR
 fun GameInfoView(viewModel: GameViewModel) {
     Card {
         Column(
+            modifier = Modifier.padding(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(

@@ -1,7 +1,6 @@
 package com.example.polyscrabbleclient.game.view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,9 +37,6 @@ fun GameScreen(navController: NavController) {
                 PlayersInfoView(viewModel)
             }
             Box {
-                GameInfoView(viewModel)
-            }
-            Box {
                 GameActionsView(viewModel, navController)
             }
         }
@@ -59,8 +55,7 @@ fun GameScreen(navController: NavController) {
         }
         EvenlySpacedSubColumn(modifier = Modifier.fillMaxHeight()) {
             Box {
-                // TODO : RIGHT PANEL
-                Text("RIGHT PANEL")
+                GameInfoView(viewModel)
             }
         }
     }
