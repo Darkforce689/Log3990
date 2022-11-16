@@ -31,6 +31,7 @@ class GameModel {
     var gameMode: MutableState<GameMode> = mutableStateOf(GameMode.Classic)
     var drawnMagicCards: MutableState<List<List<IMagicCard>>> =
         mutableStateOf(listOf(listOf(), listOf(), listOf(), listOf()))
+    val watchedPlayerIndex = mutableStateOf<Int?>(null)
 
     fun getUser(): Player? {
         return players.find { it.name == User.name }
@@ -133,7 +134,6 @@ class GameModel {
     }
 
     fun getWatchedPlayer(): Player? {
-        // TODO
-        return getPlayer(1)
+        return watchedPlayerIndex.value?.let { getPlayer(it) }
     }
 }

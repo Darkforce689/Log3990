@@ -63,8 +63,6 @@ fun GameScreen(navController: NavController) {
                 Text("RIGHT PANEL")
             }
         }
-
-
     }
 
     JokerSelectionModal(viewModel)

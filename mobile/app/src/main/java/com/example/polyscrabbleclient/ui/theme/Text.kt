@@ -122,6 +122,8 @@ const val WAIT_STATUS = "En attente"
 const val ACTIVE_STATUS = "En cours"
 const val PendingGameSubTitle = "Partie en attente"
 const val ObservableGameSubTitle = "Partie en cours (observable)"
+const val NextPlayer = "Joueur suivant"
+const val PreviousPlayer = "Joueur précédent"
 
 // Message
 const val create_convo_button = "Créer"

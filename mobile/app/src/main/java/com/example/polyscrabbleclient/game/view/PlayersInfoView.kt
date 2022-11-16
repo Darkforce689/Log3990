@@ -108,6 +108,7 @@ fun PlayersInfoPreview() {
         Player("012345678901234567890123456789", 86867867),
     )
     gvm.game.activePlayerIndex.value = 2
+    gvm.game.watchedPlayerIndex.value = 3
     PlayersInfoView(gvm)
 }
 
@@ -123,6 +124,7 @@ fun DarkPlayersInfoPreview() {
         Player("012345678901234567890123456789", 86867867),
     )
     gvm.game.activePlayerIndex.value = 2
+    gvm.game.watchedPlayerIndex.value = 3
     PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
         PlayersInfoView(gvm)
     }

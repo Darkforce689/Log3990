@@ -262,4 +262,21 @@ class GameViewModel : ViewModel() {
     fun chooseJoker(selectedTile: TileContent) {
         return game.board.jokerModel.chooseJoker(selectedTile!!)
     }
+
+    fun isObserver(): Boolean {
+        return game.watchedPlayerIndex.value !== null
+    }
+
+    fun watchNextPlayer() {
+        watchOtherPlayer(+1)
+    }
+
+    fun watchPreviousPlayer() {
+        watchOtherPlayer(-1)
+    }
+
+    private fun watchOtherPlayer(delta: Int) {
+        val index = game.watchedPlayerIndex.value ?: return
+        game.watchedPlayerIndex.value = (index + delta) % game.players.size
+    }
 }
