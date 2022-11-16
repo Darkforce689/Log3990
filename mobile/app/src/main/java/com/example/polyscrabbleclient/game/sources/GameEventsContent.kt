@@ -1,10 +1,10 @@
 package com.example.polyscrabbleclient.game.sources
 
 import androidx.annotation.Nullable
+import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
 import com.google.gson.annotations.SerializedName
-import com.example.polyscrabbleclient.lobby.sources.PendingGameId
 
-data class PlayerInfoForfeit (
+data class PlayerInfoForfeit(
     val name: String,
     val previousPlayerName: String
 )
@@ -115,12 +115,12 @@ data class GameState(
 )
 
 data class IMagicCard(
-    val id:String,
+    val id: String,
 )
 
 typealias TransitionGameState = PlayerInfoForfeit
 
-typealias JoinGame = PendingGameId
+typealias JoinGame = LobbyGameId
 
 typealias NextAction = OnlineAction
 

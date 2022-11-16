@@ -4,20 +4,21 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,7 +32,10 @@ fun PlayersInfoView(viewModel: GameViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         viewModel.game.players.forEach { player ->
-            PlayerInfoView(player) {
+            PlayerInfoView(
+                player,
+                { player === viewModel.game.getWatchedPlayer() }
+            ) {
                 player === viewModel.game.getActivePlayer()
             }
         }
@@ -41,7 +45,8 @@ fun PlayersInfoView(viewModel: GameViewModel) {
 @Composable
 fun PlayerInfoView(
     player: Player,
-    isActivePlayer: () -> Boolean
+    isWatchedPlayer: () -> Boolean,
+    isActivePlayer: () -> Boolean,
 ) {
 
     val targetColor by animateColorAsState(
@@ -56,25 +61,36 @@ fun PlayerInfoView(
     Card(
         modifier = Modifier
             .padding(4.dp)
-            .width(200.dp)
             .border(
                 width = 4.dp,
                 targetColor,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(12.dp)
+        Row(
+            modifier = Modifier.width(200.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = player.name,
-                style = MaterialTheme.typography.h6
-            )
-            Text(
-                text = "${player.points} points",
-                style = MaterialTheme.typography.caption
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth(0.8f)
+            ) {
+                Text(
+                    text = player.name,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = "${player.points} points",
+                    style = MaterialTheme.typography.caption
+                )
+            }
+            Icon(
+                imageVector = Icons.Filled.Visibility,
+                contentDescription = null,
+                modifier = Modifier.alpha(if (isWatchedPlayer()) 1.0f else 0.0f)
             )
         }
     }
@@ -92,6 +108,7 @@ fun PlayersInfoPreview() {
         Player("012345678901234567890123456789", 86867867),
     )
     gvm.game.activePlayerIndex.value = 2
+    gvm.game.watchedPlayerIndex.value = 3
     PlayersInfoView(gvm)
 }
 
@@ -107,6 +124,7 @@ fun DarkPlayersInfoPreview() {
         Player("012345678901234567890123456789", 86867867),
     )
     gvm.game.activePlayerIndex.value = 2
+    gvm.game.watchedPlayerIndex.value = 3
     PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
         PlayersInfoView(gvm)
     }

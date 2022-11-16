@@ -1,6 +1,5 @@
 package com.example.polyscrabbleclient.lobby.sources
 
-import androidx.annotation.Nullable
 import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.google.gson.annotations.SerializedName
 
@@ -37,11 +36,9 @@ data class OnlineGameSettings(
     val observerNames: ArrayList<String>? = null,
 )
 
-typealias PendingGames = ArrayList<OnlineGameSettings>
+typealias LobbyGamesList = ArrayList<OnlineGameSettings>
 
-typealias ObservableGames = ArrayList<OnlineGameSettings>
-
-typealias PendingGameId = String
+typealias LobbyGameId = String
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
 
@@ -49,14 +46,14 @@ typealias GameJoined = OnlineGameSettings
 
 typealias GameStarted = OnlineGameSettings
 
-data class PendingAndObservableGames(
-    val pendingGamesSettings: PendingGames,
-    val observableGamesSettings: ObservableGames
+data class LobbyGames(
+    val pendingGamesSettings: LobbyGamesList,
+    val observableGamesSettings: LobbyGamesList
 )
 
 typealias Error = String
 
-data class CreateGame (
+data class CreateGame(
     val gameMode: GameMode,
     val timePerTurn: Int,
     val playerNames: ArrayList<String>,
@@ -66,10 +63,10 @@ data class CreateGame (
     val magicCardIds: ArrayList<String>?,
 )
 
-typealias LaunchGame = PendingGameId
+typealias LaunchGame = LobbyGameId
 
 data class JoinGame(
-    val id: PendingGameId,
+    val id: LobbyGameId,
     val password: String? = null,
 )
 

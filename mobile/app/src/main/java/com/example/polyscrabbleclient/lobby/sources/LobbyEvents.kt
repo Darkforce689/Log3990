@@ -14,11 +14,11 @@ val LobbyEventTypes = mapOf(
     ),
     Pair(
         OnLobbyEvent.PendingGames,
-        PendingAndObservableGames::class.java
+        LobbyGames::class.java
     ),
     Pair(
         OnLobbyEvent.PendingGameId,
-        PendingGameId::class.java
+        LobbyGameId::class.java
     ),
     Pair(
         OnLobbyEvent.HostQuit,

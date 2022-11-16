@@ -1,16 +1,19 @@
 package com.example.polyscrabbleclient.lobby.view
 
-import androidx.compose.foundation.layout.*
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
+import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
 import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +32,8 @@ fun JoinGameView(
 
     EvenlySpacedRowContainer {
         Box {
-            PendingGamesView(
-                viewModel.pendingGames,
+            LobbyGamesView(
+                viewModel.lobbyGames,
                 navigateToGameScreen(viewModel, navController)
             ) { modalActions ->
                 modalButtons(modalActions)
@@ -43,8 +46,8 @@ fun JoinGameView(
 private fun navigateToGameScreen(
     viewModel: JoinGameViewModel,
     navController: NavController
-) = { pendingGameIndex: Int ->
-    viewModel.joinGame(pendingGameIndex) {
+) = { lobbyGameIndex: LobbyGameId ->
+    viewModel.joinGame(lobbyGameIndex) {
         CoroutineScope(IO).launch {
             launch(Dispatchers.Main) {
                 navController.navigate(NavPage.GamePage.label) {

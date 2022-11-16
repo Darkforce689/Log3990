@@ -4,7 +4,7 @@ import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
 import com.example.polyscrabbleclient.utils.Repository
 
-object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>()  {
+object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
 
     override var model: LobbyModel = LobbyModel()
     override val socket = LobbySocketHandler
@@ -22,15 +22,14 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>()  {
         }
     }
 
-    private val onPendingGames: (pendingGames: PendingAndObservableGames?) -> Unit = { newPendingGames ->
-        newPendingGames?.let {
-            model.pendingGames.value = it.pendingGamesSettings
-            model.observableGames.value = it.observableGamesSettings
+    private val onPendingGames: (lobbyGames: LobbyGames?) -> Unit = { newLobbyGames ->
+        newLobbyGames?.let {
+            model.lobbyGames.value = it
         }
     }
 
-    private val onPendingGameId: (pendingGameId: PendingGameId?) -> Unit = { pendingGameId ->
-        pendingGameId?.let {
+    private val onPendingGameId: (lobbyGameId: LobbyGameId?) -> Unit = { newLobbyGameId ->
+        newLobbyGameId?.let {
             model.currentPendingGameId.value = it
         }
     }
