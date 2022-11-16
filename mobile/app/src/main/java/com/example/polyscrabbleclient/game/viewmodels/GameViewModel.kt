@@ -264,23 +264,14 @@ class GameViewModel : ViewModel() {
     }
 
     fun isObserver(): Boolean {
-        return game.watchedPlayerIndex.value !== null
+        return game.isUserAnObserver()
     }
 
     fun watchNextPlayer() {
-        watchOtherPlayer(+1)
+        game.watchOtherPlayer(+1)
     }
 
     fun watchPreviousPlayer() {
-        watchOtherPlayer(-1)
-    }
-
-    private fun watchOtherPlayer(delta: Int) {
-        val index = game.watchedPlayerIndex.value
-        if (index === null) {
-            return
-        }
-        val playerCount = game.players.size
-        game.watchedPlayerIndex.value = (index + delta + playerCount) % playerCount
+        game.watchOtherPlayer(-1)
     }
 }

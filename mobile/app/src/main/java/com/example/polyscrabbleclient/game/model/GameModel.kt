@@ -13,6 +13,7 @@ import com.example.polyscrabbleclient.user.User
 
 const val defaultTurnTime = 60
 const val millisecondsInSecond = 1000
+const val DefaultWatchedPlayerIndex = 0
 
 class GameModel {
 
@@ -33,10 +34,6 @@ class GameModel {
         mutableStateOf(listOf(listOf(), listOf(), listOf(), listOf()))
     val watchedPlayerIndex = mutableStateOf<Int?>(null)
 
-    fun getUser(): Player? {
-        return players.find { it.name == User.name }
-    }
-
     fun update(gameState: GameState) {
         board.updateGrid(gameState.grid)
         updatePlayers(gameState.players)
@@ -45,7 +42,7 @@ class GameModel {
         updateEndOfGame(gameState.winnerIndex)
         updateDrawnMagicCards(gameState.drawnMagicCards)
         updateBoardCrawler()
-        updateUser()
+        updateUserLetters()
     }
 
     private fun updateEndOfGame(winnerIndex: ArrayList<Int>) {
@@ -77,16 +74,31 @@ class GameModel {
         drawnMagicCards.value = drawnMagicCard
     }
 
-    private fun updateUser() {
-        val updatedUser = players.find { player -> player.name == User.name }
-        if (updatedUser === null) {
-            return
+    private fun updateUserLetters() {
+        if (isUserAnObserver()) {
+            val watchedPlayerLetters = getPlayer(watchedPlayerIndex.value!!)
+            updateUserLettersInternal(watchedPlayerLetters)
+        } else {
+            updateUserLettersInternal(null)
         }
-        userLetters.clear()
-        userLetters.addAll(updatedUser.letters)
     }
 
-    fun getPlayer(position: Int): Player? {
+    private fun updateUserLettersInternal(watchedUser: Player?) {
+        val newLetters =
+            if (watchedUser !== null) {
+                watchedUser.letters
+            } else {
+                players.find { player -> player.name == User.name }?.letters ?: return
+            }
+        userLetters.clear()
+        userLetters.addAll(newLetters)
+    }
+
+    private fun getUser(): Player? {
+        return players.find { it.name == User.name }
+    }
+
+    private fun getPlayer(position: Int): Player? {
         return try {
             players[position]
         } catch (e: Exception) {
@@ -104,7 +116,7 @@ class GameModel {
     }
 
     fun isActivePlayer(): Boolean {
-        return getActivePlayer() === getUser()
+        return getActivePlayer() === getUser() && !isUserAnObserver()
     }
 
     fun hasGameEnded(): Boolean {
@@ -137,11 +149,30 @@ class GameModel {
         return watchedPlayerIndex.value?.let { getPlayer(it) }
     }
 
+    fun watchOtherPlayer(delta: Int) {
+        val index = watchedPlayerIndex.value
+        if (index === null) {
+            return
+        }
+
+        val newWatchedPlayerIndex = (index + delta + players.size) % players.size
+        updateWatchedPlayer(newWatchedPlayerIndex)
+    }
+
+    private fun updateWatchedPlayer(newWatchedPlayerIndex: Int) {
+        watchedPlayerIndex.value = newWatchedPlayerIndex
+        updateUserLetters()
+    }
+
+    fun isUserAnObserver(): Boolean {
+        return watchedPlayerIndex.value !== null
+    }
+
     fun setupObserver(observerNames: ArrayList<String>?) {
         if (observerNames != null) {
             val isUserAnObserver = observerNames.contains(User.name)
             if (isUserAnObserver) {
-                watchedPlayerIndex.value = 0
+                watchedPlayerIndex.value = DefaultWatchedPlayerIndex
             }
         }
     }
