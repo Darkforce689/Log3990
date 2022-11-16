@@ -169,11 +169,13 @@ class GameModel {
     }
 
     fun setupObserver(observerNames: ArrayList<String>?) {
-        if (observerNames != null) {
-            val isUserAnObserver = observerNames.contains(User.name)
-            if (isUserAnObserver) {
-                watchedPlayerIndex.value = DefaultWatchedPlayerIndex
-            }
+        if (observerNames == null) {
+            return
         }
+        val isUserAnObserver = observerNames.contains(User.name)
+        if (!isUserAnObserver) {
+            return
+        }
+        watchedPlayerIndex.value = DefaultWatchedPlayerIndex
     }
 }
