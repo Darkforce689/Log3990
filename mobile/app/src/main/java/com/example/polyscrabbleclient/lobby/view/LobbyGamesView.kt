@@ -47,17 +47,16 @@ fun LobbyGamesView(
         modalActions: ModalActions
     ) -> Unit
 ) {
-    var selectedPendingGameIndex by remember {
+    var selectedGameIndex by remember {
         mutableStateOf<LobbyGameId?>(null)
     }
 
-
     fun isGameSelected(lobbyGameId: LobbyGameId): Boolean {
-        return selectedPendingGameIndex == lobbyGameId
+        return selectedGameIndex == lobbyGameId
     }
 
     fun toggleSelectedGame(lobbyGameId: LobbyGameId) {
-        selectedPendingGameIndex =
+        selectedGameIndex =
             if (isGameSelected(lobbyGameId)) {
                 null
             } else {
@@ -88,8 +87,8 @@ fun LobbyGamesView(
             ModalActions(
                 primary = ActionButton(
                     label = { joinGameButtonFR },
-                    canAction = { selectedPendingGameIndex !== null },
-                    action = { joinGame(selectedPendingGameIndex!!) }
+                    canAction = { selectedGameIndex !== null },
+                    action = { joinGame(selectedGameIndex!!) }
                 )
             )
         )

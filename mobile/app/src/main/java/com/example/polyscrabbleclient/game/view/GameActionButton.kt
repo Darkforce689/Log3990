@@ -39,7 +39,7 @@ val GameActionButton: @Composable (
         ) {
             Text(actionButton.label())
             if (actionButton.icon !== null) {
-                Spacer(modifier = Modifier.size(15.dp))
+                Spacer(modifier = Modifier.size(10.dp))
                 Icon(
                     actionButton.icon,
                     contentDescription = "${actionButton.icon}"
@@ -53,7 +53,7 @@ val GameActionButton: @Composable (
 @Composable
 fun GameActionButtonPreview() {
     GameActionButton(
-        300.dp,
+        150.dp,
         ActionButton(
             action = { },
             canAction = { true },

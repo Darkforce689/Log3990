@@ -136,4 +136,13 @@ class GameModel {
     fun getWatchedPlayer(): Player? {
         return watchedPlayerIndex.value?.let { getPlayer(it) }
     }
+
+    fun setupObserver(observerNames: ArrayList<String>?) {
+        if (observerNames != null) {
+            val isUserAnObserver = observerNames.contains(User.name)
+            if (isUserAnObserver) {
+                watchedPlayerIndex.value = 0
+            }
+        }
+    }
 }

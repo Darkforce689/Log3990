@@ -276,7 +276,11 @@ class GameViewModel : ViewModel() {
     }
 
     private fun watchOtherPlayer(delta: Int) {
-        val index = game.watchedPlayerIndex.value ?: return
-        game.watchedPlayerIndex.value = (index + delta) % game.players.size
+        val index = game.watchedPlayerIndex.value
+        if (index === null) {
+            return
+        }
+        val playerCount = game.players.size
+        game.watchedPlayerIndex.value = (index + delta + playerCount) % playerCount
     }
 }
