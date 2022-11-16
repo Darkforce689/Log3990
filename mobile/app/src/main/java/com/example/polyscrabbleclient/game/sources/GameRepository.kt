@@ -1,7 +1,6 @@
 package com.example.polyscrabbleclient.game.sources
 
 import com.example.polyscrabbleclient.game.model.GameModel
-import com.example.polyscrabbleclient.game.model.millisecondsInSecond
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.utils.Repository
 
@@ -16,8 +15,8 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
     }
 
     fun receiveInitialGameSettings(gameSettings: OnlineGameSettings) {
-        model.turnTotalTime.value = gameSettings.timePerTurn / millisecondsInSecond
-        model.turnRemainingTime.value = gameSettings.timePerTurn / millisecondsInSecond
+        model.turnTotalTime.value = gameSettings.timePerTurn
+        model.turnRemainingTime.value = gameSettings.timePerTurn
         model.players.addAll(createPlayers(gameSettings.playerNames))
         model.gameMode.value = gameSettings.gameMode
         model.board.gameMode = model.gameMode.value
@@ -28,13 +27,13 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
 
     private val onStartTime: (startTime: StartTime?) -> Unit = { startTime ->
         startTime?.let {
-            model.turnTotalTime.value = it / millisecondsInSecond
+            model.turnTotalTime.value = it
         }
     }
 
     private val onRemainingTime: (remainingTime: RemainingTime?) -> Unit = { remainingTime ->
         remainingTime?.let {
-            model.turnRemainingTime.value = it / millisecondsInSecond
+            model.turnRemainingTime.value = it
         }
     }
 

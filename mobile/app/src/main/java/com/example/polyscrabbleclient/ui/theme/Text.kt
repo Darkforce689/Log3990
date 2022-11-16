@@ -1,7 +1,8 @@
 package com.example.polyscrabbleclient.ui.theme
 
+import com.example.polyscrabbleclient.account.viewmodel.MILLI_TO_SECONDS
 import com.example.polyscrabbleclient.account.viewmodel.SEC_IN_MIN
-import com.example.polyscrabbleclient.game.model.millisecondsInSecond
+
 
 // Authentication System
 const val email_string = "Courriel"
@@ -52,7 +53,7 @@ const val Yes = "Oui"
 const val No = "Non"
 val formatTurnTime: (Long) -> String =
     { ms ->
-        val absoluteSeconds = ms / millisecondsInSecond
+        val absoluteSeconds = ms / MILLI_TO_SECONDS
         val minutes = absoluteSeconds / SEC_IN_MIN
         val seconds = absoluteSeconds - minutes * SEC_IN_MIN
         String.format("%01d:%02d", minutes, seconds)
