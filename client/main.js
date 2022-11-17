@@ -1,14 +1,15 @@
-const { app, BrowserWindow, session } = require('electron');
+const { app, BrowserWindow, session, ipcMain } = require('electron');
 
 let appWindow;
-
+let externalWindow;
+let gameToken;
 function initWindow() {
     appWindow = new BrowserWindow({
-        // fullscreen: true,
         height: 800,
-        width: 1000,
+        width: 1200,
         webPreferences: {
             nodeIntegration: true,
+            contextIsolation: false,
         },
     });
 
@@ -19,14 +20,61 @@ function initWindow() {
     appWindow.setMenuBarVisibility(false);
 
     // Initialize the DevTools.
-    // appWindow.webContents.openDevTools()
+    appWindow.webContents.openDevTools()
 
     appWindow.on('closed', function () {
         appWindow = null;
+        try {
+            app.quit();
+        } catch (error) {
+
+        }
+    });
+}
+
+function openChatWindow(route, eventSender) {
+    externalWindow = new BrowserWindow({
+        height: 600,
+        width: 600,
+        resizable: false,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+    });
+    // Electron Build Path
+    const path = `file://${__dirname}/dist/client/index.html#/${route}?gameToken=${gameToken}`;
+    externalWindow.loadURL(path);
+
+    
+    if (gameToken!==undefined) {
+        externalWindow.webContents.send('game-token',gameToken);
+    }
+    externalWindow.setMenuBarVisibility(false);
+    eventSender.send(`open-${route}`, true);
+
+    externalWindow.on('close', (event, arg) => {
+        eventSender.send(`open-${route}`, false);
+    });
+
+    externalWindow.on('closed', function () {
+        externalWindow = null;
     });
 }
 
 app.on('ready', () => {
+    ipcMain.on('open-external-window', (event, args) => {
+        openChatWindow(args, event.sender);
+    });
+
+    ipcMain.on('close-external-window', (event, args) => {
+        externalWindow.close();
+    });
+
+    ipcMain.on('game-token',(event,args)=>{
+        gameToken = args;
+     });
+
     session.defaultSession.webRequest.onHeadersReceived(
         { urls: ['http://localhost:3000/*', 'https://d2niwfi3hp97su.cloudfront.net/*'] },
         (details, callback) => {

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { IntegratedChatComponent } from '@app/components/integrated-chat/integrated-chat.component';
 import { AuthGuard } from '@app/guards/auth.guard';
 import { AccountPageComponent } from '@app/pages/account-page/account-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
@@ -19,6 +20,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginPageComponent },
     { path: 'register', component: RegisterPageComponent },
     { path: 'account', component: AccountPageComponent, canActivate: [AuthGuard] },
+    { path: 'chat-box', component: IntegratedChatComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: '/home' },
 ];
 

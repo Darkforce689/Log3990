@@ -3,6 +3,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { BOARD_DIMENSION, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD, WAIT_STATUS } from '@app/game-logic/constants';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
@@ -22,6 +23,7 @@ describe('GameManagerService Online Edition', () => {
     let gameSocketHandler: GameSocketHandlerService;
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
     const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
+    const messageServiceMock = jasmine.createSpyObj('MessageService', ['joinGameConversation', 'leaveGameConversation']);
     const accountServiceMock = jasmine.createSpyObj('AccountService', ['actualizeAccount'], {
         account: {
             name: 'p1',
@@ -66,6 +68,7 @@ describe('GameManagerService Online Edition', () => {
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
                 { provide: BotHttpService, useValue: mockBotHttpService },
                 { provide: AccountService, useValue: accountServiceMock },
+                { provide: MessagesService, useValue: messageServiceMock },
             ],
             imports: [HttpClientTestingModule],
         });

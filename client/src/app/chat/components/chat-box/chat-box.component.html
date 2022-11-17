@@ -1,5 +1,5 @@
 <mat-card class="chatContainer" appClickAndClickout [inputComponent]="self" (click)="click()">
-    <app-conversation-picker></app-conversation-picker>
+    <app-conversation-picker [isPoped]="isPoped"></app-conversation-picker>
     <div #chat class="sharedChat" (scroll)="onChatScroll()">
         <app-message *ngFor="let message of messages$ | async" [message]="message"></app-message>
     </div>

@@ -1,3 +1,4 @@
+import { PortalModule } from '@angular/cdk/portal';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,6 +12,7 @@ import { ReplayComponent } from '@app/account/components/game-history/replay/rep
 import { ProfilComponent } from '@app/account/components/profil/profil.component';
 import { ChatBoxComponent } from '@app/chat/components/chat-box/chat-box.component';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
+import { IntegratedChatComponent } from '@app/components/integrated-chat/integrated-chat.component';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
@@ -72,6 +74,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         HomepageComponent,
         NewGamePageComponent,
         HeaderBarComponent,
+        IntegratedChatComponent,
         BoldPipe,
         PreventContextMenuDirective,
         ClickAndClickoutDirective,
@@ -118,6 +121,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         HttpClientModule,
         ReactiveFormsModule,
         MatTableModule,
+        PortalModule,
     ],
     providers: [
         {
