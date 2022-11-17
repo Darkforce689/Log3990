@@ -8,8 +8,8 @@ import com.example.polyscrabbleclient.message.model.Message
 import com.example.polyscrabbleclient.message.model.MessageDTO
 import com.example.polyscrabbleclient.message.utils.MessageFactory
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
-import java.lang.RuntimeException
 import java.net.URL
+import kotlin.RuntimeException
 
 object MessageRepository {
     fun fetchMessages(conversationId: String, pagination: Pagination, callback: (messages: List<Message>) -> Unit): Thread {
@@ -23,9 +23,14 @@ object MessageRepository {
             .build()
         val url = URL(builtUri.toString())
         val req = Thread {
-            data class MessagesGetRes(val messages: ArrayList<MessageDTO>)
+            data class MessagesGetRes(val messages: ArrayList<MessageDTO>?)
             val res = ScrabbleHttpClient.get(url, MessagesGetRes::class.java)
             if (res === null) {
+                throw RuntimeException("Parsing error when fetching message from $conversationId")
+            }
+
+            if (res.messages == null) {
+                callback(listOf())
                 return@Thread
             }
 

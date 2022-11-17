@@ -3,6 +3,7 @@ package com.example.polyscrabbleclient.lobby.viewmodels
 import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.lobby.sources.JoinGame
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
+import com.example.polyscrabbleclient.message.domain.ConversationsManager
 
 class JoinGameViewModel : ViewModel() {
     val pendingGames = LobbyRepository.model.pendingGames
@@ -17,7 +18,8 @@ class JoinGameViewModel : ViewModel() {
         }
         LobbyRepository.emitJoinGame(
             JoinGame(id = pendingGameId),
-            navigateToGameScreen
-        )
+        ) {
+            navigateToGameScreen()
+        }
     }
 }

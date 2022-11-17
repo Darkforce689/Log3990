@@ -53,9 +53,12 @@ fun ChatBox(chatBoxViewModel: ChatBoxViewModel) {
                 selectedConvoIndex = chatBoxViewModel.selectedConvoIndex.value,
                 onSelectedConvo = { index ->
                     chatBoxViewModel.onSelectedConvo(index)
+                    chatBoxViewModel.scrollDown.value = true
                 },
-                onConvoLeave = { index ->
-                    chatBoxViewModel.leaveConversation(index)
+                onConvoLeave = { index, callback ->
+                    chatBoxViewModel.leaveConversation(index) {
+                        callback()
+                    }
                 },
                 modifier = Modifier.height(70.dp)
             )
@@ -67,7 +70,7 @@ fun ChatBox(chatBoxViewModel: ChatBoxViewModel) {
                     .weight(0.5f)
                     .fillMaxHeight()
             ) {
-                MessageList(messages, history)
+                MessageList(messages, history, chatBoxViewModel.scrollDown)
             }
             Box(
                 modifier = Modifier.padding(20.dp, 3.dp, 20.dp, 15.dp),
@@ -83,6 +86,7 @@ fun ChatBox(chatBoxViewModel: ChatBoxViewModel) {
 fun MessageList(
     messages: SnapshotStateList<Message>,
     history: LazyPagingItems<Message>,
+    scrolldown: MutableState<Boolean>,
 ) {
 
     val scrollState = rememberLazyListState()
@@ -104,6 +108,12 @@ fun MessageList(
             return@LaunchedEffect
         }
         scrollState.animateScrollToItem(0)
+    }
+    LaunchedEffect(scrolldown.value) {
+        if (scrolldown.value) {
+            scrollState.scrollToItem(0, 0)
+            scrolldown.value = false
+        }
     }
 
     LazyColumn(

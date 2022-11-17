@@ -9,6 +9,7 @@ import com.example.polyscrabbleclient.game.model.TileContent
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.ui.theme.*
 
 class GameViewModel : ViewModel() {
@@ -201,6 +202,7 @@ class GameViewModel : ViewModel() {
 
     fun quitGame() {
         GameRepository.quitGame()
+        ConversationsManager.leaveGameConversation()
     }
 
     fun splitPoints() {

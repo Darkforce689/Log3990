@@ -1,8 +1,20 @@
 package com.example.polyscrabbleclient
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Message
+import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -18,12 +30,15 @@ import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.game.view.GameScreen
 import com.example.polyscrabbleclient.lobby.view.NewGameScreen
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
+import com.example.polyscrabbleclient.message.components.ChatBox
 import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
 import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
 import com.example.polyscrabbleclient.utils.Background
 import com.example.polyscrabbleclient.utils.PageSurface
+import com.example.polyscrabbleclient.utils.PhysicalButtons
+import kotlinx.coroutines.launch
 
 enum class NavPage(val label: String) {
     RegistrationRoute("registration"),
@@ -46,21 +61,20 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
     NavHost(navController, startDestination = startPage.label) {
 
         composable(NavPage.MainPage.label) {
-            PageWithHeader(navController, themeSelectorViewModel, Background.Home) {
+            PageWithHeaderAndChat(navController, themeSelectorViewModel, Background.Home) {
                 StartView(navController, StartViewModel())
             }
         }
-        composable(NavPage.Room.label) {
-            PageSurface {
-                ChatRoomScreen(navController, ChatBoxViewModel())
-            }
-        }
+
         loginGraph(navController)
         composable(NavPage.GamePage.label) {
-            PageSurface(Background.Game) {
-                GameScreen(navController)
+            PageWithChat {
+                PageSurface(Background.Game) {
+                    GameScreen(navController)
+                }
             }
         }
+
         newGame(navController, themeSelectorViewModel)
         composable(NavPage.Account.label) {
             PageSurface {
@@ -71,18 +85,83 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
 }
 
 @Composable
-private fun PageWithHeader(
+fun PageWithHeaderAndChat(
     navController: NavController,
     themeSelectorViewModel: ThemeSelectorViewModel,
     background: Background? = Background.Page,
     pageContent: @Composable () -> Unit
 ) {
-    PageSurface(background) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            HeaderBar(navController, themeSelectorViewModel)
-            pageContent()
+    PageWithChat(background) {
+        HeaderBar(navController, themeSelectorViewModel)
+        pageContent()
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun PageWithChat(
+    background: Background? = Background.Page,
+    pageContent: @Composable () -> Unit
+) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    var keyboard: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    var focus = LocalFocusManager.current
+    val viewModel: ChatPageViewModel = viewModel()
+
+    LaunchedEffect(drawerState.currentValue) {
+        if (drawerState.isClosed) {
+            keyboard?.hide()
+            focus.clearFocus()
+            viewModel.onCloseChat()
+        } else {
+            PhysicalButtons.pushBackPress {
+                scope.launch {
+                    drawerState.close()
+                    viewModel.onBackPressed()
+                }
+            }
         }
     }
+
+    CompositionLocalProvider(LocalLayoutDirection.provides(LayoutDirection.Rtl)) {
+        ModalDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                CompositionLocalProvider(
+                    LocalLayoutDirection.provides(LayoutDirection.Ltr)
+                ) {
+                    ChatBox(ChatBoxViewModel())
+                }
+            },
+        ) {
+            CompositionLocalProvider(
+                LocalLayoutDirection.provides(LayoutDirection.Ltr)
+            ) {
+                Scaffold(
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = {
+                                scope.launch {
+                                    drawerState.open()
+                                }
+                            }
+                        ) {
+                            Icon(Icons.Default.Message, null)
+                        }
+                    }
+                ) {
+                    PageSurface(background) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            pageContent()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 fun NavGraphBuilder.newGame(
@@ -91,7 +170,7 @@ fun NavGraphBuilder.newGame(
 ) {
     navigation(startDestination = NavPage.NewGame.label, route = NavPage.NewGameRoute.label) {
         composable(NavPage.NewGame.label) {
-            PageWithHeader(navController, themeSelectorViewModel) {
+            PageWithHeaderAndChat(navController, themeSelectorViewModel) {
                 NewGameScreen(navController, CreateGameViewModel())
             }
         }

@@ -29,7 +29,7 @@ data class ValidationResponse(val message: String, val errors: ArrayList<String>
 class MainActivity : ComponentActivity() {
 
     override fun onBackPressed() {
-        PhysicalButtons.backPressed?.let {
+        PhysicalButtons.getBackPress()?.let {
             it()
             return
         }
