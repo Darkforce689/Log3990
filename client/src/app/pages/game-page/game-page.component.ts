@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, HostListener, OnDestroy } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
@@ -11,6 +11,7 @@ import { RACK_LETTER_COUNT } from '@app/game-logic/constants';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
+import { PopChatService } from '@app/pages/homepage/pop-chat.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,7 +19,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './game-page.component.html',
     styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageComponent implements OnDestroy {
+export class GamePageComponent implements OnDestroy, AfterViewInit {
     dialogRef: MatDialogRef<DisconnectedFromServerComponent> | undefined;
     spectatePlayerNbr: number = 0;
     private disconnected$$: Subscription;
@@ -30,6 +31,8 @@ export class GamePageComponent implements OnDestroy {
         private router: Router,
         private dialog: MatDialog,
         private inputController: UIInputControllerService,
+        public popOutService: PopChatService,
+        private cdRef: ChangeDetectorRef,
     ) {
         try {
             this.gameManager.startGame();
@@ -55,6 +58,12 @@ export class GamePageComponent implements OnDestroy {
     keypressEvent($event: KeyboardEvent) {
         const input: UIInput = { type: InputType.KeyPress, args: $event.key };
         this.inputController.receive(input);
+    }
+
+    ngAfterViewInit(): void {
+        this.popOutService.windowed$.subscribe(() => {
+            this.cdRef.detectChanges();
+        });
     }
 
     ngOnDestroy() {

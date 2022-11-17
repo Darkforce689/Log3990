@@ -7,6 +7,7 @@ import { ConversationService } from '@app/chat/services/conversation/conversatio
 import { MessageFactoryService } from '@app/chat/services/message-factory/message-factory.service';
 import { OnlineChatHandlerService } from '@app/chat/services/online-chat-handler/online-chat-handler.service';
 import { AccountService } from '@app/services/account.service';
+import { ElectronIpcService } from '@app/services/electron-ipc.service';
 import { BehaviorSubject, Subscription, zip } from 'rxjs';
 import { first, takeWhile } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -44,6 +45,7 @@ export class MessagesService {
         private messageFactory: MessageFactoryService,
         private conversationService: ConversationService,
         private accountService: AccountService,
+        private electron: ElectronIpcService,
     ) {
         this.onlineChat.newMessages$.subscribe((chatMessage: ChatMessage) => {
             if (!this.conversationService.currentConversation) {
@@ -92,7 +94,6 @@ export class MessagesService {
         }
         this.onlineChat.disconnect();
         this.clearLog();
-        // TODO clear messages etc
     }
 
     connect() {
@@ -102,6 +103,7 @@ export class MessagesService {
                 if (!account) {
                     return;
                 }
+
                 this.onlineChat.joinChatRooms(conversations);
             });
         });
@@ -123,15 +125,16 @@ export class MessagesService {
         });
     }
 
-    joinConversation(roomId: string) {
-        this.onlineChat.joinChatRoomWithUser(roomId);
-    }
-
     joinGameConversation(gameToken: string) {
-        // TODO maybe redundant
-        this.onlineChat.joinChatRoomWithUser(gameToken);
-        this.conversationService.joinGameConversation(gameToken);
-        this.changeCurrentConversation(gameToken);
+        this.accountService.account$.pipe(takeWhile((account) => account === undefined, true)).subscribe((account) => {
+            if (!account) {
+                return;
+            }
+            this.onlineChat.joinChatRoomWithUser(gameToken);
+            this.conversationService.joinGameConversation(gameToken);
+            this.changeCurrentConversation(gameToken);
+            this.electron.sendGameToken(gameToken);
+        });
     }
 
     leaveGameConversation() {
@@ -198,7 +201,6 @@ export class MessagesService {
     }
 
     receiveNonDistributedPlayerMessage(content: string) {
-        // TODO add to not distributed message
         if (!this.conversationService.currentConversation) {
             return;
         }

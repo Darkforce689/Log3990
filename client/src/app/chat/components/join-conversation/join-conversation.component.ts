@@ -65,7 +65,6 @@ export class JoinConversationComponent implements AfterViewInit {
     }
 
     transformConversations(conversations: Conversation[]) {
-        // TODO handle
         const joinedConversationId = new Set(this.conversationService.joinedConversations$.value.map((conversation) => conversation._id));
         return conversations.map((conversation) => {
             return {

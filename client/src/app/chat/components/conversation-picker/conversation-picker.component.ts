@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CreateConversationComponent } from '@app/chat/components/create-conversation/create-conversation.component';
@@ -7,6 +7,7 @@ import { JoinConversationComponent } from '@app/chat/components/join-conversatio
 import { GAME_CONVO_NAME, GENERAL_CHANNEL } from '@app/chat/constants';
 import { Conversation } from '@app/chat/interfaces/conversation.interface';
 import { ConversationService } from '@app/chat/services/conversation/conversation.service';
+import { PopChatService } from '@app/pages/homepage/pop-chat.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
@@ -16,6 +17,7 @@ import { map, takeUntil } from 'rxjs/operators';
     styleUrls: ['./conversation-picker.component.scss'],
 })
 export class ConversationPickerComponent implements OnInit, OnDestroy {
+    @Input() isPoped = false;
     selectedConversationIndex = 0;
     readonly conversations$ = new BehaviorSubject<Conversation[]>([]);
     options = ['Rejoindre', 'Créer', 'Supprimer'];
@@ -39,6 +41,7 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
         private matDialog: MatDialog,
         private snackBarRef: MatSnackBar,
         private cdRef: ChangeDetectorRef,
+        public popOutService: PopChatService,
     ) {}
 
     ngOnDestroy(): void {
@@ -121,6 +124,10 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
             default:
                 throw Error(`No modal bound to option: ${option}`);
         }
+    }
+
+    openWindow() {
+        this.popOutService.toggleExternalWindow();
     }
 
     private arrangeConversations(conversations: Conversation[]): Conversation[] {

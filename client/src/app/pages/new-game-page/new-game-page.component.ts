@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { MatRipple, RippleConfig } from '@angular/material/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { LoadingGameComponent } from '@app/components/modals/loading-game/loading-game.component';
@@ -6,6 +6,7 @@ import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-ga
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { GameSettings } from '@app/game-logic/game/games/game-settings.interface';
+import { PopChatService } from '@app/pages/homepage/pop-chat.service';
 import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
@@ -17,7 +18,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './new-game-page.component.html',
     styleUrls: ['./new-game-page.component.scss'],
 })
-export class NewGamePageComponent {
+export class NewGamePageComponent implements AfterViewInit {
     @ViewChild(MatRipple) ripple: MatRipple;
 
     startGame$$: Subscription;
@@ -29,7 +30,15 @@ export class NewGamePageComponent {
         private gameLaucherService: GameLauncherService,
         private socketHandler: NewOnlineGameSocketHandler,
         private gameManager: GameManagerService,
+        public popOutService: PopChatService,
+        private cdRef: ChangeDetectorRef,
     ) {}
+
+    ngAfterViewInit(): void {
+        this.popOutService.windowed$.subscribe(() => {
+            this.cdRef.detectChanges();
+        });
+    }
 
     triggerRipple() {
         const rippleConfig: RippleConfig = {

@@ -225,7 +225,6 @@ export class ServerGame {
     }
 
     private displayLettersLeft() {
-        // TODO: Fix systeme message
         let message = 'Fin de partie - lettres restantes';
         this.messagesService.sendGlobal(this.gameToken, message);
         for (const player of this.players) {
