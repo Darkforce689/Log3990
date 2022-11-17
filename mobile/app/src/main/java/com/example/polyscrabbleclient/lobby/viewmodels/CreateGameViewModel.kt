@@ -19,11 +19,11 @@ class CreateGameViewModel : ViewModel() {
 
     val hostHasJustQuitTheGame = LobbyRepository.model.hostHasJustQuitTheGame
 
+    val gameMode = LobbyRepository.model.selectedGameMode
     val timePerTurn = mutableStateOf(DEFAULT_TIMER)
     val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)
     val randomBonus = mutableStateOf(false)
     val botDifficulty = mutableStateOf(BotDifficulty.Easy)
-    val gameMode = mutableStateOf(GameMode.Classic)
     val magicCardIds = mutableStateListOf<String>()
 
     fun containsMagicCard(magicCardId: String): Boolean {

@@ -19,12 +19,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.example.polyscrabbleclient.ui.theme.formatTurnTime
 import com.example.polyscrabbleclient.ui.theme.lettersRemainingFR
+
+const val LowTimerBound = 5000
 
 @Composable
 fun GameInfoView(viewModel: GameViewModel) {
     Card {
         Column(
+            modifier = Modifier.padding(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -46,8 +50,8 @@ fun GameInfoView(viewModel: GameViewModel) {
                 Box(contentAlignment = Alignment.Center) {
                     val time = viewModel.turnRemainingTime.value
                     Text(
-                        text = time.toString(),
-                        color = if (time < 5)
+                        text = formatTurnTime(time.toLong()),
+                        color = if (time <= LowTimerBound)
                             MaterialTheme.colors.error
                         else
                             Color.Unspecified,

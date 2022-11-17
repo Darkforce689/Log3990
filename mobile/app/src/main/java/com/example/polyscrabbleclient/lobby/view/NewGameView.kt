@@ -118,7 +118,8 @@ private fun JoinAGameModal(
                     waitingForOtherPlayersDialogOpened.value = true
                 }
             },
-            title = joinAGameFR
+            title = joinAGameFR,
+            maxWidth = 950.dp
         ) { modalButtons ->
             JoinGameView(navController = navController) { modalActions ->
                 modalButtons(modalActions)
