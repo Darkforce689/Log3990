@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.lobby.sources
 
 import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
+import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.utils.Repository
 
 object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>()  {
@@ -19,6 +20,8 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>()  {
     private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
         gameStarted?.let {
             GameRepository.receiveInitialGameSettings(it)
+            val gameToken = it.id
+            ConversationsManager.joinGameConversation(gameToken)
         }
     }
 

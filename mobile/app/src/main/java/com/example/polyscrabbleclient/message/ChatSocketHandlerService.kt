@@ -18,12 +18,13 @@ enum class EventType(val event: String) {
     NEW_MESSAGE("newMessage"),
     ROOM_MESSAGES("roomMessages"),
     LEAVE_ROOM("leaveRoom"),
+    SYSTEM_MESSAGE("systemMessages"),
+    SYSTEM_ERROR("error"),
 }
 
 private const val URL = BuildConfig.COMMUNICATION_URL
 
 object ChatSocketHandler {
-
     private lateinit var webSocket: Socket
     private val joinedRooms: MutableSet<String> = HashSet()
 
@@ -40,8 +41,14 @@ object ChatSocketHandler {
         try {
             opts.transports = arrayOf(WebSocket.NAME)
             webSocket = IO.socket(URL, opts)
-            webSocket.on(Socket.EVENT_CONNECT) { println("Connected") }
-            webSocket.on(Socket.EVENT_DISCONNECT) { println("Disconnected") }
+            webSocket.on(Socket.EVENT_CONNECT) {
+                println("ChatSocketHandler Connected")
+                joinedRooms.clear()
+            }
+            webSocket.on(Socket.EVENT_DISCONNECT) {
+                println("ChatSocketHandler Disconnected")
+                joinedRooms.clear()
+            }
         } catch (e: URISyntaxException) {
             println("Error$e")
         }
@@ -55,11 +62,12 @@ object ChatSocketHandler {
         webSocket.connect()
     }
 
-    fun setJoinedRooms(roomToJoin: List<String>) {
-        val roomIds = HashSet(roomToJoin)
-        val roomToLeave = joinedRooms.filter { roomId -> roomIds.contains(roomId) }
-        leaveRooms(roomToLeave)
-        joinRooms(roomToJoin)
+    fun setJoinedRooms(roomIdToJoin: List<String>) {
+        val roomIds = HashSet(roomIdToJoin)
+        val roomsToLeave = joinedRooms.filter { roomId -> !roomIds.contains(roomId) }
+        val roomsToJoin = roomIdToJoin.filter { roomId -> !joinedRooms.contains(roomId) }
+        leaveRooms(roomsToLeave)
+        joinRooms(roomsToJoin)
     }
 
     @Synchronized

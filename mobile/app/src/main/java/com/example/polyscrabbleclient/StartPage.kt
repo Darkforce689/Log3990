@@ -32,7 +32,6 @@ fun StartView(
 ) {
     PhysicalButtons.reset()
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Prototype(navController = navController)
         GamePage(navController = navController)
         NewGamePage(navController)
         Disconnection(navController = navController, startViewModel = startViewModel)
