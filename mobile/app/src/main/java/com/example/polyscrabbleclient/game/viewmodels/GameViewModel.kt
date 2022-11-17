@@ -264,4 +264,16 @@ class GameViewModel : ViewModel() {
     fun chooseJoker(selectedTile: TileContent) {
         return game.board.jokerModel.chooseJoker(selectedTile!!)
     }
+
+    fun isObserver(): Boolean {
+        return game.isUserAnObserver()
+    }
+
+    fun watchNextPlayer() {
+        game.watchOtherPlayer(+1)
+    }
+
+    fun watchPreviousPlayer() {
+        game.watchOtherPlayer(-1)
+    }
 }

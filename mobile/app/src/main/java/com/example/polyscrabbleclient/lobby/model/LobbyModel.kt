@@ -1,14 +1,14 @@
 package com.example.polyscrabbleclient.lobby.model
 
-import com.example.polyscrabbleclient.lobby.sources.ObservableGames
-import com.example.polyscrabbleclient.lobby.sources.PendingGameId
-import com.example.polyscrabbleclient.lobby.sources.PendingGames
 import androidx.compose.runtime.mutableStateOf
+import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
+import com.example.polyscrabbleclient.lobby.sources.LobbyGames
 
 class LobbyModel {
-    val pendingGames = mutableStateOf<PendingGames?>(null)
-    val observableGames = mutableStateOf<ObservableGames?>(null)
-    val currentPendingGameId = mutableStateOf<PendingGameId?>(null)
+    val selectedGameMode = mutableStateOf(GameMode.Classic)
+    val lobbyGames = mutableStateOf<LobbyGames?>(null)
+    val currentPendingGameId = mutableStateOf<LobbyGameId?>(null)
     val pendingGamePlayerNames = mutableStateOf(listOf<String>())
     val isPendingGameHost = mutableStateOf(false)
     val hostHasJustQuitTheGame = mutableStateOf(false)

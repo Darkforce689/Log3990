@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.game.view
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,7 +15,7 @@ import com.example.polyscrabbleclient.utils.constants.*
 fun MagicCardsView(viewModel: GameViewModel = GameViewModel()) {
 
     fun getMagicCards(): List<IMagicCard> {
-        return viewModel.game.drawnMagicCards.value[viewModel.game.getUserIndex()]
+        return viewModel.game.getDrawnMagicCards()
     }
 
     val magicCards: List<IMagicCard> = getMagicCards()
@@ -33,15 +34,15 @@ fun MagicCardsView(viewModel: GameViewModel = GameViewModel()) {
 
     fun getFun(id: String): Unit {
         return when (id) {
-            split_points_id ->  viewModel.splitPoints()
-            exchange_horse_id ->  viewModel.exchangeHorse()
-            exchange_horse_all_id ->  viewModel.exchangeHorseAll()
-            skip_next_turn_id ->  viewModel.skipNextTurn()
-            extra_turn_id ->  viewModel.extraTurn()
-            reduce_timer_id ->  viewModel.reduceTimer()
-            exchange_a_letter_id ->  viewModel.exchangeALetter()
-            place_random_bonus_id ->  viewModel.placeRandomBonus()
-            else ->  Unit
+            split_points_id -> viewModel.splitPoints()
+            exchange_horse_id -> viewModel.exchangeHorse()
+            exchange_horse_all_id -> viewModel.exchangeHorseAll()
+            skip_next_turn_id -> viewModel.skipNextTurn()
+            extra_turn_id -> viewModel.extraTurn()
+            reduce_timer_id -> viewModel.reduceTimer()
+            exchange_a_letter_id -> viewModel.exchangeALetter()
+            place_random_bonus_id -> viewModel.placeRandomBonus()
+            else -> Unit
         }
     }
 
