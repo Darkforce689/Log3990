@@ -54,6 +54,7 @@ import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/mag
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { GameActionButtonComponent } from './game-logic/game/game-action-button/game-action-button/game-action-button.component';
 
 /**
  * Main module that is used in main.ts.
@@ -111,6 +112,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         GameHistoryComponent,
         ReplayComponent,
         ReplayPlayersComponent,
+        GameActionButtonComponent,
     ],
     imports: [
         AppMaterialModule,
