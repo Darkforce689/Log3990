@@ -11,7 +11,7 @@ import { RACK_LETTER_COUNT } from '@app/game-logic/constants';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
-import { PopChatService } from '@app/pages/homepage/pop-chat.service';
+import { PopChatService } from '@app/services/pop-chat.service';
 import { Subscription } from 'rxjs';
 
 @Component({

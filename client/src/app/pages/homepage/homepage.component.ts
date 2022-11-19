@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
-import { PopChatService } from '@app/pages/homepage/pop-chat.service';
 import { AuthService } from '@app/services/auth.service';
+import { PopChatService } from '@app/services/pop-chat.service';
 import { first } from 'rxjs/operators';
 
 @Component({
