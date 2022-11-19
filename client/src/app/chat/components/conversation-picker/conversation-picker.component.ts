@@ -7,7 +7,7 @@ import { JoinConversationComponent } from '@app/chat/components/join-conversatio
 import { GAME_CONVO_NAME, GENERAL_CHANNEL } from '@app/chat/constants';
 import { Conversation } from '@app/chat/interfaces/conversation.interface';
 import { ConversationService } from '@app/chat/services/conversation/conversation.service';
-import { PopChatService } from '@app/pages/homepage/pop-chat.service';
+import { PopChatService } from '@app/services/pop-chat.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 

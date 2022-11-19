@@ -6,7 +6,7 @@ import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-ga
 import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { GameSettings } from '@app/game-logic/game/games/game-settings.interface';
-import { PopChatService } from '@app/pages/homepage/pop-chat.service';
+import { PopChatService } from '@app/services/pop-chat.service';
 import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
