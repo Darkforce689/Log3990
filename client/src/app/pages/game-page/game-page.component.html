@@ -23,28 +23,52 @@
                 <app-horse appPreventContextMenu (clickLetter)="receiveInput($event)"></app-horse>
             </ng-template>
             <div class="actions">
-                <div *ngIf="!isObserver">
-                    <button mat-raised-button color="primary" [disabled]="!canPass" (click)="pass()">Passer</button>
-                    <button mat-raised-button color="primary" [disabled]="!canExchange" (click)="confirm()">Échanger</button>
-                </div>
-                <div *ngIf="!isObserver">
-                    <button mat-raised-button color="primary" [disabled]="!canPlace" (click)="confirm()">Placer</button>
-                    <button mat-raised-button color="primary" [disabled]="!canCancel" (click)="cancel()">Annuler</button>
+                <ng-template *ngIf="isObserver; then observerActions; else playerActions"></ng-template>
+            </div>
+            <ng-template #observerActions>
+                <app-game-action-button (clickButton)="nextPlayer()" icon="move_down" label="Joueur suivant"></app-game-action-button>
+                <app-game-action-button (clickButton)="previousPlayer()" icon="move_up" label="Joueur précédent"></app-game-action-button>
+            </ng-template>
+            <ng-template #playerActions>
+                <div>
+                    <app-game-action-button [isDisabled]="!canPass" (clickButton)="pass()" icon="skip_next" label="Passer"></app-game-action-button>
+                    <app-game-action-button
+                        [isDisabled]="!canExchange"
+                        (clickButton)="confirm()"
+                        icon="swap_vert"
+                        label="Échanger"
+                    ></app-game-action-button>
                 </div>
                 <div>
-                    <button class="observerButton" *ngIf="isObserver" mat-raised-button color="primary" (click)="previousPlayer()">
-                        Joueur précédent
-                    </button>
-                    <button class="observerButton" *ngIf="isObserver" mat-raised-button color="primary" (click)="nextPlayer()">Joueur suivant</button>
+                    <app-game-action-button
+                        [isDisabled]="!canPlace"
+                        (clickButton)="confirm()"
+                        icon="download"
+                        label="Placer"
+                    ></app-game-action-button>
+                    <app-game-action-button [isDisabled]="!canCancel" (clickButton)="cancel()" icon="block" label="Annuler"></app-game-action-button>
                 </div>
+            </ng-template>
+            <div *ngIf="isMagicGame" class="magic-cards">
+                <app-magic-card-list></app-magic-card-list>
             </div>
             <div class="abandonner">
-                <button mat-raised-button (click)="abandon()" *ngIf="!isEndOfGame && !isObserver">Abandonner la partie</button>
-                <button mat-raised-button (click)="quit()" *ngIf="isEndOfGame || isObserver">Quitter</button>
+                <app-game-action-button
+                    *ngIf="!isEndOfGame && !isObserver"
+                    (clickButton)="abandon()"
+                    icon="logout"
+                    label="Abandonner la partie"
+                ></app-game-action-button>
+                <app-game-action-button
+                    *ngIf="isEndOfGame || isObserver"
+                    (clickButton)="quit()"
+                    icon="logout"
+                    label="Quitter"
+                ></app-game-action-button>
             </div>
             <button mat-fab color="primary" *ngIf="!popOutService.isPopOut" (click)="sidenav.toggle()" [ngClass]="sidenav.opened? 'button-open':'button-close'">
                 <mat-icon>chat</mat-icon>
             </button>
         </div>
-</mat-sidenav-content>
+    </mat-sidenav-content>
 </mat-sidenav-container>
