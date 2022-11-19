@@ -16,7 +16,7 @@ import { Timer } from '@app/game/game-logic/timer/timer.service';
 import { ServerLogger } from '@app/logger/logger';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { randomInt } from 'crypto';
-import { first, mapTo, Subject } from 'rxjs';
+import { first, mapTo, Subject, Subscription } from 'rxjs';
 
 export class ServerGame {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -30,6 +30,7 @@ export class ServerGame {
 
     isEnded$ = new Subject<undefined>();
     endReason: EndOfGameReason;
+    private playerAction$$: Subscription;
 
     constructor(
         timerController: TimerController,
@@ -145,7 +146,7 @@ export class ServerGame {
     }
 
     protected setPlayerActive(player: Player = this.getActivePlayer()): Player {
-        player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
+        this.playerAction$$ = player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
         return player;
     }
 
@@ -171,6 +172,7 @@ export class ServerGame {
                 this.onEndOfGame(EndOfGameReason.GameEnded);
                 return;
             }
+            this.playerAction$$?.unsubscribe();
             this.nextPlayer(nextPlayerDelta);
             this.emitGameState();
             this.startTurn();
