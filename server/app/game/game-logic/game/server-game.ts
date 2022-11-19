@@ -7,7 +7,7 @@ import { Board } from '@app/game/game-logic/board/board';
 import { LetterBag } from '@app/game/game-logic/board/letter-bag';
 import { MAX_CONSECUTIVE_PASS } from '@app/game/game-logic/constants';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, SyncState, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -41,6 +41,7 @@ export class ServerGame {
         private gameCompiler: GameCompiler,
         protected messagesService: SystemMessagesService,
         private newGameStateSubject: Subject<GameStateToken>,
+        private newSyncStateSubject: Subject<SyncStateToken>,
         private endGameSubject: Subject<EndOfGame>,
         public botDifficulty: BotDifficulty,
         private gameHistoryService: GameHistoryService,
@@ -155,6 +156,10 @@ export class ServerGame {
         return;
     }
 
+    protected syncronisation(sync: SyncState) {
+        this.emitSyncState(sync);
+    }
+
     protected endOfTurn(action: Action | undefined, nextPlayerDelta: number = 1) {
         this.timer.stop();
         if (!action) {
@@ -186,6 +191,11 @@ export class ServerGame {
         const gameStateToken: GameStateToken = { gameState, gameToken: this.gameToken };
         this.gameHistoryService.insertGameState(gameStateToken);
         this.newGameStateSubject.next(gameStateToken);
+    }
+
+    protected emitSyncState(sync: SyncState) {
+        const syncStateToken: SyncStateToken = { syncState: sync, gameToken: this.gameToken };
+        this.newSyncStateSubject.next(syncStateToken);
     }
 
     protected startTurn(reduceTimer: boolean = false) {
@@ -223,6 +233,7 @@ export class ServerGame {
     private drawGameLetters() {
         for (const player of this.players) {
             player.letterRack = this.letterBag.drawEmptyRackLetters();
+            player.syncronisation$.subscribe((sync) => this.syncronisation(sync));
         }
     }
 

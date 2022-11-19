@@ -1,6 +1,7 @@
 import { Action } from '@app/game-logic/actions/action';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
 import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
+import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { LetterPlacement } from '@app/game-logic/actions/ui-actions/ui-place-interface';
 import { WordPlacement } from '@app/game-logic/actions/ui-actions/word-placement.interface';
 import {
@@ -28,7 +29,7 @@ export class UIPlace implements UIAction {
     pointerPosition: { x: number; y: number } | null = null;
     tempLettersPosition: { x: number; y: number }[] = [];
 
-    constructor(private info: GameInfoService, private boardService: BoardService) {}
+    constructor(private info: GameInfoService, private boardService: BoardService, private inputController: UIInputControllerService) {}
 
     get canBeCreated(): boolean {
         return this.orderedIndexes.length > 0 && this.concernedIndexes.size > 0;
@@ -97,6 +98,7 @@ export class UIPlace implements UIAction {
         }
         this.pointerPosition = null;
         this.tempLettersPosition = [];
+        this.inputController.sendSyncState(this.tempLettersPosition);
     }
 
     private isSamePositionClicked(clickPosition: { x: number; y: number }): boolean {
@@ -161,13 +163,12 @@ export class UIPlace implements UIAction {
         this.tempLettersPosition.push({ x: this.pointerPosition.x, y: this.pointerPosition.y });
         const concernedTile = this.boardService.board.grid[this.pointerPosition.y][this.pointerPosition.x];
         const usedChar = this.info.player.letterRack[letterPlacement.rackIndex].char;
-        if (usedChar === JOKER_CHAR) {
-            concernedTile.letterObject = this.letterCreator.createBlankLetter(key);
-            concernedTile.letterObject.isTemp = true;
-            return;
-        }
-        concernedTile.letterObject = this.letterCreator.createLetter(usedChar);
+        if (usedChar === JOKER_CHAR) concernedTile.letterObject = this.letterCreator.createBlankLetter(key);
+        else concernedTile.letterObject = this.letterCreator.createLetter(usedChar);
         concernedTile.letterObject.isTemp = true;
+        if (this.tempLettersPosition.length >= 1) {
+            this.inputController.sendSyncState(this.tempLettersPosition);
+        }
     }
 
     private moveForwards(): void {
@@ -228,6 +229,9 @@ export class UIPlace implements UIAction {
         this.concernedIndexes.delete(lastLetter.rackIndex);
         this.pointerPosition = { x: lastLetter.x, y: lastLetter.y };
         this.tempLettersPosition.pop();
+        if (this.tempLettersPosition.length >= 0) {
+            this.inputController.sendSyncState(this.tempLettersPosition);
+        }
     }
 
     private isPlacementInProgress(): boolean {

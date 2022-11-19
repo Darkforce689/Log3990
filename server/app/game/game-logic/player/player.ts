@@ -1,11 +1,13 @@
 import { Action } from '@app/game/game-logic/actions/action';
 import { LetterBag } from '@app/game/game-logic/board/letter-bag';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
+import { SyncState } from '@app/game/game-logic/interface/game-state.interface';
 import { Subject } from 'rxjs';
 
 export class Player {
     static defaultName = 'QWERTY';
     action$: Subject<Action> = new Subject();
+    syncronisation$: Subject<SyncState> = new Subject();
 
     points: number = 0;
     letterRack: Letter[] = [];
@@ -14,6 +16,10 @@ export class Player {
 
     play(action: Action) {
         this.action$.next(action);
+    }
+
+    syncronisation(sync: SyncState) {
+        this.syncronisation$.next(sync);
     }
 
     getLettersFromRack(lettersToFind: Letter[]): Letter[] {

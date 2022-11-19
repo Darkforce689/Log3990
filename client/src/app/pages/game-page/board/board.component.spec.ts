@@ -58,7 +58,11 @@ describe('BoardComponent', () => {
         component.canvasDrawer = canvasDrawerMock;
         const dirAnswer: Direction = Direction.Horizontal;
 
-        const test = new UIPlace(jasmine.createSpyObj('GameInfoService', ['void']), jasmine.createSpyObj('PointCalculatorService', ['void']));
+        const test = new UIPlace(
+            jasmine.createSpyObj('GameInfoService', ['void']),
+            jasmine.createSpyObj('PointCalculatorService', ['void']),
+            inputControllerMock,
+        );
 
         test.pointerPosition = { x: 1, y: 1 };
         test.direction = Direction.Horizontal;
@@ -72,7 +76,11 @@ describe('BoardComponent', () => {
     it('ngDoCheck should enter all condition expect if pointerPosition', () => {
         component.canvasDrawer = canvasDrawerMock;
 
-        const test = new UIPlace(jasmine.createSpyObj('GameInfoService', ['void']), jasmine.createSpyObj('PointCalculatorService', ['void']));
+        const test = new UIPlace(
+            jasmine.createSpyObj('GameInfoService', ['void']),
+            jasmine.createSpyObj('PointCalculatorService', ['void']),
+            inputControllerMock,
+        );
 
         (Object.getOwnPropertyDescriptor(inputControllerMock, 'activeAction')?.get as jasmine.Spy<() => UIPlace>).and.returnValue(test);
         component.ngDoCheck();

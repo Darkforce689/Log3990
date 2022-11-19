@@ -216,9 +216,10 @@ describe('GamePageComponent', () => {
     it('canPlace coverage', () => {
         const spyGameInfo: jasmine.SpyObj<GameInfoService> = jasmine.createSpyObj('WordSearcher', ['']);
         const spyBoard: jasmine.SpyObj<BoardService> = jasmine.createSpyObj('WordSearcher', ['']);
+        const uIInputControllerService = TestBed.inject(UIInputControllerService);
 
         spyOnProperty(component, 'isItMyTurn').and.returnValue(true);
-        component['inputController'].activeAction = new UIPlace(spyGameInfo, spyBoard);
+        component['inputController'].activeAction = new UIPlace(spyGameInfo, spyBoard, uIInputControllerService);
         const ans = component.canPlace;
         expect(ans as unknown).toEqual(true);
     });

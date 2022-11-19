@@ -8,7 +8,7 @@ import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { RACK_LETTER_COUNT } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -32,6 +32,7 @@ describe('ServerGame', () => {
     const messagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     const newGameStateSubject = new Subject<GameStateToken>();
+    const newSyncStateSubject = new Subject<SyncStateToken>();
     const endGameSubject = new Subject<EndOfGame>();
 
     beforeEach(() => {
@@ -44,6 +45,7 @@ describe('ServerGame', () => {
             gameCompiler,
             messagesService,
             newGameStateSubject,
+            newSyncStateSubject,
             endGameSubject,
             BotDifficulty.Easy,
             gameHistoryService,

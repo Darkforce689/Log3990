@@ -1,7 +1,14 @@
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { Session } from '@app/auth/services/session.interface';
-import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
+import {
+    ForfeitPlayerInfo,
+    GameState,
+    GameStateToken,
+    PlayerInfoToken,
+    SyncState,
+    SyncStateToken,
+} from '@app/game/game-logic/interface/game-state.interface';
 import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineAction } from '@app/game/online-action.interface';
@@ -33,10 +40,17 @@ export class GameSocketsHandler {
             cors: { origin: '*', methods: ['GET', 'POST'] },
             pingTimeout: 5000,
         });
+
         this.gameManager.newGameState$.subscribe((gameStateToken: GameStateToken) => {
             const gameToken = gameStateToken.gameToken;
             const gameState = gameStateToken.gameState;
             this.emitGameState(gameState, gameToken);
+        });
+
+        this.gameManager.newSyncState$.subscribe((syncStateToken: SyncStateToken) => {
+            const gameToken = syncStateToken.gameToken;
+            const syncState = syncStateToken.syncState;
+            this.emitSyncState(syncState, gameToken);
         });
 
         this.gameManager.timerStartingTime$.subscribe((timerGameControl: TimerStartingTime) => {
@@ -103,6 +117,15 @@ export class GameSocketsHandler {
                 }
             });
 
+            socket.on('nextSync', (sync: SyncState) => {
+                try {
+                    this.sendSyncronisation(socket.id, sync);
+                } catch (error) {
+                    ServerLogger.logError(error);
+                    socket.disconnect();
+                }
+            });
+
             socket.on('disconnect', () => {
                 this.removeObserver(socket);
                 this.removePlayer(socket.id);
@@ -126,6 +149,10 @@ export class GameSocketsHandler {
         this.sio.to(gameToken).emit('gameState', gameState);
     }
 
+    private emitSyncState(syncState: SyncState, gameToken: string) {
+        this.sio.to(gameToken).emit('syncState', syncState);
+    }
+
     private emitTransitionGameState(playerInfo: ForfeitPlayerInfo, gameToken: string) {
         this.sio.to(gameToken).emit('transitionGameState', playerInfo);
     }
@@ -140,6 +167,11 @@ export class GameSocketsHandler {
     private sendPlayerAction(socketId: string, action: OnlineAction) {
         const playerId = socketId;
         this.gameManager.receivePlayerAction(playerId, action);
+    }
+
+    private sendSyncronisation(socketId: string, sync: SyncState) {
+        const playerId = socketId;
+        this.gameManager.receiveSync(playerId, sync);
     }
 
     private removePlayer(playerId: string) {
