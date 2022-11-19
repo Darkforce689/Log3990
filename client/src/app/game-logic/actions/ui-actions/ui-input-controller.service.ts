@@ -16,6 +16,7 @@ import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 import { ENTER, ESCAPE } from '@app/game-logic/constants';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
+import { SyncState } from '@app/game-logic/game/games/online-game/game-state';
 import { InputComponent, InputType, UIInput, WheelRoll } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
 
@@ -116,6 +117,10 @@ export class UIInputControllerService {
         this.sendAction(new PlaceBonus(player, pointerPosition));
     }
 
+    sendSyncState(positions: { x: number; y: number }[]) {
+        this.sendSync({ positions } as SyncState);
+    }
+
     private processInput(input: UIInput) {
         this.processInputComponent(input);
         this.updateActiveAction(input.type);
@@ -137,7 +142,7 @@ export class UIInputControllerService {
             case InputComponent.Board:
                 if (!(this.activeAction instanceof UIPlace)) {
                     this.discardAction();
-                    this.activeAction = new UIPlace(this.info, this.boardService);
+                    this.activeAction = new UIPlace(this.info, this.boardService, this);
                     return;
                 }
                 break;
@@ -240,6 +245,12 @@ export class UIInputControllerService {
     private sendAction(action: Action) {
         if (this.info.player === this.info.activePlayer) {
             this.info.player.action$.next(action);
+        }
+    }
+
+    private sendSync(sync: SyncState) {
+        if (this.info.player === this.info.activePlayer) {
+            this.info.player.syncronisation$.next(sync);
         }
     }
 }

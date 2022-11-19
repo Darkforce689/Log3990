@@ -6,7 +6,7 @@ import { GameCreator } from '@app/game/game-creator/game-creator';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -45,6 +45,7 @@ describe('GameCreator', () => {
     const actionCreatorStub = createSinonStubInstance<ActionCreatorService>(ActionCreatorService);
     const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     const newGameStateSubject = new Subject<GameStateToken>();
+    const newSyncStateSubject = new Subject<SyncStateToken>();
     const endGameSubject = new Subject<EndOfGame>();
     beforeEach(() => {
         id = getRandomInt(Number.MAX_SAFE_INTEGER).toString();
@@ -77,6 +78,7 @@ describe('GameCreator', () => {
             gameCompilerStub,
             systemMessagesServiceStub,
             newGameStateSubject,
+            newSyncStateSubject,
             endGameSubject,
             timerControllerStub,
             botManagerStub,

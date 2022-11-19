@@ -4,7 +4,7 @@ import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { DEFAULT_TIME_PER_TURN } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -22,6 +22,7 @@ describe('SplitPoints', () => {
     const pointCalculator = createSinonStubInstance<PointCalculatorService>(PointCalculatorService);
     const gameCompiler = createSinonStubInstance<GameCompiler>(GameCompiler);
     const mockNewGameState$ = new Subject<GameStateToken>();
+    const mockNewSyncState$ = new Subject<SyncStateToken>();
     const messagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const timerController = createSinonStubInstance<TimerController>(TimerController);
     const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
@@ -36,6 +37,7 @@ describe('SplitPoints', () => {
             gameCompiler,
             messagesService,
             mockNewGameState$,
+            mockNewSyncState$,
             mockEndGame$,
             BotDifficulty.Easy,
             gameHistoryService,

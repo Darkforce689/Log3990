@@ -12,7 +12,7 @@ import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, PlayerInfoToken, SyncState, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -51,6 +51,7 @@ export class GameManagerService {
 
     private gameCreator: GameCreator;
     private newGameStateSubject = new Subject<GameStateToken>();
+    private newSyncStateSubject = new Subject<SyncStateToken>();
     private forfeitedGameStateSubject = new Subject<PlayerInfoToken>();
 
     get forfeitedGameState$(): Observable<PlayerInfoToken> {
@@ -59,6 +60,10 @@ export class GameManagerService {
 
     get newGameState$(): Observable<GameStateToken> {
         return this.newGameStateSubject;
+    }
+
+    get newSyncState$(): Observable<SyncStateToken> {
+        return this.newSyncStateSubject;
     }
 
     get timerStartingTime$(): Observable<TimerStartingTime> {
@@ -90,6 +95,7 @@ export class GameManagerService {
             this.gameCompiler,
             this.messagesService,
             this.newGameStateSubject,
+            this.newSyncStateSubject,
             this.endGame$,
             this.timerController,
             this.botManager,
@@ -167,6 +173,20 @@ export class GameManagerService {
             const gameToken = playerRef.gameToken;
             this.notifyAction(compiledAction, gameToken);
             player.play(compiledAction);
+        } catch (error) {
+            ServerLogger.logError(error);
+            return;
+        }
+    }
+
+    receiveSync(playerId: string, sync: SyncState) {
+        const playerRef = this.activePlayers.get(playerId);
+        if (!playerRef) {
+            throw Error(`Player ${playerId} is not active anymore`);
+        }
+        const player = playerRef.player;
+        try {
+            player.syncronisation(sync);
         } catch (error) {
             ServerLogger.logError(error);
             return;

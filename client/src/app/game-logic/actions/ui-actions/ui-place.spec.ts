@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { PlaceLetter } from '@app/game-logic/actions/place-letter';
+import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import {
     BACKSPACE,
     BOARD_MAX_POSITION,
@@ -31,6 +32,7 @@ describe('UIPlace', () => {
     let action: UIPlace;
     let boardService: BoardService;
     let info: GameInfoService;
+    let uIInputControllerService: UIInputControllerService;
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [{ provide: GameInfoService, useClass: MockGameInfoService }],
@@ -47,9 +49,10 @@ describe('UIPlace', () => {
             { char: 'G', value: 0 },
         ];
         info = TestBed.inject(GameInfoService);
+        uIInputControllerService = TestBed.inject(UIInputControllerService);
         info.players = [player, new Player('opponent')];
         info.player = player;
-        action = new UIPlace(info, boardService);
+        action = new UIPlace(info, boardService, uIInputControllerService);
     });
 
     it('should create an instance', () => {

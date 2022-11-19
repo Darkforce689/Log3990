@@ -11,7 +11,7 @@ import {
 import { SplitPoints } from '@app/game/game-logic/actions/magic-card/magic-card-split-points';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken, IMagicCard } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, IMagicCard, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
@@ -34,6 +34,7 @@ describe('MagicServerGame', () => {
     const messagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     const newGameStateSubject = new Subject<GameStateToken>();
+    const newSyncStateSubject = new Subject<SyncStateToken>();
     const endGameSubject = new Subject<EndOfGame>();
 
     beforeEach(() => {
@@ -46,6 +47,7 @@ describe('MagicServerGame', () => {
             gameCompiler,
             messagesService,
             newGameStateSubject,
+            newSyncStateSubject,
             endGameSubject,
             [SPLITPOINTS_ID],
             BotDifficulty.Easy,

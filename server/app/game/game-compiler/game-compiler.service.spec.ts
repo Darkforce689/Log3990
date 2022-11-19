@@ -61,21 +61,4 @@ describe('GameCompilerService', () => {
         const compiledGame = gameCompilerService.compile(game);
         expect(compiledGame.winnerIndex[0]).to.equal(1);
     });
-
-    // Commented since I have not yet modified what goes into a magicGameState, will return here once its done
-    // it('should return an instance of magicGameState', () => {
-    //     const magicGame = createSinonStubInstance<MagicServerGame>(MagicServerGame);
-    //     const p1 = new Player('Joueur1');
-    //     const p2 = new Player('Joueur2');
-    //     magicGame.players = [p1, p2];
-    //     magicGame.activePlayerIndex = 0;
-    //     magicGame.board = createSinonStubInstance<Board>(Board);
-    //     magicGame.letterBag = letterBag;
-
-    //     const compiledGame = gameCompilerService.compile(magicGame) as MagicGameState;
-    //     for (const drawableMagicCard of magicGame.drawableMagicCards) {
-    //         const magicCard = compiledGame.drawableMagicCards.find((magicCard) => magicCard instanceof MagicCard);
-    //         expect(magicCard).to.equal(drawableMagicCard);
-    //     }
-    // });
 });

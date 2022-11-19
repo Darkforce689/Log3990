@@ -14,7 +14,7 @@ import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { NOT_FOUND } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken, IMagicCard } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, IMagicCard, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
 import { TimerController } from '@app/game/game-logic/timer/timer-controller.service';
 import { getRandomInt } from '@app/game/game-logic/utils';
@@ -36,6 +36,7 @@ export class MagicServerGame extends ServerGame {
         gameCompiler: GameCompiler,
         messagesService: SystemMessagesService,
         newGameStateSubject: Subject<GameStateToken>,
+        newSyncStateSubject: Subject<SyncStateToken>,
         endGameSubject: Subject<EndOfGame>,
         drawableMagicCardIds: string[],
         public botDifficulty: BotDifficulty,
@@ -50,6 +51,7 @@ export class MagicServerGame extends ServerGame {
             gameCompiler,
             messagesService,
             newGameStateSubject,
+            newSyncStateSubject,
             endGameSubject,
             botDifficulty,
             gameHistoryService,
