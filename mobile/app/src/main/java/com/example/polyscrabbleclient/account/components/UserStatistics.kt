@@ -85,7 +85,7 @@ private fun ConnectionLogs(userLogs: LazyPagingItems<ConnectionLog>) {
     ) {
         Row {
             columnsHeaders.forEachIndexed { index, header ->
-                ConnectionCell(text = header, weight = columnsWeights[index], Color.Black)
+                LogCell(text = header, weight = columnsWeights[index], Color.Black)
             }
         }
         LazyColumn(
@@ -109,9 +109,9 @@ fun StatisticsContent(title: String, content: @Composable () -> Unit) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(0.dp, 10.dp)
+            modifier = Modifier.padding(0.dp, 20.dp)
         )
         Divider(
             Modifier

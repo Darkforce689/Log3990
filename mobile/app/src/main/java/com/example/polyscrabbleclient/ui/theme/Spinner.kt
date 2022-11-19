@@ -3,14 +3,12 @@ package com.example.polyscrabbleclient.ui.theme
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,8 +90,9 @@ fun SpinnerPreview() {
 @Preview(showBackground = true)
 @Composable
 fun SpinnerPreviewWithPadding() {
-    SpinnerView(padding = 10.dp)
+    SpinnerView(size = 25.dp, padding = 5.dp)
 }
+
 @SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable

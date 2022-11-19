@@ -60,7 +60,7 @@ export class AccountController {
         this.router.get('/gameStates', async (req, res) => {
             const { gameToken } = req.query;
             const gameStates = (await this.gameHistoryServivce.getGameStates(gameToken as string)) as GameStateHistory[];
-            return res.send(gameStates);
+            return res.send({ gameStates });
         });
 
         this.router.get('/gamesHistory', async (req, res) => {

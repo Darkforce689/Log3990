@@ -17,8 +17,9 @@
                     <ng-container matColumnDef="replay">
                         <th mat-header-cell *matHeaderCellDef></th>
                         <td mat-cell *matCellDef="let row"> 
-                            <button mat-icon-button (click)="replay(row)">
-                                <mat-icon>visibility</mat-icon>
+                            <button mat-icon-button *ngIf="!isForfeitedPlayer(row)" (click)="replay(row)">
+                                <mat-icon *ngIf=!isLoading(row)>visibility</mat-icon>
+                                <mat-icon *ngIf=isLoading(row) [ngClass]="{ loading: isLoading }">refresh</mat-icon>
                             </button>
                         </td>
                     </ng-container>

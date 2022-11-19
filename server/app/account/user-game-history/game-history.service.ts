@@ -32,7 +32,7 @@ export class GameHistoryService {
         }
     }
 
-    async insertGame(gameToken: string, gameMode: GameMode, userNames: string[], winnerNames: string[], date: number) {
+    async insertGame(gameToken: string, gameMode: GameMode, userNames: string[], winnerNames: string[], date: number, forfeitedNames: string[]) {
         try {
             const users: User[] = [];
             for (const name of userNames) {
@@ -41,13 +41,24 @@ export class GameHistoryService {
                     users.push(user as unknown as User);
                 }
             }
+
+            for (const name of forfeitedNames) {
+                if (!userNames.find((playerName) => playerName === name)) {
+                    const user = await this.mongoService.db.collection(USER_COLLECTION).findOne({ name: { $eq: name } });
+                    if (user) {
+                        users.push(user as unknown as User);
+                    }
+                }
+            }
             const winners = users.filter((user: User) => winnerNames.find((winnerName) => user.name === winnerName));
+            const forfeitedUsers = users.filter((user: User) => forfeitedNames.find((name) => user.name === name));
             await this.collection.insertOne({
                 gameToken,
                 userIds: users.map((user) => user._id),
-                winnerUsers: winners.map((user) => user._id),
+                winnersIds: winnerNames.length > 0 ? winners.map((user) => user._id) : [],
                 date,
                 gameMode,
+                forfeitedIds: forfeitedNames.length > 0 ? forfeitedUsers.map((user) => user._id) : [],
             });
             return [];
         } catch (error) {

@@ -44,6 +44,7 @@ export class GameManagerService {
     activeGames = new Map<string, ServerGame>();
     activePlayers = new Map<string, PlayerRef>(); // socketId => PlayerRef[]
     linkedClients = new Map<string, BindedSocket[]>(); // gameToken => BindedSocket[]
+    forfeitedPlayers = new Map<string, string[]>(); // gameToken => Forfeited players
     gameDeleted$ = new Subject<string>();
     observerLeft$ = new Subject<NameAndToken>();
 
@@ -100,10 +101,11 @@ export class GameManagerService {
 
         this.endGame$.subscribe((endOfGame: EndOfGame) => {
             const gameToken = endOfGame.gameToken;
+            const hasEnded = true;
             if (endOfGame.reason === EndOfGameReason.GameEnded) {
                 this.updateLeaderboard(endOfGame.players, gameToken);
             }
-            this.insertGameInHistory(endOfGame.gameToken);
+            this.insertGameInHistory(endOfGame.gameToken, hasEnded);
             this.updateGameStatistics(endOfGame.stats);
             this.deleteGame(gameToken);
         });
@@ -186,8 +188,11 @@ export class GameManagerService {
         const players = game.players.filter((player: Player) => player.name !== playerRef.player.name && !(player instanceof BotPlayer));
         const playerNames = players.map((player) => player.name);
         this.activePlayers.delete(playerId);
+        this.addForfeitedPlayer(playerRef);
         if (playerNames.length <= 0) {
             game.forceEndturn();
+            const isForfeited = true;
+            this.insertGameInHistory(gameToken, !isForfeited);
             this.deleteGame(gameToken);
             return;
         }
@@ -290,15 +295,28 @@ export class GameManagerService {
         stats.forEach(async (gameStats, name) => this.userService.updateStatistics(gameStats, name));
     }
 
-    private insertGameInHistory(gameToken: string) {
+    private insertGameInHistory(gameToken: string, hasEnded: boolean) {
         const game = this.activeGames.get(gameToken);
         if (!game) {
             return;
         }
         const startTime = game.startTime;
         const userNames = game.players.map((player) => player.name);
-        const winnerNames = game.getWinnerIndexes().map((index) => userNames[index]);
+
+        const winnerNames = hasEnded ? game.getWinnerIndexes().map((index) => userNames[index]) : [];
         const gameMode = game instanceof MagicServerGame ? GameMode.Magic : GameMode.Classic;
-        this.gameHistoryService.insertGame(gameToken, gameMode, userNames, winnerNames, startTime);
+        const forfeitedPlayers = (this.forfeitedPlayers.get(game.gameToken) ? this.forfeitedPlayers.get(game.gameToken) : []) as string[];
+        this.gameHistoryService.insertGame(gameToken, gameMode, userNames, winnerNames, startTime, forfeitedPlayers);
+    }
+
+    private addForfeitedPlayer(playerRef: PlayerRef) {
+        const { gameToken, player } = playerRef;
+        const players = this.forfeitedPlayers.get(gameToken);
+        if (!players) {
+            this.forfeitedPlayers.set(gameToken, [player.name]);
+            return;
+        }
+        players.push(player.name);
+        this.forfeitedPlayers.set(gameToken, players);
     }
 }
