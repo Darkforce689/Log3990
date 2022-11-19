@@ -60,6 +60,7 @@ export class NewGameSocketHandler {
 
             socket.on(createGame, async (gameSettings: OnlineGameSettingsUI) => {
                 try {
+                    console.log(gameSettings);
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {

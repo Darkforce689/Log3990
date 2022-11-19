@@ -22,6 +22,9 @@ class CreateGameViewModel : ViewModel() {
     val timePerTurn = mutableStateOf(DEFAULT_TIMER)
     val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)
     val randomBonus = mutableStateOf(false)
+    val privateGame = mutableStateOf(false)
+    val isPassword = mutableStateOf(false)
+    val password = mutableStateOf<String>("")
     val botDifficulty = mutableStateOf(BotDifficulty.Easy)
     val gameMode = mutableStateOf(GameMode.Classic)
     val magicCardIds = mutableStateListOf<String>()
@@ -39,6 +42,9 @@ class CreateGameViewModel : ViewModel() {
             gameMode = gameMode.value,
             timePerTurn = timePerTurn.value,
             playerNames = ArrayList(),
+            tmpPlayerNames = ArrayList(),
+            privateGame = privateGame.value,
+            password = if (isPassword.value) password.value else null,
             randomBonus = randomBonus.value,
             botDifficulty = botDifficulty.value,
             numberOfPlayers = numberOfPlayer.value,
