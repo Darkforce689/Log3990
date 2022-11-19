@@ -59,6 +59,13 @@ val Colors.accepted: Color
     @Composable
     get() = if (isLight) LightAcceptedColor else DarkAcceptedColor
 
+val Colors.cardHolder: Color
+    @Composable
+    get() = if (isLight) LightCardHolder else DarkCardHolder
+
+val Colors.activeCard: Color
+    @Composable
+    get() = if (isLight) LightActiveCard else DarkActiveCard
 
 @Composable
 fun PolyScrabbleClientTheme(

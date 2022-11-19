@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.runtime.*
@@ -23,9 +24,9 @@ import androidx.navigation.NavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.account.model.AccountPage
 import com.example.polyscrabbleclient.account.viewmodel.AccountViewmodel
+import com.example.polyscrabbleclient.account.viewmodel.GamesHistoryViewModel
 import com.example.polyscrabbleclient.getAssetsId
-import com.example.polyscrabbleclient.ui.theme.my_profil
-import com.example.polyscrabbleclient.ui.theme.my_statistics
+import com.example.polyscrabbleclient.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -73,8 +74,13 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
                 }
             }
             AccountPage.Statistics -> {
-                AccountContent(my_statistics) {
+                AccountContent(statistics) {
                     UserStatistics()
+                }
+            }
+            AccountPage.Games -> {
+                AccountContent(game_history) {
+                    GameHistoryView(GamesHistoryViewModel())
                 }
             }
         }
@@ -106,8 +112,14 @@ private fun SideNavigation(
     navController: NavController,
     onSelected: (page: AccountPage) -> Unit,
 ) {
+    val sideNavList = listOf(
+        Triple(my_profil, Icons.Filled.AccountCircle, AccountPage.Profil),
+        Triple(my_statistics, Icons.Filled.Numbers, AccountPage.Statistics),
+        Triple(my_games, Icons.Filled.Analytics, AccountPage.Games)
+    )
     val keyboard = LocalSoftwareKeyboardController.current
     val clickedIndex = remember { mutableStateOf(0) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth(0.2f)
@@ -182,8 +194,3 @@ fun AccountContent(title: String, content: @Composable () -> Unit) {
         content()
     }
 }
-
-val sideNavList = listOf(
-    Triple(my_profil, Icons.Filled.AccountCircle, AccountPage.Profil),
-    Triple(my_statistics, Icons.Filled.Numbers, AccountPage.Statistics),
-)

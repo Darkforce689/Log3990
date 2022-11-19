@@ -14,6 +14,7 @@ import com.example.polyscrabbleclient.ui.theme.*
 
 class GameViewModel : ViewModel() {
     val game = GameRepository.model
+    val board = game.board
     var remainingLettersCount = game.remainingLettersCount
     var turnRemainingTime = game.turnRemainingTime
     var turnTotalTime = game.turnTotalTime

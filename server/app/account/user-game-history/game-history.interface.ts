@@ -3,9 +3,10 @@ import { GameMode } from '@app/game/game-mode.enum';
 
 export interface GameHistory {
     gameToken: string;
-    gameType: GameMode;
-    userdId: string[];
-    winnersId: string[];
+    gameMode: GameMode;
+    userIds: string[];
+    winnerIds: string[];
+    forfeitedIds: string[];
     date: number;
 }
 export interface GameStateHistory {

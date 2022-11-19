@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.MaterialTheme
@@ -13,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -29,17 +31,12 @@ import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.ui.theme.grayedOutTileBackground
 import com.example.polyscrabbleclient.ui.theme.tileBackground
 
-val subscript = SpanStyle(
-    baselineShift = BaselineShift.Subscript,
-    fontSize = 16.sp,
-)
-
-@OptIn(ExperimentalUnitApi::class)
 @Composable
 fun TileView(
     tileModel: TileModel,
     displayPoint: Boolean = true,
     size: Dp = 60.dp,
+    fontSize: TextUnit = 18.sp,
     select: () -> Unit,
 ) {
     val targetColor by animateColorAsState(
@@ -64,30 +61,38 @@ fun TileView(
                 onClick = select
             )
             .size(size)
-            .border(width = 4.dp, targetColor)
+            .border(width = 4.dp, targetColor),
     ) {
-        val paddingTop = if (displayPoint) 13.dp else 18.dp
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
 
-        Text(
-            modifier = Modifier
-                .padding(top = paddingTop),
-            style = TextStyle(
-                textAlign = TextAlign.Center,
-                fontSize = TextUnit(18f, TextUnitType.Sp),
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.onSurface
-            ),
-            text = tileInternalContent(tileModel, displayPoint)
-        )
+            Text(
+                style = TextStyle(
+                    textAlign = TextAlign.Center,
+                    fontSize = fontSize,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colors.onSurface
+                ),
+                text = tileInternalContent(tileModel, displayPoint, size)
+            )
+        }
     }
 }
 
+@OptIn(ExperimentalUnitApi::class)
 @Composable
 private fun tileInternalContent(
     tileModel: TileModel,
-    displayPoint: Boolean
+    displayPoint: Boolean,
+    size: Dp,
 ) = buildAnnotatedString {
+    val subscript = SpanStyle(
+        baselineShift = BaselineShift.Subscript,
+        fontSize = TextUnit((size.value / 4), TextUnitType.Sp),
+    )
     append(tileModel.letter.uppercaseChar())
     if (displayPoint) {
         withStyle(subscript) {

@@ -2,9 +2,9 @@ package com.example.polyscrabbleclient.game.viewmodels
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
+import com.example.polyscrabbleclient.game.model.BoardModel
 import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.TileModel
-import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.game.view.ThickDividerWidth
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
@@ -15,8 +15,7 @@ data class TileCoordinates(
     val column: Int
 )
 
-class BoardViewModel : ViewModel() {
-    var board = GameRepository.model.board
+class BoardViewModel(val board: BoardModel) : ViewModel() {
 
     var hoveredTileCoordinates: TileCoordinates? = null
 
