@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
-interface GetUsersRes {
+export interface GetUsersRes {
     pagination: Pagination;
     users: User[];
 }
