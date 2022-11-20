@@ -39,6 +39,11 @@ export interface PlayerRef {
     player: Player;
 }
 
+export interface PlayersAndToken {
+    gameToken: string;
+    players: Player[];
+}
+
 @Service()
 export class GameManagerService {
     activeGames = new Map<string, ServerGame>();
@@ -46,6 +51,7 @@ export class GameManagerService {
     linkedClients = new Map<string, BindedSocket[]>(); // gameToken => BindedSocket[]
     forfeitedPlayers = new Map<string, string[]>(); // gameToken => Forfeited players
     gameDeleted$ = new Subject<string>();
+    playerLeft$ = new Subject<PlayersAndToken>();
     observerLeft$ = new Subject<NameAndToken>();
 
     private endGame$ = new Subject<EndOfGame>(); // gameToken
@@ -219,6 +225,7 @@ export class GameManagerService {
         const newPlayer = await this.createNewBotPlayer(playerRef, playerNames, game.botDifficulty);
         const index = game.players.findIndex((player) => player.name === playerRef.player.name);
         game.players[index] = newPlayer;
+        this.playerLeft$.next({ gameToken, players: game.players });
         this.sendForfeitPlayerInfo(gameToken, newPlayer, playerRef.player.name);
         if (game.activePlayerIndex === index) {
             game.forceEndturn();
