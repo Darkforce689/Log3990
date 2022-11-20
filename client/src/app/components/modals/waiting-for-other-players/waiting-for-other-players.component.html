@@ -32,6 +32,11 @@
             </div>
         </div>
     </div>
+    <div class="invite" *ngIf="isGameOwner()">
+        <button mat-icon-button (click)="invitePlayers()">
+            <mat-icon >person_add</mat-icon>
+        </button>
+    </div>
 </mat-dialog-content>
 
 <mat-dialog-content #waitingForPlayer *ngIf="isWaiting">

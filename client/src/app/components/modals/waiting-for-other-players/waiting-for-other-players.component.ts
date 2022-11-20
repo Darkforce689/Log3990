@@ -1,6 +1,8 @@
 import { AfterContentChecked, ChangeDetectorRef, Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { Observable } from 'rxjs';
+import { UserSearchComponent } from '@app/users/components/user-search/user-search.component';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 const SPINNER_WIDTH_STROKE = 7;
 const SPINNER_DIAMETER = 40;
@@ -13,10 +15,37 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     spinnerStrokeWidth = SPINNER_WIDTH_STROKE;
     spinnerDiameter = SPINNER_DIAMETER;
     botDifficulty: string;
-    constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler) {}
+
+    private forbidenUserInvite$$: Subscription | undefined;
+
+    constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler, private dialog: MatDialog) {}
 
     ngAfterContentChecked() {
         this.cdref.detectChanges();
+    }
+
+    invitePlayers() {
+        this.forbidenUserInvite$$?.unsubscribe();
+        if (!this.gameSettings) {
+            throw Error("Can't invite players you haven't received the gamesettings yet.");
+        }
+        const { id, password } = this.gameSettings;
+        const forbidenUsers$ = new BehaviorSubject<string[]>([]);
+        const data = {
+            args: {
+                id,
+                password,
+            },
+            forbidenUsers$,
+        };
+        this.forbidenUserInvite$$ = this.gameSettings$.subscribe((gameSettings) => {
+            if (!gameSettings) {
+                return;
+            }
+            const playerNames = gameSettings.playerNames;
+            forbidenUsers$.next(playerNames);
+        });
+        this.dialog.open(UserSearchComponent, { data });
     }
 
     launchGame() {
@@ -45,7 +74,11 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     }
 
     isHost(playerId: string) {
-        return this.isThatPlayerHost(playerId) ? false : this.socketHandler.isGameOwner;
+        return this.isThatPlayerHost(playerId) ? false : this.isGameOwner();
+    }
+
+    isGameOwner() {
+        return this.socketHandler.isGameOwner;
     }
 
     isThatPlayerHost(playerId: string) {
@@ -55,19 +88,27 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         return playerId === this.players[0];
     }
 
+    get gameSettings$() {
+        return this.socketHandler.gameSettings$;
+    }
+
+    get gameSettings() {
+        return this.gameSettings$.value;
+    }
+
     get pendingGameId$(): Observable<string | undefined> {
         return this.socketHandler.pendingGameId$.asObservable();
     }
 
     get players() {
-        return this.socketHandler.gameSettings$.value?.playerNames ?? [];
+        return this.gameSettings?.playerNames ?? [];
     }
     get numberOfPlayers() {
-        return this.socketHandler.gameSettings$.value?.numberOfPlayers ?? 0;
+        return this.gameSettings?.numberOfPlayers ?? 0;
     }
 
     get tmpPlayers() {
-        return this.socketHandler.gameSettings$.value?.tmpPlayerNames;
+        return this.gameSettings?.tmpPlayerNames;
     }
 
     get deletedGame(): boolean {
@@ -79,6 +120,6 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     }
 
     get isPrivateGame(): boolean {
-        return this.socketHandler.gameSettings$.value?.privateGame ?? false;
+        return this.gameSettings?.privateGame ?? false;
     }
 }

@@ -1,0 +1,42 @@
+
+<mat-dialog-content>
+    <div class="container">
+        <div class="search-bar">
+            <mat-form-field appearance="outline" class="search-input">
+                <mat-label>Chercher un utilisateur</mat-label>
+                <input 
+                    #searchInput
+                    autocomplete="off"
+                    matInput
+                    type="text"
+                    [(ngModel)]="userName"
+                    (ngModelChange)="searchUsers()"
+                >
+            </mat-form-field>
+            <button mat-button class="search-button" (click)="searchUsers()">
+                <mat-icon>search</mat-icon>
+            </button>
+        </div>
+        <div #list class="user-list" (scroll)="onScroll()">
+            <div *ngFor="let user of users$ | async">
+                <div class="user">
+                    <div class="user-info">
+                        <app-avatar [src]="user.avatar" [size]="35"></app-avatar>
+                        <div class="username">{{user.name}}</div>
+                    </div>
+                    <div class="invite-button-wrapper">
+                        <button class="invite-button" mat-fab [disabled]="!canInvite(user)" (click)="invite(user)">
+                            <mat-icon>mail</mat-icon>
+                        </button>
+                    </div>
+                    
+                </div>
+                <mat-divider></mat-divider>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button color="accent" (click)="close()">Fermer</button>
+</mat-dialog-actions>
+

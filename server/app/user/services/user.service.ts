@@ -6,9 +6,10 @@ import { ServerLogger } from '@app/logger/logger';
 import { GameStats } from '@app/user/interfaces/game-stats.interface';
 import { UserCreation } from '@app/user/interfaces/user-creation.interface';
 import { User } from '@app/user/interfaces/user.interface';
-import { UserQuery } from '@app/user/user-query.interface';
+import { UserQuery, UsersGetQuery } from '@app/user/interfaces/user-query.interface';
 import { ObjectId } from 'mongodb';
 import { Service } from 'typedi';
+import { Pagination } from '@app/common/interfaces/pagination.interface';
 
 export enum UserCreationError {
     NameAlreadyTaken = 'NAME_ALREADY_TAKEN',
@@ -85,6 +86,18 @@ export class UserService {
         return user;
     }
 
+    async getUsers(query: UsersGetQuery, pagination: Pagination): Promise<User[]> {
+        const { name } = query;
+        if (!name || name.length === 0) {
+            return this.getAllUsers(pagination);
+        }
+        const { perPage, page } = pagination;
+        const result = await this.collection
+            .aggregate([{ $search: { autocomplete: { path: 'name', query: name } } }, { $skip: perPage * page }, { $limit: perPage }])
+            .toArray();
+        return result as User[];
+    }
+
     async updateName(query: UserQuery, userId: string): Promise<string[]> {
         const errors = [];
         try {
@@ -156,6 +169,21 @@ export class UserService {
             return ['UNEXPECTED_ERROR'];
         }
         return [];
+    }
+
+    async isUserExists(userId: string) {
+        const result = await this.collection.find({ _id: new ObjectId(userId) });
+        return result !== null;
+    }
+
+    private async getAllUsers(pagination: Pagination): Promise<User[]> {
+        const { perPage, page } = pagination;
+        const result = await this.collection
+            .find()
+            .skip(perPage * page)
+            .limit(perPage)
+            .toArray();
+        return result as User[];
     }
 
     private async isEmailExists(email: string) {

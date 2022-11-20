@@ -12,7 +12,7 @@ import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction, OnlineActionType } from '@app/game/online-action.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { User } from '@app/user/interfaces/user.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';

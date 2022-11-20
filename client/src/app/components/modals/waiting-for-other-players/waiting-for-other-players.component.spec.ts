@@ -79,14 +79,4 @@ describe('WaitingForOtherPlayersComponent', () => {
         component.cancel();
         expect(onlineSocketHandlerSpy.disconnectSocket).toHaveBeenCalled();
     });
-
-    it('launchGame should call launchGame', () => {
-        const dom = fixture.nativeElement as HTMLElement;
-        onlineSocketHandlerSpy.isGameOwner = true;
-        fixture.detectChanges();
-        const launchButton = dom.querySelectorAll('button')[1];
-        spyOn(component, 'launchGame');
-        launchButton.click();
-        expect(component.launchGame).toHaveBeenCalled();
-    });
 });

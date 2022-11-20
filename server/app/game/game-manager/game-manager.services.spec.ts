@@ -31,7 +31,7 @@ import { SystemMessagesService } from '@app/messages-service/system-messages-ser
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { GameStats } from '@app/user/interfaces/game-stats.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { expect } from 'chai';
 import { before } from 'mocha';
 import { Observable } from 'rxjs';

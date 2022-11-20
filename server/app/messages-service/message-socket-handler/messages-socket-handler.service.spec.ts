@@ -16,7 +16,7 @@ import { GlobalSystemMessage, IndividualSystemMessage, SystemMessageDTO } from '
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { User } from '@app/user/interfaces/user.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';

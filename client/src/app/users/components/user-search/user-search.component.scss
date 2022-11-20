@@ -1,0 +1,50 @@
+.search-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+}
+
+.search-input {
+    flex-grow: 1;
+}
+
+.user-list {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+.user {
+    display: flex;
+    justify-content: end;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.user-info {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.username {
+    padding-left: 10px;
+    font-size: medium;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.invite-button {
+    transform: scale(0.75)
+}
+
+mat-dialog-content {
+    height: 40vh;
+    width: 25vw;
+    min-width: 300px;
+}

@@ -13,7 +13,7 @@ import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/tim
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { OnlineAction } from '@app/game/online-action.interface';
 import { ServerLogger } from '@app/logger/logger';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import * as http from 'http';
 import * as io from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
