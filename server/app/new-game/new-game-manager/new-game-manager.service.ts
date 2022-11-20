@@ -61,6 +61,7 @@ export class NewGameManagerService {
         const onlineGameSettings = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken();
         onlineGameSettings.numberOfBots = onlineGameSettings.numberOfPlayers - onlineGameSettings.playerNames.length;
+        this.pendingGames.delete(id);
         this.activeGameSettingMap.set(gameToken, onlineGameSettings);
         await this.startGame(gameToken, onlineGameSettings);
         return gameToken;

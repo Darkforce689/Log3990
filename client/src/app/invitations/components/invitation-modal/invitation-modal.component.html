@@ -1,0 +1,9 @@
+<mat-dialog-content>
+    <h2>Nouvelle invitation</h2>
+    <br />
+    {{ invitation.from }} veut vous inviter à sa partie
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button color="accent" (click)="refuse()">Refuser</button>
+    <button mat-raised-button color="primary" (click)="accept()">Accepter</button>
+</mat-dialog-actions>

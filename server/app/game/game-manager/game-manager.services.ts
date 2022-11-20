@@ -30,7 +30,7 @@ import { ConversationService } from '@app/messages-service/services/conversation
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { GameStats } from '@app/user/interfaces/game-stats.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { Observable, Subject } from 'rxjs';
 import { Service } from 'typedi';
 

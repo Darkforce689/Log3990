@@ -52,9 +52,13 @@ export class NewOnlineGameSocketHandler {
         this.deletedGame$.next(false);
     }
 
-    joinPendingGame(id: string, password: string) {
+    joinPendingGame(id: string, password: string | undefined) {
+        if (!this.socket) {
+            this.connect();
+        }
+
         if (!this.socket.connected) {
-            throw Error("Can't join game, not connected to server");
+            this.connect();
         }
         const joinGameParams = { id, password };
         this.socket.emit('joinGame', joinGameParams);

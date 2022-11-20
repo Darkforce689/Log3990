@@ -44,6 +44,11 @@ export class GameLauncherService {
         });
     }
 
+    cancelWait() {
+        this.dialog.closeAll();
+        this.socketHandler.disconnectSocket();
+    }
+
     private startOnlineGame(onlineGameSettings: OnlineGameSettings) {
         const gameToken = onlineGameSettings.id;
         this.socketHandler.resetGameToken();

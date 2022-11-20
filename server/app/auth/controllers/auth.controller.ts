@@ -4,7 +4,7 @@ import { ServerLogger } from '@app/logger/logger';
 import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { UserCreation } from '@app/user/interfaces/user-creation.interface';
 import { User } from '@app/user/interfaces/user.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';

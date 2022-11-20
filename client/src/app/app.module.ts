@@ -54,6 +54,9 @@ import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/mag
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { InvitationModalComponent } from './invitations/components/invitation-modal/invitation-modal.component';
+import { InvitationService } from '@app/invitations/services/invitation.service';
+import { UserSearchComponent } from './users/components/user-search/user-search.component';
 import { GameActionButtonComponent } from './game-logic/game/game-action-button/game-action-button/game-action-button.component';
 
 /**
@@ -112,6 +115,8 @@ import { GameActionButtonComponent } from './game-logic/game/game-action-button/
         GameHistoryComponent,
         ReplayComponent,
         ReplayPlayersComponent,
+        InvitationModalComponent,
+        UserSearchComponent,
         GameActionButtonComponent,
     ],
     imports: [
@@ -133,7 +138,7 @@ import { GameActionButtonComponent } from './game-logic/game/game-action-button/
                     return;
                 };
             },
-            deps: [AppSocketHandlerService],
+            deps: [AppSocketHandlerService, InvitationService],
             multi: true,
         },
         {
