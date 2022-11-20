@@ -40,9 +40,6 @@ object AppSocketHandler {
 
     @Synchronized
     fun disconnect() {
-        if (!socket.connected()) {
-            return
-        }
         socket.disconnect()
     }
 }
