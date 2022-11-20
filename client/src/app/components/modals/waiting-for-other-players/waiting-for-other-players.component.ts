@@ -1,8 +1,10 @@
-import { AfterContentChecked, ChangeDetectorRef, Component } from '@angular/core';
+import { AfterContentChecked, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { UserSearchComponent } from '@app/users/components/user-search/user-search.component';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { UserCacheService } from '@app/users/services/user-cache.service';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 const SPINNER_WIDTH_STROKE = 7;
 const SPINNER_DIAMETER = 40;
@@ -11,17 +13,50 @@ const SPINNER_DIAMETER = 40;
     templateUrl: './waiting-for-other-players.component.html',
     styleUrls: ['./waiting-for-other-players.component.scss'],
 })
-export class WaitingForOtherPlayersComponent implements AfterContentChecked {
+export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnInit {
     spinnerStrokeWidth = SPINNER_WIDTH_STROKE;
     spinnerDiameter = SPINNER_DIAMETER;
     botDifficulty: string;
+    gameSettings: OnlineGameSettings;
+    avatars = new Map<string, string>();
 
     private forbidenUserInvite$$: Subscription | undefined;
 
-    constructor(private cdref: ChangeDetectorRef, private socketHandler: NewOnlineGameSocketHandler, private dialog: MatDialog) {}
+    constructor(
+        private cdref: ChangeDetectorRef,
+        private socketHandler: NewOnlineGameSocketHandler,
+        private dialog: MatDialog,
+        private userCacheService: UserCacheService,
+    ) {}
+
+    ngOnInit(): void {
+        this.socketHandler.gameSettings$.subscribe((gameSettings) => {
+            if (!gameSettings) {
+                return;
+            }
+            this.gameSettings = gameSettings;
+            this.addPlayerIcons(gameSettings.playerNames);
+            this.addPlayerIcons(gameSettings.tmpPlayerNames);
+        });
+    }
 
     ngAfterContentChecked() {
         this.cdref.detectChanges();
+    }
+
+    addPlayerIcons(playerNames: string[]) {
+        playerNames.forEach((name) =>
+            this.userCacheService.getUserByName(name).subscribe((user) => {
+                if (!user) {
+                    return;
+                }
+                if (!user.avatar) {
+                    this.avatars.set(name, 'default');
+                    return;
+                }
+                this.avatars.set(name, user.avatar);
+            }),
+        );
     }
 
     invitePlayers() {
@@ -88,27 +123,39 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
         return playerId === this.players[0];
     }
 
+    getAvatarIcon(playerName: string): string {
+        return this.avatars.get(playerName) ?? 'default';
+    }
+
     get gameSettings$() {
         return this.socketHandler.gameSettings$;
     }
 
-    get gameSettings() {
-        return this.gameSettings$.value;
+    get pendingGameId(): string {
+        if (!this.gameSettings) {
+            return '';
+        }
+        return this.gameSettings.id;
     }
 
-    get pendingGameId$(): Observable<string | undefined> {
-        return this.socketHandler.pendingGameId$.asObservable();
-    }
-
-    get players() {
-        return this.gameSettings?.playerNames ?? [];
+    get players(): string[] {
+        if (!this.gameSettings) {
+            return [];
+        }
+        return this.gameSettings.playerNames;
     }
     get numberOfPlayers() {
-        return this.gameSettings?.numberOfPlayers ?? 0;
+        if (!this.gameSettings) {
+            return 0;
+        }
+        return this.gameSettings.numberOfPlayers;
     }
 
-    get tmpPlayers() {
-        return this.gameSettings?.tmpPlayerNames;
+    get tmpPlayers(): string[] {
+        if (!this.gameSettings) {
+            return [];
+        }
+        return this.gameSettings.tmpPlayerNames;
     }
 
     get deletedGame(): boolean {
@@ -120,6 +167,9 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked {
     }
 
     get isPrivateGame(): boolean {
-        return this.gameSettings?.privateGame ?? false;
+        if (!this.gameSettings) {
+            return false;
+        }
+        return this.gameSettings.privateGame ?? false;
     }
 }
