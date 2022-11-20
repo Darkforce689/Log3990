@@ -1,7 +1,9 @@
 package com.example.polyscrabbleclient
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Message
@@ -9,11 +11,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -38,6 +43,8 @@ import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorVie
 import com.example.polyscrabbleclient.utils.Background
 import com.example.polyscrabbleclient.utils.PageSurface
 import com.example.polyscrabbleclient.utils.PhysicalButtons
+import com.example.polyscrabbleclient.utils.viewmodels.SnackBarViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 enum class NavPage(val label: String) {
@@ -125,6 +132,19 @@ fun PageWithChat(
         }
     }
 
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val snackBarViewModel: SnackBarViewModel = viewModel()
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    snackBarViewModel.setOpenCallback {
+        coroutineScope.launch {
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = it.message,
+                actionLabel = it.action,
+                duration = it.duration
+            )
+        }
+    }
+
     CompositionLocalProvider(LocalLayoutDirection.provides(LayoutDirection.Rtl)) {
         ModalDrawer(
             drawerState = drawerState,
@@ -140,6 +160,7 @@ fun PageWithChat(
                 LocalLayoutDirection.provides(LayoutDirection.Ltr)
             ) {
                 Scaffold(
+                    scaffoldState = scaffoldState,
                     floatingActionButton = {
                         FloatingActionButton(
                             onClick = {
@@ -150,6 +171,9 @@ fun PageWithChat(
                         ) {
                             Icon(Icons.Default.Message, null)
                         }
+                    },
+                    snackbarHost = {
+                        CustomSnackBarHost(state = it)
                     }
                 ) {
                     PageSurface(background) {
@@ -161,7 +185,41 @@ fun PageWithChat(
             }
         }
     }
-
+}
+@Composable
+fun CustomSnackBarHost(
+    state: SnackbarHostState
+) {
+    SnackbarHost(
+        hostState = state,
+        snackbar = {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Snackbar(
+                    modifier = Modifier.fillMaxWidth(0.4f),
+                    action = {
+                        if (it.actionLabel == null) {
+                            return@Snackbar
+                        }
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(end = 10.dp)
+                                .clickable { it.performAction() }, contentAlignment = Alignment.BottomEnd) {
+                            Text(text = it.actionLabel!!)
+                        }
+                    },
+                    content = {
+                        Text(
+                            text = it.message,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+                )
+            }
+        }
+    )
 }
 
 fun NavGraphBuilder.newGame(
