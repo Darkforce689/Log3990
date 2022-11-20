@@ -18,8 +18,8 @@ import { DisconnectedFromServerComponent } from '@app/components/modals/disconne
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
+import { LobbyGamesComponent } from '@app/components/modals/lobby-games/lobby-games.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
-import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { ThemeSelectorComponent } from '@app/components/theme-selector/theme-selector.component';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
@@ -84,7 +84,7 @@ import { GameActionButtonComponent } from './game-logic/game/game-action-button/
         ClickAndClickoutDirective,
         MouseRollDirective,
         WaitingForOtherPlayersComponent,
-        PendingGamesComponent,
+        LobbyGamesComponent,
         JoinOnlineGameComponent,
         DisconnectedFromServerComponent,
         ErrorDialogComponent,

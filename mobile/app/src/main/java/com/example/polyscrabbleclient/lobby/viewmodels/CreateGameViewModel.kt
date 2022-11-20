@@ -16,6 +16,8 @@ const val MIN_PLAYER_NUMBER = 2
 const val MAX_PLAYER_NUMBER = 4
 
 class CreateGameViewModel : ViewModel() {
+    val pendingGames = LobbyRepository.model.pendingGames
+    val observableGames = LobbyRepository.model.observableGames
 
     val hostHasJustQuitTheGame = LobbyRepository.model.hostHasJustQuitTheGame
 
