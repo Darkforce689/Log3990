@@ -7,7 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class GameActionButtonComponent {
     @Output() clickButton = new EventEmitter();
-    @Input() label: string;
-    @Input() icon: string;
+    @Input() label: string | undefined = undefined;
+    @Input() icon: string | undefined = undefined;
     @Input() isDisabled: boolean = false;
 }

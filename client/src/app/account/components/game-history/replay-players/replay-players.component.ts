@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { UI_MAGIC_CARD_ARRAY_REPLAY } from '@app/account/constants';
+import { UI_MAGIC_CARD_MAP } from '@app/game-logic/actions/magic-card/magic-card-constants';
 import { IMagicCard, LightPlayer } from '@app/game-logic/game/games/online-game/game-state';
 
 @Component({
@@ -38,11 +38,11 @@ export class ReplayPlayersComponent {
     }
 
     getCardName(newCard: IMagicCard): string {
-        return newCard ? (UI_MAGIC_CARD_ARRAY_REPLAY.find((card) => card.info.id === newCard.id)?.info.name as string) : '';
+        return UI_MAGIC_CARD_MAP.get(newCard.id)?.name ?? '';
     }
 
     getCardIcon(newCard: IMagicCard): string {
-        return this.canSetIcon(newCard) ? (UI_MAGIC_CARD_ARRAY_REPLAY.find((card) => card.info.id === newCard.id)?.icon as string) : '';
+        return UI_MAGIC_CARD_MAP.get(newCard.id)?.icon ?? '';
     }
 
     canSetIcon(newCard: IMagicCard) {

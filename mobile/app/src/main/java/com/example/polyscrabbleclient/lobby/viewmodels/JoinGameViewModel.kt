@@ -15,9 +15,8 @@ class JoinGameViewModel : ViewModel() {
         navigateToGameScreen: () -> Unit
     ) {
         LobbyRepository.emitJoinGame(
-            JoinGame(id = lobbyGameId),
-        ) {
-            navigateToGameScreen()
-        }
+            JoinGame(lobbyGameId),
+            navigateToGameScreen
+        )
     }
 }
