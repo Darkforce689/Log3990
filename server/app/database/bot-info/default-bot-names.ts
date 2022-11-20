@@ -1,5 +1,8 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { BotInfo } from '@app/database/bot-info/bot-info';
+interface BotInfo {
+    name: string;
+    type: BotDifficulty;
+}
 
 export const DEFAULT_BOT: BotInfo[] = [
     { name: 'Jimmy', type: BotDifficulty.Easy },
