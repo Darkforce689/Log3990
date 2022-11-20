@@ -133,6 +133,10 @@ abstract class SocketHandler(private val EventTypes: Map<SocketEvent, Class<out 
             if (args.isEmpty()) {
                 return null
             }
+
+            if (type == String::class.java) {
+                return args[0].toString() as T
+            }
             Gson().fromJson(args[0].toString(), type) as T
         } catch (e: Exception) {
             println("Error -> formatObjectResponse -> $type")
