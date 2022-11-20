@@ -27,7 +27,8 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
 
     private val onPendingGames: (lobbyGames: LobbyGames?) -> Unit = { newLobbyGames ->
         newLobbyGames?.let {
-            model.lobbyGames.value = it
+            model.pendingGames.value = it.pendingGamesSettings
+            model.observableGames.value = it.observableGamesSettings
         }
     }
 

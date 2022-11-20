@@ -1,12 +1,13 @@
 <app-header-bar></app-header-bar>
 <mat-sidenav-container class="sidenav-container" [hasBackdrop]="false">
-    <mat-sidenav #sidenav 
-            mode="over" 
-            position="end"
-            [opened]="popOutService.isOpenInWindow" 
-            (opened)="popOutService.setOpen()"
-            (closed)="popOutService.setClose()"
-            >
+    <mat-sidenav
+        #sidenav
+        mode="over"
+        position="end"
+        [opened]="popOutService.isOpenInWindow"
+        (opened)="popOutService.setOpen()"
+        (closed)="popOutService.setClose()"
+    >
         <app-chat-box></app-chat-box>
     </mat-sidenav>
     <mat-sidenav-content>
@@ -19,13 +20,15 @@
                 </div>
                 <button mat-flat-button color="primary" class="selection-button" (click)="openMultiGameForm()">Créer une partie multijoueur</button>
                 <button mat-flat-button color="accent" class="selection-button" (click)="openPendingGames()">Joindre une partie multijoueur</button>
+                <button mat-flat-button color="accent" class="selection-button" (click)="openObservableGames()">
+                    Observer une partie multijoueur
+                </button>
             </mat-card>
         </div>
         <div class="chat-button" *ngIf="!popOutService.isPopOut">
-            <button mat-fab color="primary" (click)="sidenav.toggle()" [ngClass]="sidenav.opened? 'button-open':'button-close'">
+            <button mat-fab color="primary" (click)="sidenav.toggle()" [ngClass]="sidenav.opened ? 'button-open' : 'button-close'">
                 <mat-icon>chat</mat-icon>
             </button>
         </div>
     </mat-sidenav-content>
 </mat-sidenav-container>
-
