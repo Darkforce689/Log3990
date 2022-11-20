@@ -1,5 +1,8 @@
 <div matTooltip="{{ hasMinCard ? description : '' }}" [matTooltipPosition]="'below'">
-    <button mat-raised-button color="accent" [disabled]="!(hasMinCard && canUse)" (click)="execute()">
-        {{ hasMinCard ? name : '' }}
-    </button>
+    <app-game-action-button
+        [isDisabled]="!(hasMinCard && canUse)"
+        (clickButton)="execute()"
+        [label]="hasMinCard ? name : ''"
+        [icon]="hasMinCard ? icon : ''"
+    ></app-game-action-button>
 </div>
