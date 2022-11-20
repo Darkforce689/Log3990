@@ -5,7 +5,8 @@ enum class AuthError(val label: String) {
     InvalidPassword("INVALID_PASSWORD"),
     NameAlreadyTaken("NAME_ALREADY_TAKEN"),
     EmailAlreadyTaken("EMAIL_ALREADY_TAKEN"),
-    AlreadyAuth("ALREADY_AUTH");
+    AlreadyAuth("ALREADY_AUTH"),
+    NotAuth("NOT_AUTH");
 
     companion object {
         fun find(value: String): AuthError? = values().find { it.label == value }
