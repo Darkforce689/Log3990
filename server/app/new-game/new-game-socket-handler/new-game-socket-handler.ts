@@ -239,18 +239,22 @@ export class NewGameSocketHandler {
         this.emitPendingGamesToAll();
     }
 
-    private joinGame(
+    private async joinGame(
         id: string,
         name: string,
         gameSettings: OnlineGameSettings,
         socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,
     ) {
-        const gameToken = this.newGameManagerService.joinPendingGame(id, name);
-        if (!gameToken) {
+        const gameId = this.newGameManagerService.joinPendingGame(id, name);
+        if (!gameId) {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
         }
         socket.join(id);
-        this.sendGameSettingsToPlayers(gameToken, gameSettings);
+        this.sendGameSettingsToPlayers(gameId, gameSettings);
+        const isPendingGameFullOfPlayers = this.newGameManagerService.isPendingGameFullOfPlayers(id);
+        if (isPendingGameFullOfPlayers) {
+            await this.launchGame(id);
+        }
     }
 
     private joinGameAsObserver(gameToken: string, name: string, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {

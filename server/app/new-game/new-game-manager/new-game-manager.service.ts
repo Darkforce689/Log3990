@@ -98,6 +98,14 @@ export class NewGameManagerService {
         return id;
     }
 
+    isPendingGameFullOfPlayers(id: string): boolean {
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
+            return false;
+        }
+        return gameSettings.playerNames.length === gameSettings.numberOfPlayers;
+    }
+
     acceptPlayerInPrivatePendingGame(id: string, name: string): OnlineGameSettings | undefined {
         const gameSettings = this.pendingGames.get(id);
         if (!gameSettings) {
