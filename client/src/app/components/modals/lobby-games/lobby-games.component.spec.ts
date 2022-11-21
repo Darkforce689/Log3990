@@ -188,7 +188,7 @@ describe('LobbyGamesComponent', () => {
         fixture.detectChanges();
         const dom = fixture.debugElement.nativeElement;
         const tableNotSort = dom.querySelectorAll('tr');
-        expect(tableNotSort[1].cells[0].innerHTML).toBe(' Jerry ');
+        expect(tableNotSort[1].cells[1].innerHTML).toBe(' désactivé ');
 
         component.lobbyGamesDataSource.sort = component.tableSort;
         const sortState: Sort = { active: 'Id', direction: 'asc' };

@@ -1,15 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Player } from '@app/game-logic/player/player';
 import { AccountService } from '@app/services/account.service';
+import { UserCacheService } from '@app/users/services/user-cache.service';
 
 @Component({
     selector: 'app-player-info',
     templateUrl: './player-info.component.html',
     styleUrls: ['./player-info.component.scss'],
 })
-export class PlayerInfoComponent {
-    constructor(private info: GameInfoService, private account: AccountService) {}
+export class PlayerInfoComponent implements OnInit {
+    avatars = new Map<string, string>();
+    constructor(private info: GameInfoService, private account: AccountService, private userCacheService: UserCacheService) {}
+
+    ngOnInit(): void {
+        const names = this.info.players.map((player) => player.name);
+        this.addPlayerIcons(names);
+    }
+
+    addPlayerIcons(playerNames: string[]) {
+        playerNames.forEach((name) =>
+            this.userCacheService.getUserByName(name).subscribe((user) => {
+                if (!user) {
+                    return;
+                }
+                if (!user.avatar) {
+                    this.avatars.set(name, 'default');
+                    return;
+                }
+                this.avatars.set(name, user.avatar);
+            }),
+        );
+    }
+
+    getAvatarIcon(name: string): string {
+        return this.avatars.get(name) ?? 'default';
+    }
 
     get activePlayerName(): string {
         return this.info.activePlayer.name;
