@@ -8,9 +8,9 @@
     <mat-checkbox color="accent" formControlName="randomBonus">Bonus aléatoire</mat-checkbox>
     <br />
     <br />
-    <mat-checkbox #checkPassword color="accent" formControlName="hasPassword">Mot de passe</mat-checkbox>
+    <mat-checkbox #checkPassword color="accent" formControlName="hasPassword" (change)="onPasswordChange($event)">Mot de passe</mat-checkbox>
     <br />
-    <mat-form-field *ngIf="checkPassword.checked">
+    <mat-form-field>
         <mat-label>Mot de passe</mat-label>
         <input matInput autocomplete="off" placeholder="Mot de passe" formControlName="password" />
     </mat-form-field>

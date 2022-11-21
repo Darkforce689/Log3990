@@ -38,7 +38,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             Validators.max(MAX_NUMBER_OF_PLAYERS),
         ]),
         hasPassword: new FormControl(false, [Validators.required]),
-        password: new FormControl('', []),
+        password: new FormControl({ value: '', disabled: true }, [Validators.required]),
         botDifficulty: new FormControl(BotDifficulty.Easy, [Validators.required]),
     });
 
@@ -53,12 +53,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
         private dialogRef: MatDialogRef<NewOnlineGameFormComponent>,
         private cdref: ChangeDetectorRef,
     ) {
-        this.onInit();
         this.gameMode = data.gameMode;
-    }
-
-    onInit() {
-        return;
     }
 
     ngAfterContentChecked() {
@@ -69,9 +64,6 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
 
     playGame(): void {
         const form = this.onlineGameSettingsUIForm.value;
-        if (!form.hasPassword) {
-            form.password = undefined;
-        }
         this.dialogRef.close(form);
     }
 
@@ -87,6 +79,18 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
             password: '',
             botDifficulty: BotDifficulty.Easy,
         });
+    }
+
+    onPasswordChange(event: MatCheckboxChange) {
+        const hasPassword = event.checked;
+        if (hasPassword) {
+            this.onlineGameSettingsUIForm.get('password')?.enable();
+            this.onlineGameSettingsUIForm.updateValueAndValidity();
+            return;
+        }
+        this.onlineGameSettingsUIForm.get('password')?.disable();
+        this.onlineGameSettingsUIForm.get('password')?.reset();
+        this.onlineGameSettingsUIForm.updateValueAndValidity();
     }
 
     onCheckChange(event: MatCheckboxChange, magicCard: UIMagicCard) {

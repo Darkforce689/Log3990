@@ -4,7 +4,7 @@ import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { UserSearchComponent } from '@app/users/components/user-search/user-search.component';
 import { UserCacheService } from '@app/users/services/user-cache.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 const SPINNER_WIDTH_STROKE = 7;
 const SPINNER_DIAMETER = 40;
@@ -30,7 +30,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
     ) {}
 
     ngOnInit(): void {
-        this.socketHandler.gameSettings$.subscribe((gameSettings) => {
+        this.gameSettings$.subscribe((gameSettings) => {
             if (!gameSettings) {
                 return;
             }
@@ -109,11 +109,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
     }
 
     isHost(playerId: string) {
-        return this.isThatPlayerHost(playerId) ? false : this.isGameOwner();
-    }
-
-    isGameOwner() {
-        return this.socketHandler.isGameOwner;
+        return this.isThatPlayerHost(playerId) ? false : this.isGameOwner;
     }
 
     isThatPlayerHost(playerId: string) {
@@ -125,6 +121,10 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
 
     getAvatarIcon(playerName: string): string {
         return this.avatars.get(playerName) ?? 'default';
+    }
+
+    get isGameOwner() {
+        return this.socketHandler.isGameOwner;
     }
 
     get gameSettings$() {
@@ -158,18 +158,30 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
         return this.gameSettings.tmpPlayerNames;
     }
 
-    get deletedGame(): boolean {
-        return this.socketHandler.deletedGame$.value;
+    get isDeleted(): Observable<boolean> {
+        const subject = new BehaviorSubject<boolean>(false);
+        this.socketHandler.deletedGame$.subscribe((isDeleted) => {
+            subject.next(isDeleted);
+        });
+        return subject;
     }
 
-    get isWaiting(): boolean {
-        return this.socketHandler.isWaiting$.value;
+    get isWaiting(): Observable<boolean> {
+        const subject = new BehaviorSubject<boolean>(false);
+        this.socketHandler.isWaiting$.subscribe((isDeleted) => {
+            subject.next(isDeleted);
+        });
+        return subject;
     }
 
-    get isPrivateGame(): boolean {
-        if (!this.gameSettings) {
-            return false;
-        }
-        return this.gameSettings.privateGame ?? false;
+    get isPrivateGame(): Observable<boolean> {
+        const subject = new BehaviorSubject<boolean>(false);
+        this.gameSettings$.subscribe((gameSettings) => {
+            if (!gameSettings) {
+                return;
+            }
+            subject.next(gameSettings.privateGame);
+        });
+        return subject;
     }
 }

@@ -6,6 +6,11 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
+export enum JoinGameError {
+    InexistantGame = 'INEXISTANT_GAME',
+    InvalidPassword = 'INVALID_PASSWORD',
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -17,6 +22,7 @@ export class NewOnlineGameSocketHandler {
     observableGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     gameSettings$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     gameStarted$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
+    confirmPassword$ = new Subject<boolean>();
     isGameOwner: boolean = false;
     isDisconnected$ = new Subject<boolean>();
     error$ = new Subject<string>();
@@ -52,7 +58,7 @@ export class NewOnlineGameSocketHandler {
         this.deletedGame$.next(false);
     }
 
-    joinPendingGame(id: string, password: string | undefined) {
+    joinPendingGame(id: string, password?: string) {
         if (!this.socket) {
             this.connect();
         }
@@ -61,11 +67,11 @@ export class NewOnlineGameSocketHandler {
             this.connect();
         }
         const joinGameParams = { id, password };
-        this.socket.emit('joinGame', joinGameParams);
-        this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
+        this.listenForConfirmJoin();
         this.listenForGameStart();
-        this.listenForHostQuit();
+        this.waitForOtherPlayers();
+        this.socket.emit('joinGame', joinGameParams);
     }
 
     listenForHostQuit() {
@@ -165,6 +171,11 @@ export class NewOnlineGameSocketHandler {
         });
     }
 
+    private listenForConfirmJoin() {
+        this.socket.on('confirmPassword', (canJoin: boolean) => {
+            this.confirmPassword$.next(canJoin);
+        });
+    }
     private listenForGameStart() {
         this.socket.on('gameStarted', (gameSettings: OnlineGameSettings) => {
             this.gameStarted$.next(gameSettings);
