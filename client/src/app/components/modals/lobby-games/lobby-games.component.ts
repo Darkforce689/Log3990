@@ -9,6 +9,7 @@ import { GameLauncherService } from '@app/socket-handler/game-launcher/game-lauc
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
+import { UserCacheService } from '@app/users/services/user-cache.service';
 import { Observable } from 'rxjs';
 
 export enum LobbyGameType {
@@ -33,6 +34,7 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
         cell: (form: OnlineGameSettings) => string;
     }[];
     datePipe = new DatePipe('en_US');
+    avatars = new Map<string, string>();
 
     constructor(
         @Inject(MAT_DIALOG_DATA)
@@ -44,6 +46,7 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
         private dialogRef: MatDialogRef<LobbyGamesComponent>,
         private cdref: ChangeDetectorRef,
         private onlineSocketHandler: NewOnlineGameSocketHandler,
+        private userCacheService: UserCacheService,
         private gameLauncher: GameLauncherService,
         private liveAnnouncer: LiveAnnouncer,
     ) {
@@ -53,11 +56,11 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
                 header: 'Id',
                 cell: (form: OnlineGameSettings) => `${form.id}`,
             },
-            {
-                columnDef: 'playerNames',
-                header: 'Joueurs',
-                cell: (form: OnlineGameSettings) => `${form.playerNames}`,
-            },
+            // {
+            //     columnDef: 'playerNames',
+            //     header: 'Joueurs',
+            //     cell: (form: OnlineGameSettings) => `${form.playerNames}`,
+            // },
             {
                 columnDef: 'randomBonus',
                 header: 'Bonus Aléatoire',
@@ -87,9 +90,10 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
     }
 
     ngOnInit() {
-        this.data.lobbyGames$.subscribe((gameSettings) => {
+        this.data.lobbyGames$.subscribe((gameSettings: OnlineGameSettings[]) => {
             this.lobbyGamesDataSource.data = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.data.gameMode);
-            this.lobbyGamesDataSource.sort = this.tableSort; // NOT wokring
+            gameSettings.forEach((gameSetting) => this.addPlayerIcons(gameSetting.playerNames));
+            this.lobbyGamesDataSource.sort = this.tableSort;
         });
         this.onlineSocketHandler.listenForPendingGames();
     }
@@ -130,6 +134,25 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
 
     announceSortChange(sortState: Sort) {
         this.liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    }
+
+    addPlayerIcons(playerNames: string[]) {
+        playerNames.forEach((name) =>
+            this.userCacheService.getUserByName(name).subscribe((user) => {
+                if (!user) {
+                    return;
+                }
+                if (!user.avatar) {
+                    this.avatars.set(name, 'default');
+                    return;
+                }
+                this.avatars.set(name, user.avatar);
+            }),
+        );
+    }
+
+    getAvatar(name: string): string {
+        return this.avatars.get(name) ?? 'default';
     }
 
     playerCount(form: OnlineGameSettings): string {

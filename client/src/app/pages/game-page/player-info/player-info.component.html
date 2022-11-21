@@ -2,9 +2,12 @@
     <mat-card class="playerInfo" id="{{ i }}" [ngClass]="{ active: isActivePlayer(player) }">
         <mat-card-header>
             <div class="flex-container">
-                <span class="name">
-                    {{ player.name }}
-                </span>
+                <div>
+                    <app-avatar [src]="getAvatarIcon(player.name)" [size]="40"></app-avatar>
+                    <span class="name">
+                        {{ player.name }}
+                    </span>
+                </div>
                 <mat-icon class="eyeIcon" *ngIf="isObserver && isWatchedPlayer(player.name)">remove_red_eye</mat-icon>
             </div>
         </mat-card-header>

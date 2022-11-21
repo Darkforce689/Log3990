@@ -1,15 +1,15 @@
 /* eslint-disable no-underscore-dangle */
+import { Pagination } from '@app/common/interfaces/pagination.interface';
 import { SYSTEM_USER_NAME, USER_COLLECTION } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
 import { ServerLogger } from '@app/logger/logger';
 import { GameStats } from '@app/user/interfaces/game-stats.interface';
 import { UserCreation } from '@app/user/interfaces/user-creation.interface';
-import { User } from '@app/user/interfaces/user.interface';
 import { UserQuery, UsersGetQuery } from '@app/user/interfaces/user-query.interface';
+import { User } from '@app/user/interfaces/user.interface';
 import { ObjectId } from 'mongodb';
 import { Service } from 'typedi';
-import { Pagination } from '@app/common/interfaces/pagination.interface';
 
 export enum UserCreationError {
     NameAlreadyTaken = 'NAME_ALREADY_TAKEN',

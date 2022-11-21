@@ -9,7 +9,7 @@ mat-dialog-actions {
 
 .header {
     display: flex;
-    justify-content: center !important;
+    justify-content: space-between;
 }
 
 h5 {
@@ -21,9 +21,8 @@ table {
     width: 100%;
 }
 
-.table-container {
-    max-height: 350;
-    overflow: auto;
+.mat-column-playerNames {
+    width: 25%;
 }
 
 .mat-row .mat-cell {
@@ -51,16 +50,6 @@ table {
     background-color: transparent !important;
 }
 
-.hidden {
-    display: none;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-
 .mat-flat-button {
     line-height: 0;
     padding: 3px;
@@ -74,4 +63,15 @@ table {
     to {
         background-color: var(--bg);
     }
+}
+
+.player {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding-top: 5%;
+}
+
+app-avatar {
+    padding-right: 15px;
 }
