@@ -9,20 +9,24 @@ import { ACTIVE_STATUS, WAIT_STATUS } from '@app/game-logic/constants';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
+
+export enum LobbyGameType {
+    PendingGame,
+    ObservableGame,
+}
 
 export const DELAY = 100;
 @Component({
-    selector: 'app-pending-games',
-    templateUrl: './pending-games.component.html',
-    styleUrls: ['./pending-games.component.scss'],
+    selector: 'app-lobby-games',
+    templateUrl: './lobby-games.component.html',
+    styleUrls: ['./lobby-games.component.scss'],
 })
-export class PendingGamesComponent implements AfterContentChecked, OnInit, AfterViewInit {
+export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterViewInit {
     @ViewChild(MatSort) tableSort: MatSort;
     columnsToDisplay = ['playerNames', 'randomBonus', 'timePerTurn', 'hasPassword', 'privateGame', 'numberOfPlayers'];
     selectedRow: OnlineGameSettings | undefined;
-    pendingGameDataSource = new MatTableDataSource<OnlineGameSettings>();
-    observableGameDataSource = new MatTableDataSource<OnlineGameSettings>();
+    lobbyGamesDataSource = new MatTableDataSource<OnlineGameSettings>();
     columns: {
         columnDef: string;
         header: string;
@@ -31,8 +35,13 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
     datePipe = new DatePipe('en_US');
 
     constructor(
-        @Inject(MAT_DIALOG_DATA) public gameMode: GameMode,
-        private dialogRef: MatDialogRef<PendingGamesComponent>,
+        @Inject(MAT_DIALOG_DATA)
+        public data: {
+            lobbyGameType: LobbyGameType;
+            gameMode: GameMode;
+            lobbyGames$: Observable<OnlineGameSettings[]>;
+        },
+        private dialogRef: MatDialogRef<LobbyGamesComponent>,
         private dialog: MatDialog,
         private cdref: ChangeDetectorRef,
         private onlineSocketHandler: NewOnlineGameSocketHandler,
@@ -78,19 +87,14 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
     }
 
     ngOnInit() {
-        this.pendingGames$.subscribe((gameSettings) => {
-            const filteredGameSettings = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.gameMode);
-            this.pendingGameDataSource.data = filteredGameSettings;
-        });
-        this.observableGames$.subscribe((gameSettings) => {
-            const filteredGameSettings = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.gameMode);
-            this.observableGameDataSource.data = filteredGameSettings;
+        this.data.lobbyGames$.subscribe((gameSettings) => {
+            this.lobbyGamesDataSource.data = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.data.gameMode);
         });
         this.onlineSocketHandler.listenForPendingGames();
     }
 
     ngAfterViewInit() {
-        this.pendingGameDataSource.sort = this.tableSort;
+        this.lobbyGamesDataSource.sort = this.tableSort;
     }
 
     ngAfterContentChecked() {
@@ -142,19 +146,11 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
     }
 
     get isEmpty(): boolean {
-        return this.pendingGameDataSource.data.length === 0;
+        return this.lobbyGamesDataSource.data.length === 0;
     }
 
     get hasOneGame(): boolean {
-        return this.pendingGameDataSource.data.length === 1;
-    }
-
-    get pendingGames$(): BehaviorSubject<OnlineGameSettings[]> {
-        return this.onlineSocketHandler.pendingGames$;
-    }
-
-    get observableGames$(): BehaviorSubject<OnlineGameSettings[]> {
-        return this.onlineSocketHandler.observableGames$;
+        return this.lobbyGamesDataSource.data.length === 1;
     }
 
     get isGameFull(): boolean {
@@ -165,5 +161,13 @@ export class PendingGamesComponent implements AfterContentChecked, OnInit, After
             return false;
         }
         return this.selectedRow?.playerNames.length === this.selectedRow?.numberOfPlayers;
+    }
+
+    get noLobbyGameLabel(): string {
+        return this.data.lobbyGameType === LobbyGameType.PendingGame ? 'Aucune partie en attente' : 'Aucune partie en cours';
+    }
+
+    get lobbyGameTitle(): string {
+        return this.data.lobbyGameType === LobbyGameType.PendingGame ? 'Joindre une partie' : 'Observer une partie';
     }
 }

@@ -3,6 +3,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { BOARD_DIMENSION, DEFAULT_TIME_PER_TURN, MIDDLE_OF_BOARD, WAIT_STATUS } from '@app/game-logic/constants';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { OnlineGame } from '@app/game-logic/game/games/online-game/online-game';
@@ -10,18 +11,16 @@ import { Player } from '@app/game-logic/player/player';
 import { LeaderboardService } from '@app/leaderboard/leaderboard.service';
 import { AccountService } from '@app/services/account.service';
 import { BotDifficulty } from '@app/services/bot-difficulty';
-import { BotHttpService } from '@app/services/bot-http.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
-import { of } from 'rxjs';
 import { GameManagerService } from './game-manager.service';
 
 describe('GameManagerService Online Edition', () => {
     let service: GameManagerService;
     let gameSocketHandler: GameSocketHandlerService;
     const leaderboardServiceMock = jasmine.createSpyObj('LeaderboardService', ['updateLeaderboard']);
-    const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
+    const messageServiceMock = jasmine.createSpyObj('MessageService', ['joinGameConversation', 'leaveGameConversation']);
     const accountServiceMock = jasmine.createSpyObj('AccountService', ['actualizeAccount'], {
         account: {
             name: 'p1',
@@ -29,10 +28,6 @@ describe('GameManagerService Online Edition', () => {
             email: 'a@b.c',
         },
     });
-
-    const obs = of(['Test1', 'Test2', 'Test3']);
-    mockBotHttpService.getDataInfo.and.returnValue(obs);
-
     const grid: Tile[][] = [];
     for (let i = 0; i < BOARD_DIMENSION; i++) {
         const row: Tile[] = [];
@@ -64,8 +59,8 @@ describe('GameManagerService Online Edition', () => {
             providers: [
                 { provide: AccountService, useValue: accountService },
                 { provide: LeaderboardService, useValue: leaderboardServiceMock },
-                { provide: BotHttpService, useValue: mockBotHttpService },
                 { provide: AccountService, useValue: accountServiceMock },
+                { provide: MessagesService, useValue: messageServiceMock },
             ],
             imports: [HttpClientTestingModule],
         });

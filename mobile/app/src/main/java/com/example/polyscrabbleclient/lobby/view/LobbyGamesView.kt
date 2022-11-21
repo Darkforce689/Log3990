@@ -20,6 +20,7 @@ import com.example.polyscrabbleclient.ui.theme.ObservableGameSubTitle
 import com.example.polyscrabbleclient.ui.theme.PendingGameSubTitle
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 import com.example.polyscrabbleclient.utils.SubTitleView
+import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 
 val ColumnsWeights = listOf(
     0.3f,
@@ -62,19 +63,11 @@ fun LobbyGamesView(
     }
 
     Column {
-        lobbyGames.value?.pendingGamesSettings.let { pendingGames ->
+        lobbyGames.value?.filter { onlineGameSettings ->
+            onlineGameSettings.gameMode == gameMode
+        }.let { lobbyGames ->
             LobbyGamesTableView(
-                PendingGameSubTitle,
-                pendingGames,
-                { toggleSelectedGame(it) },
-                { isGameSelected(it) },
-            )
-        }
-
-        lobbyGames.value?.observableGamesSettings.let { observableGames ->
-            LobbyGamesTableView(
-                ObservableGameSubTitle,
-                observableGames,
+                lobbyGames,
                 { toggleSelectedGame(it) },
                 { isGameSelected(it) },
             )
@@ -94,7 +87,6 @@ fun LobbyGamesView(
 
 @Composable
 private fun LobbyGamesTableView(
-    subTitle: String,
     games: List<OnlineGameSettings>?,
     toggleSelected: (lobbyGameIndex: Int) -> Unit,
     isGameSelected: (lobbyGameIndex: Int) -> Boolean,
@@ -105,10 +97,6 @@ private fun LobbyGamesTableView(
             .padding(16.dp)
     ) {
         Column {
-            SubTitleView(
-                subTitle,
-                Modifier.padding(12.dp)
-            )
             LobbyGamesListView(
                 games,
                 { toggleSelected(it) },
@@ -162,7 +150,7 @@ private fun LobbyGamesListView(
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p)
 @Composable
-fun LobbyGamesPreview() {
+fun LobbyPendingGamesPreview() {
     val a = OnlineGameSettings(
         id = "123",
         gameMode = GameMode.Classic,
@@ -207,13 +195,10 @@ fun LobbyObservableGamesPreview() {
     )
     LobbyGamesView(
         mutableStateOf(
-            LobbyGames(
-                ArrayList(listOf(a)),
-                ArrayList(listOf(b)),
-            )
+            ArrayList(listOf(b)),
         ),
         mutableStateOf(0),
         GameMode.Classic,
         {}
-    )
+    ) {}
 }

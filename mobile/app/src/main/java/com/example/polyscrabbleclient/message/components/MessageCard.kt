@@ -1,20 +1,21 @@
 package com.example.polyscrabbleclient.message.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.polyscrabbleclient.message.model.Message
 import com.example.polyscrabbleclient.message.model.MessageType
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -23,43 +24,67 @@ fun MessageCard(messageInfo: Message) {
     val dateStr = messageInfo.date?.format(dateFormatter) ?: ""
 
     val isMessageFromMe = messageInfo.type == MessageType.ME
-    val padding = if (isMessageFromMe)
-        Modifier.padding(250.dp, 5.dp, 5.dp, 5.dp)
-    else
-        Modifier.padding(5.dp, 5.dp, 250.dp, 5.dp)
 
-    Column(modifier = Modifier.padding(horizontal = 5.dp, vertical = 4.dp)) {
-        Text(
-            text = dateStr,
-            modifier = padding,
-            style = MaterialTheme.typography.body1.copy(fontSize = 15.sp)
-        )
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(padding),
-            backgroundColor = if (isMessageFromMe) MaterialTheme.colors.secondary
-            else MaterialTheme.colors.primary
-        ) {
-            Row(Modifier.padding(10.dp, 15.dp, 15.dp, 15.dp)) {
-                Text(
-                    text = "${messageInfo.from}: ",
-
-                    style = MaterialTheme.typography.body1.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 20.sp,
-                        color = Color.White
-                    )
-                )
-                Text(
-                    text = messageInfo.content,
-                    style = MaterialTheme.typography.body1.copy(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 20.sp,
-                        color = Color.White
-                    )
-                )
-            }
+    @Composable
+    fun getColor(messageType: MessageType): Color {
+        return when (messageType) {
+            MessageType.ME -> MaterialTheme.colors.primary;
+            MessageType.OTHER -> MaterialTheme.colors.secondary;
+            MessageType.SYSTEM -> Color.Gray // TODO COLOR UNIFORMITY THEME
+            MessageType.ERROR -> MaterialTheme.colors.error // TODO COLOR UNIFORMITY THEME
         }
     }
+
+    Column(modifier = Modifier.padding(horizontal = 5.dp, vertical = 4.dp)) {
+        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = dateStr,
+                modifier = Modifier.padding(5.dp),
+                style = MaterialTheme.typography.body1.copy(fontSize = 15.sp)
+            )
+        }
+
+        Row {
+            if (isMessageFromMe) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Card(
+                modifier = Modifier
+                    .widthIn(0.dp, 750.dp)
+                    .padding(horizontal = 10.dp, vertical = 5.dp),
+                shape = RoundedCornerShape(25.dp),
+                backgroundColor = getColor(messageType = messageInfo.type),
+            ) {
+                Row(Modifier.padding(horizontal = 17.dp, vertical = 12.dp)) {
+                    Text(
+                        text = "${messageInfo.from}: ",
+
+                        style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        text = messageInfo.content,
+                        style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
+                    )
+                }
+                if (!isMessageFromMe) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MessageCardPreview() {
+    MessageCard(messageInfo = Message(content = "salut je suis olivier", from = "olivier1", date = ZonedDateTime.now(), type = MessageType.ME, conversation = "abcd"))
 }

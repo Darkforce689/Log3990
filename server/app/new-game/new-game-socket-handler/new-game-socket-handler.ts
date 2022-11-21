@@ -8,7 +8,7 @@ import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dic
 import { ServerLogger } from '@app/logger/logger';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -342,7 +342,6 @@ export class NewGameSocketHandler {
     }
 
     private sendGameStartedToPlayers(gameId: string, gameToken: string, gameSettings: OnlineGameSettings) {
-        this.newGameManagerService.activeGameSettingMap.set(gameId, gameSettings);
         gameSettings.id = gameToken;
         this.ioServer.to(gameId).emit(gameStarted, gameSettings);
     }

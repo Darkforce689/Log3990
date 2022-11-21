@@ -11,12 +11,10 @@ import androidx.paging.cachedIn
 import com.example.polyscrabbleclient.message.ChatSocketHandler
 import com.example.polyscrabbleclient.message.EventType
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
-import com.example.polyscrabbleclient.message.model.BaseMessage
-import com.example.polyscrabbleclient.message.model.Conversation
-import com.example.polyscrabbleclient.message.model.Message
-import com.example.polyscrabbleclient.message.model.MessageDTO
+import com.example.polyscrabbleclient.message.model.*
 import com.example.polyscrabbleclient.message.sources.MessageSource
 import com.example.polyscrabbleclient.message.utils.MessageFactory
+import com.example.polyscrabbleclient.message.utils.conversationRoomId
 import com.google.gson.Gson
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +27,7 @@ class ChatBoxViewModel : ViewModel() {
     var currentConversation: Conversation? = null
     var currentConvoId: MutableState<String?> = mutableStateOf(null) // needed to refresh list
     var selectedConvoIndex: MutableState<Int> = mutableStateOf(0)
+    val scrollDown: MutableState<Boolean> = mutableStateOf(false)
 
     val conversations = ConversationsManager.conversations
     val currentConvoObs = { index: Int ->
@@ -45,13 +44,45 @@ class ChatBoxViewModel : ViewModel() {
         val data = args[0].toString()
         try {
             val messageDTO = Gson().fromJson(data, MessageDTO::class.java)
-            println("message received: " + messageDTO.conversation)
-            println("current convo" + currentConvo.name)
-            if (messageDTO.conversation != currentConvo.name) { // TODO change when implementing game convo
-                println("discarding message")
+            val currentRoomId = conversationRoomId(currentConvo)
+            if (messageDTO.conversation != currentRoomId) {
                 return@Listener
             }
             MessageFactory.createMessage(messageDTO) { message -> addMessage(message) }
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+    }
+
+    private var onSystemMessage = Emitter.Listener { args ->
+        val currentConvo = currentConversation
+        if (currentConvo === null) {
+            return@Listener
+        }
+        val data = args[0].toString()
+        try {
+            val messageDTO = Gson().fromJson(data, SystemMessage::class.java)
+            val currentRoomId = conversationRoomId(currentConvo)
+            if (messageDTO.conversation != currentRoomId) {
+                return@Listener
+            }
+            val message = MessageFactory.createSystemMessage(messageDTO)
+            addMessage(message)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+    }
+
+    private var onErrorMessage = Emitter.Listener { args ->
+        val currentConvo = currentConversation
+        if (currentConvo === null) {
+            return@Listener
+        }
+        val data = args[0].toString()
+        try {
+            val error = data
+            val message = MessageFactory.createSystemError(error)
+            addMessage(message)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -69,12 +100,13 @@ class ChatBoxViewModel : ViewModel() {
     }.flow.cachedIn(viewModelScope)
 
     fun sendMessage(content: String) {
-        if (currentConversation == null) {
+        val currentConvo = currentConversation
+        if (currentConvo == null) {
             throw RuntimeException("You need to be in a conversation before sending a message")
         }
-        println("current convo for new message" + currentConversation)
+        val roomId = conversationRoomId(currentConvo)
         val baseMessage =
-            BaseMessage(content, currentConversation!!.name) // todo change here for game chat
+            BaseMessage(content, roomId)
         ChatSocketHandler.sendMessage(baseMessage)
     }
 
@@ -88,6 +120,8 @@ class ChatBoxViewModel : ViewModel() {
             ChatSocketHandler.setSocket()
             ChatSocketHandler.socketConnection()
             ChatSocketHandler.on(EventType.ROOM_MESSAGES, onNewMessage)
+            ChatSocketHandler.on(EventType.SYSTEM_MESSAGE, onSystemMessage)
+            ChatSocketHandler.on(EventType.SYSTEM_ERROR, onErrorMessage)
         }
         connectThread.start()
         connectThread.join()
@@ -101,11 +135,12 @@ class ChatBoxViewModel : ViewModel() {
         }.start()
     }
 
-    fun leaveConversation(index: Int) {
+    fun leaveConversation(index: Int, callback: () -> Unit) {
         val conversation = conversations[index]
         Thread {
             ConversationsManager.leaveConversation(conversation._id) {
                 setCurrentConvoAfterUpdate()
+                callback()
             }
         }.start()
     }
@@ -152,11 +187,12 @@ class ChatBoxViewModel : ViewModel() {
         // This is worst case O(n) but will be O(1) 99.9999% of the time. This is used as an Insurance
         val insertionIndex = findMessageInsertionIndex()
         messages.add(insertionIndex, newMessage)
-        historySource.offset++;
+        if (newMessage.type != MessageType.ERROR) {
+            historySource.offset++;
+        }
     }
 
     fun onSelectedConvo(index: Int) {
-        println("change convo hashcode " + this.hashCode())
         selectedConvoIndex.value = index
         val selectedConvo = conversations[index]
         changeCurrentConversation(selectedConvo)
@@ -166,7 +202,6 @@ class ChatBoxViewModel : ViewModel() {
     private fun changeCurrentConversation(conversation: Conversation) {
         currentConversation = conversation
         messages.clear()
-        println("changing convo" + currentConversation)
     }
 
     private fun createNewMessageSource(): MessageSource {

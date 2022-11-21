@@ -1,8 +1,3 @@
-.bg-img {
-    background: url('^assets/img/game-bg.jpg') no-repeat center top;
-    background-size: 100vw 100vh;
-}
-
 .container {
     display: grid;
     height: 100vh;
@@ -11,14 +6,10 @@
     gap: 0px 0px;
     grid-template-areas:
         'Img Img Img Img'
-        'Player Board Board Objectives-Chat'
-        'Info Board Board Objectives-Chat'
-        'Actions MagicCards MagicCards Objectives-Chat'
-        'Quitter Horse Horse Objectives-Chat';
-}
-
-.observerButton {
-    width: 120px !important;
+        'Player Board Board Other'
+        'Info Board Board Other'
+        'Actions MagicCards MagicCards Other'
+        'Quitter Horse Horse Chat';
 }
 
 img {
@@ -55,38 +46,34 @@ app-player-info {
     padding-left: 2%;
 }
 
-.container-objectives-and-chat {
-    grid-area: Objectives-Chat;
-    display: flex;
-    flex-direction: column;
-    padding: 1%;
-    padding-right: 2%;
-}
-
-app-chat-box {
-    flex-grow: 1;
-}
-
 .actions {
     grid-area: Actions;
+    flex-direction: column;
     display: flex;
     justify-content: center;
-    align-self: center;
-    align-items: flex-start;
-    padding: 1%;
-    padding-left: 15%;
+    margin: 5%;
 
-    button {
+    > div {
+        display: flex;
         padding: 1%;
-        margin: 5%;
+        width: 100%;
     }
 }
 
-.magic-cards {
+app-game-action-button {
+    display: flex;
+    padding: 1%;
+    width: 100%;
+    height: fit-content;
+}
+
+app-magic-card-list {
     grid-area: MagicCards;
     display: flex;
     justify-content: center;
     align-self: center;
+    display: flex;
+    flex: 1;
 }
 
 button:disabled {
@@ -96,11 +83,37 @@ button:disabled {
 .abandonner {
     grid-area: Quitter;
     display: flex;
-    justify-content: center;
-    align-self: center;
-    align-items: flex-start;
-    padding-left: 2%;
-    button {
-        width: 60%;
-    }
+    align-items: center;
+    margin: 0 5%;
+}
+
+mat-sidenav {
+    width: 24vw;
+    height: 100%;
+}
+
+.mat-sidenav-container {
+    height: 100vh;
+    background: url('^assets/img/game-bg.jpg') no-repeat center top;
+    background-size: 100vw 100vh;
+}
+
+mat-sidenav-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.button-open {
+    position: absolute;
+    padding: 0%;
+    left: 70vw;
+    top: 90vh;
+}
+
+.button-close {
+    position: absolute;
+    padding: 0%;
+    left: 94vw;
+    top: 90vh;
 }

@@ -63,7 +63,7 @@ describe('UIInputControllerService', () => {
     });
 
     it('should discard current UIPlace action on end of turn', () => {
-        service.activeAction = new UIPlace(info, boardService);
+        service.activeAction = new UIPlace(info, boardService, service);
         (info as any as MockGameInfoService).endOfTurnMockSubject.next();
         expect(service.activeAction).toBeNull();
     });
@@ -227,7 +227,7 @@ describe('UIInputControllerService', () => {
     it('should remove letters temporarily placed on the board after UIPlace switches to UIMove', () => {
         service.activeComponent = InputComponent.Board;
         const board = TestBed.inject(BoardService).board;
-        service.activeAction = new UIPlace(info, boardService);
+        service.activeAction = new UIPlace(info, boardService, service);
         const char = 'A';
         player.letterRack[0].char = char;
         const pos = BOARD_MAX_POSITION / 2;
@@ -243,7 +243,7 @@ describe('UIInputControllerService', () => {
     it('should remove letters temporarily placed on the board after UIPlace switches to UIExchange', () => {
         service.activeComponent = InputComponent.Board;
         const board = TestBed.inject(BoardService).board;
-        service.activeAction = new UIPlace(info, boardService);
+        service.activeAction = new UIPlace(info, boardService, service);
         const char = 'A';
         player.letterRack[0].char = char;
         const pos = BOARD_MAX_POSITION / 2;

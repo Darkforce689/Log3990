@@ -42,7 +42,7 @@ fun GameScreen(navController: NavController) {
         }
         EvenlySpacedSubColumn(modifier = Modifier.fillMaxHeight()) {
             Box {
-                BoardView(dragState)
+                BoardView(dragState, viewModel.board)
             }
             if (viewModel.isMagicGame()) {
                 Box {

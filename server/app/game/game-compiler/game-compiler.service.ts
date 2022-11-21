@@ -63,7 +63,6 @@ export class GameCompiler {
             isEndOfGame: gameState.isEndOfGame,
             lettersRemaining: gameState.lettersRemaining,
             winnerIndex: gameState.winnerIndex,
-            drawableMagicCards: game.drawableMagicCards,
             drawnMagicCards: game.drawnMagicCards,
         };
         return magicGameState;

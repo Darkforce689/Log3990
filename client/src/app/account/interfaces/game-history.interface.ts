@@ -5,13 +5,18 @@ export interface GameHistoryInfo {
     gameToken: string;
     gameMode: GameMode;
     userIds: string[];
-    winnerUsers: string[];
+    winnerIds: string[];
     date: number;
+    forfeitedIds: string[];
 }
 
 export interface GameHistory {
     games: GameHistoryInfo[];
     userId: string;
+}
+
+export interface ReplayGameStates {
+    gameStates: GameStateHistory[];
 }
 
 export interface GameStateHistory {

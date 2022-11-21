@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.sources.Player
@@ -27,13 +28,14 @@ import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 
 @Composable
-fun PlayersInfoView(viewModel: GameViewModel) {
+fun PlayersInfoView(viewModel: GameViewModel, size: Dp = 200.dp) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         viewModel.game.players.forEach { player ->
             PlayerInfoView(
                 player,
+                size,
                 { player === viewModel.game.getWatchedPlayer() }
             ) {
                 player === viewModel.game.getActivePlayer()
@@ -45,6 +47,7 @@ fun PlayersInfoView(viewModel: GameViewModel) {
 @Composable
 fun PlayerInfoView(
     player: Player,
+    size: Dp,
     isWatchedPlayer: () -> Boolean,
     isActivePlayer: () -> Boolean,
 ) {
@@ -61,6 +64,7 @@ fun PlayerInfoView(
     Card(
         modifier = Modifier
             .padding(4.dp)
+            .width(size)
             .border(
                 width = 4.dp,
                 targetColor,

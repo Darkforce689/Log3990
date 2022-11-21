@@ -3,7 +3,7 @@
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
-import { GameManagerService } from '@app/game/game-manager/game-manager.services';
+import { GameManagerService, PlayersAndToken } from '@app/game/game-manager/game-manager.services';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
@@ -22,6 +22,7 @@ describe('NewGameManagerService', () => {
     before(() => {
         gameManagerStub = createSinonStubInstance<GameManagerService>(GameManagerService);
         gameManagerStub.gameDeleted$ = new Subject<string>();
+        gameManagerStub.playerLeft$ = new Subject<PlayersAndToken>();
         gameManagerStub.observerLeft$ = new Subject<NameAndToken>();
         dictionaryServiceStub = createSinonStubInstance<DictionaryService>(DictionaryService);
         service = new NewGameManagerService(gameManagerStub, dictionaryServiceStub);

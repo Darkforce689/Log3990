@@ -4,6 +4,7 @@ import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
 import { Conversation } from '@app/chat/interfaces/conversation.interface';
 import { MessageType } from '@app/chat/interfaces/message.interface';
 import { ConversationService } from '@app/chat/services/conversation/conversation.service';
@@ -23,9 +24,10 @@ describe('ChatBoxComponent', () => {
     let gameInfoServiceSpy: jasmine.SpyObj<GameInfoService>;
     let cdRefSpy: jasmine.SpyObj<ChangeDetectorRef>;
     let conversationSpy: jasmine.SpyObj<ConversationService>;
+    let routeSpy: jasmine.SpyObj<ActivatedRoute>;
     const httpClient = jasmine.createSpyObj('HttpClient', ['get']);
     const currentConversation$ = new Subject<Conversation>();
-
+    const queryParams$ = new Observable<unknown>();
     beforeEach(() => {
         messageServiceSpy = jasmine.createSpyObj('MessagesService', ['receiveNonDistributedPlayerMessage', 'connect', 'disconnect']);
         messageServiceSpy.messages$ = new BehaviorSubject<MessagesUpdate>({
@@ -35,9 +37,12 @@ describe('ChatBoxComponent', () => {
         gameInfoServiceSpy = jasmine.createSpyObj('GameInfoService', ['getPlayer']);
         cdRefSpy = jasmine.createSpyObj('ChangeDetectorRef', ['detectChanges']);
         conversationSpy = jasmine.createSpyObj('ConversationService', [], ['currentConversation$']);
+        routeSpy = jasmine.createSpyObj('ActivatedRoute', [], ['queryParams']);
+
         (
             Object.getOwnPropertyDescriptor(conversationSpy, 'currentConversation$')?.get as jasmine.Spy<() => Observable<Conversation>>
         ).and.returnValue(currentConversation$);
+        (Object.getOwnPropertyDescriptor(routeSpy, 'queryParams')?.get as jasmine.Spy<() => Observable<unknown>>).and.returnValue(queryParams$);
 
         TestBed.configureTestingModule({
             imports: [AppMaterialModule, BrowserAnimationsModule, FormsModule, CommonModule],
@@ -47,6 +52,7 @@ describe('ChatBoxComponent', () => {
                 { provide: GameInfoService, useValue: gameInfoServiceSpy },
                 { provide: ConversationService, useValue: conversationSpy },
                 { provide: ChangeDetectorRef, useValue: cdRefSpy },
+                { provide: ActivatedRoute, useValue: routeSpy },
                 { provide: HttpClient, useValue: httpClient },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],

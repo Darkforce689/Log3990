@@ -47,9 +47,11 @@ fun CreateConversationModalContent(
     ) -> Unit
 ) {
     val createConvoViewModel: CreateConversationViewModel = viewModel()
-    Column(modifier = Modifier
-        .padding(top = 20.dp)
-        .width(300.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(top = 20.dp)
+            .width(300.dp),
+    ) {
         TextField(
             modifier = Modifier
                 .fillMaxWidth()

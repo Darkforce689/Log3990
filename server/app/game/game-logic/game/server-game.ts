@@ -7,7 +7,7 @@ import { Board } from '@app/game/game-logic/board/board';
 import { LetterBag } from '@app/game/game-logic/board/letter-bag';
 import { MAX_CONSECUTIVE_PASS } from '@app/game/game-logic/constants';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, SyncState, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -16,7 +16,7 @@ import { Timer } from '@app/game/game-logic/timer/timer.service';
 import { ServerLogger } from '@app/logger/logger';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { randomInt } from 'crypto';
-import { first, mapTo, Subject } from 'rxjs';
+import { first, mapTo, Subject, Subscription } from 'rxjs';
 
 export class ServerGame {
     static readonly maxConsecutivePass = MAX_CONSECUTIVE_PASS;
@@ -30,6 +30,7 @@ export class ServerGame {
 
     isEnded$ = new Subject<undefined>();
     endReason: EndOfGameReason;
+    private playerAction$$: Subscription;
 
     constructor(
         timerController: TimerController,
@@ -40,6 +41,7 @@ export class ServerGame {
         private gameCompiler: GameCompiler,
         protected messagesService: SystemMessagesService,
         private newGameStateSubject: Subject<GameStateToken>,
+        private newSyncStateSubject: Subject<SyncStateToken>,
         private endGameSubject: Subject<EndOfGame>,
         public botDifficulty: BotDifficulty,
         private gameHistoryService: GameHistoryService,
@@ -145,13 +147,17 @@ export class ServerGame {
     }
 
     protected setPlayerActive(player: Player = this.getActivePlayer()): Player {
-        player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
+        this.playerAction$$ = player.action$.pipe(first()).subscribe((action) => this.takeAction(action));
         return player;
     }
 
     protected takeAction(action: Action) {
         this.endOfTurn(action);
         return;
+    }
+
+    protected syncronisation(sync: SyncState) {
+        this.emitSyncState(sync);
     }
 
     protected endOfTurn(action: Action | undefined, nextPlayerDelta: number = 1) {
@@ -171,6 +177,7 @@ export class ServerGame {
                 this.onEndOfGame(EndOfGameReason.GameEnded);
                 return;
             }
+            this.playerAction$$?.unsubscribe();
             this.nextPlayer(nextPlayerDelta);
             this.emitGameState();
             this.startTurn();
@@ -184,6 +191,11 @@ export class ServerGame {
         const gameStateToken: GameStateToken = { gameState, gameToken: this.gameToken };
         this.gameHistoryService.insertGameState(gameStateToken);
         this.newGameStateSubject.next(gameStateToken);
+    }
+
+    protected emitSyncState(sync: SyncState) {
+        const syncStateToken: SyncStateToken = { syncState: sync, gameToken: this.gameToken };
+        this.newSyncStateSubject.next(syncStateToken);
     }
 
     protected startTurn(reduceTimer: boolean = false) {
@@ -221,11 +233,11 @@ export class ServerGame {
     private drawGameLetters() {
         for (const player of this.players) {
             player.letterRack = this.letterBag.drawEmptyRackLetters();
+            player.syncronisation$.subscribe((sync) => this.syncronisation(sync));
         }
     }
 
     private displayLettersLeft() {
-        // TODO: Fix systeme message
         let message = 'Fin de partie - lettres restantes';
         this.messagesService.sendGlobal(this.gameToken, message);
         for (const player of this.players) {

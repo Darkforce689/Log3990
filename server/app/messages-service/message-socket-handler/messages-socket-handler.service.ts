@@ -10,7 +10,7 @@ import { RoomFactory } from '@app/messages-service/room/room-factory.service';
 import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { GlobalSystemMessage, IndividualSystemMessage, SystemMessageDTO } from '@app/messages-service/system-message.interface';
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import * as http from 'http';
 import * as io from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';

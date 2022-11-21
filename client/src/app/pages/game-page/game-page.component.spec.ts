@@ -5,6 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
@@ -77,7 +78,7 @@ describe('GamePageComponent', () => {
         mockInfo = jasmine.createSpyObj('GameInfoService', [], ['player', 'activePlayer', 'isEndOfGame', 'isEndOfGame$', 'winner']);
         await TestBed.configureTestingModule({
             declarations: [GamePageComponent, DisconnectedFromServerComponent],
-            imports: [RouterTestingModule.withRoutes(routes), AppMaterialModule, CommonModule, HttpClientTestingModule],
+            imports: [RouterTestingModule.withRoutes(routes), AppMaterialModule, CommonModule, HttpClientTestingModule, BrowserAnimationsModule],
             providers: [
                 { provide: GameManagerService, useValue: gameManagerServiceSpy },
                 { provide: ChangeDetectorRef, useValue: cdRefSpy },
@@ -215,9 +216,10 @@ describe('GamePageComponent', () => {
     it('canPlace coverage', () => {
         const spyGameInfo: jasmine.SpyObj<GameInfoService> = jasmine.createSpyObj('WordSearcher', ['']);
         const spyBoard: jasmine.SpyObj<BoardService> = jasmine.createSpyObj('WordSearcher', ['']);
+        const uIInputControllerService = TestBed.inject(UIInputControllerService);
 
         spyOnProperty(component, 'isItMyTurn').and.returnValue(true);
-        component['inputController'].activeAction = new UIPlace(spyGameInfo, spyBoard);
+        component['inputController'].activeAction = new UIPlace(spyGameInfo, spyBoard, uIInputControllerService);
         const ans = component.canPlace;
         expect(ans as unknown).toEqual(true);
     });

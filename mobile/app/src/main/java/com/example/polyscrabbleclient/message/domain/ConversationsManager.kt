@@ -2,23 +2,29 @@ package com.example.polyscrabbleclient.message.domain
 
 import androidx.compose.runtime.mutableStateListOf
 import com.example.polyscrabbleclient.message.ChatSocketHandler
+import com.example.polyscrabbleclient.message.GAME_CONVERSATION_NAME
+import com.example.polyscrabbleclient.message.GENERAL_CONVERSATION_NAME
 import com.example.polyscrabbleclient.message.model.Conversation
 import com.example.polyscrabbleclient.message.sources.ConversationRepository
+import com.example.polyscrabbleclient.message.utils.conversationRoomId
+import com.example.polyscrabbleclient.message.utils.isGameConversation
 
 object ConversationsManager {
     val conversations = mutableStateListOf<Conversation>()
-    private val conversationIds: MutableSet<String> = HashSet();
+    private val conversationIds: MutableSet<String> = HashSet()
+    private var gameConversation: Conversation? = null
 
     fun actualizeConversations(callback: () -> Unit) {
         val task = ConversationRepository.getJoinedConversations {
+            val arranged = arrangeConversations(it)
             if (conversations.size > 0) {
                 conversations.clear()
                 conversationIds.clear()
             }
-            conversations.addAll(it)
-            conversationIds.addAll(conversations.map { it._id })
+            conversations.addAll(arranged)
+            conversationIds.addAll(arranged.map { it._id })
 
-            val roomIds = conversations.map { conversation -> conversation.name }
+            val roomIds = conversations.map { conversation -> conversationRoomId(conversation) }
             ChatSocketHandler.setJoinedRooms(roomIds)
             callback()
         }
@@ -29,11 +35,13 @@ object ConversationsManager {
     fun leaveConversation(conversationId: String, callback: () -> Unit) {
         val task = ConversationRepository.leaveConversation(conversationId) {
             // TODO maybe implement soft refresh
-            actualizeConversations {}
+            actualizeConversations {
+                callback()
+            }
         }
         task.start()
         task.join()
-        callback()
+
     }
 
     fun createConversation(conversationName: String, callback: (List<String>?) -> Unit) {
@@ -107,7 +115,42 @@ object ConversationsManager {
         task.join()
     }
 
-    fun joinGameConversation(gameToken: String) {
+    fun arrangeConversations(conversations: List<Conversation>): List<Conversation> {
+        val gameConvo = gameConversation
+        val generalConvo = conversations.findLast {
+            it.name == GENERAL_CONVERSATION_NAME
+        }
 
+        val otherConvo = conversations.filter {
+            it.name != GENERAL_CONVERSATION_NAME
+        }
+
+        val arranged = ArrayList<Conversation>()
+        if (gameConvo != null) {
+            arranged.add(gameConvo)
+        }
+
+        if (generalConvo != null) {
+            arranged.add(generalConvo)
+        }
+
+        arranged.addAll(otherConvo)
+        return arranged
+    }
+
+    fun joinGameConversation(gameToken: String) {
+        gameConversation = Conversation(_id = gameToken, name = GAME_CONVERSATION_NAME)
+        actualizeConversations() {
+            // GAME CONVO ALWAYS FIRST IN arrangeConversations
+            setCurrentConversationIndex(0)
+        }
+    }
+
+    fun leaveGameConversation() {
+        gameConversation = null
+        actualizeConversations() {
+             // MAYBE improve this behavior but still good UX
+            setCurrentConversationIndex(0)
+        }
     }
 }

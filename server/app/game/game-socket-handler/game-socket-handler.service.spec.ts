@@ -4,7 +4,7 @@
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { Session } from '@app/auth/services/session.interface';
-import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
+import { ForfeitPlayerInfo, GameState, GameStateToken, PlayerInfoToken, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { TimerStartingTime, TimerTimeLeft } from '@app/game/game-logic/timer/timer-game-control.interface';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { GameSocketsHandler, NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
@@ -12,7 +12,7 @@ import { UserAuth } from '@app/game/game-socket-handler/user-auth.interface';
 import { OnlineAction, OnlineActionType } from '@app/game/online-action.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { User } from '@app/user/interfaces/user.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
@@ -31,6 +31,7 @@ describe('GameSocketHandler', () => {
     let stubGameManager: StubbedClass<GameManagerService>;
     const mockPlayerInfo$ = new Subject<PlayerInfoToken>();
     const mockNewGameState$ = new Subject<GameStateToken>();
+    const mockNewSyncState$ = new Subject<SyncStateToken>();
     const mockTimerStartingTime$ = new Subject<TimerStartingTime>();
     const mockTimeUpdate$ = new Subject<TimerTimeLeft>();
     const user: User = {
@@ -65,6 +66,7 @@ describe('GameSocketHandler', () => {
             userService.getUser.returns(Promise.resolve(user));
 
             sinon.stub(stubGameManager, 'newGameState$').value(mockNewGameState$);
+            sinon.stub(stubGameManager, 'newSyncState$').value(mockNewSyncState$);
             sinon.stub(stubGameManager, 'forfeitedGameState$').value(mockPlayerInfo$);
             sinon.stub(stubGameManager, 'timerStartingTime$').value(mockTimerStartingTime$);
             sinon.stub(stubGameManager, 'timeUpdate$').value(mockTimeUpdate$);

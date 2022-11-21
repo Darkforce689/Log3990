@@ -1,4 +1,5 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Message } from '@app/chat/interfaces/message.interface';
 import { ConversationService } from '@app/chat/services/conversation/conversation.service';
 import { MessagesService, MessageUpdateReason } from '@app/chat/services/messages/messages.service';
@@ -22,6 +23,7 @@ enum ScrollGrowDirection {
 export class ChatBoxComponent implements AfterViewInit, OnDestroy {
     @ViewChild('chat', { read: ElementRef }) chat: ElementRef;
     @Output() clickChatbox = new EventEmitter();
+    @Input() isPoped = false;
 
     readonly self = InputComponent.Chatbox;
 
@@ -32,10 +34,14 @@ export class ChatBoxComponent implements AfterViewInit, OnDestroy {
 
     private previousChatScroll: { scrollTop: number; scrollHeight: number; offsetHeight: number };
     private isChangingConvo = false;
-    constructor(private messageService: MessagesService, private cdRef: ChangeDetectorRef, private conversationService: ConversationService) {}
+    constructor(
+        private messageService: MessagesService,
+        private cdRef: ChangeDetectorRef,
+        private conversationService: ConversationService,
+        private route: ActivatedRoute,
+    ) {}
 
     ngOnDestroy(): void {
-        // TODO implement
         this.messageService.disconnect();
     }
 
@@ -49,6 +55,12 @@ export class ChatBoxComponent implements AfterViewInit, OnDestroy {
         });
         this.conversationService.currentConversation$.subscribe(() => {
             this.isChangingConvo = true;
+        });
+        this.route.queryParams.subscribe((params) => {
+            const gameToken = params.gameToken;
+            if (gameToken !== undefined && gameToken !== 'undefined') {
+                this.messageService.joinGameConversation(gameToken);
+            }
         });
     }
 

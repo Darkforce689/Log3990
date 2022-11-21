@@ -48,10 +48,22 @@ object UserRepository {
         callback(users as List<UserDTO>)
     }
 
-
     private fun getUserThread(userId: String, callback: (UserDTO) -> Unit): Thread {
         val userInCache = users[userId]
-        if (userInCache !== null) {
+        if (User._id == userId) {
+            return Thread {
+                callback(
+                    UserDTO(
+                        _id = User._id,
+                        email = User.email,
+                        name = User.name,
+                        avatar = User.avatar,
+                    )
+                )
+            }
+        }
+
+        if (userInCache != null) {
             return Thread {
                 callback(userInCache)
             }
@@ -76,7 +88,7 @@ object UserRepository {
         usersLock.unlock()
     }
 
-    fun createInexistantUser(userId: String): UserDTO {
-        return UserDTO(userId, "empty", "InexistantUser", "polarbear")
+    private fun createInexistantUser(userId: String): UserDTO {
+        return UserDTO(userId, "empty", "InexistantUser", "avatardefault")
     }
 }

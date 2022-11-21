@@ -9,10 +9,12 @@ import com.example.polyscrabbleclient.game.model.TileContent
 import com.example.polyscrabbleclient.game.model.TileModel
 import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.ui.theme.*
 
 class GameViewModel : ViewModel() {
     val game = GameRepository.model
+    val board = game.board
     var remainingLettersCount = game.remainingLettersCount
     var turnRemainingTime = game.turnRemainingTime
     var turnTotalTime = game.turnTotalTime
@@ -201,6 +203,7 @@ class GameViewModel : ViewModel() {
 
     fun quitGame() {
         GameRepository.quitGame()
+        ConversationsManager.leaveGameConversation()
     }
 
     fun splitPoints() {

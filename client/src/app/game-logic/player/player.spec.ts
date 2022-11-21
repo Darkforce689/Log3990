@@ -8,7 +8,6 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { MockGame } from '@app/game-logic/game/games/mock-game';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
-import { BotHttpService } from '@app/services/bot-http.service';
 
 describe('Player', () => {
     let boardService: BoardService;
@@ -16,11 +15,9 @@ describe('Player', () => {
     let messagesService: MessagesService;
     let gameInfo: GameInfoService;
     let player: Player;
-    const mockBotHttpService = jasmine.createSpyObj('BotHttpService', ['getDataInfo']);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: BotHttpService, useValue: mockBotHttpService }],
             imports: [HttpClientTestingModule],
         });
         boardService = TestBed.inject(BoardService);

@@ -12,7 +12,7 @@ import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame, EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken, PlayerInfoToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, PlayerInfoToken, SyncState, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -30,7 +30,7 @@ import { ConversationService } from '@app/messages-service/services/conversation
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { GameStats } from '@app/user/interfaces/game-stats.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { Observable, Subject } from 'rxjs';
 import { Service } from 'typedi';
 
@@ -39,18 +39,26 @@ export interface PlayerRef {
     player: Player;
 }
 
+export interface PlayersAndToken {
+    gameToken: string;
+    players: Player[];
+}
+
 @Service()
 export class GameManagerService {
     activeGames = new Map<string, ServerGame>();
     activePlayers = new Map<string, PlayerRef>(); // socketId => PlayerRef[]
     linkedClients = new Map<string, BindedSocket[]>(); // gameToken => BindedSocket[]
+    forfeitedPlayers = new Map<string, string[]>(); // gameToken => Forfeited players
     gameDeleted$ = new Subject<string>();
+    playerLeft$ = new Subject<PlayersAndToken>();
     observerLeft$ = new Subject<NameAndToken>();
 
     private endGame$ = new Subject<EndOfGame>(); // gameToken
 
     private gameCreator: GameCreator;
     private newGameStateSubject = new Subject<GameStateToken>();
+    private newSyncStateSubject = new Subject<SyncStateToken>();
     private forfeitedGameStateSubject = new Subject<PlayerInfoToken>();
 
     get forfeitedGameState$(): Observable<PlayerInfoToken> {
@@ -59,6 +67,10 @@ export class GameManagerService {
 
     get newGameState$(): Observable<GameStateToken> {
         return this.newGameStateSubject;
+    }
+
+    get newSyncState$(): Observable<SyncStateToken> {
+        return this.newSyncStateSubject;
     }
 
     get timerStartingTime$(): Observable<TimerStartingTime> {
@@ -90,6 +102,7 @@ export class GameManagerService {
             this.gameCompiler,
             this.messagesService,
             this.newGameStateSubject,
+            this.newSyncStateSubject,
             this.endGame$,
             this.timerController,
             this.botManager,
@@ -100,10 +113,11 @@ export class GameManagerService {
 
         this.endGame$.subscribe((endOfGame: EndOfGame) => {
             const gameToken = endOfGame.gameToken;
+            const hasEnded = true;
             if (endOfGame.reason === EndOfGameReason.GameEnded) {
                 this.updateLeaderboard(endOfGame.players, gameToken);
             }
-            this.insertGameInHistory(endOfGame.gameToken);
+            this.insertGameInHistory(endOfGame.gameToken, hasEnded);
             this.updateGameStatistics(endOfGame.stats);
             this.deleteGame(gameToken);
         });
@@ -173,6 +187,20 @@ export class GameManagerService {
         }
     }
 
+    receiveSync(playerId: string, sync: SyncState) {
+        const playerRef = this.activePlayers.get(playerId);
+        if (!playerRef) {
+            throw Error(`Player ${playerId} is not active anymore`);
+        }
+        const player = playerRef.player;
+        try {
+            player.syncronisation(sync);
+        } catch (error) {
+            ServerLogger.logError(error);
+            return;
+        }
+    }
+
     async removePlayerFromGame(playerId: string) {
         const playerRef = this.activePlayers.get(playerId);
         if (!playerRef) {
@@ -186,14 +214,18 @@ export class GameManagerService {
         const players = game.players.filter((player: Player) => player.name !== playerRef.player.name && !(player instanceof BotPlayer));
         const playerNames = players.map((player) => player.name);
         this.activePlayers.delete(playerId);
+        this.addForfeitedPlayer(playerRef);
         if (playerNames.length <= 0) {
             game.forceEndturn();
+            const isForfeited = true;
+            this.insertGameInHistory(gameToken, !isForfeited);
             this.deleteGame(gameToken);
             return;
         }
         const newPlayer = await this.createNewBotPlayer(playerRef, playerNames, game.botDifficulty);
         const index = game.players.findIndex((player) => player.name === playerRef.player.name);
         game.players[index] = newPlayer;
+        this.playerLeft$.next({ gameToken, players: game.players });
         this.sendForfeitPlayerInfo(gameToken, newPlayer, playerRef.player.name);
         if (game.activePlayerIndex === index) {
             game.forceEndturn();
@@ -290,15 +322,28 @@ export class GameManagerService {
         stats.forEach(async (gameStats, name) => this.userService.updateStatistics(gameStats, name));
     }
 
-    private insertGameInHistory(gameToken: string) {
+    private insertGameInHistory(gameToken: string, hasEnded: boolean) {
         const game = this.activeGames.get(gameToken);
         if (!game) {
             return;
         }
         const startTime = game.startTime;
         const userNames = game.players.map((player) => player.name);
-        const winnerNames = game.getWinnerIndexes().map((index) => userNames[index]);
+
+        const winnerNames = hasEnded ? game.getWinnerIndexes().map((index) => userNames[index]) : [];
         const gameMode = game instanceof MagicServerGame ? GameMode.Magic : GameMode.Classic;
-        this.gameHistoryService.insertGame(gameToken, gameMode, userNames, winnerNames, startTime);
+        const forfeitedPlayers = (this.forfeitedPlayers.get(game.gameToken) ? this.forfeitedPlayers.get(game.gameToken) : []) as string[];
+        this.gameHistoryService.insertGame(gameToken, gameMode, userNames, winnerNames, startTime, forfeitedPlayers);
+    }
+
+    private addForfeitedPlayer(playerRef: PlayerRef) {
+        const { gameToken, player } = playerRef;
+        const players = this.forfeitedPlayers.get(gameToken);
+        if (!players) {
+            this.forfeitedPlayers.set(gameToken, [player.name]);
+            return;
+        }
+        players.push(player.name);
+        this.forfeitedPlayers.set(gameToken, players);
     }
 }

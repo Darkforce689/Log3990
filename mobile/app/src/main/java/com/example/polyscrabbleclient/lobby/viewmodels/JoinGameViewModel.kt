@@ -11,7 +11,7 @@ import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 class JoinGameViewModel : ViewModel() {
-    val lobbyGames = LobbyRepository.model.lobbyGames
+    val selectedGameMode = LobbyRepository.model.selectedGameMode
 
     val selectedGameIndex = mutableStateOf<Int?>(null)
 

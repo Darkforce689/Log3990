@@ -6,7 +6,7 @@ import { ActionCreatorService } from '@app/game/game-logic/actions/action-creato
 import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
@@ -25,6 +25,7 @@ export class GameCreator {
         private gameCompiler: GameCompiler,
         private messagesService: SystemMessagesService,
         private newGameStateSubject: Subject<GameStateToken>,
+        private newSyncStateSubject: Subject<SyncStateToken>,
         private endGameSubject: Subject<EndOfGame>,
         private timerController: TimerController,
         private botManager: BotManager,
@@ -68,6 +69,7 @@ export class GameCreator {
             this.gameCompiler,
             this.messagesService,
             this.newGameStateSubject,
+            this.newSyncStateSubject,
             this.endGameSubject,
             gameSettings.botDifficulty,
             this.gameHistoryService,
@@ -84,6 +86,7 @@ export class GameCreator {
             this.gameCompiler,
             this.messagesService,
             this.newGameStateSubject,
+            this.newSyncStateSubject,
             this.endGameSubject,
             gameSettings.magicCardIds,
             gameSettings.botDifficulty,

@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.message.model.Conversation
+import com.example.polyscrabbleclient.message.utils.isConversationLeavable
 import com.example.polyscrabbleclient.ui.theme.create_menu_option
 import com.example.polyscrabbleclient.ui.theme.delete_menu_option
 import com.example.polyscrabbleclient.ui.theme.join_menu_option
@@ -26,7 +27,7 @@ fun ConversationPicker(
     conversations: SnapshotStateList<Conversation>,
     selectedConvoIndex: Int,
     onSelectedConvo: (Int) -> Unit,
-    onConvoLeave: (Int) -> Unit,
+    onConvoLeave: (Int, callback: () -> Unit) -> Unit,
     modifier: Modifier,
 ) {
     if (conversations.size === 0) {
@@ -37,12 +38,16 @@ fun ConversationPicker(
         mutableStateOf(false)
     }
 
+    var isLeaving by remember {
+        mutableStateOf(false)
+    }
+
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         Box(Modifier.fillMaxWidth(0.95f)) {
             ScrollableTabRow(
                 backgroundColor = MaterialTheme.colors.background,
                 selectedTabIndex = selectedConvoIndex,
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier.fillMaxHeight(),
             ) {
                 conversations.forEachIndexed { index, conversation ->
                     Tab(
@@ -52,7 +57,7 @@ fun ConversationPicker(
                         selected = selectedConvoIndex == index,
                         onClick = {
                             onSelectedConvo(index)
-                        }
+                        },
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -64,14 +69,22 @@ fun ConversationPicker(
                             Box(Modifier.fillMaxWidth(0.8f)) {
                                 Text(conversation.name, overflow = TextOverflow.Ellipsis, maxLines = 1)
                             }
+                            if (isConversationLeavable(conversation)) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    null,
+                                    modifier = Modifier.clickable(
+                                        onClick = {
+                                            isLeaving = true
+                                            onConvoLeave(index) {
+                                                isLeaving = false
+                                            }
+                                        },
+                                        enabled = !isLeaving
+                                    )
+                                )
+                            }
 
-                            Icon(
-                                Icons.Default.Close,
-                                null,
-                                modifier = Modifier.clickable {
-                                    onConvoLeave(index)
-                                }
-                            )
                         }
                     }
                 }
@@ -110,13 +123,13 @@ fun ConversationPicker(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                DropdownMenuItem(onClick = { joinModalOpened = true }) {
+                DropdownMenuItem(onClick = { joinModalOpened = true; expanded = false }) {
                     Text(join_menu_option)
                 }
-                DropdownMenuItem(onClick = { createModalOpened = true }) {
+                DropdownMenuItem(onClick = { createModalOpened = true; expanded = false }) {
                     Text(create_menu_option)
                 }
-                DropdownMenuItem(onClick = { deleteModalOpened = true }) {
+                DropdownMenuItem(onClick = { deleteModalOpened = true; expanded = false }) {
                     Text(delete_menu_option)
                 }
             }
@@ -152,7 +165,7 @@ fun ConversationPickerPreview() {
             Conversation("123", "asdfasdf")
         ),
         onSelectedConvo = { index -> state.value = index },
-        onConvoLeave = {},
+        onConvoLeave = { int, callback -> callback() },
         modifier = Modifier.height(50.dp),
         selectedConvoIndex = state.value
     )

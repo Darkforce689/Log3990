@@ -177,4 +177,12 @@ class GameModel {
         }
         watchedPlayerIndex.value = DefaultWatchedPlayerIndex
     }
+
+    fun getDrawnMagicCards(): List<IMagicCard> {
+        return if (isUserAnObserver()) {
+            drawnMagicCards.value[watchedPlayerIndex.value!!]
+        } else {
+            drawnMagicCards.value[getUserIndex()]
+        }
+    }
 }

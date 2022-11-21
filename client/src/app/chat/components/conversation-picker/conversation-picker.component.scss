@@ -4,11 +4,22 @@
 }
 
 .convo-list-container {
-    flex: 2;
+    flex: 1;
     // this is hard coded to prevent overflow
-    max-width: calc(100% - 64px);
+    max-width: calc(100% - 72px);
+}
+
+.convo-list-container-open {
+    flex: 1;
+    // this is hard coded to prevent overflow
+    max-width: calc(100% - 36px);
 }
 
 .convo-tab-title {
     // TODO
+}
+
+.mat-button {
+    min-width : 36px;
+    padding: 0%;
 }

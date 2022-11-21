@@ -9,7 +9,7 @@ import { Letter } from '@app/game/game-logic/board/letter.interface';
 import { Tile } from '@app/game/game-logic/board/tile';
 import { BINGO_VALUE, RACK_LETTER_COUNT } from '@app/game/game-logic/constants';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
-import { GameStateToken } from '@app/game/game-logic/interface/game-state.interface';
+import { GameStateToken, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
 import { Player } from '@app/game/game-logic/player/player';
 import { PlaceLetterPointsEstimation, WordPointsEstimation } from '@app/game/game-logic/point-calculator/calculation-estimation';
 import { MockGame } from '@app/game/game-logic/point-calculator/mock-game';
@@ -84,6 +84,7 @@ describe('PointCalculatorService', () => {
     const messagesService = createSinonStubInstance<SystemMessagesService>(SystemMessagesService);
     const gameHistoryService = createSinonStubInstance<GameHistoryService>(GameHistoryService);
     let newGameStateSubject: Subject<GameStateToken>;
+    let newSyncStateSubject: Subject<SyncStateToken>;
     let endGameSubject: Subject<EndOfGame>;
 
     beforeEach(() => {
@@ -96,6 +97,7 @@ describe('PointCalculatorService', () => {
             gameCompiler,
             messagesService,
             newGameStateSubject,
+            newSyncStateSubject,
             endGameSubject,
             BotDifficulty.Easy,
             gameHistoryService,
@@ -448,6 +450,7 @@ describe('PointCalculatorService', () => {
             gameCompiler,
             messagesService,
             newGameStateSubject,
+            newSyncStateSubject,
             endGameSubject,
             BotDifficulty.Easy,
             gameHistoryService,
