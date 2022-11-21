@@ -41,6 +41,7 @@ export class NewOnlineGameSocketHandler {
         this.isGameOwner = true;
         this.deletedGame$.next(false);
         this.waitForOtherPlayers();
+        this.listenForGameStart();
     }
 
     listenForPendingGames() {
