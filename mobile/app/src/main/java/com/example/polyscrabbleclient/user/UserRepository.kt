@@ -1,16 +1,9 @@
 package com.example.polyscrabbleclient.user
 
-import android.support.v4.os.IResultReceiver
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.user.model.UserDTO
 import com.example.polyscrabbleclient.user.model.UserGetRes
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
-import java.lang.RuntimeException
 import java.net.URL
 import java.util.concurrent.locks.ReentrantLock
 
@@ -19,7 +12,15 @@ object UserRepository {
     private val usersLock = ReentrantLock()
 
     fun getUser(userId: String, callback: (UserDTO) -> Unit) {
-        val thread = getUserThread(userId, callback)
+        val url = createGetUserUrl(userId)
+        val thread = getUserThread(userId, url, callback)
+        thread.start()
+        thread.join()
+    }
+
+    fun getUserWithName(name: String, callback: (UserDTO) -> Unit) {
+        val url = createGetUserWithNameUrl(name)
+        val thread = getUserThread(name, url, callback)
         thread.start()
         thread.join()
     }
@@ -28,7 +29,8 @@ object UserRepository {
         val userCollectorLock = ReentrantLock()
         val userCollector = HashMap<Int, UserDTO>()
         val tasks = userIds.mapIndexed { index: Int, userId ->
-            getUserThread(userId) { user ->
+            val url = createGetUserUrl(userId)
+            getUserThread(userId, url) { user ->
                 userCollectorLock.lock()
                 userCollector[index] = user
                 userCollectorLock.unlock()
@@ -39,16 +41,16 @@ object UserRepository {
         tasks.forEach { task -> task.join() }
 
         val users: List<UserDTO> = userIds.mapIndexed { index: Int, _: String ->
-                val user = userCollector[index]
-                if (user === null) {
-                    throw RuntimeException("User not collected in collector")
-                }
-                user as UserDTO
+            val user = userCollector[index]
+            if (user === null) {
+                throw RuntimeException("User not collected in collector")
+            }
+            user as UserDTO
         }
         callback(users as List<UserDTO>)
     }
 
-    private fun getUserThread(userId: String, callback: (UserDTO) -> Unit): Thread {
+    private fun getUserThread(userId: String, url: URL, callback: (UserDTO) -> Unit): Thread {
         val userInCache = users[userId]
         if (User._id == userId) {
             return Thread {
@@ -68,9 +70,10 @@ object UserRepository {
                 callback(userInCache)
             }
         }
-        val url = createGetUserUrl(userId)
         return Thread {
-            val res = ScrabbleHttpClient.get(url, UserGetRes::class.java) ?: UserGetRes(createInexistantUser(userId))
+            val res = ScrabbleHttpClient.get(url, UserGetRes::class.java) ?: UserGetRes(
+                createInexistantUser(userId)
+            )
             val user: UserDTO = res.user
             addToCache(user)
             callback(user)
@@ -80,6 +83,11 @@ object UserRepository {
     private fun createGetUserUrl(userId: String): URL {
         val apiUrl = BuildConfig.API_URL
         return URL("${apiUrl}/users/${userId}")
+    }
+
+    private fun createGetUserWithNameUrl(name: String): URL {
+        val apiUrl = BuildConfig.API_URL
+        return URL("${apiUrl}/users?name=${name}")
     }
 
     private fun addToCache(user: UserDTO) {

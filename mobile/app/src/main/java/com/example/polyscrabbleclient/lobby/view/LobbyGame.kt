@@ -4,17 +4,17 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.polyscrabbleclient.account.components.Avatar
+import com.example.polyscrabbleclient.getAssetsId
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.user.UserRepository
 import com.example.polyscrabbleclient.utils.TextView
 
 @Composable
@@ -39,7 +39,7 @@ fun LobbyGameView(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val fields = listOf(
-            formatPlayerNames(lobbyGameSettings.playerNames),
+            lobbyGameSettings.playerNames,
             formatRandomBonus(lobbyGameSettings.randomBonus),
             formatTurnTime(lobbyGameSettings.timePerTurn.toLong()),
             formatHasPassword(lobbyGameSettings.password),
@@ -48,7 +48,11 @@ fun LobbyGameView(
             lobbyGameSettings.botDifficulty.value
         )
         fields.forEachIndexed { index, field ->
-            TableCell(text = field, weight = ColumnsWeights[index])
+            if (index == 0) {
+                PlayerCell(field as ArrayList<String>, weight = ColumnsWeights[index])
+                return
+            }
+            TableCell(text = field as String, weight = ColumnsWeights[index])
         }
     }
 }
@@ -85,9 +89,9 @@ fun formatRandomBonus(randomBonus: Boolean): String {
     return if (randomBonus) Activated else Deactivated
 }
 
-fun formatPlayerNames(playerNames: ArrayList<String>): String {
-    return playerNames.reduce { acc, current -> "$acc, $current" }
-}
+//fun formatPlayerNames(playerNames: ArrayList<String>): String {
+//    return playerNames.reduce { acc, current -> "$acc, $current" }
+//}
 
 @Composable
 fun RowScope.TableCell(
@@ -100,6 +104,29 @@ fun RowScope.TableCell(
             .weight(weight)
             .padding(8.dp)
     )
+}
+
+@Composable
+fun RowScope.PlayerCell(
+    playerNames: ArrayList<String>,
+    weight: Float
+) {
+    Box(
+        modifier = Modifier
+            .weight(weight)
+            .padding(8.dp)
+    ) {
+        playerNames.forEach { name ->
+            var avatar = ""
+            UserRepository.getUserWithName(name) { avatar = it.avatar }
+            Row {
+                Avatar(Modifier.padding(vertical = 25.dp), getAssetsId(avatar))
+                TextView(
+                    text = name,
+                )
+            }
+        }
+    }
 }
 
 @Composable
