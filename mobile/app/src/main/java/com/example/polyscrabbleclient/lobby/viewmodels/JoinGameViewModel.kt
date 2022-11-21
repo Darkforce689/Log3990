@@ -6,7 +6,7 @@ import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 class JoinGameViewModel : ViewModel() {
-    val lobbyGames = LobbyRepository.model.lobbyGames
+    val selectedGameMode = LobbyRepository.model.selectedGameMode
 
     fun joinGame(
         lobbyGameId: LobbyGameId,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
@@ -23,9 +23,11 @@ export class GameLauncherService {
 
     waitForOnlineGameStart() {
         this.startGame$$?.unsubscribe();
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.disableClose = true;
-        const dialogRef = this.dialog.open(WaitingForOtherPlayersComponent, dialogConfig);
+        const dialogRef = this.dialog.open(WaitingForOtherPlayersComponent, {
+            disableClose: true,
+            width: '500px',
+            minHeight: '350px',
+        });
         dialogRef.afterOpened().subscribe(() => {
             this.socketHandler.isDisconnected$.subscribe((isDisconnected) => {
                 if (isDisconnected) {
@@ -42,6 +44,11 @@ export class GameLauncherService {
                 this.socketHandler.disconnectSocket();
             });
         });
+    }
+
+    cancelWait() {
+        this.dialog.closeAll();
+        this.socketHandler.disconnectSocket();
     }
 
     private startOnlineGame(onlineGameSettings: OnlineGameSettings) {

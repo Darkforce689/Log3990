@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SYSTEM_USER_NAME } from '@app/chat/constants';
 import { ChatMessage, Message, MessageType } from '@app/chat/interfaces/message.interface';
 import { AccountService } from '@app/services/account.service';
-import { UserCacheService } from '@app/users/user-cache.service';
+import { UserCacheService } from '@app/users/services/user-cache.service';
 import { Observable, ReplaySubject } from 'rxjs';
 
 @Injectable({

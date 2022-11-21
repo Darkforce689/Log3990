@@ -7,7 +7,7 @@ import { Pagination } from '@app/common/interfaces/pagination.interface';
 import { parseNumWithDefault } from '@app/common/utils';
 import { LOGS_PAGINATION_DEFAULT_PAGE, LOGS_PAGINATION_DEFAULT_PERPAGE } from '@app/constants';
 import { User } from '@app/user/interfaces/user.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
@@ -60,7 +60,7 @@ export class AccountController {
         this.router.get('/gameStates', async (req, res) => {
             const { gameToken } = req.query;
             const gameStates = (await this.gameHistoryServivce.getGameStates(gameToken as string)) as GameStateHistory[];
-            return res.send(gameStates);
+            return res.send({ gameStates });
         });
 
         this.router.get('/gamesHistory', async (req, res) => {

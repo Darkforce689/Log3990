@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GameState, PlayerInfoForfeit } from '@app/game-logic/game/games/online-game/game-state';
+import { GameState, PlayerInfoForfeit, SyncState } from '@app/game-logic/game/games/online-game/game-state';
 import { OnlineAction } from '@app/socket-handler/interfaces/online-action.interface';
 import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -29,6 +29,11 @@ export class GameSocketHandlerService {
         return this.gameStateSubject;
     }
 
+    private syncStateSubject = new Subject<SyncState>();
+    get syncState$(): Observable<SyncState> {
+        return this.syncStateSubject;
+    }
+
     private timerStartingTimeSubject = new Subject<number>();
     get timerStartingTimes$(): Observable<number> {
         return this.timerStartingTimeSubject;
@@ -52,6 +57,10 @@ export class GameSocketHandlerService {
         this.socket.emit('joinGame', gameToken);
         this.socket.on('gameState', (gameState: GameState) => {
             this.receiveGameState(gameState);
+        });
+
+        this.socket.on('syncState', (syncState: SyncState) => {
+            this.receiveSyncState(syncState);
         });
 
         this.socket.on('timerStartingTime', (timerStartingTime: number) => {
@@ -86,6 +95,17 @@ export class GameSocketHandlerService {
         this.socket.emit('nextAction', action);
     }
 
+    sendSync(sync: SyncState) {
+        if (!this.socket) {
+            throw Error(HAVE_NOT_JOINED_GAME_ERROR);
+        }
+
+        if (this.socket.disconnected) {
+            throw Error(SERVER_OFFLINE_ERROR);
+        }
+        this.socket.emit('nextSync', sync);
+    }
+
     disconnect() {
         if (!this.socket) {
             throw Error(HAVE_NOT_JOINED_GAME_ERROR);
@@ -100,6 +120,10 @@ export class GameSocketHandlerService {
 
     private receiveGameState(gameState: GameState) {
         this.gameStateSubject.next(gameState);
+    }
+
+    private receiveSyncState(syncState: SyncState) {
+        this.syncStateSubject.next(syncState);
     }
 
     private receiveTimerStartingTime(timerStartingTime: number) {

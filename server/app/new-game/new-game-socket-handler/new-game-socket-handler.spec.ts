@@ -13,7 +13,7 @@ import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-m
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { User } from '@app/user/interfaces/user.interface';
-import { UserService } from '@app/user/user.service';
+import { UserService } from '@app/user/services/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { beforeEach } from 'mocha';

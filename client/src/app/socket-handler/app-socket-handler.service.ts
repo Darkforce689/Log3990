@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Invitation, InvitationDTO } from '@app/invitations/interfaces/invitation.interface';
 import { AuthService } from '@app/services/auth.service';
+import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
@@ -9,6 +11,10 @@ import { environment } from 'src/environments/environment';
 })
 export class AppSocketHandlerService {
     socket: Socket | undefined;
+    private invitationsSub = new Subject<InvitationDTO>();
+    get invitations$(): Observable<Invitation> {
+        return this.invitationsSub;
+    }
 
     constructor(private authService: AuthService) {
         this.authService.isAuthenticated$.subscribe((isAuth) => {
@@ -37,7 +43,10 @@ export class AppSocketHandlerService {
             // eslint-disable-next-line no-console
             console.log('connection error for app socket', e);
         });
-        // TODO add invation socket channel
+
+        this.socket.on('invitations', (invitation: InvitationDTO) => {
+            this.invitationsSub.next(invitation);
+        });
     }
 
     private connectSocket() {

@@ -2,6 +2,7 @@ export interface UIMagicCard {
     id: string;
     name: string;
     description: string;
+    icon: string;
 }
 
 export const EXCHANGEALETTER_ID = 'MC_EXCHANGE_LETTER';
@@ -38,14 +39,14 @@ export const REDUCETIMER_NAME = 'Réduit le temps des autres joueurs';
 export const REDUCETIMER_DESCRIPTION = 'Réduit de moitié le temps de jeu des autres joueurs pour un tour complet';
 
 export const UI_MAGIC_CARD_ARRAY: UIMagicCard[] = [
-    { id: EXCHANGEALETTER_ID, name: EXCHANGEALETTER_NAME, description: EXCHANGEALETTER_DESCRIPTION },
-    { id: SPLITPOINTS_ID, name: SPLITPOINTS_NAME, description: SPLITPOINTS_DESCRIPTION },
-    { id: PLACERANDOMBONUS_ID, name: PLACERANDOMBONUS_NAME, description: PLACERANDOMBONUS_DESCRIPTION },
-    { id: EXCHANGEHORSE_ID, name: EXCHANGEHORSE_NAME, description: EXCHANGEHORSE_DESCRIPTION },
-    { id: EXCHANGEHORSEALL_ID, name: EXCHANGEHORSEALL_NAME, description: EXCHANGEHORSEALL_DESCRIPTION },
-    { id: SKIPNEXTTURN_ID, name: SKIPNEXTTURN_NAME, description: SKIPNEXTTURN_DESCRIPTION },
-    { id: EXTRATURN_ID, name: EXTRATURN_NAME, description: EXTRATURN_DESCRIPTION },
-    { id: REDUCETIMER_ID, name: REDUCETIMER_NAME, description: REDUCETIMER_DESCRIPTION },
+    { id: EXCHANGEALETTER_ID, name: EXCHANGEALETTER_NAME, description: EXCHANGEALETTER_DESCRIPTION, icon: 'font_download' },
+    { id: SPLITPOINTS_ID, name: SPLITPOINTS_NAME, description: SPLITPOINTS_DESCRIPTION, icon: 'open_with' },
+    { id: PLACERANDOMBONUS_ID, name: PLACERANDOMBONUS_NAME, description: PLACERANDOMBONUS_DESCRIPTION, icon: 'add_box' },
+    { id: EXCHANGEHORSE_ID, name: EXCHANGEHORSE_NAME, description: EXCHANGEHORSE_DESCRIPTION, icon: 'swap_horizontal_circle' },
+    { id: EXCHANGEHORSEALL_ID, name: EXCHANGEHORSEALL_NAME, description: EXCHANGEHORSEALL_DESCRIPTION, icon: 'shuffle' },
+    { id: SKIPNEXTTURN_ID, name: SKIPNEXTTURN_NAME, description: SKIPNEXTTURN_DESCRIPTION, icon: 'hide_source' },
+    { id: EXTRATURN_ID, name: EXTRATURN_NAME, description: EXTRATURN_DESCRIPTION, icon: 'exposure_plus_1' },
+    { id: REDUCETIMER_ID, name: REDUCETIMER_NAME, description: REDUCETIMER_DESCRIPTION, icon: 'timelapse' },
 ];
 
 export const UI_MAGIC_CARD_MAP: Map<string, UIMagicCard> = new Map(UI_MAGIC_CARD_ARRAY.map((magicCard) => [magicCard.id, magicCard]));

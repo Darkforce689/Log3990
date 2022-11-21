@@ -78,6 +78,9 @@ export class CanvasDrawer {
                 this.drawIndicator();
             }
         }
+
+        board.activeTiles.forEach((tile) => this.drawActiveTile(tile.x, tile.y));
+
         this.drawborder();
     }
 
@@ -250,6 +253,17 @@ export class CanvasDrawer {
         );
         this.canvas.strokeStyle = BORDER_TEMP_TILE;
         this.canvas.strokeRect(
+            pos.x + 2 * this.canvas.lineWidth,
+            pos.y + 2 * this.canvas.lineWidth,
+            this.tileSize - this.canvas.lineWidth,
+            this.tileSize - this.canvas.lineWidth,
+        );
+    }
+
+    private drawActiveTile(i: number, j: number) {
+        const pos = this.tilePositionToCoord(i, j);
+        this.canvas.fillStyle = TILE_COLOR;
+        this.canvas.fillRect(
             pos.x + 2 * this.canvas.lineWidth,
             pos.y + 2 * this.canvas.lineWidth,
             this.tileSize - this.canvas.lineWidth,

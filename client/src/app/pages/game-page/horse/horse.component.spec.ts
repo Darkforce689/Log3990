@@ -87,7 +87,11 @@ describe('HorseComponent', () => {
         expect(component.isLetterSelectedForExchange(index)).toBeTruthy();
         expect(component.isLetterSelectedForPlace(index)).toBeFalsy();
 
-        mockUIInputControllerService.activeAction = new UIPlace(TestBed.inject(GameInfoService), TestBed.inject(BoardService));
+        mockUIInputControllerService.activeAction = new UIPlace(
+            TestBed.inject(GameInfoService),
+            TestBed.inject(BoardService),
+            mockUIInputControllerService as UIInputControllerService,
+        );
         mockUIInputControllerService.activeAction.concernedIndexes.add(index);
         expect(component.isLetterSelectedForMove(index)).toBeFalsy();
         expect(component.isLetterSelectedForExchange(index)).toBeFalsy();
@@ -126,7 +130,11 @@ describe('HorseComponent', () => {
 
     it('should return the correct boolean for a rackLetter selection (UIPlace)', () => {
         component.ngAfterContentChecked();
-        mockUIInputControllerService.activeAction = new UIPlace(TestBed.inject(GameInfoService), TestBed.inject(BoardService));
+        mockUIInputControllerService.activeAction = new UIPlace(
+            TestBed.inject(GameInfoService),
+            TestBed.inject(BoardService),
+            mockUIInputControllerService as UIInputControllerService,
+        );
         for (let index = 0; index < RACK_LETTER_COUNT; index++) {
             if (index % 2) {
                 mockUIInputControllerService.activeAction.concernedIndexes.add(index);

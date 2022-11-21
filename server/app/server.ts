@@ -14,7 +14,8 @@ import { ConversationService } from '@app/messages-service/services/conversation
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { NewGameSocketHandler } from '@app/new-game/new-game-socket-handler/new-game-socket-handler';
-import { UserService } from '@app/user/user.service';
+import { UserInvitationService } from '@app/user/services/user-invitation.service';
+import { UserService } from '@app/user/services/user.service';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
@@ -41,6 +42,7 @@ export class Server {
         private roomFactory: RoomFactory,
         private conversationService: ConversationService,
         private userLogService: UserLogService,
+        private userInvitationService: UserInvitationService,
     ) {}
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -96,7 +98,13 @@ export class Server {
         );
         this.messageHandler.handleSockets();
 
-        this.appSocketHandler = new AppSocketHandler(this.server, this.sessionMiddlewareService, this.authService, this.userLogService);
+        this.appSocketHandler = new AppSocketHandler(
+            this.server,
+            this.sessionMiddlewareService,
+            this.authService,
+            this.userLogService,
+            this.userInvitationService,
+        );
         this.appSocketHandler.handleSockets();
 
         this.server.listen(Server.appPort);

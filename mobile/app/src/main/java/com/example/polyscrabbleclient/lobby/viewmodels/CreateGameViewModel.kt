@@ -16,9 +16,12 @@ const val MIN_PLAYER_NUMBER = 2
 const val MAX_PLAYER_NUMBER = 4
 
 class CreateGameViewModel : ViewModel() {
+    val pendingGames = LobbyRepository.model.pendingGames
+    val observableGames = LobbyRepository.model.observableGames
 
     val hostHasJustQuitTheGame = LobbyRepository.model.hostHasJustQuitTheGame
 
+    val gameMode = LobbyRepository.model.selectedGameMode
     val timePerTurn = mutableStateOf(DEFAULT_TIMER)
     val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)
     val randomBonus = mutableStateOf(false)
@@ -26,7 +29,6 @@ class CreateGameViewModel : ViewModel() {
     val isPassword = mutableStateOf(false)
     val password = mutableStateOf<String>("")
     val botDifficulty = mutableStateOf(BotDifficulty.Easy)
-    val gameMode = mutableStateOf(GameMode.Classic)
     val magicCardIds = mutableStateListOf<String>()
 
     fun containsMagicCard(magicCardId: String): Boolean {

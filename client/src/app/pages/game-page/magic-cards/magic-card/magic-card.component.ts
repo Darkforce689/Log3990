@@ -1,19 +1,19 @@
 import { AfterContentChecked, Component, Input } from '@angular/core';
-import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
-import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import {
     EXCHANGEALETTER_ID,
-    PLACERANDOMBONUS_ID,
-    EXCHANGEHORSE_ID,
-    SPLITPOINTS_ID,
     EXCHANGEHORSEALL_ID,
-    UI_MAGIC_CARD_MAP,
-    SKIPNEXTTURN_ID,
+    EXCHANGEHORSE_ID,
     EXTRATURN_ID,
+    PLACERANDOMBONUS_ID,
     REDUCETIMER_ID,
+    SKIPNEXTTURN_ID,
+    SPLITPOINTS_ID,
+    UI_MAGIC_CARD_MAP,
 } from '@app/game-logic/actions/magic-card/magic-card-constants';
+import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
+import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
+import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 
 @Component({
     selector: 'app-magic-card',
@@ -99,6 +99,10 @@ export class MagicCardComponent implements AfterContentChecked {
 
     get description(): string | undefined {
         return this.magicCardId === undefined ? undefined : UI_MAGIC_CARD_MAP.get(this.magicCardId)?.description;
+    }
+
+    get icon(): string | undefined {
+        return this.magicCardId === undefined ? undefined : UI_MAGIC_CARD_MAP.get(this.magicCardId)?.icon;
     }
 
     splitPoints() {

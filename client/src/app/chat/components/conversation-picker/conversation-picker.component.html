@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="convo-list-container">
+    <div [ngClass]="isPoped ? 'convo-list-container-open' : 'convo-list-container'">
         <mat-tab-group [(selectedIndex)]="selectedConversationIndex" (selectedIndexChange)="changeSelectedConversation()">
             <mat-tab *ngFor="let conversation of conversations$ | async" class="row-item">
                 <ng-template mat-tab-label class="container">
@@ -11,10 +11,12 @@
             </mat-tab>
         </mat-tab-group>
     </div>
-
     <button mat-button [matMenuTriggerFor]="menu">
         <mat-icon>more_vert</mat-icon>
     </button>
+    <button *ngIf="!isPoped" mat-button (click)="openWindow()">
+        <mat-icon>launch</mat-icon>
+    </button> 
 </div>
 <mat-menu #menu="matMenu">
     <button (click)="openAddConversationMenu(option)" *ngFor="let option of options" mat-menu-item>

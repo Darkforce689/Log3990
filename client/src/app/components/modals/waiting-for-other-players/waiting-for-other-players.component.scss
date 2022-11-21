@@ -2,8 +2,70 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    width: 100%;
 }
 
-#difficulty {
-    display: none;
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+mat-dialog-content {
+    min-width: none;
+    min-height: 350px;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.players {
+    min-height: 200px;
+}
+
+.player-container {
+    max-height: 130px;
+    overflow-y: auto;
+}
+
+.player {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 5%;
+    width: 40%;
+    p {
+        font-size: x-large;
+        padding-right: 10%;
+        margin-bottom: 0%;
+    }
+    mat-icon {
+        font-size: 24px;
+    }
+}
+
+.host {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 5%;
+    width: 30%;
+    p {
+        font-size: x-large;
+        padding-right: 10%;
+        margin-bottom: 0%;
+    }
+    mat-icon {
+        font-size: 24px;
+    }
+}
+
+app-avatar {
+    padding-right: 15px;
 }

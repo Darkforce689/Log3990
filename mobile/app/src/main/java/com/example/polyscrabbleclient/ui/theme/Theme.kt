@@ -1,12 +1,15 @@
 package com.example.polyscrabbleclient.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
 
@@ -56,6 +59,13 @@ val Colors.accepted: Color
     @Composable
     get() = if (isLight) LightAcceptedColor else DarkAcceptedColor
 
+val Colors.cardHolder: Color
+    @Composable
+    get() = if (isLight) LightCardHolder else DarkCardHolder
+
+val Colors.activeCard: Color
+    @Composable
+    get() = if (isLight) LightActiveCard else DarkActiveCard
 
 @Composable
 fun PolyScrabbleClientTheme(
@@ -72,8 +82,12 @@ fun PolyScrabbleClientTheme(
         colors = colors,
         typography = Typography,
         shapes = Shapes,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalRippleTheme provides NoRippleTheme,
+            content = content
+        )
+    }
 }
 
 object NoRippleTheme : RippleTheme {

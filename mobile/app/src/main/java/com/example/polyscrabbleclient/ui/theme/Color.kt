@@ -6,11 +6,15 @@ val LightTileBackgroundColor = Color(215, 192, 150, 255)
 val LightTransientTileBackgroundColor = Color(240, 232, 216, 255)
 val LightTileGrayedOutBackgroundColor = Color(98, 83, 80)
 val LightAcceptedColor = Color(32, 176, 0) // Triadic color related to #b00020
+val LightCardHolder = Color(139, 139, 139, 255)
+val LightActiveCard = Color(89, 217, 255, 255)
 
 val DarkTileBackgroundColor = Color(70, 15, 7, 255)
 val DarkTransientTileBackgroundColor = Color(93, 45, 38, 255)
 val DarkTileGrayedOutBackgroundColor = Color(35, 7, 3)
 val DarkAcceptedColor = Color(121, 207, 102) // Triadic color related to #cf6679
+val DarkCardHolder = Color(97, 97, 97, 255)
+val DarkActiveCard = Color(0, 76, 136, 255)
 
 val Purple200 = Color(0xFFBB86FC)
 val Purple700 = Color(0xFF3700B3)

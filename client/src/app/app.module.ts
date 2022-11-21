@@ -1,3 +1,4 @@
+import { PortalModule } from '@angular/cdk/portal';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,13 +12,14 @@ import { ReplayComponent } from '@app/account/components/game-history/replay/rep
 import { ProfilComponent } from '@app/account/components/profil/profil.component';
 import { ChatBoxComponent } from '@app/chat/components/chat-box/chat-box.component';
 import { HeaderBarComponent } from '@app/components/header-bar/header-bar.component';
+import { IntegratedChatComponent } from '@app/components/integrated-chat/integrated-chat.component';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
+import { LobbyGamesComponent } from '@app/components/modals/lobby-games/lobby-games.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
-import { PendingGamesComponent } from '@app/components/modals/pending-games/pending-games.component';
 import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { ThemeSelectorComponent } from '@app/components/theme-selector/theme-selector.component';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
@@ -52,6 +54,10 @@ import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/mag
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { InvitationModalComponent } from './invitations/components/invitation-modal/invitation-modal.component';
+import { InvitationService } from '@app/invitations/services/invitation.service';
+import { UserSearchComponent } from './users/components/user-search/user-search.component';
+import { GameActionButtonComponent } from './game-logic/game/game-action-button/game-action-button/game-action-button.component';
 
 /**
  * Main module that is used in main.ts.
@@ -72,12 +78,13 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         HomepageComponent,
         NewGamePageComponent,
         HeaderBarComponent,
+        IntegratedChatComponent,
         BoldPipe,
         PreventContextMenuDirective,
         ClickAndClickoutDirective,
         MouseRollDirective,
         WaitingForOtherPlayersComponent,
-        PendingGamesComponent,
+        LobbyGamesComponent,
         JoinOnlineGameComponent,
         DisconnectedFromServerComponent,
         ErrorDialogComponent,
@@ -108,6 +115,9 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         GameHistoryComponent,
         ReplayComponent,
         ReplayPlayersComponent,
+        InvitationModalComponent,
+        UserSearchComponent,
+        GameActionButtonComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -118,6 +128,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
         HttpClientModule,
         ReactiveFormsModule,
         MatTableModule,
+        PortalModule,
     ],
     providers: [
         {
@@ -127,7 +138,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
                     return;
                 };
             },
-            deps: [AppSocketHandlerService],
+            deps: [AppSocketHandlerService, InvitationService],
             multi: true,
         },
         {

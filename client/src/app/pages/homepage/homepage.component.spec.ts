@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { routes } from '@app/modules/app-routing.module';
 import { of } from 'rxjs';
@@ -22,7 +23,7 @@ describe('HomepageComponent', () => {
     }
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule],
+            imports: [RouterTestingModule.withRoutes(routes), HttpClientTestingModule, BrowserAnimationsModule],
             providers: [{ provide: MatDialog, useClass: MatDialogMock }],
             declarations: [HomepageComponent],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],

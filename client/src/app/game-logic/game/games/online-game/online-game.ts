@@ -8,7 +8,7 @@ import { BoardService } from '@app/game-logic/game/board/board.service';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { Game } from '@app/game-logic/game/games/game';
-import { GameState } from '@app/game-logic/game/games/online-game/game-state';
+import { GameState, SyncState } from '@app/game-logic/game/games/online-game/game-state';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
 import { isCharUpperCase } from '@app/game-logic/utils';
@@ -35,6 +35,7 @@ export class OnlineGame extends Game {
     private letterCreator = new LetterCreator();
 
     private gameState$$: Subscription;
+    private syncState$$: Subscription;
     private timerStartingTimes$$: Subscription;
     private timeLeft$$: Subscription;
 
@@ -52,6 +53,10 @@ export class OnlineGame extends Game {
 
         this.gameState$$ = this.onlineSocket.gameState$.subscribe((gameState: GameState) => {
             this.receiveState(gameState);
+        });
+
+        this.syncState$$ = this.onlineSocket.syncState$.subscribe((syncState: SyncState) => {
+            this.receiveSyncState(syncState);
         });
 
         this.timerStartingTimes$$ = this.onlineSocket.timerStartingTimes$.subscribe((timerStartingTime: number) => {
@@ -82,6 +87,7 @@ export class OnlineGame extends Game {
 
     close() {
         this.gameState$$.unsubscribe();
+        this.syncState$$.unsubscribe();
         this.timerStartingTimes$$.unsubscribe();
         this.timeLeft$$.unsubscribe();
     }
@@ -90,8 +96,15 @@ export class OnlineGame extends Game {
         if (this.playersWithIndex.size === 0) {
             this.setupPlayersWithIndex();
         }
+        this.updateActivePositions([]);
         this.endTurnSubject.next();
         this.updateClient(gameState);
+    }
+
+    receiveSyncState(syncState: SyncState) {
+        const positions = syncState.positions;
+        if (this.userName === this.players[this.activePlayerIndex].name) return;
+        this.updateActivePositions(positions);
     }
 
     handleUserActions() {
@@ -107,6 +120,13 @@ export class OnlineGame extends Game {
                 return;
             }
             this.receivePlayerAction(action);
+        });
+        (player as Player).syncronisation$.subscribe((sync) => {
+            const activePlayerName = this.players[this.activePlayerIndex].name;
+            if (activePlayerName !== this.userName) {
+                return;
+            }
+            this.receiveSyncronisation(sync);
         });
     }
 
@@ -161,6 +181,10 @@ export class OnlineGame extends Game {
         }
     }
 
+    private receiveSyncronisation(sync: SyncState) {
+        this.sendSync(sync);
+    }
+
     private placeTemporaryLetter(action: PlaceLetter) {
         const startX = action.placement.x;
         const startY = action.placement.y;
@@ -205,6 +229,10 @@ export class OnlineGame extends Game {
         this.onlineSocket.playAction(onlineAction);
     }
 
+    private sendSync(sync: SyncState) {
+        this.onlineSocket.sendSync(sync);
+    }
+
     private receiveTimerStartingTime(timerStartingTime: number) {
         this.timer.start(timerStartingTime);
     }
@@ -245,6 +273,10 @@ export class OnlineGame extends Game {
                 }
             }
         }
+    }
+
+    private updateActivePositions(positions?: { x: number; y: number }[]) {
+        this.boardService.board.activeTiles = positions ?? [];
     }
 
     private isLetterRackChanged(newLetterRack: Letter[], player: Player): boolean {

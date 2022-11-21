@@ -19,24 +19,25 @@ fun GameActionsView(viewModel: GameViewModel = GameViewModel(), navController: N
         mutableStateOf(false)
     }
 
-    val quitAction: () -> Unit = {
+    fun quitAction() {
         if (viewModel.hasGameEnded()) {
             viewModel.navigateToMainPage(navController)
+            PhysicalButtons.popBackPress()
         } else {
             playerQuitGameDialogOpened = true
         }
+        PhysicalButtons.pushBackPress { quitAction() }
     }
 
-    PhysicalButtons.backPressed = quitAction
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (viewModel.isObserver()) {
             ObserverActionButtons(viewModel, navController)
-            // TODO : OVERRIDE PhysicalButtons.backPressed
         } else {
-            PlayerActionButtons(viewModel, quitAction)
+            PlayerActionButtons(viewModel) { quitAction() }
+            PhysicalButtons.pushBackPress { quitAction() }
         }
     }
 

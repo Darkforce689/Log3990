@@ -3,7 +3,9 @@ package com.example.polyscrabbleclient.page.headerbar.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +40,7 @@ fun HeaderBar(navController: NavController, themeSelectorViewModel: ThemeSelecto
                     contentDescription = "Image",
                     colorFilter = ColorFilter.tint(color = MaterialTheme.colors.background)
                 )
-                Row (verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     ThemeSelectorView(themeSelectorViewModel)
                     Account(navController = navController, avatar = User.avatar)
                 }
@@ -60,9 +62,6 @@ fun Account(navController: NavController, avatar: String) {
                 .padding(horizontal = 50.dp)
                 .clickable {
                     navController.navigate(NavPage.Account.label) {
-                        popUpTo(NavPage.MainPage.label) {
-                            inclusive = true
-                        }
                         launchSingleTop = true
                     }
                 },

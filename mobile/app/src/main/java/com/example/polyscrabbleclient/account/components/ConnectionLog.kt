@@ -29,13 +29,13 @@ fun Log(data: ConnectionLog, columnWeights: List<Float>) {
             .fillMaxWidth()
     ) {
         fields.forEachIndexed { index, field ->
-            ConnectionCell(text = field, weight = columnWeights[index], Color.LightGray)
+            LogCell(text = field, weight = columnWeights[index], Color.LightGray)
         }
     }
 }
 
 @Composable
-fun RowScope.ConnectionCell(
+fun RowScope.LogCell(
     text: String,
     weight: Float,
     color: Color

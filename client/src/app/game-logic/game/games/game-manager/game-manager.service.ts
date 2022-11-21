@@ -31,6 +31,10 @@ export class GameManagerService {
         return this.gameSocketHandler.forfeitGameState$;
     }
 
+    get isInGame() {
+        return !!this.game;
+    }
+
     constructor(
         private messageService: MessagesService,
         private info: GameInfoService,

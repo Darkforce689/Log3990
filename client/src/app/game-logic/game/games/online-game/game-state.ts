@@ -26,6 +26,9 @@ export interface IMagicCard {
 }
 
 export interface MagicGameState extends GameState {
-    drawableMagicCards: IMagicCard[];
     drawnMagicCards: IMagicCard[][];
+}
+
+export interface SyncState {
+    positions?: { x: number; y: number }[];
 }

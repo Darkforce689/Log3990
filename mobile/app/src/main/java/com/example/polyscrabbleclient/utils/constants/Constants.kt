@@ -1,5 +1,8 @@
 package com.example.polyscrabbleclient.utils.constants
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.polyscrabbleclient.ui.theme.*
 
 const val MAX_NAME_LENGTH = 50
@@ -28,6 +31,21 @@ val magic_card_map: Map<String, String> = mapOf(
     reduce_timer_id to reduce_timer_name
 )
 
+val magic_card_icon: Map<String, ImageVector> = mapOf(
+    exchange_a_letter_id to Icons.Filled.FontDownload,
+    split_points_id to Icons.Filled.OpenWith,
+    place_random_bonus_id to Icons.Filled.AddBox,
+    exchange_horse_id to Icons.Filled.SwapHorizontalCircle,
+    exchange_horse_all_id to Icons.Filled.Shuffle,
+    skip_next_turn_id to Icons.Filled.HideSource,
+    extra_turn_id to Icons.Filled.PlusOne,
+    reduce_timer_id to Icons.Filled.Timelapse
+)
+
 fun getName(id: String): String {
     return magic_card_map.getOrDefault(id, "")
+}
+
+fun getIcon(id: String): ImageVector? {
+    return magic_card_icon[id]
 }

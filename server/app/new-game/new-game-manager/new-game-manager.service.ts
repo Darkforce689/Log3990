@@ -1,6 +1,6 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
-import { GameManagerService } from '@app/game/game-manager/game-manager.services';
+import { GameManagerService, PlayersAndToken } from '@app/game/game-manager/game-manager.services';
 import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { Subject } from 'rxjs';
@@ -26,6 +26,18 @@ export class NewGameManagerService {
             const gameSetting = this.activeGameSettingMap.get(gameToken);
             if (gameSetting) {
                 gameSetting.observerNames = gameSetting?.observerNames?.filter((observerName) => observerName !== name);
+                this.activeGameSettingMap.set(gameToken, gameSetting);
+            }
+            this.refreshPendingGame$.next();
+        });
+        this.gameMaster.playerLeft$.subscribe((playersAndToken: PlayersAndToken) => {
+            const { gameToken, players } = playersAndToken;
+            const gameSetting = this.activeGameSettingMap.get(gameToken);
+            if (gameSetting) {
+                gameSetting.playerNames = players.map((player) => player.name);
+                if (gameSetting.numberOfBots) {
+                    gameSetting.numberOfBots = gameSetting.numberOfBots + 1;
+                }
                 this.activeGameSettingMap.set(gameToken, gameSetting);
             }
             this.refreshPendingGame$.next();
@@ -61,6 +73,7 @@ export class NewGameManagerService {
         const onlineGameSettings = this.toOnlineGameSettings(id, gameSettings);
         const gameToken = this.generateGameToken();
         onlineGameSettings.numberOfBots = onlineGameSettings.numberOfPlayers - onlineGameSettings.playerNames.length;
+        this.pendingGames.delete(id);
         this.activeGameSettingMap.set(gameToken, onlineGameSettings);
         await this.startGame(gameToken, onlineGameSettings);
         return gameToken;

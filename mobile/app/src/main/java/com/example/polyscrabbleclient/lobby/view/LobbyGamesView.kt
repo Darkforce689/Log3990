@@ -19,6 +19,7 @@ import com.example.polyscrabbleclient.ui.theme.ObservableGameSubTitle
 import com.example.polyscrabbleclient.ui.theme.PendingGameSubTitle
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 import com.example.polyscrabbleclient.utils.SubTitleView
+import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 
 val ColumnsWeights = listOf(
     0.3f,
@@ -41,11 +42,10 @@ val ColumnsHeaders = listOf(
 
 @Composable
 fun LobbyGamesView(
-    lobbyGames: MutableState<LobbyGames?>,
+    lobbyGames: MutableState<LobbyGamesList?>,
+    gameMode: GameMode,
     joinGame: (lobbyGameId: LobbyGameId) -> Unit,
-    modalButtons: @Composable (
-        modalActions: ModalActions
-    ) -> Unit
+    modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
     var selectedGameIndex by remember {
         mutableStateOf<LobbyGameId?>(null)
@@ -65,19 +65,11 @@ fun LobbyGamesView(
     }
 
     Column {
-        lobbyGames.value?.pendingGamesSettings.let { pendingGames ->
+        lobbyGames.value?.filter { onlineGameSettings ->
+            onlineGameSettings.gameMode == gameMode
+        }.let { lobbyGames ->
             LobbyGamesTableView(
-                PendingGameSubTitle,
-                pendingGames,
-                { toggleSelectedGame(it) },
-                { isGameSelected(it) },
-            )
-        }
-
-        lobbyGames.value?.observableGamesSettings.let { observableGames ->
-            LobbyGamesTableView(
-                ObservableGameSubTitle,
-                observableGames,
+                lobbyGames,
                 { toggleSelectedGame(it) },
                 { isGameSelected(it) },
             )
@@ -97,8 +89,7 @@ fun LobbyGamesView(
 
 @Composable
 private fun LobbyGamesTableView(
-    subTitle: String,
-    games: LobbyGamesList?,
+    games: List<OnlineGameSettings>?,
     toggleSelected: (lobbyGameId: String) -> Unit,
     isGameSelected: (lobbyGameId: String) -> Boolean,
 ) {
@@ -108,10 +99,6 @@ private fun LobbyGamesTableView(
             .padding(16.dp)
     ) {
         Column {
-            SubTitleView(
-                subTitle,
-                Modifier.padding(12.dp)
-            )
             LobbyGamesListView(
                 games,
                 { toggleSelected(it) },
@@ -123,7 +110,7 @@ private fun LobbyGamesTableView(
 
 @Composable
 private fun LobbyGamesListView(
-    lobbyGamesList: LobbyGamesList?,
+    lobbyGamesList: List<OnlineGameSettings>?,
     toggleSelected: (lobbyGameId: String) -> Unit,
     isGameSelected: (lobbyGameId: String) -> Boolean,
 ) {
@@ -166,7 +153,7 @@ private fun LobbyGamesListView(
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p)
 @Composable
-fun LobbyGamesPreview() {
+fun LobbyPendingGamesPreview() {
     val a = OnlineGameSettings(
         id = "123",
         gameMode = GameMode.Classic,
@@ -181,6 +168,19 @@ fun LobbyGamesPreview() {
         privateGame = false,
         drawableMagicCards = ArrayList(listOf()),
     )
+    LobbyGamesView(
+        mutableStateOf(
+            ArrayList(listOf(a)),
+        ),
+        GameMode.Classic,
+        {}
+    ) {}
+}
+
+@SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
+@Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p)
+@Composable
+fun LobbyObservableGamesPreview() {
     val b = OnlineGameSettings(
         id = "123",
         gameMode = GameMode.Classic,
@@ -197,12 +197,9 @@ fun LobbyGamesPreview() {
     )
     LobbyGamesView(
         mutableStateOf(
-            LobbyGames(
-                ArrayList(listOf(a)),
-                ArrayList(listOf(b)),
-            )
+            ArrayList(listOf(b)),
         ),
-        {},
+        GameMode.Classic,
         {}
-    )
+    ) {}
 }

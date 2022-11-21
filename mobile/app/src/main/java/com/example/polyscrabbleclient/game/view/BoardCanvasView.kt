@@ -22,11 +22,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.polyscrabbleclient.game.model.BoardDimension
 import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.GridTileModel
 import com.example.polyscrabbleclient.game.model.RowChar
+import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
@@ -392,7 +392,7 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
 @Preview(showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun BoardPreview() {
-    val v: BoardViewModel = viewModel()
+    val v: BoardViewModel = BoardViewModel(GameRepository.model.board)
     val d = DragState
     BoardCanvasView(d, v)
 }

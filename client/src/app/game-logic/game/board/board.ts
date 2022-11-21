@@ -99,6 +99,7 @@ export const MULTIPLICATORS: BoardSettingPosition[] = [
 ];
 export class Board {
     grid: Tile[][];
+    activeTiles: { x: number; y: number }[] = [];
 
     constructor(public randomBonus: boolean = false) {
         this.initGrid(randomBonus);

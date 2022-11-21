@@ -6,3 +6,7 @@ export interface UserQuery {
     _id?: string | ObjectId;
     avatar?: string;
 }
+
+export interface UsersGetQuery {
+    name?: string;
+}

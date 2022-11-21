@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -29,7 +30,7 @@ describe('WaitingForOtherPlayersComponent', () => {
             ['pendingGames$', 'pendingGameId$', 'deletedGame$', 'gameSettings$', 'isWaiting$'],
         );
         await TestBed.configureTestingModule({
-            imports: [BrowserAnimationsModule, AppMaterialModule],
+            imports: [BrowserAnimationsModule, AppMaterialModule, HttpClientTestingModule],
 
             providers: [
                 { provide: MatDialogRef, useValue: mockDialogRef },
@@ -78,15 +79,5 @@ describe('WaitingForOtherPlayersComponent', () => {
     it('should disconnect socket on cancel', () => {
         component.cancel();
         expect(onlineSocketHandlerSpy.disconnectSocket).toHaveBeenCalled();
-    });
-
-    it('launchGame should call launchGame', () => {
-        const dom = fixture.nativeElement as HTMLElement;
-        onlineSocketHandlerSpy.isGameOwner = true;
-        fixture.detectChanges();
-        const launchButton = dom.querySelectorAll('button')[1];
-        spyOn(component, 'launchGame');
-        launchButton.click();
-        expect(component.launchGame).toHaveBeenCalled();
     });
 });

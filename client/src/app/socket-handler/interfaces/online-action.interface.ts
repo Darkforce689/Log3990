@@ -7,6 +7,7 @@ export interface OnlineAction {
     letters?: string;
     letterRack?: Letter[];
     position?: { x: number; y: number };
+    positions?: { x: number; y: number }[];
 }
 
 export enum OnlineActionType {
