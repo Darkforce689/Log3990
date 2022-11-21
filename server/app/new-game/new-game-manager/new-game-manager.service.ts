@@ -154,15 +154,11 @@ export class NewGameManagerService {
     }
 
     getPendingGame(id: string): OnlineGameSettings {
-        if (this.pendingGames.get(id)) {
-            const onlineGameSetting = this.toOnlineGameSettings(id, this.pendingGames.get(id));
-            return onlineGameSetting;
-        }
-        const activeGameSettings = this.activeGameSettingMap.get(id);
-        if (!activeGameSettings) {
+        const gameSettings = this.pendingGames.get(id);
+        if (!gameSettings) {
             throw Error('This game does not exist.');
         }
-        return activeGameSettings;
+        return this.toOnlineGameSettings(id, gameSettings);
     }
 
     private isPendingGame(id: string): boolean {

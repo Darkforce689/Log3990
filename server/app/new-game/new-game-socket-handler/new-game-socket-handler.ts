@@ -13,6 +13,11 @@ import * as http from 'http';
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
+export enum JoinGameError {
+    InexistantGame = 'INEXISTANT_GAME',
+    InvalidPassword = 'INVALID_PASSWORD',
+}
+
 const pendingGames = 'pendingGames';
 const createGame = 'createGame';
 const joinGame = 'joinGame';
@@ -24,6 +29,7 @@ const hostQuit = 'hostQuit';
 const kickPlayer = 'kickPlayer';
 const acceptPlayer = 'acceptPlayer';
 const refusePlayer = 'refusePlayer';
+const confirmPassword = 'confirmPassword';
 
 export class NewGameSocketHandler {
     readonly ioServer: Server;
@@ -96,16 +102,20 @@ export class NewGameSocketHandler {
                     if (user === undefined) {
                         return;
                     }
-                    if (typeof id !== 'string' || typeof user.name !== 'string') {
+                    if (typeof id !== 'string') {
                         throw Error('Impossible de rejoindre la partie, les paramètres sont invalides.');
                     }
                     const gameSettings = this.getPendingGame(id);
                     if (!gameSettings) {
-                        throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
+                        this.sendError(Error(JoinGameError.InexistantGame), socket);
+                        return;
                     }
-                    if (gameSettings.password !== undefined && gameSettings.password !== password) {
-                        throw Error('Mauvais mot de passe');
+                    const canJoin = this.canJoin(gameSettings, password);
+                    this.sendPasswordConfirmation(canJoin, socket);
+                    if (!canJoin) {
+                        return;
                     }
+
                     if (gameSettings.gameStatus === WAIT_STATUS) {
                         this.addToSocketMap(id, user.name, socket, false);
                         this.joinGame(id, user.name, gameSettings, socket);
@@ -245,12 +255,21 @@ export class NewGameSocketHandler {
         gameSettings: OnlineGameSettings,
         socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,
     ) {
-        const gameToken = this.newGameManagerService.joinPendingGame(id, name);
-        if (!gameToken) {
-            throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
+        const gameId = this.newGameManagerService.joinPendingGame(id, name);
+        if (!gameId) {
+            this.sendError(Error(JoinGameError.InexistantGame), socket);
+            return;
         }
         socket.join(id);
-        this.sendGameSettingsToPlayers(gameToken, gameSettings);
+        this.sendGameSettingsToPlayers(gameId, gameSettings);
+    }
+
+    private canJoin(gameSettings: OnlineGameSettings, password: string): boolean {
+        return gameSettings.password === undefined || gameSettings.password === password;
+    }
+
+    private sendPasswordConfirmation(canJoin: boolean, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
+        socket.emit(confirmPassword, canJoin);
     }
 
     private joinGameAsObserver(gameToken: string, name: string, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
@@ -284,8 +303,6 @@ export class NewGameSocketHandler {
             return;
         }
         this.onDisconnect(playerName);
-        const gameSettings = this.getPendingGame(id);
-        this.ioServer.to(client).emit(gameJoined, gameSettings);
         this.ioServer.to(client).disconnectSockets();
     }
 

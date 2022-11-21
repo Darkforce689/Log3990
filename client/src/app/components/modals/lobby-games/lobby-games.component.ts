@@ -1,11 +1,11 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { DatePipe } from '@angular/common';
 import { AfterContentChecked, AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { ACTIVE_STATUS, WAIT_STATUS } from '@app/game-logic/constants';
+import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
@@ -42,9 +42,9 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
             lobbyGames$: Observable<OnlineGameSettings[]>;
         },
         private dialogRef: MatDialogRef<LobbyGamesComponent>,
-        private dialog: MatDialog,
         private cdref: ChangeDetectorRef,
         private onlineSocketHandler: NewOnlineGameSocketHandler,
+        private gameLauncher: GameLauncherService,
         private liveAnnouncer: LiveAnnouncer,
     ) {
         this.columns = [
@@ -89,6 +89,7 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
     ngOnInit() {
         this.data.lobbyGames$.subscribe((gameSettings) => {
             this.lobbyGamesDataSource.data = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.data.gameMode);
+            this.lobbyGamesDataSource.sort = this.tableSort; // NOT wokring
         });
         this.onlineSocketHandler.listenForPendingGames();
     }
@@ -114,15 +115,13 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
     }
 
     joinGame(): void {
-        const joinPendingGameRef = new MatDialogConfig();
-        joinPendingGameRef.autoFocus = true;
-        joinPendingGameRef.disableClose = true;
-        joinPendingGameRef.data = this.selectedRow;
-
-        const joinPendingGame = this.dialog.open(JoinOnlineGameComponent, joinPendingGameRef);
-        joinPendingGame.beforeClosed().subscribe(() => {
-            this.dialogRef.close();
-        });
+        if (!this.selectedRow) {
+            return;
+        }
+        const { id, password } = this.selectedRow;
+        const hasPassword = password !== undefined;
+        this.gameLauncher.joinGame(id, hasPassword);
+        this.dialogRef.close();
     }
 
     isSelectedRow(row: OnlineGameSettings): boolean {
