@@ -1,13 +1,18 @@
 <div class="rackContainer" appClickAndClickout [inputComponent]="self">
     <mat-grid-list cols="7" rowHeight="1:1" gutterSize="8px">
         <mat-grid-tile
+            cdkDrag
             *ngFor="let letter of playerRack; let index = index"
-            (click)="click(inputType.LeftClick, index)"
-            (contextmenu)="click(inputType.RightClick, index)"
+            (mouseup)="click($event, index)"
+            (mousedown)="onMouseDown($event, index)"
+            (cdkDragEnded)="drop($event, index)"
+            (cdkDragMoved)="onDragMoved($event, index)"
             [ngClass]="{
                 selectedForMove: isLetterSelectedForMove(index),
                 selectedForExchange: isLetterSelectedForExchange(index),
-                selectedForPlace: isLetterSelectedForPlace(index)
+                selectedForPlace: isLetterSelectedForPlace(index),
+                holding: isHolding(index),
+                dropped: isDropped(index)
             }"
         >
             {{ letter.char }}

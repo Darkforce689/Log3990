@@ -52,3 +52,14 @@ sub {
 .selectedForPlace {
     opacity: 0.3;
 }
+
+.holding {
+    opacity: 0.3;
+}
+
+.dropped {
+    opacity: 0;
+    padding-top: 0 !important;
+    width: calc((70vh - 2 * 8px - 1px * 17) / 16) !important;
+    height: calc((70vh - 2 * 8px - 1px * 17) / 16) !important;
+}

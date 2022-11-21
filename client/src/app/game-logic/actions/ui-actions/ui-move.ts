@@ -56,6 +56,10 @@ export class UIMove implements UIAction {
         return;
     }
 
+    receiveHoldReleased(): void {
+        return;
+    }
+
     private processKey(key: string) {
         if (!isStringALowerCaseLetter(key) && key !== JOKER_CHAR) {
             this.concernedIndexes.clear();
