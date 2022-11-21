@@ -32,7 +32,7 @@ fun PlayersInfoView(viewModel: GameViewModel, size: Dp = 200.dp) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        viewModel.game.players.forEach { player ->
+        viewModel.getOrderedPlayers().forEach { player ->
             PlayerInfoView(
                 player,
                 size,
