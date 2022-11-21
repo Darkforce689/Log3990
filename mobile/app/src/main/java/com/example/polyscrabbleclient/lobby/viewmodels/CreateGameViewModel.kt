@@ -9,11 +9,11 @@ import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 const val DEFAULT_TIMER = 60000
-const val DEFAULT_PLAYER_NUMBER = 2
 const val MIN_TIMER = 30000
 const val MAX_TIMER = 300000
 const val MIN_PLAYER_NUMBER = 2
 const val MAX_PLAYER_NUMBER = 4
+const val DEFAULT_PLAYER_NUMBER = MAX_PLAYER_NUMBER
 
 class CreateGameViewModel : ViewModel() {
     val pendingGames = LobbyRepository.model.pendingGames
