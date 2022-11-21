@@ -13,7 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
-import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
+import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +33,9 @@ fun JoinGameView(
     EvenlySpacedRowContainer {
         Box {
             LobbyGamesView(
-                viewModel.lobbyGames,
+                lobbyGames,
+                viewModel.selectedGameIndex,
+                viewModel.selectedGameMode.value,
                 navigateToGameScreen(viewModel, navController)
             ) { modalActions ->
                 modalButtons(modalActions)
@@ -46,8 +48,8 @@ fun JoinGameView(
 private fun navigateToGameScreen(
     viewModel: JoinGameViewModel,
     navController: NavController
-) = { lobbyGameIndex: LobbyGameId ->
-    viewModel.joinGame(lobbyGameIndex) {
+) = { lobbyGames: LobbyGamesList? ->
+    viewModel.joinGame(lobbyGames) {
         CoroutineScope(IO).launch {
             launch(Dispatchers.Main) {
                 navController.navigate(NavPage.GamePage.label) {
