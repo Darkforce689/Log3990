@@ -34,6 +34,10 @@ export class UIExchange implements UIAction {
         return;
     }
 
+    receiveHoldReleased(): void {
+        return;
+    }
+
     create(): Action {
         const lettersToExchange: Letter[] = [];
         this.concernedIndexes.forEach((index) => {

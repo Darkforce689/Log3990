@@ -32,6 +32,8 @@ export class CanvasDrawer {
 
     private indicatorPos: Vec2 = { x: -1, y: -1 };
     private indicatorDir: Direction;
+    private tempPos: Vec2 = { x: -1, y: -1 };
+    private tempPosValid: boolean = false;
 
     constructor(public canvas: CanvasRenderingContext2D, public width: number, public height: number) {
         this.canvas.lineWidth = 1;
@@ -81,6 +83,9 @@ export class CanvasDrawer {
 
         board.activeTiles.forEach((tile) => this.drawActiveTile(tile.x, tile.y));
 
+        if (this.tempPos.x !== -1 && this.tempPos.y !== -1) {
+            this.drawTemp();
+        }
         this.drawborder();
     }
 
@@ -98,7 +103,12 @@ export class CanvasDrawer {
         this.indicatorDir = dir;
     }
 
-    private tilePositionToCoord(i: number, j: number): Vec2 {
+    setTemp(i: number, j: number, valid: boolean) {
+        this.tempPos = { x: i, y: j };
+        this.tempPosValid = valid;
+    }
+
+    tilePositionToCoord(i: number, j: number): Vec2 {
         const x = i * this.tileSize + (i + 1) * this.canvas.lineWidth;
         const y = j * this.tileSize + (j + 1) * this.canvas.lineWidth;
         return { x: x + this.offset, y: y + this.offset };
@@ -263,6 +273,18 @@ export class CanvasDrawer {
     private drawActiveTile(i: number, j: number) {
         const pos = this.tilePositionToCoord(i, j);
         this.canvas.fillStyle = TILE_COLOR;
+        this.canvas.fillRect(
+            pos.x + 2 * this.canvas.lineWidth,
+            pos.y + 2 * this.canvas.lineWidth,
+            this.tileSize - this.canvas.lineWidth,
+            this.tileSize - this.canvas.lineWidth,
+        );
+    }
+
+    private drawTemp() {
+        const pos = this.tilePositionToCoord(this.tempPos.x, this.tempPos.y);
+        // TODO GL3A22107-104
+        this.canvas.fillStyle = this.tempPosValid ? 'rgba(0, 200, 20, 0.7)' : 'rgba(200, 20, 20, 0.7)';
         this.canvas.fillRect(
             pos.x + 2 * this.canvas.lineWidth,
             pos.y + 2 * this.canvas.lineWidth,

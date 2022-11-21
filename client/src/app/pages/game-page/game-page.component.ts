@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { WinnerDialogComponent, WinnerDialogData } from '@app/components/modals/winner-dialog/winner-dialog.component';
+import { UIDragAndDrop } from '@app/game-logic/actions/ui-actions/ui-drag-and-drop';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
@@ -75,6 +76,22 @@ export class GamePageComponent implements OnDestroy, AfterViewInit {
         this.inputController.receive(input);
     }
 
+    receiveDropInput(input: UIInput) {
+        this.inputController.receiveDrop(input);
+    }
+
+    receiveMoveInput(input: UIInput) {
+        this.inputController.receiveMove(input);
+    }
+
+    receiveMoveFeedback(canPlace: boolean) {
+        this.inputController.receiveMoveFeedback(canPlace);
+    }
+
+    receiveDropFeedback(event: { left: number; top: number; index: number; x: number; y: number }) {
+        this.inputController.receiveDropFeedback(event);
+    }
+
     abandon() {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.disableClose = true;
@@ -102,7 +119,11 @@ export class GamePageComponent implements OnDestroy, AfterViewInit {
     }
 
     get canPlace(): boolean {
-        return this.isItMyTurn && this.inputController.activeAction instanceof UIPlace && this.inputController.canBeExecuted;
+        return (
+            this.isItMyTurn &&
+            (this.inputController.activeAction instanceof UIPlace || this.inputController.activeAction instanceof UIDragAndDrop) &&
+            this.inputController.canBeExecuted
+        );
     }
 
     get canExchange(): boolean {

@@ -129,3 +129,7 @@ export const openErrorDialog = (dialog: MatDialog, width: string, errorContent: 
         },
     });
 };
+
+export const isInsideOfBoard = (x: number, y: number) => {
+    return x >= BOARD_MIN_POSITION && x <= BOARD_MAX_POSITION && y >= BOARD_MIN_POSITION && y <= BOARD_MAX_POSITION;
+};

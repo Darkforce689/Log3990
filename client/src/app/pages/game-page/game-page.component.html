@@ -20,8 +20,17 @@
                 <app-horse appPreventContextMenu></app-horse>
             </ng-template>
             <ng-template #playerView>
-                <app-board (clickTile)="receiveInput($event)"></app-board>
-                <app-horse appPreventContextMenu (clickLetter)="receiveInput($event)"></app-horse>
+                <app-board
+                    (clickTile)="receiveInput($event)"
+                    (moveFeedback)="receiveMoveFeedback($event)"
+                    (dropFeedback)="receiveDropFeedback($event)"
+                ></app-board>
+                <app-horse
+                    appPreventContextMenu
+                    (clickLetter)="receiveInput($event)"
+                    (dropEvent)="receiveDropInput($event)"
+                    (moveEvent)="receiveMoveInput($event)"
+                ></app-horse>
             </ng-template>
             <div class="actions">
                 <ng-template *ngIf="isObserver; then observerActions; else playerActions"></ng-template>
