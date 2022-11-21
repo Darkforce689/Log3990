@@ -7,6 +7,7 @@ import com.example.polyscrabbleclient.game.model.BoardModel
 import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.user.User
 import kotlin.math.ceil
 
 class ReplayViewModel(private val gameStates: List<GameStateHistory>, gameMode: GameMode) :
@@ -34,7 +35,7 @@ class ReplayViewModel(private val gameStates: List<GameStateHistory>, gameMode: 
     }
 
     fun getLeftPlayers(): List<Player> {
-        return gameStateModel.players.subList(
+        return getOrderedPlayers().subList(
             0,
             ceil((gameStateModel.players.size / 2).toDouble()).toInt()
         )
@@ -45,10 +46,20 @@ class ReplayViewModel(private val gameStates: List<GameStateHistory>, gameMode: 
     }
 
     fun getRightPlayers(): List<Player> {
-        return gameStateModel.players.subList(
+        return getOrderedPlayers().subList(
             ceil((gameStateModel.players.size / 2).toDouble()).toInt(),
             gameStateModel.players.size
         )
+    }
+
+    private fun getOrderedPlayers(): List<Player> {
+        val userIndex = gameStateModel.players.indexOfFirst { player -> User.name == player.name }
+        if (userIndex < 0) {
+            return gameStateModel.players
+        }
+        val before = gameStateModel.players.subList(0, userIndex)
+        val after = gameStateModel.players.subList(userIndex, gameStateModel.players.size)
+        return after + before
     }
 
     fun isActivePlayer(player: Player): Boolean {

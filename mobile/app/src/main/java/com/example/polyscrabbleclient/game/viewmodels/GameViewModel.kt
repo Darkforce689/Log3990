@@ -17,7 +17,7 @@ class GameViewModel : ViewModel() {
     val board = game.board
     var remainingLettersCount = game.remainingLettersCount
     var turnRemainingTime = game.turnRemainingTime
-    var turnTotalTime = game.turnTotalTime
+    private var turnTotalTime = game.turnTotalTime
     var gameMode = game.gameMode
 
     fun getRemainingTimeFraction(
@@ -25,6 +25,13 @@ class GameViewModel : ViewModel() {
         total: Int = turnTotalTime.value
     ): Float {
         return current.toFloat() / total
+    }
+
+    fun getOrderedPlayers(): List<Player> {
+        val userIndex = game.getUserIndex()
+        val before = game.players.subList(0, userIndex)
+        val after = game.players.subList(userIndex, game.players.size)
+        return after + before
     }
 
     private fun isActivePlayer(): Boolean {
