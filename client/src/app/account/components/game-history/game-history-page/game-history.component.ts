@@ -126,6 +126,7 @@ export class GameHistoryComponent implements OnInit, AfterViewInit {
                 this.matDialog.open(ReplayComponent, {
                     width: '80%',
                     height: '85%',
+                    disableClose: true,
                     panelClass: 'custom-dialog-container',
                     data: { gameStates, userIndex },
                 });
