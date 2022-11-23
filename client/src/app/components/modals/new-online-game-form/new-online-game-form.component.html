@@ -1,51 +1,101 @@
-<h2>Nouvelle Partie Multijoueurs</h2>
-<mat-dialog-content [formGroup]="onlineGameSettingsUIForm">
-    <br />
-    <br />
-    <mat-checkbox color="accent" formControlName="privateGame">Partie privée</mat-checkbox>
-    <br />
-    <br />
-    <mat-checkbox color="accent" formControlName="randomBonus">Bonus aléatoire</mat-checkbox>
-    <br />
-    <br />
-    <mat-checkbox #checkPassword color="accent" formControlName="hasPassword" (change)="onPasswordChange($event)">Mot de passe</mat-checkbox>
-    <br />
-    <mat-form-field>
-        <mat-label>Mot de passe</mat-label>
-        <input matInput autocomplete="off" placeholder="Mot de passe" formControlName="password" />
-    </mat-form-field>
-    <br />
-    <mat-label>Temps par tour </mat-label>
-    <mat-label>{{ timer.value | date: 'm:ss' }} min </mat-label> <br />
-    <mat-slider
-        #timer
-        color="primary"
-        [min]="minTimePerTurn"
-        [max]="maxTimePerTurn"
-        [step]="stepTimePerTurn"
-        [formControlName]="'timePerTurn'"
-    ></mat-slider
-    ><br />
-    <mat-label>Nombre de joueurs: {{ numPlayer.value }} </mat-label> <br />
-    <mat-slider #numPlayer color="primary" [min]="minNumberOfPlayers" [max]="maxNumberOfPlayers" [formControlName]="'numberOfPlayers'"></mat-slider>
-    <br />
-    <mat-form-field appearance="fill">
-        <mat-label>Choisir une difficulté pour les joueurs virtuels</mat-label>
-        <mat-select formControlName="botDifficulty">
-            <mat-option matInput value="Facile"> Facile</mat-option>
-            <mat-option matInput value="Expert"> Expert</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <div *ngIf="isMagicGame">
-        <mat-label>Cartes de pouvoir disponibles:</mat-label>
-        <div *ngFor="let value of availableMagicCards">
-            <mat-checkbox (change)="onCheckChange($event, value)">{{ value.name }} </mat-checkbox>
-            <br />
-        </div>
+<mat-dialog-content>
+    <h1>Créer une partie</h1>
+    <div class="container">
+        <mat-card>
+            <mat-card-content>
+                <mat-vertical-stepper fxLayout="column" [linear]="true" #stepper (selectionChange)="onStepChange($event)">
+                    <ng-template #stepperIcon>
+                        <mat-icon> admin_panel_settings_rounded </mat-icon>
+                    </ng-template>
+                    <mat-step label="Visibilité de la partie"></mat-step>
+                    <ng-template #stepperIcon>
+                        <mat-icon> tune_rounded </mat-icon>
+                    </ng-template>
+                    <mat-step label="Paramètres de jeu"></mat-step>
+                    <div *ngIf="isMagicGame">
+                        <ng-template #stepperIcon>
+                            <mat-icon> star_rate_rounded </mat-icon>
+                        </ng-template>
+                        <button mat-button matStepperPrevious>Back</button>
+                        <button mat-button matStepperNext>Next</button>
+                        <mat-step label="Cartes de pouvoir"></mat-step>
+                    </div>
+                    <!-- To override icons -->
+                    <ng-template matStepperIcon="number" let-index="index">
+                        <ng-container [ngTemplateOutlet]="matStepperIcons && matStepperIcons[index]"></ng-container>
+                    </ng-template>
+                    <ng-template matStepperIcon="edit" let-index="index">
+                        <ng-container [ngTemplateOutlet]="matStepperIcons && matStepperIcons[index]"></ng-container>
+                    </ng-template>
+                    <ng-template matStepperIcon="done" let-index="index">
+                        <ng-container [ngTemplateOutlet]="matStepperIcons && matStepperIcons[index]"></ng-container>
+                    </ng-template>
+                    <ng-template matStepperIcon="error" let-index="index">
+                        <ng-container [ngTemplateOutlet]="matStepperIcons && matStepperIcons[index]"></ng-container>
+                    </ng-template>
+                </mat-vertical-stepper>
+            </mat-card-content>
+            <mat-card-footer>
+                <button mat-button color="accent" (click)="cancel()">Annuler</button>
+                <button mat-raised-button color="primary" (click)="playGame()" [disabled]="!formValid">Créer une partie</button>
+            </mat-card-footer>
+        </mat-card>
+        <mat-card [formGroup]="onlineGameSettingsUIForm">
+            <mat-card-content>
+                <div *ngIf="selectSettings">
+                    <h3>Choisir les paramètres de la partie:</h3>
+                    <div class="content">
+                        <mat-checkbox color="accent" formControlName="privateGame">Partie privée</mat-checkbox>
+                        <!-- <mat-label>Acceptation des joueurs par l'hôte</mat-label> -->
+                        <mat-checkbox color="accent" formControlName="hasPassword" (change)="onPasswordChange($event)">
+                            Partie Protégée
+                        </mat-checkbox>
+                        <mat-form-field>
+                            <input matInput #password autocomplete="off" placeholder="Mot de passe" formControlName="password" />
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div *ngIf="selectGameParamerers">
+                    <h3>Choisir les paramètres de jeu:</h3>
+                    <div class="content">
+                        <mat-label>Temps par tour: {{ timer.value | date: 'm:ss' }} min </mat-label>
+                        <mat-slider
+                            #timer
+                            color="primary"
+                            [min]="minTimePerTurn"
+                            [max]="maxTimePerTurn"
+                            [step]="stepTimePerTurn"
+                            [formControlName]="'timePerTurn'"
+                        ></mat-slider>
+                        <mat-label>Nombre de joueurs: {{ numPlayer.value }} </mat-label>
+                        <mat-slider
+                            #numPlayer
+                            color="primary"
+                            [min]="minNumberOfPlayers"
+                            [max]="maxNumberOfPlayers"
+                            [formControlName]="'numberOfPlayers'"
+                        ></mat-slider>
+                        <mat-checkbox color="accent" formControlName="randomBonus">Bonus aléatoire</mat-checkbox>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Choisir une difficulté pour les joueurs virtuels</mat-label>
+                            <mat-select formControlName="botDifficulty">
+                                <mat-option matInput value="Facile"> Facile</mat-option>
+                                <mat-option matInput value="Expert"> Expert</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div *ngIf="isMagicGame && selectMagicCards">
+                    <h3>Choisir les cartes de pouvoir:</h3>
+                    <!-- TODO JUU: select all -->
+                    <mat-checkbox [checked]="allChecked" [indeterminate]="someComplete()" (change)="setAll($event.checked)"> Tous </mat-checkbox>
+                    <div class="content-magic-cards">
+                        <div *ngFor="let value of availableMagicCards">
+                            <mat-checkbox [checked]="getIsChecked(value)" (change)="onCheckChange($event, value)">{{ value.name }} </mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
     </div>
 </mat-dialog-content>
-<br />
-<mat-dialog-actions>
-    <button mat-button color="accent" (click)="cancel()">Annuler</button>
-    <button mat-raised-button color="primary" (click)="playGame()" [disabled]="!formValid">Créer une partie</button>
-</mat-dialog-actions>

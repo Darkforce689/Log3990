@@ -1,4 +1,6 @@
-import { AfterContentChecked, ChangeDetectorRef, Component, Inject } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { StepperSelectionEvent, STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { AfterContentChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild, ViewChildren } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -16,14 +18,29 @@ import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 
+enum NewGamePages {
+    Settings = 0,
+    GameParameters = 1,
+    MagicCards = 2,
+}
+
 @Component({
     selector: 'app-new-online-game-form',
     templateUrl: './new-online-game-form.component.html',
     styleUrls: ['./new-online-game-form.component.scss'],
+    providers: [
+        {
+            provide: STEPPER_GLOBAL_OPTIONS,
+            useValue: { displayDefaultIndicatorType: false },
+        },
+    ],
 })
-export class NewOnlineGameFormComponent implements AfterContentChecked {
+export class NewOnlineGameFormComponent implements AfterContentChecked, AfterViewInit {
+    @ViewChild('password') passwordElement: ElementRef;
+    @ViewChildren('stepperIcon') private matStepperIconViewChildren: any;
+    matStepperIcons: any;
     gameMode: string;
-
+    selectedIndex = 0;
     onlineGameSettingsUIForm = new FormGroup({
         timePerTurn: new FormControl(DEFAULT_TIME_PER_TURN, [
             Validators.required,
@@ -47,13 +64,17 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
     stepTimePerTurn = STEP_TIME_PER_TURN;
     minNumberOfPlayers = MIN_NUMBER_OF_PLAYERS;
     maxNumberOfPlayers = MAX_NUMBER_OF_PLAYERS;
-
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: OnlineGameSettingsUI,
         private dialogRef: MatDialogRef<NewOnlineGameFormComponent>,
         private cdref: ChangeDetectorRef,
     ) {
         this.gameMode = data.gameMode;
+    }
+
+    ngAfterViewInit(): void {
+        this.matStepperIcons = this.matStepperIconViewChildren.toArray();
+        this.cdref.detectChanges();
     }
 
     ngAfterContentChecked() {
@@ -85,6 +106,7 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
         const hasPassword = event.checked;
         if (hasPassword) {
             this.onlineGameSettingsUIForm.get('password')?.enable();
+            this.passwordElement.nativeElement.focus();
             this.onlineGameSettingsUIForm.updateValueAndValidity();
             return;
         }
@@ -95,15 +117,65 @@ export class NewOnlineGameFormComponent implements AfterContentChecked {
 
     onCheckChange(event: MatCheckboxChange, magicCard: UIMagicCard) {
         const formArray: FormArray = this.onlineGameSettingsUIForm.get('magicCardIds') as FormArray;
-        if (event.checked) formArray.push(new FormControl(magicCard.id));
-        else formArray.removeAt(formArray.controls.findIndex((formControl: AbstractControl) => formControl.value === magicCard.id));
+        if (event.checked) {
+            formArray.push(new FormControl(magicCard.id));
+            this.onlineGameSettingsUIForm.updateValueAndValidity();
+            return;
+        }
+        const index = formArray.controls.findIndex((formControl: AbstractControl) => formControl.value === magicCard.id);
+        formArray.removeAt(index);
+        this.onlineGameSettingsUIForm.updateValueAndValidity();
     }
 
-    get formValid() {
+    someComplete(): boolean {
+        const formArray: FormArray = this.onlineGameSettingsUIForm.get('magicCardIds') as FormArray;
+        return formArray.length > 0 && !this.allChecked;
+    }
+
+    setAll(completed: boolean) {
+        if (!completed) {
+            const formArray: FormArray = this.onlineGameSettingsUIForm.get('magicCardIds') as FormArray;
+            formArray.clear();
+            this.onlineGameSettingsUIForm.updateValueAndValidity();
+            return;
+        }
+        const controls = this.availableMagicCards.map((card: UIMagicCard) => new FormControl(card.id));
+        const completeFormArray = new FormArray(controls);
+        this.onlineGameSettingsUIForm.controls.magicCardIds = completeFormArray;
+        this.onlineGameSettingsUIForm.updateValueAndValidity();
+    }
+
+    onStepChange(event: StepperSelectionEvent) {
+        this.selectedIndex = event.selectedIndex;
+    }
+
+    getIsChecked(card: UIMagicCard): boolean {
+        const formArray: FormArray = this.onlineGameSettingsUIForm.get('magicCardIds') as FormArray;
+        return formArray.controls.find((formControl: AbstractControl) => formControl.value === card.id) !== undefined;
+    }
+
+    get allChecked(): boolean {
+        const formArray: FormArray = this.onlineGameSettingsUIForm.get('magicCardIds') as FormArray;
+        return formArray.length >= this.availableMagicCards.length;
+    }
+
+    get selectSettings(): boolean {
+        return this.selectedIndex === NewGamePages.Settings;
+    }
+
+    get selectGameParamerers(): boolean {
+        return this.selectedIndex === NewGamePages.GameParameters;
+    }
+
+    get selectMagicCards(): boolean {
+        return this.selectedIndex === NewGamePages.MagicCards;
+    }
+
+    get formValid(): boolean {
         return this.onlineGameSettingsUIForm.valid;
     }
 
-    get isMagicGame() {
+    get isMagicGame(): boolean {
         return this.gameMode === GameMode.Magic;
     }
 

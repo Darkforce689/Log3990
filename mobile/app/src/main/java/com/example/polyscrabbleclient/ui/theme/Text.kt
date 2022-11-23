@@ -108,6 +108,12 @@ const val choose_bot_difficulty = "Difficulté du joueur virtuel"
 const val game_mode = "Mode de jeu"
 const val classic = "Classique"
 const val magic_cards = "Carte de pouvoirs"
+const val game_settings = "Visibilité de la partie"
+const val choose_game_settings = "Choisir les paramètres de la partie"
+const val game_parameters = "Paramètres de jeu"
+const val choose_game_parameters = "Choisir les paramètres de jeu"
+const val choose_magic_card = "Choisir les cartes de pouvoirs"
+const val select_all = "Toutes"
 
 // Magic Card
 const val exchange_a_letter_name = "Échanger une lettre"

@@ -2,22 +2,19 @@ package com.example.polyscrabbleclient.lobby.view.createGame
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.polyscrabbleclient.account.viewmodel.SEC_IN_MIN
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
-import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.viewmodels.*
 import com.example.polyscrabbleclient.roundDownToMultipleOf
-import com.example.polyscrabbleclient.ui.theme.choose_bot_difficulty
-import com.example.polyscrabbleclient.ui.theme.number_of_player
-import com.example.polyscrabbleclient.ui.theme.random_bonus
-import com.example.polyscrabbleclient.ui.theme.time_per_turn
+import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.utils.TextView
 import com.example.polyscrabbleclient.utils.constants.magic_card_map
 import kotlin.math.floor
 
@@ -27,15 +24,45 @@ fun Preview() {
     NewGameForm(createGameViewModel = CreateGameViewModel())
 }
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewMagicCards() {
+    MagicCards(createGameViewModel = CreateGameViewModel())
+}
+
+@Composable
+fun Settings() {
+    Column(Modifier.fillMaxSize()) {
+        TextView(
+            "$choose_game_settings:",
+            isBold = true,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.Start,
+        ) {
+            Text("TODO: ")
+            Text("Private GAME")
+            Text("MOT DE PASSE")
+        }
+    }
+}
+
 @Composable
 fun NewGameForm(createGameViewModel: CreateGameViewModel) {
-    Row(
-        Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
-        verticalAlignment = Alignment.CenterVertically
-    )
-    {
+    Column(
+        Modifier.fillMaxSize()
+    ) {
+        TextView(
+            "$choose_game_parameters:",
+            isBold = true,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
         Column(
-            Modifier.width(200.dp),
+            Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.Start
         ) {
@@ -64,30 +91,63 @@ fun NewGameForm(createGameViewModel: CreateGameViewModel) {
                 },
             )
         }
-        if (createGameViewModel.gameMode.value == GameMode.Magic) {
-            Column(
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier
-                    .width(400.dp)
-            ) {
-                magic_card_map.forEach { entry ->
-                    Row(
-                        Modifier
-                            .padding(0.dp, 0.dp, 5.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = createGameViewModel.containsMagicCard(entry.key),
-                            onCheckedChange = { _ ->
-                                if (createGameViewModel.containsMagicCard(entry.key))
-                                    createGameViewModel.magicCardIds.remove(entry.key)
-                                else
-                                    createGameViewModel.magicCardIds.add(entry.key)
-                            }
-                        )
-                        Text(text = entry.value)
-                    }
+    }
+}
+
+@Composable
+fun MagicCards(createGameViewModel: CreateGameViewModel) {
+    val isAllSelected = createGameViewModel.allMagicCardsSelected
+    val noCardSelected = createGameViewModel.magicCardIds.size <= 0
+    val allCardSelected = createGameViewModel.magicCardIds.size >= magic_card_map.size
+    var selectState by remember { mutableStateOf(ToggleableState.Off) }
+    Column {
+        TextView(
+            "$choose_magic_card:",
+            isBold = true,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        selectState =
+            if (isAllSelected.value && allCardSelected) ToggleableState.On
+            else if (!isAllSelected.value && noCardSelected) ToggleableState.Off
+            else ToggleableState.Indeterminate
+
+        val onParentClick = {
+            if (isAllSelected.value) {
+                createGameViewModel.addAllSelected()
+            } else {
+                createGameViewModel.removeAllSelected()
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TriStateCheckbox(
+                modifier = Modifier.height(30.dp),
+                state = selectState,
+                onClick = { isAllSelected.value = !isAllSelected.value;onParentClick() },
+                enabled = true
+            )
+            Text(text = select_all)
+        }
+        Column(
+            modifier = Modifier
+                .padding(15.dp, 0.dp, 0.dp, 0.dp)
+        ) {
+            magic_card_map.forEach { entry ->
+                Row(
+                    Modifier
+                        .height(30.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = createGameViewModel.containsMagicCard(entry.key),
+                        onCheckedChange = { _ ->
+                            if (createGameViewModel.containsMagicCard(entry.key))
+                                createGameViewModel.magicCardIds.remove(entry.key)
+                            else
+                                createGameViewModel.magicCardIds.add(entry.key)
+                        }
+                    )
+                    Text(text = entry.value)
                 }
             }
         }
