@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
     val inputFocusRequester = LocalFocusManager.current
-    val selectedPage = remember { mutableStateOf(AccountPage.Profil) }
+    val selectedPage = remember { mutableStateOf(AccountPage.Profil.name) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     if (viewmodel.updateSuccessful.value) {
@@ -48,11 +49,11 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
     }
     Row(Modifier.clickable { inputFocusRequester.clearFocus() }) {
         Surface {
-            SideNavigation(
+            AccountSideNavigation(
                 name = viewmodel.userName.value,
                 avatar = viewmodel.avatar.value,
                 navController = navController,
-                onSelected = { page: AccountPage -> selectedPage.value = page }
+                onSelected = { page: String -> selectedPage.value = page }
             )
             Divider(
                 Modifier
@@ -61,7 +62,7 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
             )
         }
         when (selectedPage.value) {
-            AccountPage.Profil -> {
+            AccountPage.Profil.name -> {
                 AccountContent(my_profil) {
                     ProfilContent(
                         fields = viewmodel.userInfoField.value,
@@ -73,12 +74,12 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
                     )
                 }
             }
-            AccountPage.Statistics -> {
+            AccountPage.Statistics.name -> {
                 AccountContent(statistics) {
                     UserStatistics()
                 }
             }
-            AccountPage.Games -> {
+            AccountPage.Games.name -> {
                 AccountContent(game_history) {
                     GameHistoryView(GamesHistoryViewModel())
                 }
@@ -106,20 +107,18 @@ fun AccountView(viewmodel: AccountViewmodel, navController: NavController) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun SideNavigation(
+private fun AccountSideNavigation(
     name: String,
     avatar: String,
     navController: NavController,
-    onSelected: (page: AccountPage) -> Unit,
+    onSelected: (page: String) -> Unit,
 ) {
     val sideNavList = listOf(
-        Triple(my_profil, Icons.Filled.AccountCircle, AccountPage.Profil),
-        Triple(my_statistics, Icons.Filled.Numbers, AccountPage.Statistics),
-        Triple(my_games, Icons.Filled.Analytics, AccountPage.Games)
+        Triple(my_profil, Icons.Filled.AccountCircle, AccountPage.Profil.name),
+        Triple(my_statistics, Icons.Filled.Numbers, AccountPage.Statistics.name),
+        Triple(my_games, Icons.Filled.Analytics, AccountPage.Games.name)
     )
     val keyboard = LocalSoftwareKeyboardController.current
-    val clickedIndex = remember { mutableStateOf(0) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth(0.2f)
@@ -146,31 +145,43 @@ private fun SideNavigation(
         Spacer(Modifier.height(15.dp))
         Divider(Modifier.fillMaxWidth(0.8f))
         Spacer(Modifier.height(20.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        ) {
-            sideNavList.forEachIndexed { index, triple ->
-                val label = triple.first
-                val imageVector = triple.second
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(if (clickedIndex.value == index) Color.LightGray else Color.Transparent)
-                        .padding(10.dp)
-                        .clickable {
-                            onSelected(triple.third)
-                            clickedIndex.value = index
-                        }
-                ) {
-                    Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                        Icon(imageVector, contentDescription = null)
-                        Text(text = label)
+        SideNavigation(
+            navigationList = sideNavList
+        ) { page -> onSelected(page) }
+    }
+}
+
+@Composable
+fun SideNavigation(
+    modifier: Modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp),
+    navigationList: List<Triple<String, ImageVector, String>>,
+    onSelected: (index: String) -> Unit
+) {
+    val clickedIndex = remember { mutableStateOf(0) }
+    Column(
+        modifier
+    ) {
+        navigationList.forEachIndexed { index, triple ->
+            val label = triple.first
+            val imageVector = triple.second
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .background(if (clickedIndex.value == index) Color.LightGray else Color.Transparent)
+                    .padding(10.dp)
+                    .clickable {
+                        onSelected(triple.third)
+                        clickedIndex.value = index
                     }
+            ) {
+                Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Icon(imageVector, contentDescription = null)
+                    Text(text = label)
                 }
             }
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }
