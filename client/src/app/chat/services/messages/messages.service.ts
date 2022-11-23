@@ -125,6 +125,11 @@ export class MessagesService {
         });
     }
 
+    refreshMessages() {
+        this.disconnect();
+        this.connect();
+    }
+
     joinGameConversation(gameToken: string) {
         this.accountService.account$.pipe(takeWhile((account) => account === undefined, true)).subscribe((account) => {
             if (!account) {

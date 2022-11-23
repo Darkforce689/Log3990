@@ -2,9 +2,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 10% ;
-    
-    h2{
+    padding-top: 10%;
+
+    h2 {
         padding-top: 5%;
         padding-bottom: 5%;
     }
@@ -16,11 +16,11 @@ mat-drawer {
     padding: 16px;
 }
 
-mat-card{
+mat-card {
     width: 250px;
     height: 70px;
     margin-bottom: 5%;
-        
+
     mat-card-content {
         padding-left: 30px;
     }
@@ -38,4 +38,28 @@ mat-drawer-content {
 
 app-avatar-list {
     width: 25vw;
+}
+
+mat-sidenav {
+    width: 25vw;
+    height: 100%;
+}
+
+mat-sidenav-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.button-open {
+    position: absolute;
+    padding: 0%;
+    left: 50vw;
+    top: 90vh;
+}
+
+.button-close {
+    position: absolute;
+    padding: 0%;
+    left: 75vw;
+    top: 90vh;
 }

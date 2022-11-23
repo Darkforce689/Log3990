@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { User } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
+import { PopChatService } from '@app/services/pop-chat.service';
 
 const enum AccountPage {
     Profil = 'profil',
@@ -26,9 +27,12 @@ export class AccountPageComponent implements OnInit {
     };
     showPage: AccountPage = AccountPage.Profil;
 
-    constructor(private accountService: AccountService) {}
+    constructor(private accountService: AccountService, public popOutService: PopChatService, private cdRef: ChangeDetectorRef) {}
 
     ngOnInit(): void {
+        this.popOutService.windowed$.subscribe(() => {
+            this.cdRef.detectChanges();
+        });
         this.accountService.account$.subscribe((user: User | undefined) => {
             if (user) {
                 this.user = user;
