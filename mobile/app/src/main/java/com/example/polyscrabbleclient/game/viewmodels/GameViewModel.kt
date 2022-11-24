@@ -127,9 +127,7 @@ class GameViewModel : ViewModel() {
 
     fun navigateToMainPage(navController: NavController) {
         this.quitGame()
-        navController.navigate(NavPage.MainPage.label) {
-            launchSingleTop = true
-        }
+        navController.navigate(NavPage.MainPage.label)
     }
 
     fun getEndOfGameLabel(): String {

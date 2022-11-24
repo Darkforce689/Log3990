@@ -24,6 +24,7 @@ import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.game.view.*
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
+import com.example.polyscrabbleclient.game.viewmodels.PlayerInfoViewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.ui.theme.cardHolder
@@ -123,7 +124,7 @@ fun ReplayPlayers(
                         .fillMaxHeight()
                         .padding(5.dp)
                 ) {
-                    PlayerInfoView(player = it, 200.dp, { false }) {
+                    PlayerInfoView(player = it, 200.dp, PlayerInfoViewModel(), { false }) {
                         viewModel.isActivePlayer(it)
                     }
                     ReplayLetterRack(weight = weight, letters = it.letters)
