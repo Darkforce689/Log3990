@@ -15,8 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,16 +32,17 @@ import com.example.polyscrabbleclient.invitations.models.GameInviteArgs
 import com.example.polyscrabbleclient.invitations.viewmodels.InviteUserViewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
+import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.view.ModalView
-import com.example.polyscrabbleclient.ui.theme.close_invite_user
-import com.example.polyscrabbleclient.ui.theme.user_search
+import com.example.polyscrabbleclient.lobby.viewmodels.NewGameViewModel
+import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.user.model.UserDTO
+import com.example.polyscrabbleclient.user.model.UserStatus
 
 
 @Composable
 fun InviteUserToGameModal(
     inviteArgs: GameInviteArgs,
-    nonInvitableUserNames: List<String>,
     isOpened: Boolean,
     onClose: () -> Unit,
 ) {
@@ -50,7 +54,7 @@ fun InviteUserToGameModal(
         closeModal = {},
         title = null,
     ) { modalButtons ->
-        InviteUserToGameModalContent(inviteArgs, nonInvitableUserNames, onClose) { modalActions ->
+        InviteUserToGameModalContent(inviteArgs, onClose) { modalActions ->
             modalButtons(modalActions)
         }
     }
@@ -60,19 +64,19 @@ fun InviteUserToGameModal(
 @Composable
 fun InviteUserToGameModalContent(
     inviteArgs: GameInviteArgs,
-    nonInvitableUserNames: List<String>,
     onClose: () -> Unit,
     modalButtons: @Composable (
         modalActions: ModalActions
     ) -> Unit
 ) {
-    val viewModel = InviteUserViewModel(inviteArgs, nonInvitableUserNames)
+    val viewModel = InviteUserViewModel(inviteArgs)
     val users = viewModel.usersPager.collectAsLazyPagingItems()
     val keyboard = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
-            .width(400.dp)
+            .width(450.dp)
             .fillMaxHeight(0.5f)
             .clickable {
                 keyboard?.hide()
@@ -85,6 +89,7 @@ fun InviteUserToGameModalContent(
                 users.refresh()
             },
             userName = viewModel.userName,
+            isOnline = viewModel.isOnline,
         )
         Box(Modifier.weight(0.1f)) {
             SearchResultInvitableUserList(
@@ -115,6 +120,7 @@ fun InviteUserToGameModalContent(
 @Composable
 fun SearchBar(
     userName: MutableState<String>,
+    isOnline: MutableState<Boolean>,
     onSearch: (String) -> Unit,
 ) {
     Row(
@@ -135,9 +141,23 @@ fun SearchBar(
                 label = { Text(user_search) }
             )
         }
-        Button(onClick = { onSearch(userName.value) }) {
+        Button(
+            modifier = Modifier.padding(end = 10.dp),
+            onClick = { onSearch(userName.value) }
+        ) {
             Icon(imageVector = Icons.Default.Search, contentDescription = null)
         }
+        Row(modifier= Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically) {
+            Switch(
+                checked = isOnline.value,
+                onCheckedChange = {
+                    isOnline.value = it
+                    onSearch(userName.value)
+                }
+            )
+            Text(user_status_online)
+        }
+
     }
 }
 
@@ -181,16 +201,27 @@ fun InvitableUser(
     ) {
         val avatarId = getAssetsId(name = user.avatar)
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).padding(end = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Avatar(
-                modifier = Modifier
-                    .size(50.dp),
-                avatarId = if (avatarId == 0) getAssetsId(name = "avatardefault") else avatarId
-            )
-            Spacer(modifier = Modifier.width(15.dp))
-            Text(text = user.name, fontSize = 25.sp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Avatar(
+                    modifier = Modifier
+                        .size(50.dp),
+                    avatarId = if (avatarId == 0) getAssetsId(name = "avatardefault") else avatarId
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(text = user.name, fontSize = 18.sp)
+            }
+
+            if (user.status == UserStatus.Online) {
+                Text(user_status_online, fontSize = 17.sp, color = MaterialTheme.colors.userStatusOnline)
+            }
+
+            if (user.status == UserStatus.Offline) {
+                Text(user_status_offline, fontSize = 17.sp, color = Color.Gray)
+            }
         }
 
         Button(
@@ -209,8 +240,8 @@ fun InvitableUser(
 @Preview(showBackground = true)
 @Composable
 fun InvitableUserPreview() {
-    val user = UserDTO("abc", "email", "olivier1", avatar = "polarbear")
-    Box(Modifier.width(300.dp)) {
+    val user = UserDTO("abc", "email", "olivier1", avatar = "polarbear", status = UserStatus.Online)
+    Box(Modifier.width(450.dp)) {
         InvitableUser(
             user = user,
             isInvitable = remember { mutableStateOf(true) },
@@ -226,7 +257,11 @@ fun SearchBarPreview() {
     var v = remember {
         mutableStateOf("")
     }
+
+    var v2 = remember {
+        mutableStateOf(true)
+    }
     Box(Modifier.width(400.dp)) {
-        SearchBar(userName = v, onSearch = { v.value = it })
+        SearchBar(userName = v, onSearch = { v.value = it }, isOnline = v2)
     }
 }

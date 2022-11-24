@@ -4,9 +4,9 @@ import android.net.Uri
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.account.model.Pagination
 import com.example.polyscrabbleclient.invitations.models.BaseInvitation
-import com.example.polyscrabbleclient.invitations.models.GameInviteArgs
 import com.example.polyscrabbleclient.invitations.models.GameInviteDTO
 import com.example.polyscrabbleclient.user.model.UserDTO
+import com.example.polyscrabbleclient.user.model.UserStatus
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 
@@ -15,6 +15,7 @@ data class GetUsersRes(val users: ArrayList<UserDTO>)
 object UserInviteRepository {
     fun searchUsers(
         userName: String,
+        status: UserStatus?,
         pagination: Pagination,
         callback: (List<UserDTO>) -> Unit,
     ): Thread {
@@ -24,6 +25,10 @@ object UserInviteRepository {
             .appendQueryParameter("page", pagination.page.toString())
         if (userName.isNotEmpty()) {
             uriBuilder.appendQueryParameter("search", userName)
+        }
+
+        if (status != null) {
+            uriBuilder.appendQueryParameter("status", status.value)
         }
 
         val builtUri = uriBuilder.build()

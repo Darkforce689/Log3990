@@ -4,10 +4,11 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.polyscrabbleclient.account.model.Pagination
 import com.example.polyscrabbleclient.user.model.UserDTO
+import com.example.polyscrabbleclient.user.model.UserStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class UserSearchSource(val userName: String): PagingSource<Int, UserDTO>() {
+class UserSearchSource(val userName: String, val isOnline: Boolean): PagingSource<Int, UserDTO>() {
     private val defaultPageSize = 10;
 
     override fun getRefreshKey(state: PagingState<Int, UserDTO>): Int? {
@@ -18,7 +19,10 @@ class UserSearchSource(val userName: String): PagingSource<Int, UserDTO>() {
         return try {
             val nextPageNumber = params.key ?: 0
             var users: List<UserDTO>? = null
-            val request = UserInviteRepository.searchUsers(userName, Pagination(nextPageNumber, defaultPageSize, null)) {
+
+            val status = if (isOnline) UserStatus.Online else null
+
+            val request = UserInviteRepository.searchUsers(userName, status, Pagination(nextPageNumber, defaultPageSize, null)) {
                 users = it
             }
 

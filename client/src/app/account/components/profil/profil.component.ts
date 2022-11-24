@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH, NO_WHITE_SPACE_RGX } from '@app/game-logic/constants';
 import { currentLevel, getNextLevel, getProgressValue } from '@app/game-logic/utils';
-import { User } from '@app/pages/register-page/user.interface';
+import { User, UserStatus } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { UserCreationError } from '@app/services/auth-errors';
 import { first } from 'rxjs/operators';
@@ -26,6 +26,7 @@ export class ProfilComponent implements OnInit {
         nGameWon: 0,
         averageTimePerGame: 0,
         totalExp: 0,
+        status: UserStatus.Online,
     };
     name = new FormControl('', [
         Validators.required,

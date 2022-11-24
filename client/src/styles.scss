@@ -39,6 +39,8 @@ $light-theme: mat.define-light-theme(
     --fg: #{$fg};
     --bg: #{$bg};
 
+    --user-status: rgb(5,107,250);
+
     .accent-color {
         color: mat-color($light-accent) !important;
     }
@@ -79,6 +81,8 @@ $dark-theme: mat.define-dark-theme(
     --warn: #{$warn};
     --fg: #{$fg};
     --bg: #{$bg};
+
+    --user-status: rgb(5,250,46);
 
     .accent-color {
         color: mat-color($dark-accent) !important;

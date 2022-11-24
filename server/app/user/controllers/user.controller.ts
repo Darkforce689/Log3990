@@ -3,6 +3,7 @@ import { Pagination } from '@app/common/interfaces/pagination.interface';
 import { isObjectId, parseNumWithDefault } from '@app/common/utils';
 import { DEFAULT_USERS_PAGE, DEFAULT_USERS_PERPAGE } from '@app/user/constants';
 import { Invitation } from '@app/user/interfaces/invitations.interface';
+import { UserStatus } from '@app/user/interfaces/user.interface';
 import { UserInvitationService } from '@app/user/services/user-invitation.service';
 import { UserService } from '@app/user/services/user.service';
 import { Router } from 'express';
@@ -24,7 +25,7 @@ export class UserController {
 
         this.router.get('/', async (req, res) => {
             const { search, perPage, page } = req.query as { search: string | undefined; perPage: string | undefined; page: string | undefined };
-            const { name } = req.query as { name: string };
+            const { name, status } = req.query as { name: string; status: string };
 
             if (name) {
                 const user = await this.userService.getUser({ name });
@@ -33,8 +34,10 @@ export class UserController {
                 }
                 return res.send({ user });
             }
+
             const pagination = this.getUsersPagination(perPage, page);
-            const users = await this.userService.getUsers({ name: search }, pagination);
+            const query = this.getUserGetUserQuery(search, status);
+            const users = await this.userService.getUsers(query, pagination);
             return res.send({ pagination, users });
         });
 
@@ -87,5 +90,19 @@ export class UserController {
             perPage,
             page,
         };
+    }
+
+    private getUserGetUserQuery(name: string | undefined, statusStr: string | undefined) {
+        const getUserStatus = (userStatus: string | undefined) => {
+            if (!userStatus) {
+                return;
+            }
+            if (!(Object.values(UserStatus) as string[]).includes(userStatus)) {
+                return;
+            }
+            return userStatus as UserStatus;
+        };
+        const status = getUserStatus(statusStr);
+        return { name, status };
     }
 }

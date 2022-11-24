@@ -7,8 +7,8 @@ import { ServerLogger } from '@app/logger/logger';
 import { GameStats } from '@app/user/interfaces/game-stats.interface';
 import { UserCreation } from '@app/user/interfaces/user-creation.interface';
 import { UserQuery, UsersGetQuery } from '@app/user/interfaces/user-query.interface';
-import { User } from '@app/user/interfaces/user.interface';
-import { ObjectId } from 'mongodb';
+import { User, UserStatus } from '@app/user/interfaces/user.interface';
+import { Document, ObjectId } from 'mongodb';
 import { Service } from 'typedi';
 
 export enum UserCreationError {
@@ -88,14 +88,22 @@ export class UserService {
     }
 
     async getUsers(query: UsersGetQuery, pagination: Pagination): Promise<User[]> {
-        const { name } = query;
+        const { name, status } = query;
         if (!name || name.length === 0) {
-            return this.getAllUsers(pagination);
+            return this.getAllUsers(pagination, status);
         }
+
         const { perPage, page } = pagination;
-        const result = await this.collection
-            .aggregate([{ $search: { autocomplete: { path: 'name', query: name } } }, { $skip: perPage * page }, { $limit: perPage }])
-            .toArray();
+
+        const agregationPipeline: Document[] = [
+            { $search: { autocomplete: { path: 'name', query: name } } },
+            { $skip: perPage * page },
+            { $limit: perPage },
+        ] as Document[];
+        if (status) {
+            agregationPipeline.splice(1, 0, { $match: { status } });
+        }
+        const result = await this.collection.aggregate(agregationPipeline).toArray();
         return result as User[];
     }
 
@@ -175,15 +183,28 @@ export class UserService {
         return [];
     }
 
+    async setUserOnline(userId: string) {
+        await this.setUserStatus(userId, UserStatus.Online);
+    }
+
+    async setUserOffline(userId: string) {
+        await this.setUserStatus(userId, UserStatus.Offline);
+    }
+
     async isUserExists(userId: string) {
         const result = await this.collection.find({ _id: new ObjectId(userId) });
         return result !== null;
     }
 
-    private async getAllUsers(pagination: Pagination): Promise<User[]> {
+    private async setUserStatus(userId: string, userStatus: UserStatus) {
+        await this.collection.updateOne({ _id: new ObjectId(userId) }, { $set: { status: userStatus } });
+    }
+
+    private async getAllUsers(pagination: Pagination, status?: UserStatus): Promise<User[]> {
         const { perPage, page } = pagination;
+        const query = !status ? {} : { status };
         const result = await this.collection
-            .find()
+            .find(query)
             .skip(perPage * page)
             .limit(perPage)
             .toArray();

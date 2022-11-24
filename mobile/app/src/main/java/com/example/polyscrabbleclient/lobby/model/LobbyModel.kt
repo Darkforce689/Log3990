@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class LobbyModel {
     val selectedGameMode = mutableStateOf(GameMode.Classic)
@@ -14,6 +15,7 @@ class LobbyModel {
     val isPendingGameHost = mutableStateOf(false)
     val hostHasJustQuitTheGame = mutableStateOf(false)
     val password = mutableStateOf<String?>(null)
+    val playerNamesInLobby = MutableStateFlow<List<String>>(listOf())
 }
 
 enum class LobbyError(val value: String) {

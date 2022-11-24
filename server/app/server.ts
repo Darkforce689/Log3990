@@ -104,6 +104,7 @@ export class Server {
             this.authService,
             this.userLogService,
             this.userInvitationService,
+            this.userService,
         );
         this.appSocketHandler.handleSockets();
 

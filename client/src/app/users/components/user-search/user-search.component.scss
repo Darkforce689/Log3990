@@ -26,6 +26,20 @@
     display: flex;
     flex-grow: 1;
     align-items: center;
+    justify-content: space-between;
+}
+
+.user-avatar-name {
+    display: flex;
+    align-items: center;
+}
+
+.online-status {
+    color: var(--user-status)
+}
+
+.offline-status {
+    color: grey
 }
 
 .username {
@@ -46,5 +60,5 @@
 mat-dialog-content {
     height: 40vh;
     width: 25vw;
-    min-width: 300px;
+    min-width: 450px;
 }

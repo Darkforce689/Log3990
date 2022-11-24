@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from '@app/pages/register-page/user.interface';
+import { User, UserStatus } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { ThemeService } from '@app/services/theme/theme.service';
 
@@ -19,6 +19,7 @@ export class HeaderBarComponent {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        status: UserStatus.Online,
         totalExp: 0,
     };
 

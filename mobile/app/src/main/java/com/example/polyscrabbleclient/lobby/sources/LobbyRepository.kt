@@ -5,6 +5,7 @@ import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.utils.Repository
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
 
@@ -15,6 +16,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         gameJoined?.let {
             model.currentPendingGameId.value = it.id
             model.pendingGamePlayerNames.value = it.playerNames
+            model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
         }
     }

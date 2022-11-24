@@ -6,6 +6,7 @@ import { Session } from '@app/auth/services/session.interface';
 import { ServerLogger } from '@app/logger/logger';
 import { Invitation } from '@app/user/interfaces/invitations.interface';
 import { UserInvitationService } from '@app/user/services/user-invitation.service';
+import { UserService } from '@app/user/services/user.service';
 import * as http from 'http';
 import * as io from 'socket.io';
 
@@ -20,6 +21,7 @@ export class AppSocketHandler {
         private authService: AuthService,
         private userLogService: UserLogService,
         private userInvitationService: UserInvitationService,
+        private userService: UserService,
     ) {
         this.sio = new io.Server(server, {
             path: '/app',
@@ -40,11 +42,13 @@ export class AppSocketHandler {
             const { session, sessionID } = socket.request as unknown as { session: Session; sessionID: string };
             const { userId } = session;
 
+            this.userService.setUserOnline(userId);
             this.userLogService.updateUserLog(Date.now(), LogType.CONNECTION, userId);
             this.authService.assignSessionToUser(userId, sessionID);
             this.addUser(userId, socket.id);
 
             socket.on('disconnect', () => {
+                this.userService.setUserOffline(userId);
                 this.userLogService.updateUserLog(Date.now(), LogType.DECONNECTION, userId);
                 this.authService.unassignSessionToUser(userId);
                 this.removeUser(userId);

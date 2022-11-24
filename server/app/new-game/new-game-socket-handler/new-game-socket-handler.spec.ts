@@ -12,7 +12,7 @@ import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
-import { User } from '@app/user/interfaces/user.interface';
+import { User, UserStatus } from '@app/user/interfaces/user.interface';
 import { UserService } from '@app/user/services/user.service';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -47,6 +47,7 @@ describe('New Online Game Service', () => {
         nGameWon: 0,
         averageTimePerGame: 0,
         totalExp: 0,
+        status: UserStatus.Online,
     };
 
     before((done) => {
