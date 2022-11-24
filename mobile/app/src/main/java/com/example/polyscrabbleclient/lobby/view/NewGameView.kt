@@ -13,12 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.lobby.domain.ModalResult
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.view.createGame.CreateGameModalContent
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
+import com.example.polyscrabbleclient.lobby.viewmodels.NewGameViewModel
 import com.example.polyscrabbleclient.ui.theme.*
 
 @Composable
@@ -26,10 +28,19 @@ fun NewGameScreen(
     navController: NavController,
     createGameViewModel: CreateGameViewModel,
 ) {
-    val createGameDialogOpened = remember { mutableStateOf(false) }
-    val joinGameDialogOpened = remember { mutableStateOf(false) }
-    val watchGameDialogOpened = remember { mutableStateOf(false) }
-    val waitingForOtherPlayersDialogOpened = remember { mutableStateOf(false) }
+    val viewModel: NewGameViewModel = viewModel()
+    val createGameDialogOpened = remember {
+        viewModel.createGameDialogOpened
+    }
+    val joinGameDialogOpened = remember {
+        viewModel.joinGameDialogOpened
+    }
+    val waitingForOtherPlayersDialogOpened = remember {
+        viewModel.waitingForOtherPlayersDialogOpened
+    }
+    val watchGameDialogOpened = remember {
+        viewModel.watchGameDialogOpened
+    }
 
     val isToggled = remember { mutableStateOf(false) }
     val gameText = if (isToggled.value) magic_cards else classic

@@ -9,7 +9,10 @@ import { environment } from 'src/environments/environment';
 export enum JoinGameError {
     InexistantGame = 'INEXISTANT_GAME',
     InvalidPassword = 'INVALID_PASSWORD',
+    NotEnoughPlace = 'PENDING_GAME_FULL',
 }
+
+export const KICKED_ERROR_MESSAGE = "L'hôte vous a retiré de la partie";
 
 @Injectable({
     providedIn: 'root',
@@ -28,7 +31,6 @@ export class NewOnlineGameSocketHandler {
     error$ = new Subject<string>();
     name: string;
     socket: Socket;
-    kickedErrorMsg = "L'hôte vous a retiré de la partie";
 
     constructor(private account: AccountService) {}
 
@@ -72,6 +74,12 @@ export class NewOnlineGameSocketHandler {
         this.listenForGameStart();
         this.waitForOtherPlayers();
         this.socket.emit('joinGame', joinGameParams);
+    }
+
+    quitJoinedPendingGame() {
+        this.resetGameToken();
+        this.disconnectSocket();
+        this.isDisconnected$.next(true);
     }
 
     listenForHostQuit() {
@@ -153,7 +161,7 @@ export class NewOnlineGameSocketHandler {
             this.gameSettings$.next(gameSettings);
             const clientName = this.account.account?.name;
             if (this.gameSettings$.value === undefined) {
-                this.error$.next(this.kickedErrorMsg);
+                this.error$.next(KICKED_ERROR_MESSAGE);
                 return;
             }
             if (clientName === undefined) {
@@ -167,7 +175,7 @@ export class NewOnlineGameSocketHandler {
                 this.isWaiting$.next(true);
                 return;
             }
-            this.error$.next(this.kickedErrorMsg);
+            this.error$.next(KICKED_ERROR_MESSAGE);
         });
     }
 

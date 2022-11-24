@@ -1,0 +1,52 @@
+package com.example.polyscrabbleclient.invitations.viewmodels
+
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import com.example.polyscrabbleclient.invitations.models.BaseInvitation
+import com.example.polyscrabbleclient.invitations.models.GameInviteArgs
+import com.example.polyscrabbleclient.invitations.models.InvitationType
+import com.example.polyscrabbleclient.invitations.sources.UserInviteRepository
+import com.example.polyscrabbleclient.invitations.sources.UserSearchSource
+import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.user.model.UserDTO
+
+class InviteUserViewModel(private val args: GameInviteArgs, nonInvitableUserNames: List<String>): ViewModel() {
+    val userName = mutableStateOf("")
+
+    private val nonInvitableUserNames = HashSet(nonInvitableUserNames)
+
+    val usersPager = Pager(PagingConfig(pageSize = 10)) {
+        createUserSource()
+    }.flow.cachedIn(viewModelScope)
+
+    private fun createUserSource(): UserSearchSource {
+        return UserSearchSource(userName.value)
+    }
+
+    fun close() {
+        userName.value = ""
+    }
+
+    fun inviteUser(user: UserDTO) {
+        val baseInvitation = BaseInvitation(InvitationType.Game, args)
+        UserInviteRepository.invite(user, baseInvitation) {
+                val isEnabled = isUserInviteButtonEnabled[user.name]
+                if (isEnabled != null) {
+                    isEnabled.value = false
+                }
+        }.start()
+    }
+
+    private val isUserInviteButtonEnabled: MutableMap<String, MutableState<Boolean>> = HashMap()
+    fun createButtonDisabledState(userName: String): MutableState<Boolean> {
+        val isInvitable = User.name != userName && !nonInvitableUserNames.contains(userName)
+        val mutableState = mutableStateOf(isInvitable)
+        isUserInviteButtonEnabled[userName] = mutableState
+        return mutableState
+    }
+}

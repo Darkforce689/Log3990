@@ -1,10 +1,10 @@
 export interface InvitationDTO extends BaseInvitation {
+    from: string;
+    to: string;
     date: Date;
 }
 
 export interface BaseInvitation {
-    from: string;
-    to: string;
     type: InvitationType;
     args: InvitationArgs;
 }

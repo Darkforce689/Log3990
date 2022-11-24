@@ -46,12 +46,9 @@ export class UserService {
             throw Error("You can't send an invite: your account is not loaded yet");
         }
 
-        const { _id: from } = account;
         const { _id: to } = user;
 
         const invitation: BaseInvitation = {
-            from,
-            to,
             type: InvitationType.Game,
             args,
         };

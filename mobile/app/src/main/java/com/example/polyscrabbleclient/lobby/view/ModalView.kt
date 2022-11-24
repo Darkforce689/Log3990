@@ -30,7 +30,7 @@ import com.example.polyscrabbleclient.utils.TitleView
 @Composable
 fun ModalView(
     closeModal: (modalResult: ModalResult) -> Unit,
-    title: String,
+    title: String?,
     hasSpinner: Boolean = false,
     minWidth: Dp = 200.dp,
     maxWidth: Dp = 700.dp,
@@ -51,13 +51,15 @@ fun ModalView(
                             .requiredWidthIn(minWidth, maxWidth)
                             .padding(18.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(bottom = 18.dp)
-                        ) {
-                            TitleView(title)
-                            if (hasSpinner) {
-                                SpinnerView()
+                        if (title != null) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(bottom = 18.dp)
+                            ) {
+                                TitleView(title)
+                                if (hasSpinner) {
+                                    SpinnerView()
+                                }
                             }
                         }
 
