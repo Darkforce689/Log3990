@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
-import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService, PlayersAndToken } from '@app/game/game-manager/game-manager.services';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
@@ -14,7 +13,6 @@ import { Subject } from 'rxjs';
 
 describe('NewGameManagerService', () => {
     let gameManagerStub: StubbedClass<GameManagerService>;
-    let dictionaryServiceStub: StubbedClass<DictionaryService>;
     let service: NewGameManagerService;
     const tmpPlayerNames: string[] = [];
     const password = undefined;
@@ -24,8 +22,7 @@ describe('NewGameManagerService', () => {
         gameManagerStub.gameDeleted$ = new Subject<string>();
         gameManagerStub.playerLeft$ = new Subject<PlayersAndToken>();
         gameManagerStub.observerLeft$ = new Subject<NameAndToken>();
-        dictionaryServiceStub = createSinonStubInstance<DictionaryService>(DictionaryService);
-        service = new NewGameManagerService(gameManagerStub, dictionaryServiceStub);
+        service = new NewGameManagerService(gameManagerStub);
     });
 
     it('should createGame', () => {

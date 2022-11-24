@@ -1,11 +1,16 @@
 package com.example.polyscrabbleclient.lobby.view
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.NavPage
+import com.example.polyscrabbleclient.invitations.components.InviteUserToGameModal
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.viewmodels.WaitingForOtherPlayersViewModel
@@ -32,6 +37,25 @@ fun WaitingForOtherPlayersView (
                 Text(text = "> $it")
             }
         }
+
+        // Invite some one
+        if (viewModel.canInvite()) {
+            var isInviteModalOpened by remember {
+                mutableStateOf(false)
+            }
+            Button(onClick = { isInviteModalOpened = true }) {
+                Icon(imageVector = Icons.Default.PersonAdd, contentDescription = null)
+            }
+
+            // TODO if waiting modal stop recomposing notify oli
+            InviteUserToGameModal(
+                inviteArgs = viewModel.getGameInviteArgs(),
+                nonInvitableUserNames = viewModel.getPendingGamePlayerNames(),
+                isOpened = isInviteModalOpened,
+                onClose = { isInviteModalOpened = false }
+            )
+        }
+
 
         // TODO : ACCEPT / KICK PLAYERS
 

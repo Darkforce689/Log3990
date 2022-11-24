@@ -102,7 +102,7 @@ fun updateUser() {
 fun connectAppSocket() {
     val thread = Thread {
         AppSocketHandler.setSocket()
-        AppSocketHandler.connect()
+        AppSocketHandler.ensureConnection()
     }
     thread.start()
     thread.join()

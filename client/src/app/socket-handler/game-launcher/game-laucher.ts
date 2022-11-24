@@ -6,7 +6,10 @@ import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game
 import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
-import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
+import {
+    KICKED_ERROR_MESSAGE,
+    NewOnlineGameSocketHandler,
+} from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { Subscription } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 
@@ -26,13 +29,16 @@ export class GameLauncherService {
     ) {}
 
     waitForOnlineGameStart() {
+        this.dialog.closeAll();
         this.startGame$$?.unsubscribe();
         this.errors$$?.unsubscribe();
         const dialogRef = this.dialog.open(WaitingForOtherPlayersComponent, {
             disableClose: true,
         });
-        this.errors$$ = this.socketHandler.error$.subscribe(() => {
-            this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: "L'hôte vous a retiré de la partie" });
+        this.errors$$ = this.socketHandler.error$.subscribe((error) => {
+            if (error === KICKED_ERROR_MESSAGE) {
+                this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: KICKED_ERROR_MESSAGE });
+            }
             dialogRef.close();
         });
         dialogRef.afterOpened().subscribe(() => {
