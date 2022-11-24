@@ -9,5 +9,11 @@ export interface User extends UserCreation {
     nGamePlayed: number;
     nGameWon: number;
     averageTimePerGame: number;
+    status: UserStatus;
     totalExp: number;
+}
+
+export enum UserStatus {
+    Online = 'ONLINE',
+    Offline = 'OFFLINE',
 }

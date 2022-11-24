@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MILLI_TO_SECONDS, MIN_IN_HOUR, SECONDS_TO_HOUR, SEC_IN_MIN, TIME_BASE } from '@app/account/constants';
 import { Log, LogType, UserLogs } from '@app/account/interfaces/user-logs.interface';
-import { User } from '@app/pages/register-page/user.interface';
+import { User, UserStatus } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -27,6 +27,7 @@ export class GameStatsPageComponent implements OnInit, AfterViewInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        status: UserStatus.Online,
         totalExp: 0,
     };
     columnsToDisplay: string[] = ['date', 'type'];

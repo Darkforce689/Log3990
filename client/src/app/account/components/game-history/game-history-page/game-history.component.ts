@@ -8,7 +8,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ReplayComponent } from '@app/account/components/game-history/replay/replay.component';
 import { GameHistory, GameHistoryInfo, ReplayGameStates } from '@app/account/interfaces/game-history.interface';
-import { User } from '@app/pages/register-page/user.interface';
+import { User, UserStatus } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -30,6 +30,7 @@ export class GameHistoryComponent implements OnInit, AfterViewInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        status: UserStatus.Online,
         totalExp: 0,
     };
     columnsToDisplay: string[] = ['date', 'type', 'replay'];

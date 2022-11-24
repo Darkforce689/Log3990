@@ -1,3 +1,4 @@
+import { UserStatus } from '@app/user/interfaces/user.interface';
 import { ObjectId } from 'mongodb';
 
 export interface UserQuery {
@@ -9,4 +10,5 @@ export interface UserQuery {
 
 export interface UsersGetQuery {
     name?: string;
+    status?: UserStatus;
 }

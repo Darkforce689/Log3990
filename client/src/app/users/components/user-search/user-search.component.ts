@@ -2,10 +2,10 @@ import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@an
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameInviteArgs } from '@app/invitations/interfaces/invitation.interface';
-import { User } from '@app/pages/register-page/user.interface';
+import { User, UserStatus } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { USERS_PERPAGE_SEARCH } from '@app/users/constans';
-import { UserService } from '@app/users/services/user.service';
+import { SearchUsersArgs, UserService } from '@app/users/services/user.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 export interface UserSearchData {
@@ -22,6 +22,7 @@ export class UserSearchComponent implements OnInit, OnDestroy {
     @ViewChild('list', { read: ElementRef }) usersList: ElementRef;
 
     userName: string = '';
+    isOnline: boolean = false;
 
     users$ = new BehaviorSubject<User[]>([]);
 
@@ -48,7 +49,7 @@ export class UserSearchComponent implements OnInit, OnDestroy {
                 this.forbidenUsersName.add(name);
             });
         });
-        this.fetchFirstUsers('');
+        this.fetchFirstUsers('', false);
     }
 
     ngOnDestroy(): void {
@@ -56,7 +57,7 @@ export class UserSearchComponent implements OnInit, OnDestroy {
     }
 
     searchUsers() {
-        this.fetchFirstUsers(this.userName);
+        this.fetchFirstUsers(this.userName, this.isOnline);
     }
 
     invite(user: User) {
@@ -95,7 +96,7 @@ export class UserSearchComponent implements OnInit, OnDestroy {
             return;
         }
         this.currentPage++;
-        this.fetchUsers(this.userName, this.currentPage);
+        this.fetchUsers(this.userName, this.isOnline, this.currentPage);
     }
 
     scrollTop() {
@@ -111,17 +112,18 @@ export class UserSearchComponent implements OnInit, OnDestroy {
         return !this.accountService.account ? '' : this.accountService.account._id;
     }
 
-    private fetchFirstUsers(userName: string) {
+    private fetchFirstUsers(name: string, isOnline: boolean) {
         this.search$$?.unsubscribe();
         this.currentPage = 0;
         this.scrollTop();
-        this.search$$ = this.userService.searchUsers({ name: userName }).subscribe((users) => {
+        const searchQuery = isOnline ? { name, status: UserStatus.Online } : { name };
+        this.search$$ = this.userService.searchUsers(searchQuery).subscribe((users) => {
             this.users$.next(users);
         });
     }
 
     // Used to fetch page 1 2 3 etc
-    private fetchUsers(userName: string, page: number) {
+    private fetchUsers(name: string, isOnline: boolean, page: number) {
         const isFetching = !this.search$$;
         if (isFetching) {
             return;
@@ -130,10 +132,22 @@ export class UserSearchComponent implements OnInit, OnDestroy {
             page,
             perPage: USERS_PERPAGE_SEARCH,
         };
-        this.search$$ = this.userService.searchUsers({ name: userName, pagination }).subscribe((newUsers) => {
+        const searchQuery: SearchUsersArgs = { name, pagination };
+        if (isOnline) {
+            searchQuery.status = UserStatus.Online;
+        }
+        this.search$$ = this.userService.searchUsers(searchQuery).subscribe((newUsers) => {
             const users = this.users$.value;
             users.push(...newUsers);
             this.users$.next(users);
         });
+    }
+
+    get onlineStatus() {
+        return UserStatus.Online;
+    }
+
+    get offlineStatus() {
+        return UserStatus.Offline;
     }
 }

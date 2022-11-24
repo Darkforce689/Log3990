@@ -31,7 +31,6 @@ fun WaitingForOtherPlayersView (
     Column {
 
         Text(text = pendingGameIdFR(viewModel.getPendingGameId()))
-
         Column {
             viewModel.getPendingGamePlayerNames().forEach {
                 Text(text = "> $it")
@@ -50,12 +49,10 @@ fun WaitingForOtherPlayersView (
             // TODO if waiting modal stop recomposing notify oli
             InviteUserToGameModal(
                 inviteArgs = viewModel.getGameInviteArgs(),
-                nonInvitableUserNames = viewModel.getPendingGamePlayerNames(),
                 isOpened = isInviteModalOpened,
                 onClose = { isInviteModalOpened = false }
             )
         }
-
 
         // TODO : ACCEPT / KICK PLAYERS
 

@@ -4,6 +4,7 @@ import android.support.v4.os.IResultReceiver
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.user.model.UserDTO
 import com.example.polyscrabbleclient.user.model.UserGetRes
+import com.example.polyscrabbleclient.user.model.UserStatus
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +59,7 @@ object UserRepository {
                         email = User.email,
                         name = User.name,
                         avatar = User.avatar,
+                        status = UserStatus.Online,
                     )
                 )
             }
@@ -89,6 +91,6 @@ object UserRepository {
     }
 
     private fun createInexistantUser(userId: String): UserDTO {
-        return UserDTO(userId, "empty", "InexistantUser", "avatardefault")
+        return UserDTO(userId, "empty", "InexistantUser", "avatardefault", UserStatus.Online)
     }
 }

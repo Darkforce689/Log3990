@@ -12,24 +12,59 @@ import com.example.polyscrabbleclient.invitations.models.GameInviteArgs
 import com.example.polyscrabbleclient.invitations.models.InvitationType
 import com.example.polyscrabbleclient.invitations.sources.UserInviteRepository
 import com.example.polyscrabbleclient.invitations.sources.UserSearchSource
+import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.user.User
 import com.example.polyscrabbleclient.user.model.UserDTO
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-class InviteUserViewModel(private val args: GameInviteArgs, nonInvitableUserNames: List<String>): ViewModel() {
+@OptIn(DelicateCoroutinesApi::class)
+class InviteUserViewModel(private val args: GameInviteArgs): ViewModel() {
     val userName = mutableStateOf("")
+    val isOnline = mutableStateOf(false)
 
-    private val nonInvitableUserNames = HashSet(nonInvitableUserNames)
+    private val nonInvitableUserNames = HashSet<String>()
 
     val usersPager = Pager(PagingConfig(pageSize = 10)) {
         createUserSource()
     }.flow.cachedIn(viewModelScope)
 
     private fun createUserSource(): UserSearchSource {
-        return UserSearchSource(userName.value)
+        return UserSearchSource(userName.value, isOnline.value)
+    }
+
+    init {
+        LobbyRepository.model.playerNamesInLobby.onEach {
+            setNonInvitableUsers(it)
+        }.launchIn(GlobalScope)
     }
 
     fun close() {
         userName.value = ""
+    }
+
+    private fun setNonInvitableUsers(users: List<String>) {
+        if (isUserInviteButtonEnabled == null) {
+            nonInvitableUserNames.clear()
+            nonInvitableUserNames.addAll(users)
+            return
+        }
+
+        nonInvitableUserNames.forEach{
+            isUserInviteButtonEnabled[it]?.value = true
+        }
+
+        users.forEach{
+            val isEnabled = isUserInviteButtonEnabled[it]
+            if (isEnabled != null) {
+                isEnabled.value = false
+            }
+        }
+
+        nonInvitableUserNames.clear()
+        nonInvitableUserNames.addAll(users)
     }
 
     fun inviteUser(user: UserDTO) {

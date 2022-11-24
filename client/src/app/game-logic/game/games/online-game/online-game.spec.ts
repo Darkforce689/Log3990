@@ -12,7 +12,7 @@ import { Tile } from '@app/game-logic/game/board/tile';
 import { GameState, LightPlayer } from '@app/game-logic/game/games/online-game/game-state';
 import { TimerService } from '@app/game-logic/game/timer/timer.service';
 import { Player } from '@app/game-logic/player/player';
-import { User } from '@app/pages/register-page/user.interface';
+import { User, UserStatus } from '@app/pages/register-page/user.interface';
 
 import { AccountService } from '@app/services/account.service';
 import { GameSocketHandlerService } from '@app/socket-handler/game-socket-handler/game-socket-handler.service';
@@ -39,6 +39,7 @@ describe('OnlineGame', () => {
             nGameWon: 0,
             averageTimePerGame: 0,
             totalExp: 0,
+            status: UserStatus.Online,
         });
 
         TestBed.configureTestingModule({

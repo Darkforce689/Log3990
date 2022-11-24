@@ -12,31 +12,44 @@
                     [(ngModel)]="userName"
                     (ngModelChange)="searchUsers()"
                 >
+                
             </mat-form-field>
             <button mat-button class="search-button" (click)="searchUsers()">
                 <mat-icon>search</mat-icon>
             </button>
+            <mat-slide-toggle [(ngModel)]="isOnline" (change)="searchUsers()">
+                En Ligne
+            </mat-slide-toggle>
         </div>
         <div #list class="user-list" (scroll)="onScroll()">
             <div *ngFor="let user of users$ | async">
                 <div class="user">
                     <div class="user-info">
-                        <app-avatar [src]="user.avatar" [size]="35"></app-avatar>
-                        <div class="username">{{user.name}}</div>
+                        <div class="user-avatar-name">
+                            <app-avatar [src]="user.avatar" [size]="35"></app-avatar>
+                            <div class="username">{{user.name}}</div>
+                        </div>
+                        <div>
+                            <div class="online-status" *ngIf="user.status === onlineStatus">
+                                En ligne
+                            </div>
+                            <div class="offline-status" *ngIf="user.status === offlineStatus">
+                                Hors ligne
+                            </div>
+                        </div>
                     </div>
                     <div class="invite-button-wrapper">
                         <button class="invite-button" mat-fab [disabled]="!canInvite(user)" (click)="invite(user)">
                             <mat-icon>mail</mat-icon>
                         </button>
                     </div>
-                    
                 </div>
                 <mat-divider></mat-divider>
             </div>
         </div>
     </div>
 </mat-dialog-content>
-<mat-dialog-actions>
+<mat-dialog-actions class="actions">
     <button mat-button color="accent" (click)="close()">Fermer</button>
 </mat-dialog-actions>
 
