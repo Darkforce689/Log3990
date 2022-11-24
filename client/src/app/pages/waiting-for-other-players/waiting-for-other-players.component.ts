@@ -1,5 +1,9 @@
-import { AfterContentChecked, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterContentChecked, AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
+import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
+import { PopChatService } from '@app/services/pop-chat.service';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { UserSearchComponent } from '@app/users/components/user-search/user-search.component';
@@ -13,35 +17,74 @@ const SPINNER_DIAMETER = 40;
     templateUrl: './waiting-for-other-players.component.html',
     styleUrls: ['./waiting-for-other-players.component.scss'],
 })
-export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnInit {
+export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnInit, AfterViewInit, OnDestroy {
     spinnerStrokeWidth = SPINNER_WIDTH_STROKE;
     spinnerDiameter = SPINNER_DIAMETER;
     botDifficulty: string;
     gameSettings: OnlineGameSettings;
     avatars = new Map<string, string>();
+    isGameOwner: boolean = false;
 
     private forbidenUserInvite$$: Subscription | undefined;
+    private gameDeleted$$: Subscription;
+    private gameSettings$$: Subscription;
+    private errors$$: Subscription;
 
     constructor(
         private cdref: ChangeDetectorRef,
         private socketHandler: NewOnlineGameSocketHandler,
         private dialog: MatDialog,
         private userCacheService: UserCacheService,
+        public popOutService: PopChatService,
+        private messageService: MessagesService,
+        private router: Router,
     ) {}
 
     ngOnInit(): void {
-        this.gameSettings$.subscribe((gameSettings) => {
+        this.isGameOwner = this.socketHandler.isGameOwner;
+        this.gameSettings$$ = this.gameSettings$.subscribe((gameSettings) => {
             if (!gameSettings) {
                 return;
             }
             this.gameSettings = gameSettings;
             this.addPlayerIcons(gameSettings.playerNames);
             this.addPlayerIcons(gameSettings.tmpPlayerNames);
+            this.cdref.detectChanges();
+        });
+        this.gameDeleted$$ = this.socketHandler.deletedGame$.subscribe((isDeleted) => {
+            if (isDeleted) {
+                const errorDialog = this.dialog.open(ErrorDialogComponent, { data: "L'hôte a annulé la partie" });
+                errorDialog.afterClosed().subscribe(() => {
+                    this.messageService.leaveGameConversation();
+                    this.router.navigate(['/home']);
+                });
+            }
+        });
+        this.errors$$ = this.socketHandler.error$.subscribe((error) => {
+            if (error) {
+                const errorDialog = this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: error });
+                errorDialog.afterClosed().subscribe(() => {
+                    this.messageService.leaveGameConversation();
+                    this.router.navigate(['/home']);
+                });
+            }
+        });
+    }
+
+    ngAfterViewInit(): void {
+        this.popOutService.windowed$.subscribe(() => {
+            this.cdref.detectChanges();
         });
     }
 
     ngAfterContentChecked() {
         this.cdref.detectChanges();
+    }
+
+    ngOnDestroy() {
+        this.gameDeleted$$.unsubscribe();
+        this.errors$$.unsubscribe();
+        this.gameSettings$$.unsubscribe();
     }
 
     addPlayerIcons(playerNames: string[]) {
@@ -85,6 +128,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
 
     launchGame() {
         this.socketHandler.launchGame();
+        // this.openLoadingGame()
     }
 
     kickPlayer(playerId: string) {
@@ -105,8 +149,18 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
 
     cancel() {
         this.socketHandler.isGameOwner = false;
+        this.messageService.leaveGameConversation();
         this.socketHandler.disconnectSocket();
+        this.router.navigate(['/home']);
     }
+
+    // openLoadingGame(): MatDialogRef<LoadingGameComponent> {
+    //     const loadingGameDialogConfig = new MatDialogConfig();
+    //     loadingGameDialogConfig.disableClose = true;
+    //     loadingGameDialogConfig.width = '255px';
+    //     const loadingGameDialog = this.dialog.open(LoadingGameComponent, loadingGameDialogConfig);
+    //     return loadingGameDialog;
+    // }
 
     isHost(playerId: string) {
         return this.isThatPlayerHost(playerId) ? false : this.isGameOwner;
@@ -121,10 +175,6 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
 
     getAvatarIcon(playerName: string): string {
         return this.avatars.get(playerName) ?? 'default';
-    }
-
-    get isGameOwner() {
-        return this.socketHandler.isGameOwner;
     }
 
     get gameSettings$() {
@@ -156,14 +206,6 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
             return [];
         }
         return this.gameSettings.tmpPlayerNames;
-    }
-
-    get isDeleted(): Observable<boolean> {
-        const subject = new BehaviorSubject<boolean>(false);
-        this.socketHandler.deletedGame$.subscribe((isDeleted) => {
-            subject.next(isDeleted);
-        });
-        return subject;
     }
 
     get isWaiting(): Observable<boolean> {

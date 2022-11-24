@@ -1,17 +1,15 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { MatRipple, RippleConfig } from '@angular/material/core';
-import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { LoadingGameComponent } from '@app/components/modals/loading-game/loading-game.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { LobbyGamesComponent, LobbyGameType } from '@app/components/modals/lobby-games/lobby-games.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
-import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { GameSettings } from '@app/game-logic/game/games/game-settings.interface';
 import { PopChatService } from '@app/services/pop-chat.service';
 import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-new-game-page',
@@ -20,16 +18,11 @@ import { Observable, Subscription } from 'rxjs';
 })
 export class NewGamePageComponent implements AfterViewInit {
     @ViewChild(MatRipple) ripple: MatRipple;
-
-    startGame$$: Subscription;
     gameMode = GameMode.Classic;
-    gameReady$$: Subscription;
-
     constructor(
         private dialog: MatDialog,
-        private gameLaucherService: GameLauncherService,
         private socketHandler: NewOnlineGameSocketHandler,
-        private gameManager: GameManagerService,
+        private gameLauncher: GameLauncherService,
         public popOutService: PopChatService,
         private cdRef: ChangeDetectorRef,
     ) {}
@@ -74,13 +67,8 @@ export class NewGamePageComponent implements AfterViewInit {
                 tmpPlayerNames: [],
             };
             this.socketHandler.createGame(onlineGameSettings);
-            this.openWaitingForPlayer();
+            this.gameLauncher.waitForOnlineGameStart();
         });
-    }
-
-    openWaitingForPlayer() {
-        this.startGame$$?.unsubscribe();
-        this.gameLaucherService.waitForOnlineGameStart();
     }
 
     openPendingGames() {
@@ -93,20 +81,6 @@ export class NewGamePageComponent implements AfterViewInit {
         this.dialog.open(LobbyGamesComponent, observableGamesDialogConfig);
     }
 
-    openLoadingGame(): MatDialogRef<LoadingGameComponent> {
-        const loadingGameDialogConfig = new MatDialogConfig();
-        loadingGameDialogConfig.disableClose = true;
-        loadingGameDialogConfig.width = '255px';
-        const loadingGameDialog = this.dialog.open(LoadingGameComponent, loadingGameDialogConfig);
-        loadingGameDialog.afterClosed().subscribe((isCanceled) => {
-            if (isCanceled) {
-                this.gameReady$$.unsubscribe();
-                this.gameManager.stopGame();
-            }
-        });
-        return loadingGameDialog;
-    }
-
     get isMagicGame() {
         return this.gameMode === GameMode.Magic;
     }
@@ -116,7 +90,6 @@ export class NewGamePageComponent implements AfterViewInit {
     }
 
     private setupLobbyGamesModal(lobbyGames$: Observable<OnlineGameSettings[]>, lobbyGameType: LobbyGameType, gameMode: GameMode = this.gameMode) {
-        this.startGame$$?.unsubscribe();
         const pendingGamesDialogConfig = new MatDialogConfig();
         pendingGamesDialogConfig.autoFocus = true;
         pendingGamesDialogConfig.disableClose = true;

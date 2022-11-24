@@ -7,7 +7,6 @@ import { SessionMiddlewareService } from '@app/auth/services/session-middleware.
 import { Session } from '@app/auth/services/session.interface';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
 import { WAIT_STATUS } from '@app/game/game-logic/constants';
-import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
@@ -33,7 +32,6 @@ describe('New Online Game Service', () => {
     let port: number;
     let httpServer: Server;
     let newGameManagerService: StubbedClass<NewGameManagerService>;
-    let dictionaryService: StubbedClass<DictionaryService>;
     const tmpPlayerNames: string[] = [];
     const password = undefined;
 
@@ -57,7 +55,6 @@ describe('New Online Game Service', () => {
             port = (httpServer.address() as AddressInfo).port;
             newGameManagerService = createSinonStubInstance<NewGameManagerService>(NewGameManagerService);
             newGameManagerService.refreshPendingGame$ = new Subject<void>();
-            dictionaryService = createSinonStubInstance<DictionaryService>(DictionaryService);
             const sessionMiddleware = createSinonStubInstance(SessionMiddlewareService);
             sessionMiddleware.getSocketSessionMiddleware.returns((socket: unknown, next: (err?: ExtendedError | undefined) => void) => {
                 next();
@@ -70,7 +67,7 @@ describe('New Online Game Service', () => {
             const userService = createSinonStubInstance(UserService);
             userService.getUser.returns(Promise.resolve(user));
 
-            handler = new NewGameSocketHandler(httpServer, newGameManagerService, dictionaryService, sessionMiddleware, authService, userService);
+            handler = new NewGameSocketHandler(httpServer, newGameManagerService, sessionMiddleware, authService, userService);
             handler.newGameHandler();
             handler.ioServer.on('connection', (socket: Socket) => {
                 serverSocket = socket;
@@ -95,7 +92,7 @@ describe('New Online Game Service', () => {
         const playerNames: string[] = [];
         const gameId = '1';
 
-        newGameManagerService.createPendingGame.returns(gameId);
+        newGameManagerService.createPendingGame.returns(Promise.resolve(gameId));
         const gameSettingsOnline: OnlineGameSettingsUI = {
             gameMode: GameMode.Classic,
             timePerTurn: 60000,
@@ -122,7 +119,7 @@ describe('New Online Game Service', () => {
 
     it('should receive pendingGameId on create', (done) => {
         const id = 'abc';
-        newGameManagerService.createPendingGame.returns(id);
+        newGameManagerService.createPendingGame.returns(Promise.resolve(id));
         const gameSettings = {
             gameMode: GameMode.Classic,
             timePerTurn: 60000,
@@ -227,7 +224,7 @@ describe('New Online Game Service', () => {
             gameStatus: WAIT_STATUS,
         } as OnlineGameSettings;
 
-        newGameManagerService.createPendingGame.returns('a');
+        newGameManagerService.createPendingGame.returns(Promise.resolve('a'));
         newGameManagerService.joinPendingGame.returns('a');
         newGameManagerService.getPendingGame.returns(gameSettings);
 
@@ -273,8 +270,8 @@ describe('New Online Game Service', () => {
             gameStatus: WAIT_STATUS,
         };
         newGameManagerService.activeGameSettingMap = new Map<string, OnlineGameSettings>();
-        newGameManagerService.launchPendingGame.returns(Promise.resolve('a'));
-        newGameManagerService.createPendingGame.returns('a');
+        newGameManagerService.launchPendingGame.returns('a');
+        newGameManagerService.createPendingGame.returns(Promise.resolve('a'));
         newGameManagerService.joinPendingGame.returns('a');
         newGameManagerService.getPendingGame.returns(gameSettings as OnlineGameSettings);
 

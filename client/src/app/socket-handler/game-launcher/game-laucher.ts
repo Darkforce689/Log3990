@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
-import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
-import {
-    KICKED_ERROR_MESSAGE,
-    NewOnlineGameSocketHandler,
-} from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
+import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { Subscription } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 
@@ -25,37 +22,33 @@ export class GameLauncherService {
         private gameManager: GameManagerService,
         private router: Router,
         private socketHandler: NewOnlineGameSocketHandler,
+        private messageService: MessagesService,
         private dialog: MatDialog,
     ) {}
 
     waitForOnlineGameStart() {
-        this.dialog.closeAll();
         this.startGame$$?.unsubscribe();
         this.errors$$?.unsubscribe();
-        const dialogRef = this.dialog.open(WaitingForOtherPlayersComponent, {
-            disableClose: true,
-        });
-        this.errors$$ = this.socketHandler.error$.subscribe((error) => {
-            if (error === KICKED_ERROR_MESSAGE) {
-                this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: KICKED_ERROR_MESSAGE });
+        let gameSettingsReceived = false;
+        this.socketHandler.gameSettings$.pipe().subscribe((gameSettings) => {
+            if (!gameSettings) {
+                return;
             }
-            dialogRef.close();
+            if (!gameSettingsReceived) {
+                gameSettingsReceived = true;
+                this.messageService.joinGameConversation(gameSettings.id);
+                this.router.navigate(['/waiting-room']);
+            }
         });
-        dialogRef.afterOpened().subscribe(() => {
-            this.socketHandler.isDisconnected$.subscribe((isDisconnected) => {
-                if (isDisconnected) {
-                    dialogRef.close();
-                    this.socketHandler.disconnectSocket();
-                }
-            });
-            this.startGame$$ = this.socketHandler.gameStarted$.pipe(takeWhile((val) => !val, true)).subscribe((gameSettings) => {
-                if (!gameSettings) {
-                    return;
-                }
-                dialogRef.close();
-                this.startOnlineGame(gameSettings);
-                this.socketHandler.disconnectSocket();
-            });
+        this.socketHandler.isDisconnected$.subscribe(() => {
+            this.socketHandler.disconnectSocket();
+        });
+        this.startGame$$ = this.socketHandler.gameStarted$.pipe(takeWhile((val) => !val, true)).subscribe((gameSettings) => {
+            if (!gameSettings) {
+                return;
+            }
+            this.startOnlineGame(gameSettings);
+            this.socketHandler.disconnectSocket();
         });
     }
 
@@ -83,7 +76,14 @@ export class GameLauncherService {
         joinPendingGame.afterOpened().subscribe(() => {
             this.errors$$ = this.socketHandler.error$.subscribe((error) => {
                 if (error) {
-                    this.dialog.open(ErrorDialogComponent, { disableClose: true, autoFocus: true, data: "L'hôte a annulé la partie" });
+                    const errorDialog = this.dialog.open(ErrorDialogComponent, {
+                        disableClose: true,
+                        autoFocus: true,
+                        data: "L'hôte a annulé la partie",
+                    });
+                    errorDialog.afterClosed().subscribe(() => {
+                        this.router.navigate(['/home']);
+                    });
                     joinPendingGame.close();
                 }
             });

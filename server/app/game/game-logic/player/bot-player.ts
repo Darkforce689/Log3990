@@ -66,8 +66,8 @@ export class BotPlayer extends Player {
         });
     }
 
-    async updateBotName(playerNames: string[]): Promise<void> {
-        const botNames: string[] = await this.getBotNames();
+    updateBotName(playerNames: string[]) {
+        const botNames: string[] = this.getBotNames();
         let generatedName: string;
         do {
             generatedName = botNames[getRandomInt(botNames.length)];
@@ -75,7 +75,7 @@ export class BotPlayer extends Player {
         this.name = generatedName;
     }
 
-    private async getBotNames(): Promise<string[]> {
+    private getBotNames(): string[] {
         const botInfos = DEFAULT_BOT;
         const filteredBotInfos = botInfos.filter((bot) => bot.type === this.botDifficulty);
         const filteredBotInfosNames = filteredBotInfos.map((bot) => bot.name);

@@ -34,20 +34,16 @@ export class GameCreator {
         private gameHistoryService: GameHistoryService,
     ) {}
 
-    async createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): Promise<ServerGame> {
+    createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): ServerGame {
         const newServerGame = this.createNewGame(onlineGameSettings, gameToken);
-        const players = await this.createPlayers(
-            onlineGameSettings.numberOfPlayers,
-            onlineGameSettings.playerNames,
-            onlineGameSettings.botDifficulty,
-        );
+        const players = this.createPlayers(onlineGameSettings.numberOfPlayers, onlineGameSettings.playerNames, onlineGameSettings.botDifficulty);
         newServerGame.players = players;
         return newServerGame;
     }
 
-    async createBotPlayer(botDifficulty: BotDifficulty, playerNames: string[]) {
+    createBotPlayer(botDifficulty: BotDifficulty, playerNames: string[]) {
         const botPlayer = new BotPlayer(this.botManager, botDifficulty, this.gameActionNotifier, this.actionCreator);
-        await botPlayer.updateBotName(playerNames);
+        botPlayer.updateBotName(playerNames);
         return botPlayer;
     }
 
@@ -94,20 +90,11 @@ export class GameCreator {
         );
     }
 
-    /**
-     * Creates N player instances from M real players names.
-     * When N > M, creates N-M bots players
-     *
-     * @param numberOfPlayers total number of players (N)
-     * @param playerNames real players names (array of length M)
-     * @param botDifficulty uniform difficulty of the bots created
-     * @returns created players, including bots
-     */
-    private async createPlayers(numberOfPlayers: number, playerNames: string[], botDifficulty: BotDifficulty): Promise<Player[]> {
+    private createPlayers(numberOfPlayers: number, playerNames: string[], botDifficulty: BotDifficulty): Player[] {
         const players = playerNames.map((name) => new Player(name));
         const numberOfBots = numberOfPlayers - players.length;
         for (let i = 0; i < numberOfBots; i++) {
-            const newBot = await this.createBotPlayer(botDifficulty, playerNames);
+            const newBot = this.createBotPlayer(botDifficulty, playerNames);
             players.push(newBot);
             playerNames.push(newBot.name);
         }

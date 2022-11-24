@@ -84,27 +84,6 @@ describe('GameManagerService Online Edition', () => {
         expect(gameSpy).toHaveBeenCalled();
     });
 
-    it('should throw error if there is no players in the game', () => {
-        const faultyOnlineGameSettings: OnlineGameSettings = {
-            timePerTurn: DEFAULT_TIME_PER_TURN,
-            playerNames: [],
-            privateGame: false,
-            gameStatus: WAIT_STATUS,
-            randomBonus: false,
-            id: '0',
-            gameMode: GameMode.Classic,
-            botDifficulty: BotDifficulty.Easy,
-            numberOfPlayers: 2,
-            magicCardIds: [],
-            tmpPlayerNames: [],
-            password: '',
-        };
-
-        const gameToken = '0';
-
-        expect(() => service.joinOnlineGame(gameToken, faultyOnlineGameSettings)).toThrowError('No opponent name was entered');
-    });
-
     it('should test the disconnectedFromServerSubject subject', () => {
         const result = service.disconnectedFromServer$.subscribe();
         gameSocketHandler['disconnectedFromServerSubject'].next();
