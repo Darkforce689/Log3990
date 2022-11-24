@@ -8,4 +8,5 @@ export interface User {
     nGamePlayed: number;
     nGameWon: number;
     averageTimePerGame: number;
+    totalExp: number;
 }

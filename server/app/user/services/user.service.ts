@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { Pagination } from '@app/common/interfaces/pagination.interface';
-import { SYSTEM_USER_NAME, USER_COLLECTION } from '@app/constants';
+import { LOSS_EXP_BONUS, SYSTEM_USER_NAME, USER_COLLECTION, WIN_EXP_BONUS } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
 import { ServerLogger } from '@app/logger/logger';
@@ -55,6 +55,7 @@ export class UserService {
         }
 
         try {
+            userCreation.totalExp = 0;
             await this.collection.insertOne(userCreation);
             return {
                 errors,
@@ -152,6 +153,8 @@ export class UserService {
             const nGamePlayed = user.nGamePlayed ? user.nGamePlayed : 0;
             const nGameWon = user.nGameWon ? user.nGameWon : 0;
             const averageTimePerGame = user.averageTimePerGame ? user.averageTimePerGame : 0;
+            const totalExp = user.totalExp ? user.totalExp : 0;
+            const addExp = this.calcExp(isWinner, points);
 
             this.collection.updateOne(
                 { name },
@@ -161,6 +164,7 @@ export class UserService {
                         nGamePlayed: nGamePlayed + 1,
                         nGameWon: isWinner ? nGameWon + 1 : nGameWon,
                         averageTimePerGame: (averageTimePerGame * nGamePlayed + totalTime) / (nGamePlayed + 1),
+                        totalExp: totalExp + addExp,
                     },
                 },
             );
@@ -194,5 +198,10 @@ export class UserService {
     private async isNameExists(name: string) {
         const result = await this.collection.findOne({ name: { $eq: name } });
         return result !== null;
+    }
+
+    private calcExp(isWinner: boolean, points: number): number {
+        points = points < 0 ? 0 : points;
+        return isWinner ? points + WIN_EXP_BONUS : points + LOSS_EXP_BONUS;
     }
 }

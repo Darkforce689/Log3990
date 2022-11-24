@@ -38,6 +38,7 @@ describe('OnlineGame', () => {
             nGamePlayed: 0,
             nGameWon: 0,
             averageTimePerGame: 0,
+            totalExp: 0,
         });
 
         TestBed.configureTestingModule({

@@ -10,6 +10,11 @@ const val MIN_NAME_LENGTH = 3
 const val MIN_PASSWORD_LENGTH = 5
 const val MAX_PASSWORD_LENGTH = 32
 
+const val WIN_EXP_BONUS = 100;
+const val LOSS_EXP_BONUS = 50;
+const val EXP_PER_LEVEL = 10;
+const val MAX_LEVEL = 10;
+
 // Magic Cards Ids
 const val exchange_a_letter_id = "MC_EXCHANGE_LETTER"
 const val split_points_id = "MC_SPLIT_POINTS"

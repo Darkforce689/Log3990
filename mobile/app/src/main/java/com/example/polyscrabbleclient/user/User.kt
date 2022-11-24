@@ -1,6 +1,8 @@
 package com.example.polyscrabbleclient.user
 
 import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.utils.constants.EXP_PER_LEVEL
+import com.example.polyscrabbleclient.utils.constants.MAX_LEVEL
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 
@@ -13,6 +15,7 @@ object User {
     var nGamePlayed: Double = 0.0
     var nGameWon: Double = 0.0
     var averageTimePerGame: Double = 0.0
+    var totalExp: Double = 0.0
 
     fun updateUser(): Thread {
         data class AccountRes(
@@ -21,6 +24,7 @@ object User {
             val nGamePlayed: Double,
             val nGameWon: Double,
             val averageTimePerGame: Double,
+            val totalExp: Double,
         )
 
         val accountUrl = URL(BuildConfig.API_URL + "/account")
@@ -35,6 +39,7 @@ object User {
             nGamePlayed = account.nGamePlayed
             nGameWon = account.nGameWon
             averageTimePerGame = account.averageTimePerGame
+            totalExp = account.totalExp
         }
         return thread
     }
@@ -48,5 +53,21 @@ object User {
         nGamePlayed = 0.0
         nGameWon = 0.0
         averageTimePerGame = 0.0
+        totalExp = 0.0
+    }
+
+    fun currentLevel(): Int {
+        var level = Math.floor(Math.sqrt(totalExp / EXP_PER_LEVEL)).toInt()
+        return if (level <= MAX_LEVEL) level else MAX_LEVEL
+    }
+
+    fun getNextLevel(): Int {
+        return if (currentLevel() < MAX_LEVEL) currentLevel() + 1 else MAX_LEVEL
+    }
+
+    fun getProgressValue(): Float {
+        var level = Math.sqrt(totalExp / EXP_PER_LEVEL)
+        var decimal = level - Math.floor(level)
+        return decimal.toFloat()
     }
 }

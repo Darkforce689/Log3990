@@ -1,10 +1,14 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { LOSS_EXP_BONUS, WIN_EXP_BONUS } from '@app/account/constants';
+import { currentLevel, getNextLevel, getProgressValue } from '@app/game-logic/utils';
 
 export interface WinnerDialogData {
     winnerNames: string[];
+    points: number;
     isWinner: boolean;
     isObserver: boolean;
+    totalExp: number;
 }
 const arrayOffset = -1;
 @Component({
@@ -41,6 +45,31 @@ export class WinnerDialogComponent {
             return 'Félicitation!';
         }
         return 'Dommage...';
+    }
+
+    getExpBreakdown(): string {
+        const userIsWinner = this.winnerData.isWinner;
+        const points = this.winnerData.points > 0 ? this.winnerData.points : 0;
+        const userIsObserver = this.winnerData.isObserver;
+        if (userIsObserver) {
+            return '';
+        }
+        if (userIsWinner) {
+            return `Vous avez gagné ${WIN_EXP_BONUS + points} points d'expérience.`;
+        }
+        return `Vous avez gagné ${LOSS_EXP_BONUS + points} points d'expérience.`;
+    }
+
+    getCurrentLevel(): number {
+        return currentLevel(this.winnerData.totalExp);
+    }
+
+    getNextLevel(): number {
+        return getNextLevel(this.winnerData.totalExp);
+    }
+
+    getProgressValue(): number {
+        return getProgressValue(this.winnerData.totalExp);
     }
 
     close() {

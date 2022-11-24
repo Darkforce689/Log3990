@@ -29,6 +29,8 @@ export const GAME_TOKEN_PREFIX = 'game-';
 export const SYSTEM_USER_NAME = 'System';
 export const LOGS_PAGINATION_DEFAULT_PAGE = 0;
 export const LOGS_PAGINATION_DEFAULT_PERPAGE = 10;
+export const WIN_EXP_BONUS = 100;
+export const LOSS_EXP_BONUS = 50;
 
 // TODO set this to enable api access only for logged in user
 export const ENABLE_API_LOGIN = true;
