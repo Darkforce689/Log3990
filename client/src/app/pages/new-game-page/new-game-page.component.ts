@@ -56,13 +56,11 @@ export class NewGamePageComponent implements AfterViewInit {
     }
 
     openGameForm() {
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.autoFocus = true;
-        dialogConfig.disableClose = true;
-        dialogConfig.minWidth = 60;
-        dialogConfig.data = { gameMode: this.gameMode };
-
-        const dialogRef = this.dialog.open(NewOnlineGameFormComponent, dialogConfig);
+        const dialogRef = this.dialog.open(NewOnlineGameFormComponent, {
+            autoFocus: true,
+            disableClose: true,
+            data: { gameMode: this.gameMode },
+        });
         dialogRef.afterClosed().subscribe((gameSettings: GameSettings) => {
             if (!gameSettings) {
                 return;
@@ -82,10 +80,6 @@ export class NewGamePageComponent implements AfterViewInit {
 
     openWaitingForPlayer() {
         this.startGame$$?.unsubscribe();
-        const secondDialogConfig = new MatDialogConfig();
-        secondDialogConfig.autoFocus = true;
-        secondDialogConfig.disableClose = true;
-
         this.gameLaucherService.waitForOnlineGameStart();
     }
 

@@ -3,6 +3,7 @@ export enum InputType {
     RightClick = 'RightClick',
     MouseRoll = 'MouseRoll',
     KeyPress = 'KeyPress',
+    HoldReleased = 'HoldReleased',
 }
 
 export enum InputComponent {
@@ -20,4 +21,5 @@ export interface UIInput {
     type: InputType;
     from?: InputComponent;
     args?: string | number | { x: number; y: number };
+    dropPoint?: { x: number; y: number };
 }

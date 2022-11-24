@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { NEW_GAME_TIMEOUT } from '@app/constants';
 import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';

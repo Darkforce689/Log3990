@@ -20,15 +20,13 @@ function initWindow() {
     appWindow.setMenuBarVisibility(false);
 
     // Initialize the DevTools.
-    appWindow.webContents.openDevTools()
+    appWindow.webContents.openDevTools();
 
     appWindow.on('closed', function () {
         appWindow = null;
         try {
             app.quit();
-        } catch (error) {
-
-        }
+        } catch (error) {}
     });
 }
 
@@ -46,9 +44,8 @@ function openChatWindow(route, eventSender) {
     const path = `file://${__dirname}/dist/client/index.html#/${route}?gameToken=${gameToken}`;
     externalWindow.loadURL(path);
 
-    
-    if (gameToken!==undefined) {
-        externalWindow.webContents.send('game-token',gameToken);
+    if (gameToken !== undefined) {
+        externalWindow.webContents.send('game-token', gameToken);
     }
     externalWindow.setMenuBarVisibility(false);
     eventSender.send(`open-${route}`, true);
@@ -71,9 +68,9 @@ app.on('ready', () => {
         externalWindow.close();
     });
 
-    ipcMain.on('game-token',(event,args)=>{
+    ipcMain.on('game-token', (event, args) => {
         gameToken = args;
-     });
+    });
 
     session.defaultSession.webRequest.onHeadersReceived(
         { urls: ['http://localhost:3000/*', 'https://d2niwfi3hp97su.cloudfront.net/*'] },

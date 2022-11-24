@@ -1,34 +1,10 @@
-<div *ngIf="!deleted">
-    <h2>Configuration partie multijoueurs</h2>
-    <br />
-    <mat-dialog-content>
-        <mat-form-field>
-            <mat-label>Adversaires</mat-label>
-            <input matInput [disabled]="true" [value]="data.playerNames" />
-        </mat-form-field>
-
-        <br />
-        <mat-form-field>
-            <mat-label #bonus>Bonus aléatoire </mat-label>
-            <input matInput [disabled]="true" [value]="randomBonusType" />
-        </mat-form-field>
-
-        <br />
-        <mat-form-field>
-            <mat-label>Temps par tour </mat-label>
-            <input matInput [disabled]="true" value="{{ data.timePerTurn | date: 'm:ss' }} min" />
-        </mat-form-field>
-        <div *ngIf="hasPassword">
-            <mat-form-field>
-                <mat-label>Veuillez entrer le mot de passe</mat-label>
-                <input matInput autocomplete="off" placeholder="Mot de passe" formControlName="password" [formControl]="password" />
-            </mat-form-field>
-        </div>
-    </mat-dialog-content>
-    <br />
-</div>
-<div *ngIf="deleted">La partie a été supprimé</div>
+<mat-dialog-content>
+    <mat-form-field>
+        <mat-label>Veuillez entrer le mot de passe</mat-label>
+        <input matInput autocomplete="off" placeholder="Mot de passe" [formControl]="password" />
+    </mat-form-field>
+</mat-dialog-content>
 <mat-dialog-actions>
     <button mat-button [mat-dialog-close] (click)="cancel()">Annuler</button>
-    <button mat-button color="primary" *ngIf="!deleted" (click)="sendParameter()">Rejoindre la partie</button>
+    <button mat-button color="primary" [disabled]="!password.valid" (click)="sendParameter()">Rejoindre la partie</button>
 </mat-dialog-actions>

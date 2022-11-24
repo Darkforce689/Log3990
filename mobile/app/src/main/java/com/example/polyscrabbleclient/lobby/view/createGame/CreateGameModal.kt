@@ -1,17 +1,26 @@
 package com.example.polyscrabbleclient.lobby.view.createGame
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AdminPanelSettings
+import androidx.compose.material.icons.rounded.StarRate
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.polyscrabbleclient.account.components.SideNavigation
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
+import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameMenu
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.ui.theme.create_game
+import com.example.polyscrabbleclient.ui.theme.game_parameters
+import com.example.polyscrabbleclient.ui.theme.game_settings
+import com.example.polyscrabbleclient.ui.theme.magic_cards
 
 @Composable
 fun CreateGameModalContent(
@@ -20,27 +29,71 @@ fun CreateGameModalContent(
         modalActions: ModalActions
     ) -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .defaultMinSize(400.dp)
+    val contentHeight = if (createGameViewModel.gameMode.value == GameMode.Magic) 300.dp else 275.dp
+    Row(
+        Modifier
+            .height(contentHeight)
+            .width(530.dp),
+        horizontalArrangement = Arrangement.Center,
     ) {
-        Column(
-            Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
+        val selectedPage = remember { mutableStateOf(CreateGameMenu.Settings.name) }
+        var createGameMenuList = listOf(
+            Triple(game_settings, Icons.Rounded.AdminPanelSettings, CreateGameMenu.Settings.name),
+            Triple(game_parameters, Icons.Rounded.Tune, CreateGameMenu.Parameters.name),
+        )
+        if (createGameViewModel.gameMode.value == GameMode.Magic) {
+            createGameMenuList = createGameMenuList.plus(
+                Triple(magic_cards, Icons.Rounded.StarRate, CreateGameMenu.MagicCards.name)
+            )
+        }
+        Box(
+            Modifier
+                .fillMaxWidth(0.45f)
+                .padding(end = 40.dp)
         ) {
-
-            NewGameForm(createGameViewModel)
-
+            Row {
+                SideNavigation(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(0.dp),
+                    navigationList = createGameMenuList,
+                    onSelected = { page: String -> selectedPage.value = page }
+                )
+                Divider(
+                    Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+            }
+        }
+        when (selectedPage.value) {
+            CreateGameMenu.Settings.name -> {
+                Settings() // TODO
+            }
+            CreateGameMenu.Parameters.name -> {
+                NewGameForm(createGameViewModel)
+            }
+            CreateGameMenu.MagicCards.name -> {
+                MagicCards(createGameViewModel)
+            }
         }
     }
-    modalButtons(
-        ModalActions(
-            ActionButton(
-                label = { create_game },
-                canAction = { createGameViewModel.canCreateGame() },
-                action = { createGameViewModel.sendCreateGameRequest() }
+    Box(
+        Modifier
+            .fillMaxWidth(0.45f)
+            .padding(end = 40.dp)
+    ) {
+        modalButtons(
+            ModalActions(
+                ActionButton(
+                    label = { create_game },
+                    canAction = { createGameViewModel.canCreateGame() },
+                    action = { createGameViewModel.sendCreateGameRequest() }
+                ),
+                ActionButton(
+                    action = { createGameViewModel.resetForm() }
+                )
             )
         )
-    )
+    }
 }

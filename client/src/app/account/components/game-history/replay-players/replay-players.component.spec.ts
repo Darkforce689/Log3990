@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
 
@@ -10,7 +11,7 @@ describe('ReplayPlayersComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ReplayPlayersComponent],
-            imports: [AppMaterialModule],
+            imports: [AppMaterialModule, HttpClientTestingModule],
         }).compileComponents();
     });
 

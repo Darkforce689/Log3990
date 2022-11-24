@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.account.components.AvatarList
+import com.example.polyscrabbleclient.account.components.NewAccountAvatarList
 import com.example.polyscrabbleclient.auth.model.AuthSignUpSate
 import com.example.polyscrabbleclient.auth.model.ErrorState
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
@@ -195,7 +196,7 @@ private fun AvatarInput(
     validateAvatar: (avatar: String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        AvatarList(onAvatarClick = { validateAvatar(it) })
+        NewAccountAvatarList(onAvatarClick = { validateAvatar(it) })
         Requirement(
             message = error,
             showError = error.isNotEmpty()

@@ -6,6 +6,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -86,7 +87,9 @@ private fun EndOfGameModal(viewModel: GameViewModel) {
     if (endOfGameDialogOpened.value) {
         ModalView(
             closeModal = { endOfGameDialogOpened.value = false },
-            title = viewModel.getEndOfGameLabel()
+            title = viewModel.getEndOfGameLabel(),
+            maxWidth = 400.dp,
+
         ) { modalButtons ->
             EndOfGameView(viewModel) { modalActions ->
                 modalButtons(modalActions)

@@ -1,9 +1,11 @@
 import { AfterViewInit, ChangeDetectorRef, Component, HostListener, OnDestroy } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { LOSS_EXP_BONUS, WIN_EXP_BONUS } from '@app/account/constants';
 import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/abandon-dialog.component';
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { WinnerDialogComponent, WinnerDialogData } from '@app/components/modals/winner-dialog/winner-dialog.component';
+import { UIDragAndDrop } from '@app/game-logic/actions/ui-actions/ui-drag-and-drop';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
@@ -11,6 +13,7 @@ import { RACK_LETTER_COUNT } from '@app/game-logic/constants';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
+import { AccountService } from '@app/services/account.service';
 import { PopChatService } from '@app/services/pop-chat.service';
 import { Subscription } from 'rxjs';
 
@@ -33,6 +36,7 @@ export class GamePageComponent implements OnDestroy, AfterViewInit {
         private inputController: UIInputControllerService,
         public popOutService: PopChatService,
         private cdRef: ChangeDetectorRef,
+        private accountService: AccountService,
     ) {
         try {
             this.gameManager.startGame();
@@ -47,9 +51,11 @@ export class GamePageComponent implements OnDestroy, AfterViewInit {
         this.endOfGame$$ = this.info.isEndOfGame$.subscribe(() => {
             const winnerNames = this.info.winner.map((player) => player.name);
             const playerName = this.info.player.name;
+            const points = this.info.player.points;
             const isWinner = winnerNames.includes(playerName);
             const isObserver = this.isObserver;
-            const data: WinnerDialogData = { winnerNames, isWinner, isObserver };
+            const totalExp = isObserver ? 0 : this.localExpUpdate(points, isWinner);
+            const data: WinnerDialogData = { winnerNames, points, isWinner, isObserver, totalExp };
             this.dialog.open(WinnerDialogComponent, { disableClose: true, autoFocus: true, data });
         });
     }
@@ -73,6 +79,22 @@ export class GamePageComponent implements OnDestroy, AfterViewInit {
 
     receiveInput(input: UIInput) {
         this.inputController.receive(input);
+    }
+
+    receiveDropInput(input: UIInput) {
+        this.inputController.receiveDrop(input);
+    }
+
+    receiveMoveInput(input: UIInput) {
+        this.inputController.receiveMove(input);
+    }
+
+    receiveMoveFeedback(canPlace: boolean) {
+        this.inputController.receiveMoveFeedback(canPlace);
+    }
+
+    receiveDropFeedback(event: { left: number; top: number; index: number; x: number; y: number }) {
+        this.inputController.receiveDropFeedback(event);
     }
 
     abandon() {
@@ -102,7 +124,11 @@ export class GamePageComponent implements OnDestroy, AfterViewInit {
     }
 
     get canPlace(): boolean {
-        return this.isItMyTurn && this.inputController.activeAction instanceof UIPlace && this.inputController.canBeExecuted;
+        return (
+            this.isItMyTurn &&
+            (this.inputController.activeAction instanceof UIPlace || this.inputController.activeAction instanceof UIDragAndDrop) &&
+            this.inputController.canBeExecuted
+        );
     }
 
     get canExchange(): boolean {
@@ -166,5 +192,14 @@ export class GamePageComponent implements OnDestroy, AfterViewInit {
             this.dialogRef = undefined;
             this.router.navigate(['/']);
         });
+    }
+
+    private localExpUpdate(points: number, isWinner: boolean): number {
+        points = points > 0 ? points : 0;
+        const exp = isWinner ? points + WIN_EXP_BONUS : points + LOSS_EXP_BONUS;
+        if (this.accountService.account) {
+            this.accountService.account.totalExp = this.accountService.account?.totalExp + exp;
+        }
+        return this.accountService.account?.totalExp ? this.accountService.account.totalExp : 0;
     }
 }

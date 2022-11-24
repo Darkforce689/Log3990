@@ -1,13 +1,16 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { CommonModule } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { WAIT_STATUS } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BotDifficulty } from '@app/services/bot-difficulty';
+import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
@@ -31,6 +34,7 @@ describe('LobbyGamesComponent', () => {
     const testPendingGames$ = new Subject<OnlineGameSettings[]>();
     const testObservableGames$ = new Subject<OnlineGameSettings[]>();
     let matDialog: jasmine.SpyObj<MatDialog>;
+    const gameLauncherServiceMock = jasmine.createSpyObj('GameLauncherService', ['waitForOnlineGameStart', 'leaveGameConversation', 'joinGame']);
 
     const pendingGames = [
         {
@@ -68,12 +72,12 @@ describe('LobbyGamesComponent', () => {
             matDialog = jasmine.createSpyObj('MatDialog', ['open']);
             onlineSocketHandlerSpy = jasmine.createSpyObj(
                 'NewOnlineGameSocketHandler',
-                ['createGameMulti', 'listenForPendingGames', 'disconnect', 'joinPendingGames'],
+                ['createGameMulti', 'listenForPendingGames', 'disconnect', 'joinPendingGame'],
                 ['pendingGames$', 'observableGames$'],
             );
 
             TestBed.configureTestingModule({
-                imports: [AppMaterialModule, BrowserAnimationsModule, CommonModule],
+                imports: [AppMaterialModule, BrowserAnimationsModule, CommonModule, HttpClientTestingModule, RouterTestingModule],
 
                 providers: [
                     { provide: MAT_DIALOG_DATA, useValue: GameMode.Classic },
@@ -81,6 +85,7 @@ describe('LobbyGamesComponent', () => {
                     { provide: MatDialog, useValue: matDialog },
                     { provide: NewOnlineGameSocketHandler, useValue: onlineSocketHandlerSpy },
                     { provide: LiveAnnouncer, useValue: mockLiveAnnouncer },
+                    { provide: GameLauncherService, useValue: gameLauncherServiceMock },
                 ],
                 declarations: [LobbyGamesComponent],
             }).compileComponents();
@@ -156,20 +161,6 @@ describe('LobbyGamesComponent', () => {
         expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('JoinGameDialog should close if name was not returned', () => {
-        matDialog.open.and.returnValue({
-            beforeClosed: () => {
-                return of(undefined);
-            },
-            close: () => {
-                return;
-            },
-        } as MatDialogRef<JoinOnlineGameComponent>);
-        component.setSelectedRow(pendingGames[0]);
-        component.joinGame();
-        expect(matDialog.open).toHaveBeenCalled();
-    });
-
     it('should be an empty table ', () => {
         const dom = fixture.nativeElement as HTMLElement;
         const tables = dom.querySelectorAll('tr');
@@ -197,7 +188,7 @@ describe('LobbyGamesComponent', () => {
         fixture.detectChanges();
         const dom = fixture.debugElement.nativeElement;
         const tableNotSort = dom.querySelectorAll('tr');
-        expect(tableNotSort[1].cells[0].innerHTML).toBe(' Jerry ');
+        expect(tableNotSort[1].cells[1].innerHTML).toBe(' désactivé ');
 
         component.lobbyGamesDataSource.sort = component.tableSort;
         const sortState: Sort = { active: 'Id', direction: 'asc' };

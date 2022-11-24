@@ -8,8 +8,10 @@ import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 import { NOT_FOUND } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
+import { UIInput } from '@app/game-logic/interfaces/ui-input';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { CanvasDrawer } from '@app/pages/game-page/board/canvas-drawer';
+import { Observable, Subject } from 'rxjs';
 import { BoardComponent } from './board.component';
 
 describe('BoardComponent', () => {
@@ -17,15 +19,26 @@ describe('BoardComponent', () => {
     let fixture: ComponentFixture<BoardComponent>;
     let canvasDrawerMock: CanvasDrawer;
     let inputControllerMock: UIInputControllerService;
+    let mockObservableDropEvent: Subject<UIInput>;
+    let mockObservableMoveEvent: Subject<UIInput>;
     beforeEach(async () => {
         canvasDrawerMock = jasmine.createSpyObj('CanvasDrawer', ['setIndicator', 'setDirection', 'drawGrid']);
-        inputControllerMock = jasmine.createSpyObj('UIInputControllerService', [], ['activeAction']);
+        inputControllerMock = jasmine.createSpyObj('UIInputControllerService', [], ['activeAction', 'dropEvent$', 'moveEvent$']);
+        mockObservableDropEvent = new Subject<UIInput>();
+        mockObservableMoveEvent = new Subject<UIInput>();
         await TestBed.configureTestingModule({
             declarations: [BoardComponent, ClickAndClickoutDirective],
             providers: [{ provide: UIInputControllerService, useValue: inputControllerMock }],
             imports: [AppMaterialModule, FormsModule, CommonModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
+
+        (Object.getOwnPropertyDescriptor(inputControllerMock, 'dropEvent$')?.get as jasmine.Spy<() => Observable<UIInput>>).and.returnValue(
+            mockObservableDropEvent,
+        );
+        (Object.getOwnPropertyDescriptor(inputControllerMock, 'moveEvent$')?.get as jasmine.Spy<() => Observable<UIInput>>).and.returnValue(
+            mockObservableMoveEvent,
+        );
     });
     beforeEach(() => {
         fixture = TestBed.createComponent(BoardComponent);

@@ -110,6 +110,12 @@ const val choose_bot_difficulty = "Difficulté du joueur virtuel"
 const val game_mode = "Mode de jeu"
 const val classic = "Classique"
 const val magic_cards = "Carte de pouvoirs"
+const val game_settings = "Visibilité de la partie"
+const val choose_game_settings = "Choisir les paramètres de la partie"
+const val game_parameters = "Paramètres de jeu"
+const val choose_game_parameters = "Choisir les paramètres de jeu"
+const val choose_magic_card = "Choisir les cartes de pouvoirs"
+const val select_all = "Toutes"
 
 // Magic Card
 const val exchange_a_letter_name = "Échanger une lettre"
@@ -157,3 +163,16 @@ const val join_menu_option = "Rejoindre"
 const val delete_convo_title = "Supprimer des conversations"
 
 const val no_conversation_to_delete = "Vous n'avez pas créé de conversations"
+
+// Invitations
+
+const val new_invite_title = "Nouvelle invitation"
+const val accept_invite_button = "Accepter"
+const val refuse_invite_button = "Refuser"
+val new_invite_body: (userName: String) -> String = { userName: String -> "$userName veut vous inviter à sa partie"}
+
+const val close_invite_user = "Fermer"
+const val user_search = "Chercher un utilisateur"
+const val invite_expired = "Votre invitation a expirée."
+const val invite_invalid = "L'invitation est invalide."
+const val invite_game_full = "La partie que vous essayez de rejoindre est pleine."

@@ -4,22 +4,12 @@ import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { LetterPlacement } from '@app/game-logic/actions/ui-actions/ui-place-interface';
 import { WordPlacement } from '@app/game-logic/actions/ui-actions/word-placement.interface';
-import {
-    BACKSPACE,
-    BOARD_DIMENSION,
-    BOARD_MAX_POSITION,
-    BOARD_MIN_POSITION,
-    EMPTY_CHAR,
-    JOKER_CHAR,
-    MIN_PLACE_LETTER_ARG_SIZE,
-    NEXT_INDEX,
-    PREVIOUS_INDEX,
-} from '@app/game-logic/constants';
+import { BACKSPACE, BOARD_DIMENSION, EMPTY_CHAR, JOKER_CHAR, MIN_PLACE_LETTER_ARG_SIZE, NEXT_INDEX, PREVIOUS_INDEX } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
 import { BoardService } from '@app/game-logic/game/board/board.service';
 import { LetterCreator } from '@app/game-logic/game/board/letter-creator';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
-import { convertToProperLetter, isStringALowerCaseLetter, isStringAnUpperCaseLetter } from '@app/game-logic/utils';
+import { convertToProperLetter, isInsideOfBoard, isStringALowerCaseLetter, isStringAnUpperCaseLetter } from '@app/game-logic/utils';
 
 export class UIPlace implements UIAction {
     concernedIndexes = new Set<number>();
@@ -75,6 +65,10 @@ export class UIPlace implements UIAction {
     }
 
     receiveRoll(): void {
+        return;
+    }
+
+    receiveHoldReleased(): void {
         return;
     }
 
@@ -137,7 +131,7 @@ export class UIPlace implements UIAction {
     }
 
     private isThereALetter(x: number, y: number): boolean {
-        if (!this.isInsideOfBoard(x, y)) {
+        if (!isInsideOfBoard(x, y)) {
             return false;
         }
         return this.boardService.board.grid[y][x].letterObject.char !== EMPTY_CHAR;
@@ -182,7 +176,7 @@ export class UIPlace implements UIAction {
                 this.pointerPosition = { x, y };
                 return;
             }
-        } while (this.isInsideOfBoard(x, y));
+        } while (isInsideOfBoard(x, y));
 
         this.pointerPosition = null;
     }
@@ -209,14 +203,10 @@ export class UIPlace implements UIAction {
     }
 
     private canPlaceALetterHere(x: number, y: number): boolean {
-        if (!this.isInsideOfBoard(x, y)) {
+        if (!isInsideOfBoard(x, y)) {
             return false;
         }
         return this.boardService.board.grid[y][x].letterObject.char === EMPTY_CHAR;
-    }
-
-    private isInsideOfBoard(x: number, y: number) {
-        return x >= BOARD_MIN_POSITION && x <= BOARD_MAX_POSITION && y >= BOARD_MIN_POSITION && y <= BOARD_MAX_POSITION;
     }
 
     private moveBackwards(): void {
@@ -304,7 +294,7 @@ export class UIPlace implements UIAction {
 
     private isAdjacentTileEmpty(x: number, y: number, direction: Direction, delta: number) {
         [x, y] = direction === Direction.Horizontal ? [x + delta, y] : [x, y + delta];
-        if (!this.isInsideOfBoard(x, y)) {
+        if (!isInsideOfBoard(x, y)) {
             return true;
         }
         return this.grid[y][x].letterObject.char === EMPTY_CHAR;

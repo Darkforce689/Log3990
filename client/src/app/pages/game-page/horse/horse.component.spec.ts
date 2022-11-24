@@ -2,7 +2,6 @@
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UIAction } from '@app/game-logic/actions/ui-actions/ui-action';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIMove } from '@app/game-logic/actions/ui-actions/ui-move';
@@ -15,6 +14,7 @@ import { InputComponent, InputType } from '@app/game-logic/interfaces/ui-input';
 import { Player } from '@app/game-logic/player/player';
 import { getRandomInt } from '@app/game-logic/utils';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { Observable, Subject } from 'rxjs';
 import { HorseComponent } from './horse.component';
 
 const mockPlayers: Player[] = [new Player('Tim'), new Player('George')];
@@ -31,15 +31,18 @@ class MockGameInfoService {
     players = mockPlayers;
 }
 
-class MockUIInputControllerService {
-    activeAction: UIAction | null;
-}
-
 describe('HorseComponent', () => {
     let component: HorseComponent;
     let fixture: ComponentFixture<HorseComponent>;
-    const mockUIInputControllerService = new MockUIInputControllerService();
+    let mockUIInputControllerService: UIInputControllerService;
+    let mockObservableMoveFeedback: Subject<boolean>;
+    let mockObservableDropFeedback: Subject<{ left: number; top: number; index: number }>;
+    let mockObservableResetIndex: Subject<void>;
     beforeEach(async () => {
+        mockUIInputControllerService = jasmine.createSpyObj('UIInputControllerService', [], ['moveFeedback$', 'dropFeedback$', 'resetIndex$']);
+        mockObservableMoveFeedback = new Subject<boolean>();
+        mockObservableDropFeedback = new Subject<{ left: number; top: number; index: number }>();
+        mockObservableResetIndex = new Subject<void>();
         await TestBed.configureTestingModule({
             imports: [AppMaterialModule, CommonModule],
             declarations: [HorseComponent],
@@ -50,6 +53,20 @@ describe('HorseComponent', () => {
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
+        (
+            Object.getOwnPropertyDescriptor(mockUIInputControllerService, 'moveFeedback$')?.get as jasmine.Spy<() => Observable<boolean>>
+        ).and.returnValue(mockObservableMoveFeedback);
+
+        (
+            Object.getOwnPropertyDescriptor(mockUIInputControllerService, 'dropFeedback$')?.get as jasmine.Spy<
+                () => Observable<{ left: number; top: number; index: number }>
+            >
+        ).and.returnValue(mockObservableDropFeedback);
+
+        (Object.getOwnPropertyDescriptor(mockUIInputControllerService, 'resetIndex$')?.get as jasmine.Spy<() => Observable<void>>).and.returnValue(
+            mockObservableResetIndex,
+        );
+
         fixture = TestBed.createComponent(HorseComponent);
         component = fixture.componentInstance;
     });
@@ -68,7 +85,8 @@ describe('HorseComponent', () => {
         const args = getRandomInt(RACK_LETTER_COUNT);
         const type = InputType.LeftClick;
         const input = { from: InputComponent.Horse, type, args };
-        component.click(type, args);
+        const mouseEvent = { button: 0 } as MouseEvent;
+        component.click(mouseEvent, args);
         expect(component.clickLetter.emit).toHaveBeenCalledWith(input);
     });
 

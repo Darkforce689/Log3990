@@ -13,4 +13,11 @@ class LobbyModel {
     val pendingGamePlayerNames = mutableStateOf(listOf<String>())
     val isPendingGameHost = mutableStateOf(false)
     val hostHasJustQuitTheGame = mutableStateOf(false)
+    val password = mutableStateOf<String?>(null)
+}
+
+enum class LobbyError(val value: String) {
+    InexistantGame("INEXISTANT_GAME"),
+    InvalidPassword("INVALID_PASSWORD"),
+    NotEnoughPlace("PENDING_GAME_FULL")
 }

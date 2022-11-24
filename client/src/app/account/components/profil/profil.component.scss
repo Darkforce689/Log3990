@@ -1,6 +1,6 @@
 .container {
-    width:80vw;
-    height : 100vh;
+    width: 70vw;
+    height: 100vh;
     padding-left: 5%;
 }
 
@@ -25,11 +25,31 @@ h1 {
     margin-right: 8%;
 }
 
-mat-card{
+.progressBar {
+    display: flex;
+    direction: row;
+}
+
+.flexSecondRow {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 75%;
+}
+.center {
+    display: flex;
+    justify-content: center !important;
+}
+
+.noPadding {
+    padding-left: 0 !important;
+}
+
+mat-card {
     min-width: 250px;
     min-height: 71px;
     margin-bottom: 5%;
-        
+
     mat-card-content {
         padding-left: 30px;
     }

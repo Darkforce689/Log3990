@@ -133,7 +133,14 @@ describe('NewOnlineGameFormComponent', () => {
             botDifficulty: BotDifficulty.Easy,
         };
         component.onlineGameSettingsUIForm.setValue(settings);
-        expect(component.onlineGameSettingsUIForm.value).toEqual(settings);
+        expect(component.onlineGameSettingsUIForm.value).toEqual({
+            timePerTurn: 60000,
+            privateGame: false,
+            randomBonus: true,
+            numberOfPlayers: 4,
+            hasPassword: false,
+            botDifficulty: BotDifficulty.Easy,
+        });
     });
 
     it('playGame should close the dialog', () => {
@@ -171,7 +178,6 @@ describe('NewOnlineGameFormComponent', () => {
             randomBonus: false,
             numberOfPlayers: DEFAULT_NUMBER_OF_PLAYERS,
             hasPassword: false,
-            password: '',
             botDifficulty: BotDifficulty.Easy,
         });
     });

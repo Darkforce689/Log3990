@@ -1,3 +1,64 @@
 .mat-dialog-content {
+    display: flex;
+    flex-direction: column;
     overflow-y: hidden !important;
+}
+
+h3 {
+    font-weight: bold;
+    padding-top: 10%;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 90%;
+    width: 95%;
+    padding-left: 1%;
+}
+
+.content-magic-cards {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 100%;
+    padding-left: 5%;
+    .mat-checkbox {
+        padding-bottom: 1%;
+    }
+}
+
+mat-card {
+    display: flex;
+    flex-direction: column;
+    width: 255px;
+}
+
+::ng-deep .custom-dialog > mat-dialog-container {
+    background-color: var(--background);
+}
+
+.mat-card-header {
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+}
+
+.mat-card-content {
+    flex-grow: 1;
+    overflow: auto;
+    height: 310px;
+    overflow-x: auto;
+}
+
+.mat-checkbox {
+    padding-left: 1%;
+    padding-bottom: 6%;
 }

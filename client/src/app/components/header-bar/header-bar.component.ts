@@ -19,6 +19,7 @@ export class HeaderBarComponent {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
 
     constructor(private themeService: ThemeService, private accountService: AccountService, private router: Router) {

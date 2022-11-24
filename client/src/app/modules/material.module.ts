@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgModule } from '@angular/core';
 // import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -68,6 +69,7 @@ const modules = [
     MatToolbarModule,
     MatTooltipModule,
     MatRippleModule,
+    DragDropModule,
 ];
 
 /**

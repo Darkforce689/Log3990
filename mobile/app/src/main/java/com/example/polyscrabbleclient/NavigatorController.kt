@@ -33,6 +33,8 @@ import com.example.polyscrabbleclient.auth.components.SignUpScreen
 import com.example.polyscrabbleclient.auth.viewmodel.AuthenticationViewModel
 import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.game.view.GameScreen
+import com.example.polyscrabbleclient.invitations.components.NewInvitationView
+import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.view.NewGameScreen
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.message.components.ChatBox
@@ -68,7 +70,7 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
     NavHost(navController, startDestination = startPage.label) {
 
         composable(NavPage.MainPage.label) {
-            PageWithHeaderAndChat(navController, themeSelectorViewModel, Background.Home) {
+            PageWithHeaderAndChat(navController, themeSelectorViewModel, Background.Home, canReceiveInvite = true) {
                 StartView(navController, StartViewModel())
             }
         }
@@ -86,6 +88,7 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
         composable(NavPage.Account.label) {
             PageSurface {
                 AccountView(AccountViewmodel(), navController)
+                NewInvitationView(navController)
             }
         }
     }
@@ -96,11 +99,15 @@ fun PageWithHeaderAndChat(
     navController: NavController,
     themeSelectorViewModel: ThemeSelectorViewModel,
     background: Background? = Background.Page,
+    canReceiveInvite: Boolean = false,
     pageContent: @Composable () -> Unit
 ) {
     PageWithChat(background) {
         HeaderBar(navController, themeSelectorViewModel)
         pageContent()
+        if (canReceiveInvite) {
+            NewInvitationView(navController)
+        }
     }
 }
 
@@ -135,6 +142,13 @@ fun PageWithChat(
     val scaffoldState: ScaffoldState = rememberScaffoldState()
     val snackBarViewModel: SnackBarViewModel = viewModel()
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
+
+    GameInviteBroker.onInvite {
+        coroutineScope.launch {
+            drawerState.close()
+        }
+    }
+
     snackBarViewModel.setOpenCallback {
         coroutineScope.launch {
             scaffoldState.snackbarHostState.showSnackbar(
@@ -186,6 +200,7 @@ fun PageWithChat(
         }
     }
 }
+
 @Composable
 fun CustomSnackBarHost(
     state: SnackbarHostState
@@ -228,7 +243,7 @@ fun NavGraphBuilder.newGame(
 ) {
     navigation(startDestination = NavPage.NewGame.label, route = NavPage.NewGameRoute.label) {
         composable(NavPage.NewGame.label) {
-            PageWithHeaderAndChat(navController, themeSelectorViewModel) {
+            PageWithHeaderAndChat(navController, themeSelectorViewModel, canReceiveInvite = true) {
                 NewGameScreen(navController, CreateGameViewModel())
             }
         }

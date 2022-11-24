@@ -21,7 +21,7 @@ class GameModel {
     var remainingLettersCount = mutableStateOf(0)
     var turnRemainingTime = mutableStateOf(defaultTurnTime)
     var turnTotalTime = mutableStateOf(defaultTurnTime)
-    var players: MutableList<Player> = mutableStateListOf<Player>()
+    var players: MutableList<Player> = mutableStateListOf()
     var winnerIndexes: MutableState<List<Int>> = mutableStateOf(listOf())
     var activePlayerIndex = mutableStateOf(0)
     val userLetters = mutableStateListOf<TileModel>()

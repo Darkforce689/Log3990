@@ -6,12 +6,19 @@ import { ACTIVE_STATUS, DEFAULT_DICTIONARY_TITLE, WAIT_STATUS } from '@app/game/
 import { isGameSettings } from '@app/game/game-logic/utils';
 import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { ServerLogger } from '@app/logger/logger';
+import { isGameToken } from '@app/messages-service/utils';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { UserService } from '@app/user/services/user.service';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+
+export enum JoinGameError {
+    InexistantGame = 'INEXISTANT_GAME',
+    InvalidPassword = 'INVALID_PASSWORD',
+    NotEnoughPlace = 'PENDING_GAME_FULL',
+}
 
 const pendingGames = 'pendingGames';
 const createGame = 'createGame';
@@ -24,6 +31,7 @@ const hostQuit = 'hostQuit';
 const kickPlayer = 'kickPlayer';
 const acceptPlayer = 'acceptPlayer';
 const refusePlayer = 'refusePlayer';
+const confirmPassword = 'confirmPassword';
 
 export class NewGameSocketHandler {
     readonly ioServer: Server;
@@ -67,7 +75,7 @@ export class NewGameSocketHandler {
                         return;
                     }
                     gameSettings.gameStatus = WAIT_STATUS;
-                    gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name] }), socket);
+                    gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name], tmpPlayerNames: [] }), socket);
                     this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
                     this.addToSocketMap(gameId, user.name, socket, true);
                     this.emitPendingGamesToAll();
@@ -97,23 +105,34 @@ export class NewGameSocketHandler {
                     if (user === undefined) {
                         return;
                     }
-                    if (typeof id !== 'string' || typeof user.name !== 'string') {
+                    if (typeof id !== 'string') {
                         throw Error('Impossible de rejoindre la partie, les paramètres sont invalides.');
                     }
-                    const gameSettings = this.getPendingGame(id);
+                    const gameSettings = this.getGame(id);
                     if (!gameSettings) {
-                        throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
+                        this.sendError(Error(JoinGameError.InexistantGame), socket);
+                        return;
                     }
-                    if (gameSettings.password !== undefined && gameSettings.password !== password) {
-                        throw Error('Mauvais mot de passe');
+
+                    const canJoin = this.canJoin(gameSettings, password);
+                    this.sendPasswordConfirmation(canJoin, socket);
+                    if (!canJoin) {
+                        return;
                     }
-                    if (gameSettings.gameStatus === WAIT_STATUS) {
-                        this.addToSocketMap(id, user.name, socket, false);
-                        this.joinGame(id, user.name, gameSettings, socket);
+
+                    if (gameSettings.gameStatus !== WAIT_STATUS) {
+                        this.joinGameAsObserver(id, user.name, socket);
                         this.emitPendingGamesToAll();
                         return;
                     }
-                    this.joinGameAsObserver(id, user.name, socket);
+
+                    const isEnoughPlaceToJoin = this.newGameManagerService.isEnoughPlaceToJoin(id);
+                    if (!isEnoughPlaceToJoin) {
+                        this.sendError(Error(JoinGameError.NotEnoughPlace), socket);
+                        return;
+                    }
+                    this.joinGame(id, user.name, gameSettings, socket);
+                    this.addToSocketMap(id, user.name, socket, false);
                     this.emitPendingGamesToAll();
                 } catch (error) {
                     ServerLogger.logError(error);
@@ -178,7 +197,7 @@ export class NewGameSocketHandler {
                 if (user === undefined) {
                     return;
                 }
-                this.onDisconnect(user.name);
+                this.removePlayerFromGame(user.name);
                 this.emitPendingGamesToAll();
             });
         });
@@ -246,12 +265,22 @@ export class NewGameSocketHandler {
         gameSettings: OnlineGameSettings,
         socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,
     ) {
-        const gameToken = this.newGameManagerService.joinPendingGame(id, name);
-        if (!gameToken) {
-            throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
+        this.removePlayerFromGame(name);
+        const gameId = this.newGameManagerService.joinPendingGame(id, name);
+        if (!gameId) {
+            this.sendError(Error(JoinGameError.InexistantGame), socket);
+            return;
         }
         socket.join(id);
-        this.sendGameSettingsToPlayers(gameToken, gameSettings);
+        this.sendGameSettingsToPlayers(gameId, gameSettings);
+    }
+
+    private canJoin(gameSettings: OnlineGameSettings, password: string): boolean {
+        return gameSettings.password === undefined || gameSettings.password === password;
+    }
+
+    private sendPasswordConfirmation(canJoin: boolean, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
+        socket.emit(confirmPassword, canJoin);
     }
 
     private joinGameAsObserver(gameToken: string, name: string, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
@@ -267,12 +296,19 @@ export class NewGameSocketHandler {
         this.emitPendingGamesToAll();
     }
 
-    private getPendingGame(id: string): OnlineGameSettings | undefined {
-        const gameSettings = this.newGameManagerService.getPendingGame(id);
-        if (!gameSettings) {
-            return;
+    private getGame(id: string): OnlineGameSettings | undefined {
+        if (isGameToken(id)) {
+            return this.getObservableGame(id);
         }
-        return gameSettings;
+        return this.getPendingGame(id);
+    }
+
+    private getObservableGame(id: string): OnlineGameSettings | undefined {
+        return this.newGameManagerService.getObservableGame(id);
+    }
+
+    private getPendingGame(id: string): OnlineGameSettings | undefined {
+        return this.newGameManagerService.getPendingGame(id);
     }
 
     private deletePendingGame(id: string): void {
@@ -284,9 +320,7 @@ export class NewGameSocketHandler {
         if (!client) {
             return;
         }
-        this.onDisconnect(playerName);
-        const gameSettings = this.getPendingGame(id);
-        this.ioServer.to(client).emit(gameJoined, gameSettings);
+        this.removePlayerFromGame(playerName);
         this.ioServer.to(client).disconnectSockets();
     }
 
@@ -311,7 +345,7 @@ export class NewGameSocketHandler {
         this.ioServer.to(client).disconnectSockets();
     }
 
-    private onDisconnect(name: string) {
+    private removePlayerFromGame(name: string) {
         const gameToChange = this.newGameManagerService
             .getPendingGames()
             .find((gameSettings) => gameSettings.playerNames.includes(name) || gameSettings.tmpPlayerNames.includes(name));

@@ -18,8 +18,10 @@ describe('WinnerDialogComponent', () => {
     beforeEach(async () => {
         data = {
             winnerNames: [],
+            points: 0,
             isWinner: false,
             isObserver: false,
+            totalExp: 0,
         };
         await TestBed.configureTestingModule({
             imports: [AppMaterialModule],

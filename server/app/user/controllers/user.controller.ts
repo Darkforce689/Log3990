@@ -23,16 +23,19 @@ export class UserController {
         this.router = Router();
 
         this.router.get('/', async (req, res) => {
-            const {
-                search: name,
-                perPage,
-                page,
-            } = req.query as { search: string | undefined; perPage: string | undefined; page: string | undefined };
+            const { search, perPage, page } = req.query as { search: string | undefined; perPage: string | undefined; page: string | undefined };
+            const { name } = req.query as { name: string };
 
+            if (name) {
+                const user = await this.userService.getUser({ name });
+                if (!user) {
+                    return res.status(StatusCodes.NOT_FOUND).send({ message: USER_NOT_FOUND });
+                }
+                return res.send({ user });
+            }
             const pagination = this.getUsersPagination(perPage, page);
-            const users = await this.userService.getUsers({ name }, pagination);
-
-            res.send({ pagination, users });
+            const users = await this.userService.getUsers({ name: search }, pagination);
+            return res.send({ pagination, users });
         });
 
         this.router.get('/:userId', async (req, res) => {

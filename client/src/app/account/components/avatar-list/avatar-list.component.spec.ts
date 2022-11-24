@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AvatarListComponent } from '@app/account/components/avatar-list/avatar-list.component';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -9,7 +10,7 @@ describe('AvatarComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [AvatarListComponent],
-            imports: [AppMaterialModule],
+            imports: [AppMaterialModule, HttpClientTestingModule],
         }).compileComponents();
     });
 

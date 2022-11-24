@@ -30,6 +30,7 @@ export class GameHistoryComponent implements OnInit, AfterViewInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
     columnsToDisplay: string[] = ['date', 'type', 'replay'];
     gameSource = new MatTableDataSource<GameHistoryInfo>();
@@ -126,6 +127,7 @@ export class GameHistoryComponent implements OnInit, AfterViewInit {
                 this.matDialog.open(ReplayComponent, {
                     width: '80%',
                     height: '85%',
+                    disableClose: true,
                     panelClass: 'custom-dialog-container',
                     data: { gameStates, userIndex },
                 });

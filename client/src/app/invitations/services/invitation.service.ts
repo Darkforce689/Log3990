@@ -8,7 +8,7 @@ import { Invitation, InvitationDTO } from '@app/invitations/interfaces/invitatio
 import { InvitationFactoryService } from '@app/invitations/invitation-factory.service';
 import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.service';
 import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
-import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
+import { JoinGameError, NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
 import { first } from 'rxjs/operators';
 
 @Injectable({
@@ -78,12 +78,30 @@ export class InvitationService {
         const {
             args: { id, password },
         } = invitation;
-
-        this.newGameSocketHandler.error$.pipe(first()).subscribe(() => {
+        this.newGameSocketHandler.error$.pipe(first()).subscribe((errorContent) => {
             this.gameLaucherService.cancelWait();
-            this.snackBar.open("L'invitation à expirée", 'OK', { duration: 3000 });
+
+            const errorMessage = this.getErrorMessage(errorContent);
+            if (!errorMessage) {
+                return;
+            }
+            this.snackBar.open(errorMessage, 'OK', { duration: 3000 });
         });
+        this.newGameSocketHandler.quitJoinedPendingGame();
         this.newGameSocketHandler.joinPendingGame(id, password);
         this.gameLaucherService.waitForOnlineGameStart();
+    }
+
+    private getErrorMessage(error: string): string | undefined {
+        switch (error) {
+            case JoinGameError.InexistantGame:
+                return "L'invitation a expirée.";
+            case JoinGameError.InvalidPassword:
+                return "L'invitation est invalide.";
+            case JoinGameError.NotEnoughPlace:
+                return 'La partie que vous essayez de rejoindre est pleine.';
+            default:
+                return;
+        }
     }
 }

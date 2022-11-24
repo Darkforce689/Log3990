@@ -6,6 +6,14 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
+export enum JoinGameError {
+    InexistantGame = 'INEXISTANT_GAME',
+    InvalidPassword = 'INVALID_PASSWORD',
+    NotEnoughPlace = 'PENDING_GAME_FULL',
+}
+
+export const KICKED_ERROR_MESSAGE = "L'hôte vous a retiré de la partie";
+
 @Injectable({
     providedIn: 'root',
 })
@@ -17,12 +25,12 @@ export class NewOnlineGameSocketHandler {
     observableGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     gameSettings$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
     gameStarted$ = new BehaviorSubject<OnlineGameSettings | undefined>(undefined);
+    confirmPassword$ = new Subject<boolean>();
     isGameOwner: boolean = false;
     isDisconnected$ = new Subject<boolean>();
     error$ = new Subject<string>();
     name: string;
     socket: Socket;
-    kickedErrorMsg = "L'hôte vous a retiré de la partie";
 
     constructor(private account: AccountService) {}
 
@@ -52,7 +60,7 @@ export class NewOnlineGameSocketHandler {
         this.deletedGame$.next(false);
     }
 
-    joinPendingGame(id: string, password: string | undefined) {
+    joinPendingGame(id: string, password?: string) {
         if (!this.socket) {
             this.connect();
         }
@@ -61,11 +69,17 @@ export class NewOnlineGameSocketHandler {
             this.connect();
         }
         const joinGameParams = { id, password };
-        this.socket.emit('joinGame', joinGameParams);
-        this.listenForUpdatedGameSettings();
         this.listenErrorMessage();
+        this.listenForConfirmJoin();
         this.listenForGameStart();
-        this.listenForHostQuit();
+        this.waitForOtherPlayers();
+        this.socket.emit('joinGame', joinGameParams);
+    }
+
+    quitJoinedPendingGame() {
+        this.resetGameToken();
+        this.disconnectSocket();
+        this.isDisconnected$.next(true);
     }
 
     listenForHostQuit() {
@@ -147,7 +161,7 @@ export class NewOnlineGameSocketHandler {
             this.gameSettings$.next(gameSettings);
             const clientName = this.account.account?.name;
             if (this.gameSettings$.value === undefined) {
-                this.error$.next(this.kickedErrorMsg);
+                this.error$.next(KICKED_ERROR_MESSAGE);
                 return;
             }
             if (clientName === undefined) {
@@ -161,10 +175,15 @@ export class NewOnlineGameSocketHandler {
                 this.isWaiting$.next(true);
                 return;
             }
-            this.error$.next(this.kickedErrorMsg);
+            this.error$.next(KICKED_ERROR_MESSAGE);
         });
     }
 
+    private listenForConfirmJoin() {
+        this.socket.on('confirmPassword', (canJoin: boolean) => {
+            this.confirmPassword$.next(canJoin);
+        });
+    }
     private listenForGameStart() {
         this.socket.on('gameStarted', (gameSettings: OnlineGameSettings) => {
             this.gameStarted$.next(gameSettings);

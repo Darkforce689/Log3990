@@ -5,30 +5,25 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.polyscrabbleclient.account.components.DisabledInput
 import com.example.polyscrabbleclient.account.viewmodel.SEC_IN_MIN
-import com.example.polyscrabbleclient.auth.components.PasswordInput
-import com.example.polyscrabbleclient.auth.components.Requirement
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
-import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.viewmodels.*
 import com.example.polyscrabbleclient.roundDownToMultipleOf
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.utils.TextView
 import com.example.polyscrabbleclient.utils.constants.magic_card_map
 import kotlin.math.floor
 
@@ -38,15 +33,69 @@ fun Preview() {
     NewGameForm(createGameViewModel = CreateGameViewModel())
 }
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewMagicCards() {
+    MagicCards(createGameViewModel = CreateGameViewModel())
+}
+
+@Composable
+fun NewGameVisibilitySettings(createGameViewModel: CreateGameViewModel) {
+    Column(Modifier.fillMaxSize()) {
+        TextView(
+            "$choose_game_settings:",
+            isBold = true,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+
+        Column(
+            Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row {
+                Checkbox(checked = createGameViewModel.isGamePrivate.value,
+                    onCheckedChange = { value ->
+                        createGameViewModel.isGamePrivate.value = value
+                    }
+                )
+                Text(text = private_game)
+            }
+            Row {
+                Checkbox(checked = createGameViewModel.isGameProtected.value,
+                    onCheckedChange = { value ->
+                        createGameViewModel.isGameProtected.value = value
+                    }
+                )
+                Text(text = password_text)
+            }
+            if (createGameViewModel.isGameProtected.value) {
+                GamePasswordInput(
+                    password = createGameViewModel.password.value,
+                    onPasswordChanged = { password ->
+                        createGameViewModel.password.value = password
+                    },
+                )
+            } else {
+                DisabledInput(value = password_text)
+            }
+        }
+    }
+}
+
 @Composable
 fun NewGameForm(createGameViewModel: CreateGameViewModel) {
-    Row(
-        Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
-        verticalAlignment = Alignment.CenterVertically
-    )
-    {
+    Column(
+        Modifier.fillMaxSize()
+    ) {
+        TextView(
+            "$choose_game_parameters:",
+            isBold = true,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
         Column(
-            Modifier.width(200.dp),
+            Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.Start
         ) {
@@ -73,41 +122,6 @@ fun NewGameForm(createGameViewModel: CreateGameViewModel) {
                 Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Checkbox(checked = createGameViewModel.privateGame.value,
-                    onCheckedChange = { value ->
-                        createGameViewModel.privateGame.value = value
-                    }
-                )
-                Text(text = private_game)
-            }
-            Row(
-                Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(checked = createGameViewModel.isPassword.value,
-                    onCheckedChange = { value ->
-                        createGameViewModel.isPassword.value = value
-                    }
-                )
-                Text(text = password_text)
-            }
-            if (createGameViewModel.isPassword.value) {
-                Row(
-                    Modifier.padding(0.dp, 0.dp, 5.dp, 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    GamePasswordInput(
-                        password = createGameViewModel.password.value,
-                        onPasswordChanged = { password ->
-                            createGameViewModel.password.value = password
-                        },
-                    )
-                }
-            }
-            Row(
-                Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 BotDifficultyMenu(
                     updateBotDifficulty = { newValue ->
                         createGameViewModel.botDifficulty.value = newValue
@@ -115,30 +129,63 @@ fun NewGameForm(createGameViewModel: CreateGameViewModel) {
                 )
             }
         }
-        if (createGameViewModel.gameMode.value == GameMode.Magic) {
-            Column(
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier
-                    .width(400.dp)
-            ) {
-                magic_card_map.forEach { entry ->
-                    Row(
-                        Modifier
-                            .padding(0.dp, 0.dp, 5.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = createGameViewModel.containsMagicCard(entry.key),
-                            onCheckedChange = { _ ->
-                                if (createGameViewModel.containsMagicCard(entry.key))
-                                    createGameViewModel.magicCardIds.remove(entry.key)
-                                else
-                                    createGameViewModel.magicCardIds.add(entry.key)
-                            }
-                        )
-                        Text(text = entry.value)
-                    }
+    }
+}
+
+@Composable
+fun MagicCards(createGameViewModel: CreateGameViewModel) {
+    val isAllSelected = createGameViewModel.allMagicCardsSelected
+    val noCardSelected = createGameViewModel.magicCardIds.size <= 0
+    val allCardSelected = createGameViewModel.magicCardIds.size >= magic_card_map.size
+    var selectState by remember { mutableStateOf(ToggleableState.Off) }
+    Column {
+        TextView(
+            "$choose_magic_card:",
+            isBold = true,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+        selectState =
+            if (isAllSelected.value && allCardSelected) ToggleableState.On
+            else if (!isAllSelected.value && noCardSelected) ToggleableState.Off
+            else ToggleableState.Indeterminate
+
+        val onParentClick = {
+            if (isAllSelected.value) {
+                createGameViewModel.addAllSelected()
+            } else {
+                createGameViewModel.removeAllSelected()
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TriStateCheckbox(
+                modifier = Modifier.height(30.dp),
+                state = selectState,
+                onClick = { isAllSelected.value = !isAllSelected.value;onParentClick() },
+                enabled = true
+            )
+            Text(text = select_all)
+        }
+        Column(
+            modifier = Modifier
+                .padding(15.dp, 0.dp, 0.dp, 0.dp)
+        ) {
+            magic_card_map.forEach { entry ->
+                Row(
+                    Modifier
+                        .height(30.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = createGameViewModel.containsMagicCard(entry.key),
+                        onCheckedChange = {
+                            if (createGameViewModel.containsMagicCard(entry.key))
+                                createGameViewModel.magicCardIds.remove(entry.key)
+                            else
+                                createGameViewModel.magicCardIds.add(entry.key)
+                        }
+                    )
+                    Text(text = entry.value)
                 }
             }
         }

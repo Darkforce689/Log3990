@@ -46,6 +46,7 @@ describe('New Online Game Service', () => {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
 
     before((done) => {
@@ -191,7 +192,7 @@ describe('New Online Game Service', () => {
         const id = 'aa';
         clientSocket.on('error', (errorContent: string) => {
             setTimeout(() => {
-                expect(errorContent).to.equal("Impossible de rejoindre la partie, elle n'existe pas.");
+                expect(errorContent).to.equal('INEXISTANT_GAME');
                 done();
             }, timeout);
         });

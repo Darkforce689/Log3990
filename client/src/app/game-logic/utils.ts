@@ -1,4 +1,5 @@
 import { MatDialog } from '@angular/material/dialog';
+import { EXP_PER_LEVEL, MAX_LEVEL } from '@app/account/constants';
 import { AlertDialogComponent } from '@app/components/modals/alert-dialog/alert-dialog.component';
 import { BOARD_MAX_POSITION, BOARD_MIN_POSITION } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
@@ -128,4 +129,24 @@ export const openErrorDialog = (dialog: MatDialog, width: string, errorContent: 
             button2: '',
         },
     });
+};
+
+export const currentLevel = (totalExp: number): number => {
+    const level = Math.floor(Math.sqrt(totalExp / EXP_PER_LEVEL));
+    return level <= MAX_LEVEL ? level : MAX_LEVEL;
+};
+
+export const getNextLevel = (totalExp: number): number => {
+    return currentLevel(totalExp) < MAX_LEVEL ? currentLevel(totalExp) + 1 : MAX_LEVEL;
+};
+
+export const getProgressValue = (totalExp: number): number => {
+    const level = Math.sqrt(totalExp / EXP_PER_LEVEL);
+    const decimal = level - Math.floor(level);
+    const percent = 100;
+    return decimal * percent;
+};
+
+export const isInsideOfBoard = (x: number, y: number) => {
+    return x >= BOARD_MIN_POSITION && x <= BOARD_MAX_POSITION && y >= BOARD_MIN_POSITION && y <= BOARD_MAX_POSITION;
 };

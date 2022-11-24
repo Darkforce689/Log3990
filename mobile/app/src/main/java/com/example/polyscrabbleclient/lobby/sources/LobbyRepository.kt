@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.lobby.sources
 
 import com.example.polyscrabbleclient.game.sources.GameRepository
+import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.utils.Repository
@@ -14,6 +15,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         gameJoined?.let {
             model.currentPendingGameId.value = it.id
             model.pendingGamePlayerNames.value = it.playerNames
+            model.password.value = it.password
         }
     }
 
@@ -22,6 +24,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
             GameRepository.receiveInitialGameSettings(it)
             val gameToken = it.id
             ConversationsManager.joinGameConversation(gameToken)
+            GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
         }
     }
 
@@ -42,7 +45,15 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         model.hostHasJustQuitTheGame.value = true
     }
 
-    private val onError: (error: Error?) -> Unit = { error ->
+    private var onErrorCallbacks: MutableMap<String, (Error?) -> Unit> = HashMap()
+    fun subscribeOnError(key: String, callback: (Error?) -> Unit) {
+        onErrorCallbacks[key] = callback
+    }
+
+    val onError: (error: Error?) -> Unit = { error ->
+        onErrorCallbacks.forEach { _, callback ->
+            callback(error)
+        }
         println("LobbyRepository -> Error : $error")
     }
 
@@ -70,6 +81,10 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
 
     fun quitPendingGame() {
         reset()
+    }
+
+    private fun clearCallBacks() {
+        onErrorCallbacks.clear()
     }
 
     init {

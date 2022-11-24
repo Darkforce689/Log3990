@@ -1,14 +1,15 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { DatePipe } from '@angular/common';
 import { AfterContentChecked, AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { ACTIVE_STATUS, WAIT_STATUS } from '@app/game-logic/constants';
+import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
+import { UserCacheService } from '@app/users/services/user-cache.service';
 import { Observable } from 'rxjs';
 
 export enum LobbyGameType {
@@ -33,6 +34,7 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
         cell: (form: OnlineGameSettings) => string;
     }[];
     datePipe = new DatePipe('en_US');
+    avatars = new Map<string, string>();
 
     constructor(
         @Inject(MAT_DIALOG_DATA)
@@ -42,9 +44,10 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
             lobbyGames$: Observable<OnlineGameSettings[]>;
         },
         private dialogRef: MatDialogRef<LobbyGamesComponent>,
-        private dialog: MatDialog,
         private cdref: ChangeDetectorRef,
         private onlineSocketHandler: NewOnlineGameSocketHandler,
+        private userCacheService: UserCacheService,
+        private gameLauncher: GameLauncherService,
         private liveAnnouncer: LiveAnnouncer,
     ) {
         this.columns = [
@@ -53,11 +56,11 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
                 header: 'Id',
                 cell: (form: OnlineGameSettings) => `${form.id}`,
             },
-            {
-                columnDef: 'playerNames',
-                header: 'Joueurs',
-                cell: (form: OnlineGameSettings) => `${form.playerNames}`,
-            },
+            // {
+            //     columnDef: 'playerNames',
+            //     header: 'Joueurs',
+            //     cell: (form: OnlineGameSettings) => `${form.playerNames}`,
+            // },
             {
                 columnDef: 'randomBonus',
                 header: 'Bonus Aléatoire',
@@ -87,8 +90,10 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
     }
 
     ngOnInit() {
-        this.data.lobbyGames$.subscribe((gameSettings) => {
+        this.data.lobbyGames$.subscribe((gameSettings: OnlineGameSettings[]) => {
             this.lobbyGamesDataSource.data = gameSettings.filter((gameSetting) => gameSetting.gameMode === this.data.gameMode);
+            gameSettings.forEach((gameSetting) => this.addPlayerIcons(gameSetting.playerNames));
+            this.lobbyGamesDataSource.sort = this.tableSort;
         });
         this.onlineSocketHandler.listenForPendingGames();
     }
@@ -114,15 +119,13 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
     }
 
     joinGame(): void {
-        const joinPendingGameRef = new MatDialogConfig();
-        joinPendingGameRef.autoFocus = true;
-        joinPendingGameRef.disableClose = true;
-        joinPendingGameRef.data = this.selectedRow;
-
-        const joinPendingGame = this.dialog.open(JoinOnlineGameComponent, joinPendingGameRef);
-        joinPendingGame.beforeClosed().subscribe(() => {
-            this.dialogRef.close();
-        });
+        if (!this.selectedRow) {
+            return;
+        }
+        const { id, password } = this.selectedRow;
+        const hasPassword = password !== undefined;
+        this.gameLauncher.joinGame(id, hasPassword);
+        this.dialogRef.close();
     }
 
     isSelectedRow(row: OnlineGameSettings): boolean {
@@ -131,6 +134,25 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
 
     announceSortChange(sortState: Sort) {
         this.liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    }
+
+    addPlayerIcons(playerNames: string[]) {
+        playerNames.forEach((name) =>
+            this.userCacheService.getUserByName(name).subscribe((user) => {
+                if (!user) {
+                    return;
+                }
+                if (!user.avatar) {
+                    this.avatars.set(name, 'default');
+                    return;
+                }
+                this.avatars.set(name, user.avatar);
+            }),
+        );
+    }
+
+    getAvatar(name: string): string {
+        return this.avatars.get(name) ?? 'default';
     }
 
     playerCount(form: OnlineGameSettings): string {

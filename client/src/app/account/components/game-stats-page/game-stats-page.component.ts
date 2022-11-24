@@ -27,6 +27,7 @@ export class GameStatsPageComponent implements OnInit, AfterViewInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
     columnsToDisplay: string[] = ['date', 'type'];
     logsSource = new MatTableDataSource<Log>();
