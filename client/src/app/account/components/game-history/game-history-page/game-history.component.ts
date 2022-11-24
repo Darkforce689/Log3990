@@ -30,6 +30,7 @@ export class GameHistoryComponent implements OnInit, AfterViewInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
     columnsToDisplay: string[] = ['date', 'type', 'replay'];
     gameSource = new MatTableDataSource<GameHistoryInfo>();

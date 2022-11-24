@@ -46,6 +46,7 @@ describe('New Online Game Service', () => {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
 
     before((done) => {

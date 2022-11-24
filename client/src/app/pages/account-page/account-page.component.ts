@@ -24,6 +24,7 @@ export class AccountPageComponent implements OnInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
     showPage: AccountPage = AccountPage.Profil;
 

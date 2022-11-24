@@ -9,4 +9,5 @@ export interface User extends UserCreation {
     nGamePlayed: number;
     nGameWon: number;
     averageTimePerGame: number;
+    totalExp: number;
 }

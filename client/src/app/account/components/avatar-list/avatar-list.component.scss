@@ -3,13 +3,52 @@ mat-icon {
 }
 
 mat-selection-list {
-    display:inline-flex; 
+    display: inline-flex;
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
+    justify-content: center !important;
 }
 
-mat-selection-list>* {
-    flex: 1 1 30px;
+mat-selection-list > * {
+    flex: 0 1 95px;
 }
 
+mat-list-option {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    min-width: 90px !important;
+    height: 60px !important;
+}
+
+.levelLock {
+    position: relative;
+    width: 100%;
+    white-space: nowrap !important;
+    span {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        font-size: 10px;
+    }
+}
+
+.levelLockImage {
+    opacity: 0.27;
+}
+
+.levelLockText {
+    font-size: 10px;
+    width: 100%;
+}
+.levelLockIcon {
+    font-size: 12px !important;
+    width: 15px;
+}
+
+.blockIcon {
+    position: absolute;
+    top: 20px;
+    right: 33px;
+}

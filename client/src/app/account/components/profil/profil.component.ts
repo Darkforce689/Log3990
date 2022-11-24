@@ -4,6 +4,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH, NO_WHITE_SPACE_RGX } from '@app/game-logic/constants';
+import { currentLevel, getNextLevel, getProgressValue } from '@app/game-logic/utils';
 import { User } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { UserCreationError } from '@app/services/auth-errors';
@@ -24,6 +25,7 @@ export class ProfilComponent implements OnInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        totalExp: 0,
     };
     name = new FormControl('', [
         Validators.required,
@@ -51,6 +53,25 @@ export class ProfilComponent implements OnInit {
 
     setAvatar(src: string) {
         this.avatar = src;
+    }
+
+    getCurrentLevel(): number {
+        const totalExp = this.getCurrentExp();
+        return currentLevel(totalExp);
+    }
+
+    getNextLevel(): number {
+        const totalExp = this.getCurrentExp();
+        return getNextLevel(totalExp);
+    }
+
+    getProgressValue(): number {
+        const totalExp = this.getCurrentExp();
+        return getProgressValue(totalExp);
+    }
+
+    getCurrentExp(): number {
+        return this.accountService.account?.totalExp ? this.accountService.account.totalExp : 0;
     }
 
     private updateName() {
