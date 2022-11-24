@@ -20,12 +20,12 @@ import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
 import { LobbyGamesComponent } from '@app/components/modals/lobby-games/lobby-games.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
-import { WaitingForOtherPlayersComponent } from '@app/components/modals/waiting-for-other-players/waiting-for-other-players.component';
 import { ThemeSelectorComponent } from '@app/components/theme-selector/theme-selector.component';
 import { ClickAndClickoutDirective } from '@app/directives/click-and-clickout.directive';
 import { MouseRollDirective } from '@app/directives/mouse-roll.directive';
 import { PreventContextMenuDirective } from '@app/directives/prevent-context-menu.directive';
 import { AuthInterceptor } from '@app/interceptors/auth.interceptor';
+import { InvitationService } from '@app/invitations/services/invitation.service';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AccountPageComponent } from '@app/pages/account-page/account-page.component';
@@ -37,6 +37,7 @@ import { InfoBoxComponent } from '@app/pages/game-page/info-box/info-box.compone
 import { PlayerInfoComponent } from '@app/pages/game-page/player-info/player-info.component';
 import { HomepageComponent } from '@app/pages/homepage/homepage.component';
 import { NewGamePageComponent } from '@app/pages/new-game-page/new-game-page.component';
+import { WaitingForOtherPlayersComponent } from '@app/pages/waiting-for-other-players/waiting-for-other-players.component';
 import { BoldPipe } from '@app/pipes/bold-pipe/bold.pipe';
 import { AppSocketHandlerService } from '@app/socket-handler/app-socket-handler.service';
 import { ReplayPlayersComponent } from './account/components/game-history/replay-players/replay-players.component';
@@ -49,15 +50,14 @@ import { MessageComponent } from './chat/components/message/message.component';
 import { AlertDialogComponent } from './components/modals/alert-dialog/alert-dialog.component';
 import { LoadingGameComponent } from './components/modals/loading-game/loading-game.component';
 import { WinnerDialogComponent } from './components/modals/winner-dialog/winner-dialog.component';
+import { GameActionButtonComponent } from './game-logic/game/game-action-button/game-action-button/game-action-button.component';
+import { InvitationModalComponent } from './invitations/components/invitation-modal/invitation-modal.component';
 import { MagicCardListComponent } from './pages/game-page/magic-cards/magic-card-list.component';
 import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/magic-card.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
-import { InvitationModalComponent } from './invitations/components/invitation-modal/invitation-modal.component';
-import { InvitationService } from '@app/invitations/services/invitation.service';
 import { UserSearchComponent } from './users/components/user-search/user-search.component';
-import { GameActionButtonComponent } from './game-logic/game/game-action-button/game-action-button/game-action-button.component';
 
 /**
  * Main module that is used in main.ts.

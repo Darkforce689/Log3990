@@ -71,20 +71,14 @@ export class GameManagerService {
         if (this.game) {
             this.stopGame();
         }
-        if (gameSettings.playerNames.length === 0) {
-            throw Error('No opponent name was entered');
-        }
-
         const timePerTurn = Number(gameSettings.timePerTurn);
         const gameCreationParams: OnlineGameCreationParams = { id: gameSettings.id, timePerTurn };
-
         this.game = this.createOnlineGame(gameCreationParams, gameSettings.gameMode);
         this.userName = this.game.userName;
         const players = this.createOnlinePlayers(gameSettings.playerNames);
         this.allocatePlayers(players);
         this.game.handleUserActions();
         this.info.receiveGame(this.game);
-        this.messageService.joinGameConversation(gameToken);
         this.gameSocketHandler.joinGame(gameToken);
     }
 

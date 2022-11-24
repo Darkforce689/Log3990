@@ -4,7 +4,6 @@ import { AppSocketHandler } from '@app/auth/app-socket-handler.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { DatabaseService } from '@app/database/database.service';
-import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { GameManagerService } from '@app/game/game-manager/game-manager.services';
 import { GameSocketsHandler } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { ServerLogger } from '@app/logger/logger';
@@ -35,7 +34,6 @@ export class Server {
         private gameManager: GameManagerService,
         private systemMessagesService: SystemMessagesService,
         private databaseService: DatabaseService,
-        private dictionaryService: DictionaryService,
         private sessionMiddlewareService: SessionMiddlewareService,
         private authService: AuthService,
         private userService: UserService,
@@ -71,7 +69,6 @@ export class Server {
         this.onlineGameManager = new NewGameSocketHandler(
             this.server,
             this.onlineGameService,
-            this.dictionaryService,
             this.sessionMiddlewareService,
             this.authService,
             this.userService,
