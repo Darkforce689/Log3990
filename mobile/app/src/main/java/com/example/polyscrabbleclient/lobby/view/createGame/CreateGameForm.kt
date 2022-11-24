@@ -17,7 +17,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.polyscrabbleclient.account.components.DisabledInput
 import com.example.polyscrabbleclient.account.viewmodel.SEC_IN_MIN
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
 import com.example.polyscrabbleclient.lobby.viewmodels.*
@@ -51,9 +50,10 @@ fun NewGameVisibilitySettings(createGameViewModel: CreateGameViewModel) {
 
         Column(
             Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
-//            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row {
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Checkbox(checked = createGameViewModel.isGamePrivate.value,
                     onCheckedChange = { value ->
                         createGameViewModel.isGamePrivate.value = value
@@ -61,24 +61,23 @@ fun NewGameVisibilitySettings(createGameViewModel: CreateGameViewModel) {
                 )
                 Text(text = private_game)
             }
-            Row {
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Checkbox(checked = createGameViewModel.isGameProtected.value,
                     onCheckedChange = { value ->
                         createGameViewModel.isGameProtected.value = value
                     }
                 )
-                Text(text = password_text)
+                Text(text = protected_game)
             }
-            if (createGameViewModel.isGameProtected.value) {
-                GamePasswordInput(
-                    password = createGameViewModel.password.value,
-                    onPasswordChanged = { password ->
-                        createGameViewModel.password.value = password
-                    },
-                )
-            } else {
-                DisabledInput(value = password_text)
-            }
+            GamePasswordInput(
+                password = createGameViewModel.password.value,
+                onPasswordChanged = { password ->
+                    createGameViewModel.password.value = password
+                },
+                enabled = createGameViewModel.isGameProtected.value
+            )
         }
     }
 }
@@ -252,6 +251,7 @@ fun GamePasswordInput(
     modifier: Modifier = Modifier.fillMaxWidth(),
     password: String,
     onPasswordChanged: (password: String) -> Unit,
+    enabled: Boolean,
 ) {
     val focusRequester = FocusRequester()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -268,7 +268,8 @@ fun GamePasswordInput(
         ),
         label = { Text(password_text) },
         singleLine = true,
-        leadingIcon = { Icon(imageVector = Icons.Default.Password, contentDescription = null) }
+        leadingIcon = { Icon(imageVector = Icons.Default.Password, contentDescription = null) },
+        enabled = enabled
     )
 }
 
@@ -292,7 +293,7 @@ fun BotDifficultyMenu(
             value = selectedOption.value.value,
             onValueChange = {},
             label = { Text(choose_bot_difficulty) },
-            trailingIcon = { icon(expanded.value) },
+            trailingIcon = { Icon(expanded.value) },
             colors = ExposedDropdownMenuDefaults.textFieldColors()
         )
         ExposedDropdownMenu(
@@ -318,7 +319,7 @@ fun BotDifficultyMenu(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun icon(
+fun Icon(
     expanded: Boolean
 ) {
     ExposedDropdownMenuDefaults.TrailingIcon(

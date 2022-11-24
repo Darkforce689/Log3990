@@ -68,7 +68,7 @@ fun CreateGameModalContent(
         }
         when (selectedPage.value) {
             CreateGameMenu.Settings.name -> {
-                Settings() // TODO
+                NewGameVisibilitySettings(createGameViewModel)
             }
             CreateGameMenu.Parameters.name -> {
                 NewGameForm(createGameViewModel)

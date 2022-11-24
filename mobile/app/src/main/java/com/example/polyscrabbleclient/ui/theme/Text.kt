@@ -98,6 +98,7 @@ const val new_game_creation = "Nouvelle Partie Multijoueurs"
 const val time_per_turn = "Temps par tour"
 const val random_bonus = "Bonus aléatoire"
 const val private_game = "Partie privée"
+const val protected_game = "Partie protégée"
 const val password_text = "Mot de passe"
 const val cancel = "Annuler"
 const val create_game = "Créer la partie"
@@ -169,7 +170,8 @@ const val no_conversation_to_delete = "Vous n'avez pas créé de conversations"
 const val new_invite_title = "Nouvelle invitation"
 const val accept_invite_button = "Accepter"
 const val refuse_invite_button = "Refuser"
-val new_invite_body: (userName: String) -> String = { userName: String -> "$userName veut vous inviter à sa partie"}
+val new_invite_body: (userName: String) -> String =
+    { userName: String -> "$userName veut vous inviter à sa partie" }
 
 const val close_invite_user = "Fermer"
 const val user_search = "Chercher un utilisateur"

@@ -32,9 +32,9 @@ class CreateGameViewModel : ViewModel() {
     val timePerTurn = mutableStateOf(DEFAULT_TIMER)
     val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)
     val randomBonus = mutableStateOf(false)
-    val privateGame = mutableStateOf(false)
-    val isPassword = mutableStateOf(false)
-    val password = mutableStateOf<String>("")
+    val isGamePrivate = mutableStateOf(false)
+    val isGameProtected = mutableStateOf(false)
+    val password = mutableStateOf("")
     val botDifficulty = mutableStateOf(BotDifficulty.Easy)
     var magicCardIds = mutableStateListOf<String>()
     val allMagicCardsSelected = mutableStateOf(false)
@@ -61,8 +61,8 @@ class CreateGameViewModel : ViewModel() {
             timePerTurn = timePerTurn.value,
             playerNames = ArrayList(),
             tmpPlayerNames = ArrayList(),
-            privateGame = privateGame.value,
-            password = if (isPassword.value) password.value else null,
+            privateGame = isGamePrivate.value,
+            password = if (isGameProtected.value) password.value else null,
             randomBonus = randomBonus.value,
             botDifficulty = botDifficulty.value,
             numberOfPlayers = numberOfPlayer.value,
@@ -71,6 +71,7 @@ class CreateGameViewModel : ViewModel() {
         LobbyRepository.emitCreateGame(newGameParam)
     }
 
+    // TODO MODEL ?
     fun resetForm() {
         gameMode = LobbyRepository.model.selectedGameMode
         timePerTurn.value = DEFAULT_TIMER
