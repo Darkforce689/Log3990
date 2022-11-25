@@ -264,12 +264,16 @@ private fun CandidatePlayersView(
                 .height(350.dp),
         ) {
             SubTitleView(CandidatePlayers)
-            viewModel.getCandidatePlayerNames().forEach {
-                CandidatePlayerView(
-                    it,
-                    { viewModel.accept(it) },
-                    { viewModel.refuse(it) }
-                )
+            LazyColumn {
+                val playerNames = viewModel.getCandidatePlayerNames()
+                items(playerNames.size) {
+                    val playerName = playerNames[it]
+                    CandidatePlayerView(
+                        playerName,
+                        { viewModel.accept(playerName) },
+                        { viewModel.refuse(playerName) }
+                    )
+                }
             }
         }
     }
