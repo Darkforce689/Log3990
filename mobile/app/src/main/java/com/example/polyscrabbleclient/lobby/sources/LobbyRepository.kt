@@ -16,6 +16,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
             model.currentPendingGameId.value = it.id
             model.pendingGamePlayerNames.value = it.playerNames
             model.isGamePrivate.value = it.privateGame
+            model.isGameProtected.value = it.password?.isNotEmpty() ?: false
             model.candidatePlayerNames.value = it.tmpPlayerNames
             model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
@@ -24,27 +25,33 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         }
     }
 
-    private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
+    private val onGameStarted: (GameStarted?) -> Unit = { gameStarted ->
         gameStarted?.let {
             GameRepository.receiveInitialGameSettings(it)
             GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
         }
     }
 
-    private val onPendingGames: (lobbyGames: LobbyGames?) -> Unit = { newLobbyGames ->
+    private val onPendingGames: (LobbyGames?) -> Unit = { newLobbyGames ->
         newLobbyGames?.let {
             model.pendingGames.value = it.pendingGamesSettings
             model.observableGames.value = it.observableGamesSettings
         }
     }
 
-    private val onPendingGameId: (lobbyGameId: LobbyGameId?) -> Unit = { newLobbyGameId ->
+    private val onPendingGameId: (LobbyGameId?) -> Unit = { newLobbyGameId ->
         newLobbyGameId?.let {
             model.currentPendingGameId.value = it
         }
     }
 
-    private val onHostQuit: (hostQuit: HostQuit?) -> Unit = {
+    private val onConfirmJoin: (ConfirmJoin?) -> Unit = { newConfirmJoin ->
+        newConfirmJoin?.let {
+            model.hasJustConfirmedJoin.value = it
+        }
+    }
+
+    private val onHostQuit: (HostQuit?) -> Unit = {
         model.hostHasJustQuitTheGame.value = true
     }
 
@@ -126,6 +133,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         socket.on(OnLobbyEvent.GameStarted, onGameStarted)
         socket.on(OnLobbyEvent.LobbyGames, onPendingGames)
         socket.on(OnLobbyEvent.LobbyGameId, onPendingGameId)
+        socket.on(OnLobbyEvent.ConfirmJoin, onConfirmJoin)
         socket.on(OnLobbyEvent.HostQuit, onHostQuit)
         socket.on(OnLobbyEvent.Error, onError)
     }

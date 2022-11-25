@@ -150,6 +150,7 @@ const val ObservableGameSubTitle = "Partie en cours (observable)"
 const val NextPlayer = "Joueur suivant"
 const val PreviousPlayer = "Joueur précédent"
 const val CandidatePlayers = "Joueurs en attente d'approbation:"
+const val EnterPasswordFR = "Veuillez entre le mot de passe"
 
 // Message
 const val create_convo_button = "Créer"

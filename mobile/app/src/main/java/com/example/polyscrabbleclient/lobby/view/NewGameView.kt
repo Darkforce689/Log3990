@@ -42,6 +42,9 @@ fun NewGameScreen(
     val watchGameDialogOpened = remember {
         viewModel.watchGameDialogOpened
     }
+    val enterGamePasswordDialogOpened = remember {
+        viewModel.watchGameDialogOpened
+    }
 
     val isToggled = remember { mutableStateOf(false) }
     val gameText = if (isToggled.value) magic_cards else classic
@@ -73,7 +76,14 @@ fun NewGameScreen(
 
                 Button(
                     modifier = Modifier.padding(10.dp),
-                    onClick = { joinGameDialogOpened.value = true }
+                    onClick = {
+//                        if (viewModel.isGameProtected()) {
+//                            enterGamePasswordDialogOpened.value = true
+//                        } else {
+//                            joinGameDialogOpened.value = true
+//                        }
+                        joinGameDialogOpened.value = true
+                    }
                 ) {
                     Text(text = join_game_multiplayers)
                 }
@@ -93,8 +103,16 @@ fun NewGameScreen(
 
                 JoinAGameModal(
                     joinGameDialogOpened,
+                    enterGamePasswordDialogOpened,
+                    viewModel,
                     navController,
                     createGameViewModel.pendingGames
+                )
+
+                EnterPasswordModal(
+                    enterGamePasswordDialogOpened,
+                    viewModel,
+                    navController,
                 )
 
                 WatchAGameModal(
@@ -102,9 +120,33 @@ fun NewGameScreen(
                     navController,
                     createGameViewModel.observableGames
                 )
+
                 HostHasJustQuitModal(createGameViewModel.hostHasJustQuitTheGame) {
                     createGameViewModel.hostHasJustQuitTheGame.value = false
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun EnterPasswordModal(
+    enterGamePasswordDialogOpened: MutableState<Boolean>,
+    viewModel: NewGameViewModel,
+    navController: NavController
+) {
+    if (enterGamePasswordDialogOpened.value) {
+        ModalView(
+            closeModal = { result ->
+                enterGamePasswordDialogOpened.value = false
+                if (result == ModalResult.Primary) {
+                    navigateToWaitingScreen(navController)
+                }
+            },
+            title = EnterPasswordFR
+        ) { modalButtons ->
+            EnterPasswordView(viewModel) { modalActions ->
+                modalButtons(modalActions)
             }
         }
     }
@@ -123,7 +165,6 @@ private fun CreateGameModal(
                 createGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
                     navigateToWaitingScreen(navController)
-
                 }
             },
             title = new_game_creation
@@ -138,6 +179,8 @@ private fun CreateGameModal(
 @Composable
 private fun JoinAGameModal(
     joinGameDialogOpened: MutableState<Boolean>,
+    enterGamePasswordDialogOpened: MutableState<Boolean>,
+    viewModel: NewGameViewModel,
     navController: NavController,
     pendingGames: MutableState<LobbyGamesList?>
 ) {
@@ -146,7 +189,11 @@ private fun JoinAGameModal(
             closeModal = { result ->
                 joinGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateToWaitingScreen(navController)
+                    if (viewModel.isGameProtected()) {
+                        enterGamePasswordDialogOpened.value = true
+                    } else {
+                        navigateToWaitingScreen(navController)
+                    }
                 }
             },
             title = joinAGameFR,

@@ -155,7 +155,7 @@ private fun PlayerAndAvatar(playerName: String) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
-        // TODO : DYNAMIC VIEW WIDTH
+        // TODO : DYNAMIC VIEW WIDTH ?
         modifier = Modifier.fillMaxWidth(0.6f)
     ) {
         // Todo add ICON -> in other PR (JU)

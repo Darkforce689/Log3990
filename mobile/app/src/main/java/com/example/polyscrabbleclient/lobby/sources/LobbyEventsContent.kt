@@ -56,6 +56,8 @@ data class LobbyGames(
 
 typealias LobbyGameId = String
 
+typealias ConfirmJoin = Boolean
+
 typealias HostQuit = Unit
 
 typealias Error = String

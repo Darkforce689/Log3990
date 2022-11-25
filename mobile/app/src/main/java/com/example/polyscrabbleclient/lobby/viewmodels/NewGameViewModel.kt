@@ -7,11 +7,12 @@ import com.example.polyscrabbleclient.lobby.model.LobbyError
 import com.example.polyscrabbleclient.lobby.sources.Error
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
-class NewGameViewModel: ViewModel() {
+class NewGameViewModel : ViewModel() {
     val waitingForOtherPlayersDialogOpened = mutableStateOf(false)
     val createGameDialogOpened = mutableStateOf(false)
     val joinGameDialogOpened = mutableStateOf(false)
     val watchGameDialogOpened = mutableStateOf(false)
+    val enterGamePasswordDialogOpened = mutableStateOf(false)
 
     private var isInvitation = false
 
@@ -71,4 +72,10 @@ class NewGameViewModel: ViewModel() {
         GameInviteBroker.getCurrentInvitation() ?: return
         onInvitation()
     }
+
+    fun isGameProtected(): Boolean {
+        return LobbyRepository.model.isGameProtected.value
+    }
+
+    val password = mutableStateOf("")
 }

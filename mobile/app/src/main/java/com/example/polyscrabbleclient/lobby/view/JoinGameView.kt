@@ -23,19 +23,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 
-enum class LobbyGameType {
-    PendingGame,
-    ObservableGame
-}
-
 @Composable
 fun JoinGameView(
     navController: NavController,
     lobbyGames: MutableState<LobbyGamesList?>,
+    viewModel: JoinGameViewModel = viewModel(),
     modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
-    val viewModel: JoinGameViewModel = viewModel()
-
     EvenlySpacedRowContainer {
         Box {
             LobbyGamesView(
