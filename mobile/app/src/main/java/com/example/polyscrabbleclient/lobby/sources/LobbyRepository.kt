@@ -18,14 +18,14 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
             model.pendingGamePlayerNames.value = it.playerNames
             model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
+            val gameToken = it.id
+            ConversationsManager.joinGameConversation(gameToken)
         }
     }
 
     private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
         gameStarted?.let {
             GameRepository.receiveInitialGameSettings(it)
-            val gameToken = it.id
-            ConversationsManager.joinGameConversation(gameToken)
             GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
         }
     }

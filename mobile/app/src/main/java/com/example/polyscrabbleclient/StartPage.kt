@@ -17,6 +17,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.example.polyscrabbleclient.auth.model.AuthError
+import com.example.polyscrabbleclient.lobby.view.NewGameScreen
+import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.ui.theme.disconnection
 import com.example.polyscrabbleclient.ui.theme.gamePage
 import com.example.polyscrabbleclient.ui.theme.new_game
@@ -69,9 +71,7 @@ fun StartView(
     }
     PhysicalButtons.reset()
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        GamePage(navController = navController)
-        NewGamePage(navController)
-        Disconnection(navController = navController, startViewModel = startViewModel)
+        NewGameScreen(navController, CreateGameViewModel())
     }
 }
 

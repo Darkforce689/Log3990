@@ -7,6 +7,7 @@ import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 class WaitingForOtherPlayersViewModel : ViewModel() {
     private val lobby = LobbyRepository
+    val hostHasJustQuitTheGame = LobbyRepository.model.hostHasJustQuitTheGame
 
     fun launchGame(navigateToGameScreen: () -> Unit) {
         lobby.emitLaunchGame(navigateToGameScreen)
@@ -14,7 +15,7 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
     }
 
     fun getGameInviteArgs(): GameInviteArgs {
-        val id = LobbyRepository.model.currentPendingGameId.value!! // might cause problem
+        val id = LobbyRepository.model.currentPendingGameId.value
         if (id == null) {
             return GameInviteArgs(id = "", password = "")
         }
@@ -36,11 +37,11 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
         GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
     }
 
-    fun getPendingGameId(): String? {
-        return lobby.model.currentPendingGameId.value
-    }
-
     fun getPendingGamePlayerNames(): List<String> {
         return lobby.model.pendingGamePlayerNames.value
+    }
+
+    fun isHost(playerName: String): Boolean {
+        return playerName === getPendingGamePlayerNames()[0]
     }
 }

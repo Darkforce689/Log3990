@@ -24,7 +24,7 @@ class NewInvitationViewModel(private val navController: NavController): ViewMode
     }
 
     private fun acceptInvite(invitation: GameInvite) {
-        navController.navigate(NavPage.NewGame.label) {
+        navController.navigate(NavPage.WaitingRoom.label) {
             launchSingleTop = true
         }
 

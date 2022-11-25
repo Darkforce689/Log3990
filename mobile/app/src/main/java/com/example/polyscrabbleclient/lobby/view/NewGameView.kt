@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.lobby.domain.ModalResult
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
@@ -22,6 +23,9 @@ import com.example.polyscrabbleclient.lobby.view.createGame.CreateGameModalConte
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.lobby.viewmodels.NewGameViewModel
 import com.example.polyscrabbleclient.ui.theme.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun NewGameScreen(
@@ -34,9 +38,6 @@ fun NewGameScreen(
     }
     val joinGameDialogOpened = remember {
         viewModel.joinGameDialogOpened
-    }
-    val waitingForOtherPlayersDialogOpened = remember {
-        viewModel.waitingForOtherPlayersDialogOpened
     }
     val watchGameDialogOpened = remember {
         viewModel.watchGameDialogOpened
@@ -85,37 +86,35 @@ fun NewGameScreen(
                 }
 
                 CreateGameModal(
+                    navController,
                     createGameDialogOpened,
-                    waitingForOtherPlayersDialogOpened,
                     createGameViewModel
                 )
 
                 JoinAGameModal(
                     joinGameDialogOpened,
-                    waitingForOtherPlayersDialogOpened,
                     navController,
                     createGameViewModel.pendingGames
                 )
 
                 WatchAGameModal(
                     watchGameDialogOpened,
-                    waitingForOtherPlayersDialogOpened,
                     navController,
                     createGameViewModel.observableGames
                 )
-
-                WaitingForOtherPlayersModal(waitingForOtherPlayersDialogOpened, navController)
-
-                HostHasJustQuitModal(createGameViewModel, waitingForOtherPlayersDialogOpened)
+                HostHasJustQuitModal(createGameViewModel.hostHasJustQuitTheGame) {
+                    createGameViewModel.hostHasJustQuitTheGame.value = false
+                }
             }
         }
     }
 }
 
+
 @Composable
 private fun CreateGameModal(
+    navController: NavController,
     createGameDialogOpened: MutableState<Boolean>,
-    waitingForOtherPlayersDialogOpened: MutableState<Boolean>,
     createGameViewModel: CreateGameViewModel
 ) {
     if (createGameDialogOpened.value) {
@@ -123,7 +122,8 @@ private fun CreateGameModal(
             closeModal = { result ->
                 createGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    waitingForOtherPlayersDialogOpened.value = true
+                    navigateToWaitingScreen(navController)
+
                 }
             },
             title = new_game_creation
@@ -138,7 +138,6 @@ private fun CreateGameModal(
 @Composable
 private fun JoinAGameModal(
     joinGameDialogOpened: MutableState<Boolean>,
-    waitingForOtherPlayersDialogOpened: MutableState<Boolean>,
     navController: NavController,
     pendingGames: MutableState<LobbyGamesList?>
 ) {
@@ -147,7 +146,7 @@ private fun JoinAGameModal(
             closeModal = { result ->
                 joinGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    waitingForOtherPlayersDialogOpened.value = true
+                    navigateToWaitingScreen(navController)
                 }
             },
             title = joinAGameFR,
@@ -166,7 +165,6 @@ private fun JoinAGameModal(
 @Composable
 private fun WatchAGameModal(
     watchGameDialogOpened: MutableState<Boolean>,
-    waitingForOtherPlayersDialogOpened: MutableState<Boolean>,
     navController: NavController,
     observableGames: MutableState<LobbyGamesList?>
 ) {
@@ -175,7 +173,7 @@ private fun WatchAGameModal(
             closeModal = { result ->
                 watchGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    waitingForOtherPlayersDialogOpened.value = true
+                    navigateToWaitingScreen(navController)
                 }
             },
             title = watchAGameFR,
@@ -192,33 +190,14 @@ private fun WatchAGameModal(
 }
 
 @Composable
-private fun WaitingForOtherPlayersModal(
-    waitingForOtherPlayersDialogOpened: MutableState<Boolean>,
-    navController: NavController
+fun HostHasJustQuitModal(
+    hostHasJustQuitTheGame: MutableState<Boolean>,
+    onCancel: () -> Unit,
 ) {
-    if (waitingForOtherPlayersDialogOpened.value) {
-        ModalView(
-            closeModal = { waitingForOtherPlayersDialogOpened.value = false },
-            title = waitingForOtherPlayersFR,
-            hasSpinner = true
-        ) { modalButtons ->
-            WaitingForOtherPlayersView(navController = navController) { modalActions ->
-                modalButtons(modalActions)
-            }
-        }
-    }
-}
-
-@Composable
-private fun HostHasJustQuitModal(
-    createGameViewModel: CreateGameViewModel,
-    waitingForOtherPlayersDialogOpened: MutableState<Boolean>
-) {
-    if (createGameViewModel.hostHasJustQuitTheGame.value) {
+    if (hostHasJustQuitTheGame.value) {
         ModalView(
             closeModal = {
-                createGameViewModel.hostHasJustQuitTheGame.value = false
-                waitingForOtherPlayersDialogOpened.value = false
+                onCancel()
             },
             title = hostQuitGameFR
         ) { modalButtons ->
@@ -237,5 +216,15 @@ fun CenteredContainer(content: @Composable () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         content()
+    }
+}
+
+private fun navigateToWaitingScreen(navController: NavController) {
+    CoroutineScope(Dispatchers.IO).launch {
+        launch(Dispatchers.Main) {
+            navController.navigate(NavPage.WaitingRoom.label) {
+                launchSingleTop = true
+            }
+        }
     }
 }
