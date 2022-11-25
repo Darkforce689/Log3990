@@ -48,4 +48,12 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
     fun kick(playerName: String) {
         LobbyRepository.kickPlayer(playerName)
     }
+
+    fun accept(playerName: String) {
+        LobbyRepository.acceptPlayer(playerName)
+    }
+
+    fun refuse(playerName: String) {
+        LobbyRepository.refusePlayer(playerName)
+    }
 }

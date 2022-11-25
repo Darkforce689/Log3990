@@ -90,14 +90,14 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
     fun refusePlayer(playerName: String) {
         model.currentPendingGameId.value?.let {
             val refusePlayerEvent = RefusePlayer(it, playerName)
-            socket.emit(EmitLobbyEvent.AcceptPlayer, refusePlayerEvent)
+            socket.emit(EmitLobbyEvent.RefusePlayer, refusePlayerEvent)
         }
     }
 
     fun kickPlayer(playerName: String) {
         model.currentPendingGameId.value?.let {
             val kickPlayerEvent = KickPlayer(it, playerName)
-            socket.emit(EmitLobbyEvent.AcceptPlayer, kickPlayerEvent)
+            socket.emit(EmitLobbyEvent.KickPlayer, kickPlayerEvent)
         }
     }
 

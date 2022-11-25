@@ -1,5 +1,6 @@
 package com.example.polyscrabbleclient.lobby.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -10,6 +11,8 @@ import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,6 +22,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.invitations.components.InviteUserToGameModal
+import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.viewmodels.WaitingForOtherPlayersViewModel
 import com.example.polyscrabbleclient.ui.theme.*
 import kotlinx.coroutines.CoroutineScope
@@ -79,14 +83,17 @@ fun WaitingForOtherPlayersView(
                     Column(Modifier.padding(5.dp)) {
                         viewModel.getPendingGamePlayerNames().forEach {
                             Row(
-                                Modifier.fillMaxWidth(0.3f),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 // Todo add ICON -> in other PR (JU)
                                 Text(
-                                    text = "> $it",
-                                    modifier = Modifier.padding(5.dp),
+                                    text = it,
+                                    modifier =
+                                    Modifier
+                                        .padding(5.dp)
+                                        .fillMaxWidth(0.8f),
                                     fontSize = 18.sp
                                 )
                                 if (viewModel.isHost(it)) {
@@ -145,11 +152,10 @@ fun WaitingForOtherPlayersView(
 
 @Composable
 private fun HostPlayerView() {
-    Icon(
-        modifier = Modifier.size(30.dp),
-        imageVector = Icons.Rounded.StarRate,
-        contentDescription = null,
-        tint = MaterialTheme.colors.secondary
+    PlayerSideElementView(
+        Icons.Rounded.StarRate,
+        MaterialTheme.colors.secondary,
+        null
     )
 }
 
@@ -158,15 +164,31 @@ fun KickPlayerView(
     playerName: String,
     viewModel: WaitingForOtherPlayersViewModel
 ) {
+    PlayerSideElementView(
+        Icons.Rounded.Close,
+    ) {
+        viewModel.kick(playerName)
+    }
+}
+
+@Composable
+private fun PlayerSideElementView(
+    icon: ImageVector,
+    color: Color = MaterialTheme.colors.primary,
+    action: (() -> Unit)?,
+) {
     Button(
-        onClick = { viewModel.kick(playerName) },
-        color = ButtonC
+        onClick = { action?.invoke() },
+        enabled = action !== null,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.Transparent
+        )
     ) {
         Icon(
             modifier = Modifier.size(30.dp),
-            imageVector = Icons.Rounded.Close,
+            imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colors.primary,
+            tint = color
         )
     }
 }
@@ -185,5 +207,19 @@ private fun navigateTo(page: NavPage, navController: NavController) {
 @Composable
 fun WaitingForOtherPlayersPreview() {
     val vm = WaitingForOtherPlayersViewModel()
+    LobbyRepository.model.pendingGamePlayerNames.value =
+        listOf("xavMobile", "xavMobile2", "xavMobileButHeDecidedToMessTheUIEvenFurther")
     WaitingForOtherPlayersView(rememberNavController(), vm)
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Composable
+fun DarkWaitingForOtherPlayersPreview() {
+    PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
+        val vm = WaitingForOtherPlayersViewModel()
+        LobbyRepository.model.pendingGamePlayerNames.value =
+            listOf("xavMobile", "xavMobile2", "xavMobileButHeDecidedToMessTheUIEvenFurther")
+        WaitingForOtherPlayersView(rememberNavController(), vm)
+    }
 }
