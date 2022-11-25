@@ -1,0 +1,82 @@
+$dark-primary-palette: (
+    100: #d1c4e9,
+    500: #bb86fc,
+    900: #3700b3,
+    contrast: (
+        100: $dark-primary-text,
+        500: $dark-primary-text,
+        900: $light-primary-text,
+    ),
+);
+
+$dark-accent-palette: (
+    100: #99cfce,
+    500: #03dac6,
+    900: #018786,
+    contrast: (
+        100: $dark-primary-text,
+        500: $dark-primary-text,
+        900: $light-primary-text,
+    ),
+);
+
+$dark-warn-palette: (
+    100: #e7b2bc,
+    500: #d88493,
+    900: #cf6679,
+    contrast: (
+        100: $dark-primary-text,
+        500: $light-primary-text,
+        900: $light-primary-text,
+    ),
+);
+
+$dark-primary: mat.define-palette($dark-primary-palette, 500, 100, 900);
+$dark-accent: mat.define-palette($dark-accent-palette, 500, 100, 900);
+$dark-warn: mat.define-palette($dark-warn-palette);
+
+$dark-theme: mat.define-dark-theme(
+    (
+        color: (
+            primary: $dark-primary,
+            accent: $dark-accent,
+            warn: $dark-warn,
+        ),
+    )
+);
+
+.dark-theme {
+    @include mat.all-component-themes($dark-theme);
+
+    $primary: mat-color($dark-primary);
+    $accent: mat-color($dark-accent);
+    $warn: mat-color($dark-warn);
+    $fg_palette: map-get($dark-theme, foreground);
+    $bg_palette: map-get($dark-theme, background);
+    $fg: map-get($fg_palette, text);
+    $bg: map-get($bg_palette, background);
+
+    --primary: #{$primary};
+    --accent: #{$accent};
+    --warn: #{$warn};
+    --fg: #{$fg};
+    --bg: #{$bg};
+
+    // Custom fields
+    --tileBackground: var(--DarkTileBackgroundColor) !important;
+    --transientTileBackground: var(--DarkTransientTileBackgroundColor) !important;
+    --grayedOutTileBackground: var(--DarkTileGrayedOutBackgroundColor) !important;
+    --accepted: var(--DarkAcceptedColor) !important;
+    --cardHolder: var(--DarkCardHolder) !important;
+    --activeCard: var(--DarkActiveCard) !important;
+    --link: var(--DarkLink) !important;
+    --userStatus: var(--DarkUserStatus) !important;
+
+    .accent-color {
+        color: mat-color($dark-accent) !important;
+    }
+
+    .primary-color {
+        color: mat-color($dark-primary) !important;
+    }
+}

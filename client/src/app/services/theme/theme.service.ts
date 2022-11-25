@@ -6,7 +6,7 @@ import { Themes } from '@app/services/theme/themes.enum';
     providedIn: 'root',
 })
 export class ThemeService {
-    private static readonly defaultTheme = Themes.Dark;
+    private static readonly defaultTheme = Themes.Light;
 
     private currentTheme: Themes;
 

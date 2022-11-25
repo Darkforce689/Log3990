@@ -35,11 +35,11 @@
 }
 
 .online-status {
-    color: var(--user-status)
+    color: var(--userStatus);
 }
 
 .offline-status {
-    color: grey
+    color: grey;
 }
 
 .username {
@@ -54,7 +54,7 @@
 }
 
 .invite-button {
-    transform: scale(0.75)
+    transform: scale(0.75);
 }
 
 mat-dialog-content {

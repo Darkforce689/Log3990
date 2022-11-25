@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -67,7 +68,8 @@ fun ModalView(
                             Row(modifier = Modifier.padding(top = 18.dp)) {
                                 ModalButton(
                                     { closeModal(ModalResult.Cancel) },
-                                    modalActions.cancel
+                                    modalActions.cancel,
+                                    MaterialTheme.colors.secondary.copy(0.3f),
                                 )
                                 modalActions.primary?.let {
                                     ModalButton(
@@ -87,10 +89,15 @@ fun ModalView(
 @Composable
 private fun ModalButton(
     closeModal: () -> Unit,
-    actionButton: ActionButton
+    actionButton: ActionButton,
+    backgroundColor: Color = MaterialTheme.colors.primary,
 ) {
     Button(
-        modifier = Modifier.padding(end = 8.dp),
+        modifier = Modifier
+            .padding(end = 8.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor
+        ),
         onClick = {
             actionButton.action()
             closeModal()
@@ -112,7 +119,7 @@ fun ModalPreview() {
             ModalActions(
                 primary = ActionButton(
                     label = { joinGameButtonFR },
-                    canAction = { false },
+                    canAction = { true },
                     action = {}
                 )
             )
@@ -177,7 +184,7 @@ fun DarkModalWithSpinnerPreview() {
                 ModalActions(
                     primary = ActionButton(
                         label = { joinGameButtonFR },
-                        canAction = { false },
+                        canAction = { true },
                         action = {}
                     )
                 )

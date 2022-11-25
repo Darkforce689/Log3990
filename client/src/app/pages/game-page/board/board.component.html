@@ -1,3 +1,3 @@
-<div #ScrabbleBoard class="boardContainer" appClickAndClickout [inputComponent]="self">
+<div #ScrabbleBoard class="boardContainer" appClickAndClickout [inputComponent]="self" style.--tileBackground="var(--tileBackground)">
     <canvas id="canvas" #gridCanvas (click)="canvasClick($event)"></canvas>
 </div>

@@ -13,7 +13,6 @@
         <div class="container" appMouseRoll>
             <img src="assets/img/logoWhite.png" width="200" height="50" alt="Logo Scrabble" />
             <app-player-info></app-player-info>
-            <app-info-box></app-info-box>
             <ng-template *ngIf="isObserver; then observerView; else playerView"></ng-template>
             <ng-template #observerView>
                 <app-board></app-board>
@@ -83,6 +82,7 @@
             >
                 <mat-icon>chat</mat-icon>
             </button>
+            <app-info-box></app-info-box>
         </div>
     </mat-sidenav-content>
 </mat-sidenav-container>
