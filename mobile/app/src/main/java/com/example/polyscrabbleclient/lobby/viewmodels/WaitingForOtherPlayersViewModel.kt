@@ -52,6 +52,10 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
         return lobby.model.isGamePrivate.value
     }
 
+    fun canAcceptRefusePlayers(): Boolean {
+        return isGamePrivate() && isHost()
+    }
+
     fun getCandidatePlayerNames(): List<String> {
         return lobby.model.candidatePlayerNames.value
     }

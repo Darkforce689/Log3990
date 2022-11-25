@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.runtime.*
@@ -81,20 +82,7 @@ fun WaitingForOtherPlayersView(
                     SubTitleView(players_in_game)
                     Column(Modifier.padding(5.dp)) {
                         viewModel.getPendingGamePlayerNames().forEach {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                LobbyGamePlayerView(it)
-                                if (viewModel.isHost(it)) {
-                                    HostPlayerView()
-                                } else {
-                                    if (viewModel.isHost()) {
-                                        KickPlayerView { viewModel.kick(it) }
-                                    }
-                                }
-                            }
+                            ConfirmedPlayerView(it, viewModel)
                         }
                     }
                 }
@@ -119,9 +107,45 @@ fun WaitingForOtherPlayersView(
 }
 
 @Composable
-private fun LobbyGamePlayerView(playerName: String) {
+private fun ConfirmedPlayerView(
+    playerName: String,
+    viewModel: WaitingForOtherPlayersViewModel
+) {
     Row(
         Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PlayerView(playerName) {
+            if (viewModel.isHost(playerName)) {
+                HostPlayerView()
+            } else {
+                if (viewModel.isHost()) {
+                    KickPlayerView { viewModel.kick(playerName) }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayerView(
+    playerName: String,
+    playerSideElements: @Composable () -> Unit
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PlayerAndAvatar(playerName)
+        playerSideElements()
+    }
+}
+
+@Composable
+private fun PlayerAndAvatar(playerName: String) {
+    Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -175,13 +199,35 @@ private fun HostPlayerView() {
 }
 
 @Composable
-fun KickPlayerView(
+private fun KickPlayerView(
     kickPlayer: () -> Unit
 ) {
     PlayerSideElementView(
         Icons.Rounded.Close,
     ) {
         kickPlayer()
+    }
+}
+
+@Composable
+private fun AcceptPlayerView(
+    acceptPlayer: () -> Unit
+) {
+    PlayerSideElementView(
+        Icons.Rounded.Check,
+    ) {
+        acceptPlayer()
+    }
+}
+
+@Composable
+private fun RefusePlayerView(
+    refusePlayer: () -> Unit
+) {
+    PlayerSideElementView(
+        Icons.Rounded.Close,
+    ) {
+        refusePlayer()
     }
 }
 
@@ -211,7 +257,7 @@ private fun PlayerSideElementView(
 private fun CandidatePlayersView(
     viewModel: WaitingForOtherPlayersViewModel
 ) {
-    if (viewModel.isGamePrivate()) {
+    if (viewModel.canAcceptRefusePlayers()) {
         Card(
             modifier = Modifier
                 .width(400.dp)
@@ -220,6 +266,7 @@ private fun CandidatePlayersView(
             SubTitleView(CandidatePlayers)
             viewModel.getCandidatePlayerNames().forEach {
                 CandidatePlayerView(
+                    it,
                     { viewModel.accept(it) },
                     { viewModel.refuse(it) }
                 )
@@ -230,10 +277,14 @@ private fun CandidatePlayersView(
 
 @Composable
 fun CandidatePlayerView(
+    playerName: String,
     accept: () -> Unit,
-    refuse: () -> Unit
+    refuse: () -> Unit,
 ) {
-
+    PlayerView(playerName) {
+        AcceptPlayerView { accept() }
+        RefusePlayerView { refuse() }
+    }
 }
 
 private fun navigateTo(page: NavPage, navController: NavController) {
