@@ -4,6 +4,7 @@ import { GAME_CONVO_NAME } from '@app/chat/constants';
 import { ConversationGetQuery } from '@app/chat/interfaces/conversation-get-query';
 import { Conversation, ConversationCreation } from '@app/chat/interfaces/conversation.interface';
 import { Pagination } from '@app/chat/interfaces/pagination.interface';
+import { AuthService } from '@app/services/auth.service';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -30,8 +31,12 @@ export class ConversationService {
         return this.currentConversationSubject.value;
     }
 
-    constructor(private http: HttpClient) {
-        this.refreshJoinedConversations();
+    constructor(private http: HttpClient, private authService: AuthService) {
+        this.authService.isAuthenticated$.subscribe((isAuth) => {
+            if (isAuth) {
+                this.refreshJoinedConversations();
+            }
+        });
     }
 
     setCurrentConversation(conversation: Conversation) {
@@ -39,6 +44,14 @@ export class ConversationService {
             return;
         }
         this.currentConversationSubject.next(conversation);
+    }
+
+    setFirstConversationCurrent() {
+        const joinedConvos = this.joinedConversations$.value;
+        if (joinedConvos.length === 0) {
+            return;
+        }
+        this.setCurrentConversation(joinedConvos[0]);
     }
 
     getCreatedConversations() {
