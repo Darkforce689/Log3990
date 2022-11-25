@@ -97,31 +97,14 @@ export class MessagesService {
     }
 
     connect() {
-        this.joinedConversation$$ = this.conversationService.joinedConversations$.subscribe((conversations) => {
-            // SAFE GUARD FOR ACCOUNT
-            this.accountService.account$.pipe(takeWhile((account) => account === undefined, true)).subscribe((account) => {
-                if (!account) {
-                    return;
-                }
-
-                this.onlineChat.joinChatRooms(conversations);
-            });
-        });
-
-        this.currentConversation$$ = this.conversationService.currentConversation$.subscribe(async (conversation) => {
-            if (!conversation) {
-                this.clearLog();
+        // Safe guard for account
+        this.accountService.account$.pipe(takeWhile((account) => account === undefined, true)).subscribe((account) => {
+            if (!account) {
                 return;
             }
 
-            const { _id: conversationId } = conversation;
-            // SAFE GUARD FOR ACCOUNT
-            this.accountService.account$.pipe(takeWhile((account) => account === undefined, true)).subscribe((account) => {
-                if (!account) {
-                    return;
-                }
-                this.changeCurrentConversation(conversationId);
-            });
+            this.listenJoinedConversations();
+            this.listenCurrentConversation();
         });
     }
 
@@ -233,6 +216,27 @@ export class MessagesService {
     clearLog(): void {
         this.messages.splice(0, this.messages.length);
         this.messages$.next({ messages: this.messages, reason: MessageUpdateReason.Other });
+    }
+
+    private listenJoinedConversations() {
+        this.joinedConversation$$?.unsubscribe();
+        this.joinedConversation$$ = this.conversationService.joinedConversations$.subscribe((conversations) => {
+            this.onlineChat.joinChatRooms(conversations);
+            if (!this.currentConversation) {
+                this.conversationService.setFirstConversationCurrent();
+            }
+        });
+    }
+
+    private listenCurrentConversation() {
+        this.currentConversation$$?.unsubscribe();
+        this.currentConversation$$ = this.conversationService.currentConversation$.subscribe(async (conversation) => {
+            if (!conversation) {
+                return;
+            }
+            const { _id: conversationId } = conversation;
+            this.changeCurrentConversation(conversationId);
+        });
     }
 
     private addMessageToLog(message: Message) {
