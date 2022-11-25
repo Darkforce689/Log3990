@@ -19,7 +19,7 @@ export const KICKED_ERROR_MESSAGE = "L'hôte vous a retiré de la partie";
 })
 export class NewOnlineGameSocketHandler {
     pendingGameId$ = new BehaviorSubject<string | undefined>(undefined);
-    deletedGame$ = new BehaviorSubject<boolean>(false);
+    deletedGame$ = new Subject<boolean>();
     isWaiting$ = new BehaviorSubject<boolean>(false);
     pendingGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
     observableGames$ = new BehaviorSubject<OnlineGameSettings[]>([]);
@@ -83,7 +83,9 @@ export class NewOnlineGameSocketHandler {
     }
 
     listenForHostQuit() {
-        this.socket.on('hostQuit', () => this.deletedGame$.next(true));
+        this.socket.on('hostQuit', () => {
+            this.deletedGame$.next(true);
+        });
     }
 
     launchGame() {
@@ -187,7 +189,6 @@ export class NewOnlineGameSocketHandler {
     private listenForGameStart() {
         this.socket.on('gameStarted', (gameSettings: OnlineGameSettings) => {
             this.gameStarted$.next(gameSettings);
-            this.disconnectSocket();
         });
     }
 

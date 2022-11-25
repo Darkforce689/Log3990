@@ -5,6 +5,7 @@ import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { GameManagerService, PlayersAndToken } from '@app/game/game-manager/game-manager.services';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
+import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
@@ -13,16 +14,18 @@ import { Subject } from 'rxjs';
 
 describe('NewGameManagerService', () => {
     let gameManagerStub: StubbedClass<GameManagerService>;
+    let conversationStub: StubbedClass<ConversationService>;
     let service: NewGameManagerService;
     const tmpPlayerNames: string[] = [];
     const password = undefined;
 
     before(() => {
         gameManagerStub = createSinonStubInstance<GameManagerService>(GameManagerService);
+        conversationStub = createSinonStubInstance<ConversationService>(ConversationService);
         gameManagerStub.gameDeleted$ = new Subject<string>();
         gameManagerStub.playerLeft$ = new Subject<PlayersAndToken>();
         gameManagerStub.observerLeft$ = new Subject<NameAndToken>();
-        service = new NewGameManagerService(gameManagerStub);
+        service = new NewGameManagerService(gameManagerStub, conversationStub);
     });
 
     it('should createGame', () => {

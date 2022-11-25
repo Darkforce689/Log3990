@@ -5,6 +5,7 @@ import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.utils.Repository
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
 
@@ -15,15 +16,16 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         gameJoined?.let {
             model.currentPendingGameId.value = it.id
             model.pendingGamePlayerNames.value = it.playerNames
+            model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
+            val gameToken = it.id
+            ConversationsManager.joinGameConversation(gameToken)
         }
     }
 
     private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
         gameStarted?.let {
             GameRepository.receiveInitialGameSettings(it)
-            val gameToken = it.id
-            ConversationsManager.joinGameConversation(gameToken)
             GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
         }
     }

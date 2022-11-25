@@ -1,3 +1,8 @@
+mat-card {
+    width: 35vw;
+    margin-top: 5%;
+}
+
 .title {
     display: flex;
     flex-direction: row;
@@ -12,25 +17,28 @@
     align-items: center;
 }
 
-mat-dialog-content {
-    min-width: fit-content;
-    min-height: fit-content;
+mat-sidenav-content {
+    height: 100vh;
+    background: url('^assets/img/classic-bg.jpg') no-repeat center top;
+    background-size: 100vw 100vh;
 }
 
-.content {
-    min-width: 400px;
-    min-height: 275px;
-}
-
-.host-private {
-    min-width: 400px;
-    min-height: 390px;
+.container {
+    height: 90vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
 .messages {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-evenly;
+    height: 30vh;
+    margin-top: 10vh;
     > h4 {
         padding: 50px;
         padding-top: 25px;
@@ -39,16 +47,17 @@ mat-dialog-content {
 
 .players > .player-container {
     flex-wrap: wrap;
-    min-height: 120px;
+    min-height: 175px;
 }
 
 .probation > .player-container {
-    height: 90px;
+    height: 20vh;
     overflow-y: auto;
 }
 
 h4 {
     margin: 0;
+    margin-top: 5%;
 }
 
 .player,
@@ -75,4 +84,24 @@ h4 {
 app-avatar {
     padding-right: 15px;
     padding-top: 8px;
+}
+
+.chat-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 0.5%;
+}
+
+.button-open {
+    margin-right: 32%;
+}
+
+.button-close {
+    margin-right: 1%;
+}
+
+mat-sidenav {
+    width: 30vw;
+    height: 100%;
 }

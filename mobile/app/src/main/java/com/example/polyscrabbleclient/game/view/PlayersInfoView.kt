@@ -6,26 +6,26 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.polyscrabbleclient.account.components.Avatar
 import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
+import com.example.polyscrabbleclient.game.viewmodels.PlayerInfoViewModel
+import com.example.polyscrabbleclient.getAssetsId
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
+import com.example.polyscrabbleclient.user.UserRepository
+import com.example.polyscrabbleclient.utils.constants.NoAvatar
 
 @Composable
 fun PlayersInfoView(viewModel: GameViewModel, size: Dp = 200.dp) {
@@ -36,10 +36,10 @@ fun PlayersInfoView(viewModel: GameViewModel, size: Dp = 200.dp) {
             PlayerInfoView(
                 player,
                 size,
-                { player === viewModel.game.getWatchedPlayer() }
-            ) {
-                player === viewModel.game.getActivePlayer()
-            }
+                PlayerInfoViewModel(),
+                { player === viewModel.game.getWatchedPlayer() },
+                { player === viewModel.game.getActivePlayer() }
+            )
         }
     }
 }
@@ -48,17 +48,27 @@ fun PlayersInfoView(viewModel: GameViewModel, size: Dp = 200.dp) {
 fun PlayerInfoView(
     player: Player,
     size: Dp,
+    viewModel: PlayerInfoViewModel,
     isWatchedPlayer: () -> Boolean,
     isActivePlayer: () -> Boolean,
 ) {
 
-    val targetColor by animateColorAsState(
+    val backgroundColor by animateColorAsState(
         targetValue =
         if (isActivePlayer())
-            MaterialTheme.colors.primary
+            MaterialTheme.colors.secondary
         else
-            MaterialTheme.colors.secondary,
-        animationSpec = tween(durationMillis = 200)
+            Color.Unspecified,
+        animationSpec = tween(durationMillis = 750)
+    )
+
+    val borderColor by animateColorAsState(
+        targetValue =
+        if (isActivePlayer())
+            MaterialTheme.colors.onSurface.copy(0.9f)
+        else
+            Color.Unspecified,
+        animationSpec = tween(durationMillis = 750)
     )
 
     Card(
@@ -67,36 +77,63 @@ fun PlayerInfoView(
             .width(size)
             .border(
                 width = 4.dp,
-                targetColor,
+                borderColor,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {
-        Row(
-            modifier = Modifier.width(200.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Surface(
+            color = backgroundColor
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth(0.8f)
+            Row(
+                modifier = Modifier.width(200.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = player.name,
-                    style = MaterialTheme.typography.h6
-                )
-                Text(
-                    text = "${player.points} points",
-                    style = MaterialTheme.typography.caption
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth(0.8f)
+                ) {
+                    LaunchedEffect(viewModel.avatar.value) {
+                        UserRepository.getUserByName(player.name) {
+                            if (viewModel.avatar.value != it.avatar) {
+                                viewModel.avatar.value = it.avatar
+                            }
+                        }
+                    }
+
+                    UserInfoView(player, viewModel.avatar.value)
+                    Divider()
+                    Text(
+                        text = "${player.points} points",
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                Icon(
+                    imageVector = Icons.Filled.Visibility,
+                    contentDescription = null,
+                    modifier = Modifier.alpha(if (isWatchedPlayer()) 1.0f else 0.0f)
                 )
             }
-            Icon(
-                imageVector = Icons.Filled.Visibility,
-                contentDescription = null,
-                modifier = Modifier.alpha(if (isWatchedPlayer()) 1.0f else 0.0f)
-            )
         }
+    }
+}
+
+@Composable
+fun UserInfoView(player: Player, avatar: String = NoAvatar) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Avatar(
+            modifier = Modifier.size(18.dp),
+            avatarId = getAssetsId(avatar)
+        )
+        Spacer(modifier = Modifier.size(5.dp))
+        Text(
+            text = player.name,
+            style = MaterialTheme.typography.h6
+        )
     }
 }
 

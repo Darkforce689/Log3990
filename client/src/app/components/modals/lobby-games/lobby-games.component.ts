@@ -56,11 +56,6 @@ export class LobbyGamesComponent implements AfterContentChecked, OnInit, AfterVi
                 header: 'Id',
                 cell: (form: OnlineGameSettings) => `${form.id}`,
             },
-            // {
-            //     columnDef: 'playerNames',
-            //     header: 'Joueurs',
-            //     cell: (form: OnlineGameSettings) => `${form.playerNames}`,
-            // },
             {
                 columnDef: 'randomBonus',
                 header: 'Bonus Aléatoire',

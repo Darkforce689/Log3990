@@ -130,12 +130,11 @@ export class GameManagerService {
         });
     }
 
-    async createGame(gameToken: string, onlineGameSettings: OnlineGameSettings): Promise<ServerGame> {
-        const newServerGame = await this.gameCreator.createGame(onlineGameSettings, gameToken);
+    createGame(gameToken: string, onlineGameSettings: OnlineGameSettings): ServerGame {
+        const newServerGame = this.gameCreator.createGame(onlineGameSettings, gameToken);
         this.activeGames.set(gameToken, newServerGame);
         this.linkedClients.set(gameToken, []);
         this.dictionaryService.makeGameDictionary(gameToken, DEFAULT_DICTIONARY_TITLE);
-        await this.conversationService.createGameConversation(gameToken);
         this.startInactiveGameDestructionTimer(gameToken);
         return newServerGame;
     }

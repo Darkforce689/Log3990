@@ -1,18 +1,20 @@
 package com.example.polyscrabbleclient
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Message
-import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -35,12 +37,11 @@ import com.example.polyscrabbleclient.auth.viewmodel.SignUpViewModel
 import com.example.polyscrabbleclient.game.view.GameScreen
 import com.example.polyscrabbleclient.invitations.components.NewInvitationView
 import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
-import com.example.polyscrabbleclient.lobby.view.NewGameScreen
-import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
+import com.example.polyscrabbleclient.lobby.view.WaitingForOtherPlayersView
 import com.example.polyscrabbleclient.message.components.ChatBox
-import com.example.polyscrabbleclient.message.components.ChatRoomScreen
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
+import com.example.polyscrabbleclient.page.headerbar.viewmodels.DisconnectViewModel
 import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
 import com.example.polyscrabbleclient.utils.Background
 import com.example.polyscrabbleclient.utils.PageSurface
@@ -55,11 +56,10 @@ enum class NavPage(val label: String) {
     SignUp("signUpPage"),
     MainPage("mainPage"),
     GamePage("gamePage"),
-    JoinGamePage("joinGamePage"),
-    Prototype("prototype"),
+    WaitingRoom("waitingRoom"),
     Room("messageList"),
     Account("account"),
-    NewGameRoute("newGameRoute"),
+    WaitingRoute("waitingRoute"),
     NewGame("newGame"),
 }
 
@@ -70,7 +70,13 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
     NavHost(navController, startDestination = startPage.label) {
 
         composable(NavPage.MainPage.label) {
-            PageWithHeaderAndChat(navController, themeSelectorViewModel, Background.Home, canReceiveInvite = true) {
+            PageWithHeaderAndChat(
+                navController,
+                themeSelectorViewModel,
+                DisconnectViewModel(),
+                Background.Home,
+                canReceiveInvite = true
+            ) {
                 StartView(navController, StartViewModel())
             }
         }
@@ -84,9 +90,9 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
             }
         }
 
-        newGame(navController, themeSelectorViewModel)
+        waitingRoom(navController, themeSelectorViewModel)
         composable(NavPage.Account.label) {
-            PageSurface {
+            PageWithChat {
                 AccountView(AccountViewmodel(), navController)
                 NewInvitationView(navController)
             }
@@ -98,12 +104,13 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
 fun PageWithHeaderAndChat(
     navController: NavController,
     themeSelectorViewModel: ThemeSelectorViewModel,
+    disconnectViewModel: DisconnectViewModel,
     background: Background? = Background.Page,
     canReceiveInvite: Boolean = false,
     pageContent: @Composable () -> Unit
 ) {
     PageWithChat(background) {
-        HeaderBar(navController, themeSelectorViewModel)
+        HeaderBar(navController, themeSelectorViewModel, disconnectViewModel)
         pageContent()
         if (canReceiveInvite) {
             NewInvitationView(navController)
@@ -219,7 +226,9 @@ fun CustomSnackBarHost(
                             Modifier
                                 .fillMaxWidth()
                                 .padding(end = 10.dp)
-                                .clickable { it.performAction() }, contentAlignment = Alignment.BottomEnd) {
+                                .clickable { it.performAction() },
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
                             Text(text = it.actionLabel!!)
                         }
                     },
@@ -237,14 +246,17 @@ fun CustomSnackBarHost(
     )
 }
 
-fun NavGraphBuilder.newGame(
+fun NavGraphBuilder.waitingRoom(
     navController: NavController,
     themeSelectorViewModel: ThemeSelectorViewModel
 ) {
-    navigation(startDestination = NavPage.NewGame.label, route = NavPage.NewGameRoute.label) {
-        composable(NavPage.NewGame.label) {
-            PageWithHeaderAndChat(navController, themeSelectorViewModel, canReceiveInvite = true) {
-                NewGameScreen(navController, CreateGameViewModel())
+    navigation(startDestination = NavPage.WaitingRoom.label, route = NavPage.WaitingRoute.label) {
+        composable(NavPage.WaitingRoom.label) {
+            PageWithChat(
+                Background.Page
+            ) {
+                WaitingForOtherPlayersView(navController = navController)
+                NewInvitationView(navController = navController)
             }
         }
     }

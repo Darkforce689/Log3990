@@ -71,7 +71,6 @@ describe('NewOnlineGameSocketHandler', () => {
         service.gameStarted$.pipe(first()).subscribe((gameSettingsServer) => {
             expect(gameSettingsServer).not.toBeUndefined();
         });
-        expect(service.disconnectSocket).toHaveBeenCalled();
     });
 
     it('listenForPendingGames should return pending games', () => {

@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
@@ -17,7 +18,7 @@ describe('WaitingForOtherPlayersComponent', () => {
     let fixture: ComponentFixture<WaitingForOtherPlayersComponent>;
     let onlineSocketHandlerSpy: jasmine.SpyObj<NewOnlineGameSocketHandler>;
     let matDialog: jasmine.SpyObj<MatDialog>;
-    let pendingGameId$: Subject<string>;
+    let errors$: Subject<string>;
     let gameSettings$: Subject<OnlineGameSettings>;
     let deletedGame$: Observable<boolean>;
     let isWaiting$: BehaviorSubject<boolean>;
@@ -27,10 +28,10 @@ describe('WaitingForOtherPlayersComponent', () => {
         onlineSocketHandlerSpy = jasmine.createSpyObj(
             'NewOnlineGameSocketHandler',
             ['createGame', 'listenForPendingGames', 'disconnectSocket', 'joinPendingGame', 'launchGame'],
-            ['pendingGames$', 'pendingGameId$', 'deletedGame$', 'gameSettings$', 'isWaiting$'],
+            ['error$', 'pendingGameId$', 'deletedGame$', 'gameSettings$', 'isWaiting$'],
         );
         await TestBed.configureTestingModule({
-            imports: [BrowserAnimationsModule, AppMaterialModule, HttpClientTestingModule],
+            imports: [BrowserAnimationsModule, AppMaterialModule, HttpClientTestingModule, RouterTestingModule],
 
             providers: [
                 { provide: MatDialogRef, useValue: mockDialogRef },
@@ -40,10 +41,8 @@ describe('WaitingForOtherPlayersComponent', () => {
             declarations: [WaitingForOtherPlayersComponent],
         }).compileComponents();
 
-        pendingGameId$ = new Subject<string>();
-        (Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'pendingGameId$')?.get as jasmine.Spy<() => Observable<string>>).and.returnValue(
-            pendingGameId$,
-        );
+        errors$ = new Subject<string>();
+        (Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'error$')?.get as jasmine.Spy<() => Observable<string>>).and.returnValue(errors$);
         deletedGame$ = new Observable<boolean>();
         (Object.getOwnPropertyDescriptor(onlineSocketHandlerSpy, 'deletedGame$')?.get as jasmine.Spy<() => Observable<boolean>>).and.returnValue(
             deletedGame$,
@@ -66,14 +65,6 @@ describe('WaitingForOtherPlayersComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('cancel', () => {
-        const dom = fixture.nativeElement as HTMLElement;
-        const cancelButton = dom.querySelectorAll('button')[0];
-        spyOn(component, 'cancel');
-        cancelButton.click();
-        expect(component.cancel).toHaveBeenCalled();
     });
 
     it('should disconnect socket on cancel', () => {

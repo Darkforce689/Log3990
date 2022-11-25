@@ -10,6 +10,43 @@ const val MIN_NAME_LENGTH = 3
 const val MIN_PASSWORD_LENGTH = 5
 const val MAX_PASSWORD_LENGTH = 32
 
+const val NoAvatar = "avatardefault"
+const val BotAvatar = NoAvatar // TODO CHANGE ?
+val botNames = listOf(
+    "Jimmy",
+    "Sasha",
+    "BeepBoop",
+    "Martin",
+    "Wayne",
+    "Fabian",
+    "Juan",
+    "Oliver",
+    "Maria",
+    "Wilson",
+    "Laura",
+    "Noah",
+    "James",
+    "Benjamin",
+    "Lucas",
+    "Henry",
+    "Alexander",
+    "Mason",
+    "Michael",
+    "Ethan",
+    "Daniel",
+    "Jacob",
+    "Terminator",
+    "Skynet",
+    "Stockfish",
+    "AlphaZero",
+    "DeepBlue",
+    "Mario",
+    "Spooky",
+    "Sonic",
+    "Lynne",
+    "Optix",
+    "Machina",
+)
 const val WIN_EXP_BONUS = 100;
 const val LOSS_EXP_BONUS = 50;
 const val EXP_PER_LEVEL = 10;

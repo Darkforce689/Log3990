@@ -3,9 +3,9 @@ package com.example.polyscrabbleclient.page.headerbar.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,13 +19,18 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.getAssetsId
+import com.example.polyscrabbleclient.page.headerbar.viewmodels.DisconnectViewModel
 import com.example.polyscrabbleclient.page.headerbar.viewmodels.ThemeSelectorViewModel
 import com.example.polyscrabbleclient.ui.theme.my_account
 import com.example.polyscrabbleclient.user.User
 
 
 @Composable
-fun HeaderBar(navController: NavController, themeSelectorViewModel: ThemeSelectorViewModel) {
+fun HeaderBar(
+    navController: NavController,
+    themeSelectorViewModel: ThemeSelectorViewModel,
+    disconnectViewModel: DisconnectViewModel
+) {
     TopAppBar(
         modifier = Modifier.height(130.dp),
         title = {
@@ -43,6 +48,10 @@ fun HeaderBar(navController: NavController, themeSelectorViewModel: ThemeSelecto
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     ThemeSelectorView(themeSelectorViewModel)
                     Account(navController = navController, avatar = User.avatar)
+
+                    Button(onClick = { disconnectViewModel.disconnect(navController) }) {
+                        Icon(imageVector = Icons.Default.Logout, contentDescription = null)
+                    }
                 }
             }
         },
@@ -77,6 +86,7 @@ fun Account(navController: NavController, avatar: String) {
 fun HeaderBarPreview() {
     HeaderBar(
         navController = rememberNavController(),
-        themeSelectorViewModel = viewModel()
+        themeSelectorViewModel = viewModel(),
+        disconnectViewModel = viewModel()
     )
 }

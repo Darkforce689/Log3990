@@ -2,11 +2,9 @@
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { Session } from '@app/auth/services/session.interface';
-import { ACTIVE_STATUS, DEFAULT_DICTIONARY_TITLE, WAIT_STATUS } from '@app/game/game-logic/constants';
+import { ACTIVE_STATUS, WAIT_STATUS } from '@app/game/game-logic/constants';
 import { isGameSettings } from '@app/game/game-logic/utils';
-import { DictionaryService } from '@app/game/game-logic/validator/dictionary/dictionary.service';
 import { ServerLogger } from '@app/logger/logger';
-import { isGameToken } from '@app/messages-service/utils';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { UserService } from '@app/user/services/user.service';
@@ -40,7 +38,6 @@ export class NewGameSocketHandler {
     constructor(
         server: http.Server,
         private newGameManagerService: NewGameManagerService,
-        private dictionaryService: DictionaryService,
         private sessionMiddleware: SessionMiddlewareService,
         private authService: AuthService,
         private userService: UserService,
@@ -75,8 +72,7 @@ export class NewGameSocketHandler {
                         return;
                     }
                     gameSettings.gameStatus = WAIT_STATUS;
-                    gameId = this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name], tmpPlayerNames: [] }), socket);
-                    this.dictionaryService.makeGameDictionary(gameId, DEFAULT_DICTIONARY_TITLE);
+                    gameId = await this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name], tmpPlayerNames: [] }), socket);
                     this.addToSocketMap(gameId, user.name, socket, true);
                     this.emitPendingGamesToAll();
                     this.sendGameSettingsToPlayers(gameId, gameSettings as OnlineGameSettings);
@@ -231,28 +227,26 @@ export class NewGameSocketHandler {
         this.socketMap.delete(gameId);
     }
 
-    private createGame(gameSettings: OnlineGameSettingsUI, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>): string {
+    private async createGame(
+        gameSettings: OnlineGameSettingsUI,
+        socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,
+    ): Promise<string> {
         if (!isGameSettings(gameSettings)) {
             throw Error('Impossible de rejoindre la partie, les paramètres de partie sont invalides.');
         }
-        const gameId = this.createGameInternal(gameSettings, socket);
-        return gameId;
-    }
-
-    private createGameInternal(gameSettings: OnlineGameSettingsUI, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>): string {
-        const gameId = this.newGameManagerService.createPendingGame(gameSettings);
+        const gameId = await this.newGameManagerService.createPendingGame(gameSettings);
         socket.emit(pendingGameId, gameId);
         socket.join(gameId);
         return gameId;
     }
 
-    private async launchGame(id: string) {
+    private launchGame(id: string) {
         const gameSettings = this.getPendingGame(id);
         if (!gameSettings) {
             return;
         }
         gameSettings.gameStatus = ACTIVE_STATUS;
-        const gameToken = await this.newGameManagerService.launchPendingGame(id, gameSettings);
+        const gameToken = this.newGameManagerService.launchPendingGame(id, gameSettings);
         this.sendGameStartedToPlayers(id, gameToken, gameSettings);
         this.deleteGameSocketMap(id);
         this.deletePendingGame(id);
@@ -297,7 +291,7 @@ export class NewGameSocketHandler {
     }
 
     private getGame(id: string): OnlineGameSettings | undefined {
-        if (isGameToken(id)) {
+        if (this.newGameManagerService.isObservableGame(id)) {
             return this.getObservableGame(id);
         }
         return this.getPendingGame(id);
@@ -355,8 +349,9 @@ export class NewGameSocketHandler {
         }
         if (gameToChange.playerNames[0] === name) {
             if (gameToChange.gameStatus === WAIT_STATUS) {
+                this.deletePendingGame(gameToChange.id);
+                this.newGameManagerService.deleteGameConvo(gameToChange.id);
                 this.ioServer.to(gameToChange.id).emit(hostQuit);
-                this.newGameManagerService.deletePendingGame(gameToChange.id);
                 this.deleteGameSocketMap(gameToChange.id);
             }
         }

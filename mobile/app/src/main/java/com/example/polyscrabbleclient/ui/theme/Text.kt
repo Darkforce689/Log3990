@@ -138,6 +138,7 @@ const val watchAGameFR = "Observer une partie"
 const val hostQuitGameFR = "L'hôte a quitté la partie"
 const val Ok = "Ok"
 val pendingGameIdFR: (id: String?) -> String = { id -> "Id de la partie: ${id ?: ""}" }
+const val players_in_game = "Joueurs dans la partie:"
 
 // Public/Private/Observables
 const val Private = "Privée"
@@ -178,3 +179,5 @@ const val user_search = "Chercher un utilisateur"
 const val invite_expired = "Votre invitation a expirée."
 const val invite_invalid = "L'invitation est invalide."
 const val invite_game_full = "La partie que vous essayez de rejoindre est pleine."
+const val user_status_online = "En ligne"
+const val user_status_offline = "Hors ligne"

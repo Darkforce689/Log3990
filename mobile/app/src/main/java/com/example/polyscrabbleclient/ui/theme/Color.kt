@@ -22,3 +22,6 @@ val Teal200 = Color(0xFF03DAC5)
 
 val Black = Color.Black
 val White = Color.White
+
+val LightOnlinePlayerStatus = Color(5,107,250)
+val DarkOnlinePlayerStatus = Color(5,250,46)

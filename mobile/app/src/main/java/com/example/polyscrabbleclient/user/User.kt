@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.user
 
 import com.example.polyscrabbleclient.BuildConfig
+import com.example.polyscrabbleclient.utils.constants.NoAvatar
 import com.example.polyscrabbleclient.utils.constants.EXP_PER_LEVEL
 import com.example.polyscrabbleclient.utils.constants.MAX_LEVEL
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
@@ -10,7 +11,7 @@ object User {
     var name: String = ""
     var email: String = ""
     var _id: String = ""
-    var avatar: String = "avatardefault"
+    var avatar: String = NoAvatar
     var averagePoints: Double = 0.0
     var nGamePlayed: Double = 0.0
     var nGameWon: Double = 0.0

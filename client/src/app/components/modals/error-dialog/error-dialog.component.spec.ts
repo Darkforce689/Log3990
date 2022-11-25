@@ -33,9 +33,4 @@ describe('ErrorDialogComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('close should close the dialog', () => {
-        component.close();
-        expect(mockDialogRef.close).toHaveBeenCalled();
-    });
 });

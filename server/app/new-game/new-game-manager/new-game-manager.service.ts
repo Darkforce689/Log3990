@@ -1,6 +1,7 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
 import { GameManagerService, PlayersAndToken } from '@app/game/game-manager/game-manager.services';
 import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
+import { ConversationService } from '@app/messages-service/services/conversation.service';
 import { OnlineGameSettings, OnlineGameSettingsUI } from '@app/new-game/online-game.interface';
 import { Subject } from 'rxjs';
 import { Service } from 'typedi';
@@ -8,12 +9,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Service()
 export class NewGameManagerService {
-    static gameIdCounter: number = 0;
     pendingGames: Map<string, OnlineGameSettingsUI> = new Map<string, OnlineGameSettingsUI>();
     activeGameSettingMap = new Map<string, OnlineGameSettings>();
     refreshPendingGame$ = new Subject<void>();
 
-    constructor(private gameMaster: GameManagerService) {
+    constructor(private gameMaster: GameManagerService, private conversationService: ConversationService) {
         this.gameMaster.gameDeleted$.subscribe((gameToken) => {
             if (gameToken) {
                 this.activeGameSettingMap.delete(gameToken);
@@ -67,22 +67,24 @@ export class NewGameManagerService {
         return games;
     }
 
-    createPendingGame(gameSettings: OnlineGameSettingsUI): string {
-        const gameId = this.generateId();
+    async createPendingGame(gameSettings: OnlineGameSettingsUI): Promise<string> {
+        const gameToken = this.generateGameToken();
+        const gameId = gameToken;
         this.pendingGames.set(gameId, gameSettings);
+        await this.conversationService.createGameConversation(gameToken);
         return gameId;
     }
 
-    async launchPendingGame(id: string, gameSettings?: OnlineGameSettingsUI): Promise<string> {
+    launchPendingGame(id: string, gameSettings?: OnlineGameSettingsUI): string {
         if (!gameSettings) {
             gameSettings = this.pendingGames.get(id);
         }
         const onlineGameSettings = this.toOnlineGameSettings(id, gameSettings);
-        const gameToken = this.generateGameToken();
+        const gameToken = id;
         onlineGameSettings.numberOfBots = onlineGameSettings.numberOfPlayers - onlineGameSettings.playerNames.length;
         this.pendingGames.delete(id);
         this.activeGameSettingMap.set(gameToken, onlineGameSettings);
-        await this.startGame(gameToken, onlineGameSettings);
+        this.startGame(gameToken, onlineGameSettings);
         return gameToken;
     }
 
@@ -156,6 +158,10 @@ export class NewGameManagerService {
         this.pendingGames.delete(id);
     }
 
+    async deleteGameConvo(id: string) {
+        await this.conversationService.deleteGameConversation(id);
+    }
+
     getPendingGame(id: string): OnlineGameSettings | undefined {
         const gameSettings = this.pendingGames.get(id);
         return !gameSettings ? undefined : this.toOnlineGameSettings(id, gameSettings);
@@ -165,20 +171,18 @@ export class NewGameManagerService {
         return this.activeGameSettingMap.get(id);
     }
 
+    isObservableGame(gameToken: string): boolean {
+        return this.getObservableGame(gameToken) !== undefined;
+    }
+
     private isPendingGame(id: string): boolean {
         return this.pendingGames.has(id);
     }
 
-    private async startGame(gameToken: string, gameSettings: OnlineGameSettings): Promise<OnlineGameSettings> {
-        const newGame = await this.gameMaster.createGame(gameToken, gameSettings);
+    private startGame(gameToken: string, gameSettings: OnlineGameSettings): OnlineGameSettings {
+        const newGame = this.gameMaster.createGame(gameToken, gameSettings);
         gameSettings.playerNames = newGame.players.map((player) => player.name);
         return gameSettings;
-    }
-
-    private generateId(): string {
-        const gameId = NewGameManagerService.gameIdCounter.toString();
-        NewGameManagerService.gameIdCounter = (NewGameManagerService.gameIdCounter + 1) % Number.MAX_SAFE_INTEGER;
-        return gameId;
     }
 
     private generateGameToken(): string {

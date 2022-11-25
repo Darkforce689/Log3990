@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
-import { User } from '@app/pages/register-page/user.interface';
+import { User, UserStatus } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { PopChatService } from '@app/services/pop-chat.service';
 
@@ -24,6 +24,7 @@ export class AccountPageComponent implements OnInit {
         nGamePlayed: 0,
         nGameWon: 0,
         averageTimePerGame: 0,
+        status: UserStatus.Online,
         totalExp: 0,
     };
     showPage: AccountPage = AccountPage.Profil;

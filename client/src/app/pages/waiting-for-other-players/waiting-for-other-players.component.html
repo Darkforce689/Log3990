@@ -1,0 +1,73 @@
+<mat-sidenav-container class="sidenav-container" [hasBackdrop]="false">
+    <mat-sidenav
+        #sidenav
+        mode="over"
+        position="end"
+        [opened]="popOutService.isOpenInWindow"
+        (opened)="popOutService.setOpen()"
+        (closed)="popOutService.setClose()"
+    >
+        <app-chat-box></app-chat-box>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <div class="container">
+            <!-- Waiting for Approval  -->
+            <div class="messages" *ngIf="isWaiting | async">
+                <h4>En attente de la réponse de l'hôte</h4>
+                <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
+                <button mat-raised-button color="primary" (click)="cancel()">Annuler</button>
+            </div>
+            <!-- main content -->
+            <mat-card *ngIf="(isWaiting | async) === false">
+                <div class="title">
+                    <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
+                    <h3>En attente d'autres joueurs</h3>
+                    <div *ngIf="isGameOwner">
+                        <button mat-icon-button (click)="invitePlayers()">
+                            <mat-icon>person_add</mat-icon>
+                        </button>
+                    </div>
+                    <div *ngIf="!isGameOwner"></div>
+                </div>
+                <div class="players">
+                    <h4>Joueurs dans la partie:</h4>
+                    <div class="player-container">
+                        <div [ngClass]="isThatPlayerHost(name) ? 'host' : 'player'" *ngFor="let name of players">
+                            <app-avatar [src]="getAvatarIcon(name)" [size]="30"></app-avatar>
+                            <p>{{ name }}</p>
+                            <mat-icon color="accent" *ngIf="isThatPlayerHost(name)">star</mat-icon>
+                            <button mat-icon-button (click)="kickPlayer(name)" *ngIf="isHost(name)">
+                                <mat-icon color="primary">close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <mat-card-actions>
+                    <button mat-button color="accent" (click)="cancel()">Annuler</button>
+                    <button mat-raised-button color="primary" [disabled]="!canLaunchGame" (click)="launchGame()">Démarrer la partie</button>
+                </mat-card-actions>
+            </mat-card>
+            <!-- Probation Players -->
+            <mat-card *ngIf="(isPrivateGame | async) && isGameOwner" class="probation">
+                <h4>Joueurs en attente d'approbation:</h4>
+                <div class="player-container">
+                    <div class="player" *ngFor="let name of tmpPlayers">
+                        <app-avatar [src]="getAvatarIcon(name)" [size]="30"></app-avatar>
+                        <p>{{ name }}</p>
+                        <button mat-icon-button (click)="acceptPlayer(name)" *ngIf="isHost(name)">
+                            <mat-icon color="primary">check</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="refusePlayer(name)" *ngIf="isHost(name)">
+                            <mat-icon color="primary">close</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+        <div class="chat-button" *ngIf="!popOutService.isPopOut">
+            <button mat-fab color="primary" (click)="sidenav.toggle()" [ngClass]="sidenav.opened ? 'button-open' : 'button-close'">
+                <mat-icon>chat</mat-icon>
+            </button>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

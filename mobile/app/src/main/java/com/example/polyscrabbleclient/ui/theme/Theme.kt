@@ -67,6 +67,10 @@ val Colors.activeCard: Color
     @Composable
     get() = if (isLight) LightActiveCard else DarkActiveCard
 
+val Colors.userStatusOnline: Color
+    @Composable
+    get() = if (isLight) LightOnlinePlayerStatus else DarkOnlinePlayerStatus
+
 @Composable
 fun PolyScrabbleClientTheme(
     isDarkTheme: MutableState<Boolean>,

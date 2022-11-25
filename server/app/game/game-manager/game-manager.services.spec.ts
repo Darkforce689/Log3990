@@ -448,26 +448,6 @@ describe('GameManagerService', () => {
         expect(service.activePlayers.size).to.be.equal(1);
     });
 
-    it('should delete game when unjoined for a certain time', () => {
-        const gameSettings: OnlineGameSettings = {
-            id: '1',
-            timePerTurn: 60000,
-            privateGame: false,
-            randomBonus: false,
-            playerNames: ['test1', 'test2'],
-            gameMode: GameMode.Classic,
-            botDifficulty,
-            numberOfPlayers,
-            magicCardIds: [],
-            tmpPlayerNames,
-            password,
-        };
-        service.createGame('1', gameSettings).then(() => {
-            clock.tick(NEW_GAME_TIMEOUT);
-            expect(service.activeGames.size).to.be.equal(0);
-        });
-    });
-
     it('should delete game when linked clients are undefined', async () => {
         const gameSettings: OnlineGameSettings = {
             id: '1',
@@ -521,27 +501,6 @@ describe('GameManagerService', () => {
         clock.tick(NEW_GAME_TIMEOUT);
         await Promise.resolve();
         expect(service.activeGames.size).to.be.equal(1);
-    });
-
-    it('should not delete linked clients when game is deleted before the time runs out', () => {
-        const gameSettings: OnlineGameSettings = {
-            id: '1',
-            timePerTurn: 60000,
-            privateGame: false,
-            randomBonus: false,
-            playerNames: ['test1', 'test2'],
-            gameMode: GameMode.Classic,
-            botDifficulty,
-            numberOfPlayers,
-            magicCardIds: [],
-            tmpPlayerNames,
-            password,
-        };
-        service.createGame('1', gameSettings).then(() => {
-            service.activeGames.delete('1');
-            clock.tick(NEW_GAME_TIMEOUT);
-            expect(service.linkedClients.size).to.be.equal(0);
-        });
     });
 
     it('should get newGameState$ properly', () => {

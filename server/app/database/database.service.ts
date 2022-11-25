@@ -19,6 +19,7 @@ import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { RedisClientService } from '@app/database/redis-client.service';
 import { ServerLogger } from '@app/logger/logger';
 import { ConversationType } from '@app/messages-service/interfaces/conversation.interface';
+import { UserStatus } from '@app/user/interfaces/user.interface';
 import { CollectionInfo, Db } from 'mongodb';
 import 'reflect-metadata';
 import { Service } from 'typedi';
@@ -49,15 +50,22 @@ export class DatabaseService {
         try {
             const isCollectionExist = await this.isCollectionInDb(USER_COLLECTION);
             if (isCollectionExist) {
+                this.setAllUserOffline();
                 return;
             }
             const collection = await this.db.createCollection(USER_COLLECTION);
             await collection.createIndex({ email: 1 }, { unique: true });
             await collection.createIndex({ name: 1 }, { unique: true });
+            await collection.createIndex({ status: 1 }, { unique: false });
             await collection.insertOne({ email: 'system@scrabble.com', name: SYSTEM_USER_NAME, avatar: 'elephant' });
         } catch (e) {
             throw Error('Data base users collection creation error');
         }
+    }
+
+    private async setAllUserOffline() {
+        const collection = this.db.collection(USER_COLLECTION);
+        await collection.updateMany({}, { $set: { status: UserStatus.Offline } });
     }
 
     private async createConversationCollection() {
