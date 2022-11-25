@@ -2,6 +2,7 @@ package com.example.polyscrabbleclient.lobby.view
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -107,61 +107,6 @@ fun WaitingForOtherPlayersView(
 }
 
 @Composable
-private fun ConfirmedPlayerView(
-    playerName: String,
-    viewModel: WaitingForOtherPlayersViewModel
-) {
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        PlayerView(playerName) {
-            if (viewModel.isHost(playerName)) {
-                HostPlayerView()
-            } else {
-                if (viewModel.isHost()) {
-                    KickPlayerView { viewModel.kick(playerName) }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun PlayerView(
-    playerName: String,
-    playerSideElements: @Composable () -> Unit
-) {
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        PlayerAndAvatar(playerName)
-        playerSideElements()
-    }
-}
-
-@Composable
-private fun PlayerAndAvatar(playerName: String) {
-    Row(
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Todo add ICON -> in other PR (JU)
-        Text(
-            text = playerName,
-            modifier =
-            Modifier
-                .padding(5.dp)
-                .fillMaxWidth(0.8f),
-            fontSize = 18.sp
-        )
-    }
-}
-
-@Composable
 private fun WaitingForOtherPlayersButtons(
     viewModel: WaitingForOtherPlayersViewModel,
     navController: NavController
@@ -186,6 +131,62 @@ private fun WaitingForOtherPlayersButtons(
                 }
             }
         ) { Text(text = launchGameButtonFR) }
+    }
+}
+
+
+@Composable
+private fun PlayerView(
+    playerName: String,
+    playerSideElements: @Composable () -> Unit
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PlayerAndAvatar(playerName)
+        playerSideElements()
+    }
+}
+
+@Composable
+private fun PlayerAndAvatar(playerName: String) {
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+        // TODO : DYNAMIC VIEW WIDTH
+        modifier = Modifier.fillMaxWidth(0.6f)
+    ) {
+        // Todo add ICON -> in other PR (JU)
+        Text(
+            text = playerName,
+            modifier = Modifier.padding(5.dp),
+            fontSize = 18.sp
+        )
+    }
+}
+
+
+@Composable
+private fun ConfirmedPlayerView(
+    playerName: String,
+    viewModel: WaitingForOtherPlayersViewModel
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PlayerView(playerName) {
+            if (viewModel.isHost(playerName)) {
+                HostPlayerView()
+            } else {
+                if (viewModel.isHost()) {
+                    KickPlayerView { viewModel.kick(playerName) }
+                }
+            }
+        }
     }
 }
 
@@ -258,21 +259,26 @@ private fun CandidatePlayersView(
     viewModel: WaitingForOtherPlayersViewModel
 ) {
     if (viewModel.canAcceptRefusePlayers()) {
+        Spacer(modifier = Modifier.size(20.dp))
         Card(
             modifier = Modifier
                 .width(400.dp)
-                .height(350.dp),
+                .height(250.dp),
         ) {
-            SubTitleView(CandidatePlayers)
-            LazyColumn {
-                val playerNames = viewModel.getCandidatePlayerNames()
-                items(playerNames.size) {
-                    val playerName = playerNames[it]
-                    CandidatePlayerView(
-                        playerName,
-                        { viewModel.accept(playerName) },
-                        { viewModel.refuse(playerName) }
-                    )
+            Column(
+                Modifier.padding(10.dp)
+            ) {
+                SubTitleView(CandidatePlayers)
+                LazyColumn {
+                    val playerNames = viewModel.getCandidatePlayerNames()
+                    items(playerNames.size) {
+                        val playerName = playerNames[it]
+                        CandidatePlayerView(
+                            playerName,
+                            { viewModel.accept(playerName) },
+                            { viewModel.refuse(playerName) }
+                        )
+                    }
                 }
             }
         }
@@ -301,11 +307,25 @@ private fun navigateTo(page: NavPage, navController: NavController) {
     }
 }
 
-@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Preview(showBackground = true)
+@Composable
+fun WaitingForOtherPlayersPreviewReadOnly() {
+    val vm = WaitingForOtherPlayersViewModel()
+    LobbyRepository.model.isGamePrivate.value = true
+    LobbyRepository.model.isPendingGameHost.value = false
+    LobbyRepository.model.pendingGamePlayerNames.value =
+        listOf("Player", "Player2", "PlayerButHeDecidedToMessTheUIEvenFurther")
+    LobbyRepository.model.candidatePlayerNames.value =
+        listOf("Candidate", "Candidate2", "CandidateButHeDecidedToMessTheUIEvenFurther")
+    WaitingForOtherPlayersView(rememberNavController(), vm)
+}
+
+@Preview(showBackground = true)
 @Composable
 fun WaitingForOtherPlayersPreview() {
     val vm = WaitingForOtherPlayersViewModel()
-    LobbyRepository.model.isGamePrivate.value = false
+    LobbyRepository.model.isGamePrivate.value = true
+    LobbyRepository.model.isPendingGameHost.value = true
     LobbyRepository.model.pendingGamePlayerNames.value =
         listOf("Player", "Player2", "PlayerButHeDecidedToMessTheUIEvenFurther")
     LobbyRepository.model.candidatePlayerNames.value =
@@ -314,7 +334,7 @@ fun WaitingForOtherPlayersPreview() {
 }
 
 @SuppressLint("UnrememberedMutableState")
-@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Preview(showBackground = true)
 @Composable
 fun DarkWaitingForOtherPlayersPreview() {
     PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
