@@ -62,6 +62,7 @@ class NewGameViewModel: ViewModel() {
 
     private var onErrorCallBack: (Error?) -> Unit = {}
 
+    // NOT CALLED ?
     fun onError(onError: (Error?) -> Unit) {
         onErrorCallBack = onError
     }

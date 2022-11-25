@@ -5,14 +5,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.invitations.components.InviteUserToGameModal
 import com.example.polyscrabbleclient.lobby.viewmodels.WaitingForOtherPlayersViewModel
@@ -24,8 +28,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun WaitingForOtherPlayersView(
     navController: NavController,
+    viewModel: WaitingForOtherPlayersViewModel = viewModel()
 ) {
-    val viewModel: WaitingForOtherPlayersViewModel = viewModel()
     var isInviteModalOpened by remember {
         mutableStateOf(false)
     }
@@ -86,18 +90,15 @@ fun WaitingForOtherPlayersView(
                                     fontSize = 18.sp
                                 )
                                 if (viewModel.isHost(it)) {
-                                    Icon(
-                                        modifier = Modifier.size(30.dp),
-                                        imageVector = Icons.Rounded.StarRate,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colors.secondary
-                                    )
+                                    HostPlayerView()
+                                } else {
+                                    KickPlayerView(it, viewModel)
                                 }
                             }
 
                         }
                     }
-                    // TODO : ACCEPT / KICK PLAYERS
+                    // TODO : PROBATION IF PRIVATE
                 }
                 Row(
                     Modifier
@@ -109,7 +110,7 @@ fun WaitingForOtherPlayersView(
 
                         onClick = {
                             viewModel.leavePendingGame();
-                            navigateToHomeScreen(navController)
+                            navigateTo(NavPage.MainPage, navController)
                         }
                     ) { Text(text = cancelButtonFR) }
 
@@ -117,9 +118,7 @@ fun WaitingForOtherPlayersView(
                         enabled = viewModel.canLaunchGame(),
                         onClick = {
                             viewModel.launchGame {
-                                navigateToGameScreen(
-                                    navController
-                                )
+                                navigateTo(NavPage.GamePage, navController)
                             }
                         }
                     ) { Text(text = launchGameButtonFR) }
@@ -127,7 +126,12 @@ fun WaitingForOtherPlayersView(
                 }
             }
         }
-        HostHasJustQuitModal(viewModel.hostHasJustQuitTheGame) { navigateToHomeScreen(navController) }
+        HostHasJustQuitModal(viewModel.hostHasJustQuitTheGame) {
+            navigateTo(
+                NavPage.MainPage,
+                navController
+            )
+        }
 
         // TODO if waiting modal stop recomposing notify oli
         InviteUserToGameModal(
@@ -138,24 +142,48 @@ fun WaitingForOtherPlayersView(
     }
 }
 
-private fun navigateToHomeScreen(navController: NavController) {
+
+@Composable
+private fun HostPlayerView() {
+    Icon(
+        modifier = Modifier.size(30.dp),
+        imageVector = Icons.Rounded.StarRate,
+        contentDescription = null,
+        tint = MaterialTheme.colors.secondary
+    )
+}
+
+@Composable
+fun KickPlayerView(
+    playerName: String,
+    viewModel: WaitingForOtherPlayersViewModel
+) {
+    Button(
+        onClick = { viewModel.kick(playerName) },
+        color = ButtonC
+    ) {
+        Icon(
+            modifier = Modifier.size(30.dp),
+            imageVector = Icons.Rounded.Close,
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary,
+        )
+    }
+}
+
+private fun navigateTo(page: NavPage, navController: NavController) {
     CoroutineScope(Dispatchers.IO).launch {
         launch(Dispatchers.Main) {
-            navController.navigate(NavPage.MainPage.label) {
+            navController.navigate(page.label) {
                 launchSingleTop = true
             }
         }
     }
 }
 
-private fun navigateToGameScreen(navController: NavController) {
-    CoroutineScope(Dispatchers.IO).launch {
-        launch(Dispatchers.Main) {
-            navController.navigate(NavPage.GamePage.label) {
-                launchSingleTop = true
-            }
-        }
-    }
+@Preview(showBackground = true, device = Devices.PIXEL_C)
+@Composable
+fun WaitingForOtherPlayersPreview() {
+    val vm = WaitingForOtherPlayersViewModel()
+    WaitingForOtherPlayersView(rememberNavController(), vm)
 }
-
-

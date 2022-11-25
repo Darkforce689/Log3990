@@ -44,4 +44,8 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
     fun isHost(playerName: String): Boolean {
         return playerName === getPendingGamePlayerNames()[0]
     }
+
+    fun kick(playerName: String) {
+        LobbyRepository.kickPlayer(playerName)
+    }
 }
