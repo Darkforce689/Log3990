@@ -18,6 +18,15 @@ export enum JoinGameError {
     NotEnoughPlace = 'PENDING_GAME_FULL',
 }
 
+export interface PrivateGameEvent {
+    gameId: string;
+    playerName: string;
+}
+
+type KickPlayer = PrivateGameEvent;
+type AcceptPlayer = PrivateGameEvent;
+type RefusePlayer = PrivateGameEvent;
+
 const pendingGames = 'pendingGames';
 const createGame = 'createGame';
 const joinGame = 'joinGame';
@@ -57,7 +66,6 @@ export class NewGameSocketHandler {
         this.ioServer.use(this.authService.socketAuthGuard);
 
         this.ioServer.on('connection', async (socket) => {
-            let gameId: string;
             socket.emit(pendingGames, {
                 pendingGamesSettings: this.newGameManagerService.getPendingGames(),
                 observableGamesSettings: this.newGameManagerService.getObservableGames(),
@@ -65,14 +73,13 @@ export class NewGameSocketHandler {
 
             socket.on(createGame, async (gameSettings: OnlineGameSettingsUI) => {
                 try {
-                    console.log(gameSettings);
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
                         return;
                     }
                     gameSettings.gameStatus = WAIT_STATUS;
-                    gameId = await this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name], tmpPlayerNames: [] }), socket);
+                    const gameId = await this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name], tmpPlayerNames: [] }), socket);
                     this.addToSocketMap(gameId, user.name, socket, true);
                     this.emitPendingGamesToAll();
                     this.sendGameSettingsToPlayers(gameId, gameSettings as OnlineGameSettings);
@@ -136,15 +143,15 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(kickPlayer, async (id, playerName) => {
+            socket.on(kickPlayer, async ({ gameId, playerName }: KickPlayer) => {
                 try {
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
                         return;
                     }
-                    if (this.socketMap.get(id)?.get(user.name)?.isHost) {
-                        this.kickPlayer(id, playerName);
+                    if (this.socketMap.get(gameId)?.get(user.name)?.isHost) {
+                        this.kickPlayer(gameId, playerName);
                         this.emitPendingGamesToAll();
                     }
                 } catch (error) {
@@ -153,15 +160,15 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(acceptPlayer, async (id, playerNbr) => {
+            socket.on(acceptPlayer, async ({ gameId, playerName }: AcceptPlayer) => {
                 try {
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
                         return;
                     }
-                    if (this.socketMap.get(id)?.get(user.name)?.isHost) {
-                        this.acceptPlayer(id, playerNbr);
+                    if (this.socketMap.get(gameId)?.get(user.name)?.isHost) {
+                        this.acceptPlayer(gameId, playerName);
                         this.emitPendingGamesToAll();
                     }
                 } catch (error) {
@@ -170,15 +177,15 @@ export class NewGameSocketHandler {
                 }
             });
 
-            socket.on(refusePlayer, async (id, playerNbr) => {
+            socket.on(refusePlayer, async ({ gameId, playerName }: RefusePlayer) => {
                 try {
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
                         return;
                     }
-                    if (this.socketMap.get(id)?.get(user.name)?.isHost) {
-                        this.refusePlayer(id, playerNbr);
+                    if (this.socketMap.get(gameId)?.get(user.name)?.isHost) {
+                        this.refusePlayer(gameId, playerName);
                         this.emitPendingGamesToAll();
                     }
                 } catch (error) {
