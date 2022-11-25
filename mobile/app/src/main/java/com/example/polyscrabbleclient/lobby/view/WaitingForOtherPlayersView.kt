@@ -43,7 +43,7 @@ fun WaitingForOtherPlayersView(
         Card(
             modifier = Modifier
                 .width(400.dp)
-                .height(350.dp),
+                .height(375.dp),
         ) {
             Column(
                 Modifier.padding(10.dp),
@@ -317,6 +317,19 @@ fun WaitingForOtherPlayersPreviewReadOnly() {
         listOf("Player", "Player2", "PlayerButHeDecidedToMessTheUIEvenFurther")
     LobbyRepository.model.candidatePlayerNames.value =
         listOf("Candidate", "Candidate2", "CandidateButHeDecidedToMessTheUIEvenFurther")
+    WaitingForOtherPlayersView(rememberNavController(), vm)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PopularWaitingForOtherPlayersPreviewReadOnly() {
+    val vm = WaitingForOtherPlayersViewModel()
+    LobbyRepository.model.isGamePrivate.value = true
+    LobbyRepository.model.isPendingGameHost.value = true
+    LobbyRepository.model.pendingGamePlayerNames.value =
+        listOf("Host", "PlayerB", "PayerC", "PlayerD")
+    LobbyRepository.model.candidatePlayerNames.value =
+        (1..100).map { "Player$it" }
     WaitingForOtherPlayersView(rememberNavController(), vm)
 }
 
