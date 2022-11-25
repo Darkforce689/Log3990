@@ -38,7 +38,10 @@ data class OnlineGameSettings(
 
 typealias LobbyGamesList = ArrayList<OnlineGameSettings>
 
-typealias LobbyGameId = String
+data class PrivateGameEvent(
+    val gameId: String,
+    val playerName: String
+)
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
 
@@ -50,6 +53,10 @@ data class LobbyGames(
     val pendingGamesSettings: LobbyGamesList,
     val observableGamesSettings: LobbyGamesList
 )
+
+typealias LobbyGameId = String
+
+typealias HostQuit = Unit
 
 typealias Error = String
 
@@ -73,4 +80,10 @@ data class JoinGame(
     val password: String? = null,
 )
 
-typealias HostQuit = Unit
+typealias KickPlayer = PrivateGameEvent
+
+typealias AcceptPlayer = PrivateGameEvent
+
+typealias RefusePlayer = PrivateGameEvent
+
+

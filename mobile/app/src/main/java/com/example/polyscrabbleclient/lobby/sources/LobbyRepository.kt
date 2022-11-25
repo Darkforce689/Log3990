@@ -5,7 +5,6 @@ import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.utils.Repository
-import kotlinx.coroutines.flow.MutableStateFlow
 
 object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
 
@@ -52,8 +51,8 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         onErrorCallbacks[key] = callback
     }
 
-    val onError: (error: Error?) -> Unit = { error ->
-        onErrorCallbacks.forEach { _, callback ->
+    private val onError: (error: Error?) -> Unit = { error ->
+        onErrorCallbacks.forEach { (_, callback) ->
             callback(error)
         }
         println("LobbyRepository -> Error : $error")
@@ -81,6 +80,27 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         }
     }
 
+    fun acceptPlayer(playerName: String) {
+        model.currentPendingGameId.value?.let {
+            val acceptPlayerEvent = AcceptPlayer(it, playerName)
+            socket.emit(EmitLobbyEvent.AcceptPlayer, acceptPlayerEvent)
+        }
+    }
+
+    fun refusePlayer(playerName: String) {
+        model.currentPendingGameId.value?.let {
+            val refusePlayerEvent = RefusePlayer(it, playerName)
+            socket.emit(EmitLobbyEvent.AcceptPlayer, refusePlayerEvent)
+        }
+    }
+
+    fun kickPlayer(playerName: String) {
+        model.currentPendingGameId.value?.let {
+            val kickPlayerEvent = KickPlayer(it, playerName)
+            socket.emit(EmitLobbyEvent.AcceptPlayer, kickPlayerEvent)
+        }
+    }
+
     fun quitPendingGame() {
         reset()
     }
@@ -101,8 +121,8 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
     override fun setupEvents() {
         socket.on(OnLobbyEvent.GameJoined, onGameJoined)
         socket.on(OnLobbyEvent.GameStarted, onGameStarted)
-        socket.on(OnLobbyEvent.PendingGames, onPendingGames)
-        socket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
+        socket.on(OnLobbyEvent.LobbyGames, onPendingGames)
+        socket.on(OnLobbyEvent.LobbyGameId, onPendingGameId)
         socket.on(OnLobbyEvent.HostQuit, onHostQuit)
         socket.on(OnLobbyEvent.Error, onError)
     }
