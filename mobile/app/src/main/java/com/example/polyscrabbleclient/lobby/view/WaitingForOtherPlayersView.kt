@@ -99,7 +99,7 @@ fun WaitingForOtherPlayersView(
                                 if (viewModel.isHost(it)) {
                                     HostPlayerView()
                                 } else {
-                                    KickPlayerView(it, viewModel)
+                                    KickPlayerView { viewModel.kick(it) }
                                 }
                             }
 
@@ -161,13 +161,12 @@ private fun HostPlayerView() {
 
 @Composable
 fun KickPlayerView(
-    playerName: String,
-    viewModel: WaitingForOtherPlayersViewModel
+    kickPlayer: () -> Unit
 ) {
     PlayerSideElementView(
         Icons.Rounded.Close,
     ) {
-        viewModel.kick(playerName)
+        kickPlayer()
     }
 }
 
