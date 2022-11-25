@@ -25,6 +25,7 @@ import com.example.polyscrabbleclient.invitations.components.InviteUserToGameMod
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.viewmodels.WaitingForOtherPlayersViewModel
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.utils.SubTitleView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,9 +78,7 @@ fun WaitingForOtherPlayersView(
                             }
                         }
                     }
-                    Text(
-                        text = players_in_game, Modifier.padding(5.dp), fontSize = 20.sp
-                    )
+                    SubTitleView(players_in_game)
                     Column(Modifier.padding(5.dp)) {
                         viewModel.getPendingGamePlayerNames().forEach {
                             Row(
@@ -87,52 +86,22 @@ fun WaitingForOtherPlayersView(
                                 horizontalArrangement = Arrangement.Start,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Todo add ICON -> in other PR (JU)
-                                Text(
-                                    text = it,
-                                    modifier =
-                                    Modifier
-                                        .padding(5.dp)
-                                        .fillMaxWidth(0.8f),
-                                    fontSize = 18.sp
-                                )
+                                LobbyGamePlayerView(it)
                                 if (viewModel.isHost(it)) {
                                     HostPlayerView()
                                 } else {
-                                    KickPlayerView { viewModel.kick(it) }
+                                    if (viewModel.isHost()) {
+                                        KickPlayerView { viewModel.kick(it) }
+                                    }
                                 }
                             }
-
                         }
                     }
-                    // TODO : PROBATION IF PRIVATE
                 }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Button(
-
-                        onClick = {
-                            viewModel.leavePendingGame();
-                            navigateTo(NavPage.MainPage, navController)
-                        }
-                    ) { Text(text = cancelButtonFR) }
-
-                    Button(
-                        enabled = viewModel.canLaunchGame(),
-                        onClick = {
-                            viewModel.launchGame {
-                                navigateTo(NavPage.GamePage, navController)
-                            }
-                        }
-                    ) { Text(text = launchGameButtonFR) }
-
-                }
+                WaitingForOtherPlayersButtons(viewModel, navController)
             }
         }
+        CandidatePlayersView(viewModel)
         HostHasJustQuitModal(viewModel.hostHasJustQuitTheGame) {
             navigateTo(
                 NavPage.MainPage,
@@ -149,6 +118,52 @@ fun WaitingForOtherPlayersView(
     }
 }
 
+@Composable
+private fun LobbyGamePlayerView(playerName: String) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Todo add ICON -> in other PR (JU)
+        Text(
+            text = playerName,
+            modifier =
+            Modifier
+                .padding(5.dp)
+                .fillMaxWidth(0.8f),
+            fontSize = 18.sp
+        )
+    }
+}
+
+@Composable
+private fun WaitingForOtherPlayersButtons(
+    viewModel: WaitingForOtherPlayersViewModel,
+    navController: NavController
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(5.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Button(
+            onClick = {
+                viewModel.leavePendingGame();
+                navigateTo(NavPage.MainPage, navController)
+            }
+        ) { Text(text = cancelButtonFR) }
+        Button(
+            enabled = viewModel.canLaunchGame(),
+            onClick = {
+                viewModel.launchGame {
+                    navigateTo(NavPage.GamePage, navController)
+                }
+            }
+        ) { Text(text = launchGameButtonFR) }
+    }
+}
 
 @Composable
 private fun HostPlayerView() {
@@ -192,6 +207,35 @@ private fun PlayerSideElementView(
     }
 }
 
+@Composable
+private fun CandidatePlayersView(
+    viewModel: WaitingForOtherPlayersViewModel
+) {
+    if (viewModel.isGamePrivate()) {
+        Card(
+            modifier = Modifier
+                .width(400.dp)
+                .height(350.dp),
+        ) {
+            SubTitleView(CandidatePlayers)
+            viewModel.getCandidatePlayerNames().forEach {
+                CandidatePlayerView(
+                    { viewModel.accept(it) },
+                    { viewModel.refuse(it) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CandidatePlayerView(
+    accept: () -> Unit,
+    refuse: () -> Unit
+) {
+
+}
+
 private fun navigateTo(page: NavPage, navController: NavController) {
     CoroutineScope(Dispatchers.IO).launch {
         launch(Dispatchers.Main) {
@@ -206,8 +250,11 @@ private fun navigateTo(page: NavPage, navController: NavController) {
 @Composable
 fun WaitingForOtherPlayersPreview() {
     val vm = WaitingForOtherPlayersViewModel()
+    LobbyRepository.model.isGamePrivate.value = false
     LobbyRepository.model.pendingGamePlayerNames.value =
-        listOf("xavMobile", "xavMobile2", "xavMobileButHeDecidedToMessTheUIEvenFurther")
+        listOf("Player", "Player2", "PlayerButHeDecidedToMessTheUIEvenFurther")
+    LobbyRepository.model.candidatePlayerNames.value =
+        listOf("Candidate", "Candidate2", "CandidateButHeDecidedToMessTheUIEvenFurther")
     WaitingForOtherPlayersView(rememberNavController(), vm)
 }
 
@@ -216,9 +263,6 @@ fun WaitingForOtherPlayersPreview() {
 @Composable
 fun DarkWaitingForOtherPlayersPreview() {
     PolyScrabbleClientTheme(isDarkTheme = mutableStateOf(true)) {
-        val vm = WaitingForOtherPlayersViewModel()
-        LobbyRepository.model.pendingGamePlayerNames.value =
-            listOf("xavMobile", "xavMobile2", "xavMobileButHeDecidedToMessTheUIEvenFurther")
-        WaitingForOtherPlayersView(rememberNavController(), vm)
+        WaitingForOtherPlayersPreview()
     }
 }

@@ -15,6 +15,8 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         gameJoined?.let {
             model.currentPendingGameId.value = it.id
             model.pendingGamePlayerNames.value = it.playerNames
+            model.isGamePrivate.value = it.privateGame
+            model.candidatePlayerNames.value = it.tmpPlayerNames
             model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
             val gameToken = it.id

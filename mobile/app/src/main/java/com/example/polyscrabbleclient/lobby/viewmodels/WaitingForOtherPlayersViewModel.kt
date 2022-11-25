@@ -27,9 +27,12 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
         return canLaunchGame()
     }
 
-    fun canLaunchGame(): Boolean {
+    fun isHost(): Boolean {
         return lobby.model.isPendingGameHost.value
-            && lobby.model.currentPendingGameId.value !== null
+    }
+
+    fun canLaunchGame(): Boolean {
+        return isHost() && lobby.model.currentPendingGameId.value !== null
     }
 
     fun leavePendingGame() {
@@ -43,6 +46,14 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
 
     fun isHost(playerName: String): Boolean {
         return playerName === getPendingGamePlayerNames()[0]
+    }
+
+    fun isGamePrivate(): Boolean {
+        return lobby.model.isGamePrivate.value
+    }
+
+    fun getCandidatePlayerNames(): List<String> {
+        return lobby.model.candidatePlayerNames.value
     }
 
     fun kick(playerName: String) {

@@ -12,8 +12,10 @@ class LobbyModel {
     val observableGames = mutableStateOf<LobbyGamesList?>(null)
     val currentPendingGameId = mutableStateOf<LobbyGameId?>(null)
     val pendingGamePlayerNames = mutableStateOf(listOf<String>())
+    val candidatePlayerNames = mutableStateOf(listOf<String>())
     val isPendingGameHost = mutableStateOf(false)
     val hostHasJustQuitTheGame = mutableStateOf(false)
+    val isGamePrivate = mutableStateOf(false)
     val password = mutableStateOf<String?>(null)
     val playerNamesInLobby = MutableStateFlow<List<String>>(listOf())
 }
