@@ -1,0 +1,82 @@
+$light-primary-palette: (
+    100: #af99e0,
+    500: #6200ee,
+    900: #3700b3,
+    contrast: (
+        100: $dark-primary-text,
+        500: $light-primary-text,
+        900: $light-primary-text,
+    ),
+);
+
+$light-accent-palette: (
+    100: #99cfce,
+    500: #03dac6,
+    900: #018786,
+    contrast: (
+        100: $dark-primary-text,
+        500: $dark-primary-text,
+        900: $light-primary-text,
+    ),
+);
+
+$light-warn-palette: (
+    100: #d77f8f,
+    500: #bf324c,
+    900: #b00020,
+    contrast: (
+        100: $dark-primary-text,
+        500: $light-primary-text,
+        900: $light-primary-text,
+    ),
+);
+
+$light-primary: mat.define-palette($light-primary-palette, 500, 100, 900);
+$light-accent: mat.define-palette($light-accent-palette, 500, 100, 900);
+$light-warn: mat.define-palette($light-warn-palette);
+
+$light-theme: mat.define-light-theme(
+    (
+        color: (
+            primary: $light-primary,
+            accent: $light-accent,
+            warn: $light-warn,
+        ),
+    )
+);
+
+.light-theme {
+    @include mat.all-component-themes($light-theme);
+
+    $primary: mat-color($light-primary);
+    $accent: mat-color($light-accent);
+    $warn: mat-color($light-warn);
+    $fg_palette: map-get($light-theme, foreground);
+    $bg_palette: map-get($light-theme, background);
+    $fg: map-get($fg_palette, text);
+    $bg: map-get($bg_palette, background);
+
+    --primary: #{$primary};
+    --accent: #{$accent};
+    --warn: #{$warn};
+    --fg: #{$fg};
+    --bg: #{$bg};
+
+    // Custom fields
+    --tileBackground: var(--LightTileBackgroundColor) !important;
+    --transientTileBackground: var(--LightTransientTileBackgroundColor) !important;
+    --grayedOutTileBackground: var(--LightTileGrayedOutBackgroundColor) !important;
+    --accepted: var(--LightAcceptedColor) !important;
+    --cardHolder: var(--LightCardHolder) !important;
+    --activeCard: var(--LightActiveCard) !important;
+    --link: var(--LightLink) !important;
+    --userStatus: var(--LightUserStatus) !important;
+
+    .accent-color {
+        color: mat-color($light-accent) !important;
+    }
+
+    .primary-color {
+        color: mat-color($light-primary) !important;
+    }
+}

@@ -1,5 +1,7 @@
 @use '~@angular/material' as mat;
 @import '~@angular/material/theming';
+@import 'themes/light-theme';
+@import 'themes/dark-theme';
 @include mat.core();
 
 //     stylesheet           Theme          P               A         W
@@ -8,115 +10,31 @@
 // pink-bluegrey.css 	    Dark 	    pink,           bluegrey,   red
 // purple-green.css 	    Dark 	    purple,         green,      red
 
-$light-primary: mat.define-palette(mat.$deep-purple-palette, 500, 100, 900);
-$light-accent: mat.define-palette(mat.$teal-palette, 500, 100, 900);
-$light-warn: mat.define-palette(mat.$red-palette);
-
-$light-theme: mat.define-light-theme(
-    (
-        color: (
-            primary: $light-primary,
-            accent: $light-accent,
-            warn: $light-warn,
-        ),
-    )
-);
-
-.light-theme {
-    @include mat.all-component-themes($light-theme);
-
-    $primary: mat-color($light-primary);
-    $accent: mat-color($light-accent);
-    $warn: mat-color($light-warn);
-    $fg_palette: map-get($light-theme, foreground);
-    $bg_palette: map-get($light-theme, background);
-    $fg: map-get($fg_palette, text);
-    $bg: map-get($bg_palette, background);
-
-    --primary: #{$primary};
-    --accent: #{$accent};
-    --warn: #{$warn};
-    --fg: #{$fg};
-    --bg: #{$bg};
-
-    --user-status: rgb(5,107,250);
-
-    .accent-color {
-        color: mat-color($light-accent) !important;
-    }
-    
-    .primary-color {
-        color: mat-color($light-primary) !important;
-    }
-}
-
-
-$dark-primary: mat.define-palette(mat.$purple-palette, 500, 100, 900);
-$dark-accent: mat.define-palette(mat.$blue-palette, 500, 100, 900);
-$dark-warn: mat.define-palette(mat.$red-palette);
-
-$dark-theme: mat.define-dark-theme(
-    (
-        color: (
-            primary: $dark-primary,
-            accent: $dark-accent,
-            warn: $dark-warn,
-        ),
-    )
-);
-
-.dark-theme {
-    @include mat.all-component-themes($dark-theme);
-
-    $primary: mat-color($dark-primary);
-    $accent: mat-color($dark-accent);
-    $warn: mat-color($dark-warn);
-    $fg_palette: map-get($dark-theme, foreground);
-    $bg_palette: map-get($dark-theme, background);
-    $fg: map-get($fg_palette, text);
-    $bg: map-get($bg_palette, background);
-
-    --primary: #{$primary};
-    --accent: #{$accent};
-    --warn: #{$warn};
-    --fg: #{$fg};
-    --bg: #{$bg};
-
-    --user-status: rgb(5,250,46);
-
-    .accent-color {
-        color: mat-color($dark-accent) !important;
-    }
-
-    .primary-color {
-        color: mat-color($dark-primary) !important;
-    }
-    
-
-}
-
-
-
-// TODO GL3A22107-104
 :root {
-    --lightblue: rgb(152, 222, 255);
-    --darkgray: rgb(119, 119, 119);
-    --brown: rgb(129, 82, 63);
+    --LightTileBackgroundColor: rgba(215, 192, 150, 255);
+    --LightTransientTileBackgroundColor: rgba(240, 232, 216, 255);
+    --LightTileGrayedOutBackgroundColor: rgba(98, 83, 80);
+    --LightAcceptedColor: rgba(32, 176, 0); // Triadic color related to #b00020
+    --LightCardHolder: rgba(139, 139, 139, 255);
+    --LightActiveCard: rgba(89, 217, 255, 255);
+    --LightLink: blue;
+    --LightUserStatus: rgb(5, 107, 250);
 
-    // Board color
-    --blue-munsell: rgb(50, 87, 187);
-    --melon: rgb(248, 142, 142);
-    --salmon: rgb(209, 0, 45);
-    --powder-blue: rgb(120, 209, 221);
-    --brown-choco: rgb(66, 56, 52);
-    --bone: rgb(240, 231, 216, 1);
+    --DarkTileBackgroundColor: rgba(70, 15, 7, 255);
+    --DarkTransientTileBackgroundColor: rgba(93, 45, 38, 255);
+    --DarkTileGrayedOutBackgroundColor: rgba(35, 7, 3);
+    --DarkAcceptedColor: rgba(121, 207, 102); // Triadic color related to #cf6679
+    --DarkCardHolder: rgba(97, 97, 97, 255);
+    --DarkActiveCard: rgba(0, 76, 136, 255);
+    --DarkLink: cyan;
+    --DarkUserStatus: rgb(5, 250, 46);
 
-    // Page
-    --black-chocolate: rgba(20, 16, 9, 1);
-    --lightgray: rgb(209, 209, 209, 0.9);
-    --white: rgb(255, 255, 255);
-    --red: rgb(153, 1, 1);
-    --active: rgba(0, 217, 255, 0.76);
+    --MessageHeader: gray;
+    --LetterRackBackround: rgb(47, 37, 51);
+    --LetterRackBorder: rgb(37, 37, 37);
+
+    --Black: black;
+    --White: white;
 }
 
 html,
@@ -126,7 +44,6 @@ body {
 body {
     margin: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
-    // TODO GL3A22107-104
     background: #20262c;
 }
 

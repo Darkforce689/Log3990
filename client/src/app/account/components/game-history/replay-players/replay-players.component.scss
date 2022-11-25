@@ -2,7 +2,9 @@ mat-card {
     margin-bottom: 10%;
 }
 
-.mat-card-actions, .mat-card-subtitle, .mat-card-content {
+.mat-card-actions,
+.mat-card-subtitle,
+.mat-card-content {
     margin-bottom: 0%;
 }
 
@@ -32,9 +34,8 @@ mat-card {
     margin-top: 10%;
     padding: 2%;
     min-height: 29px;
-    // TODO GL3A22107-104
-    background-color: rgb(47, 37, 51);
-    border: 3px solid rgb(37, 37, 37);
+    background-color: var(--LetterRackBackround);
+    border: 3px solid var(--LetterRackBorder);
     border-radius: 2%;
 }
 
@@ -43,12 +44,10 @@ mat-card {
     align-items: center;
     font-weight: 400;
     font-size: small;
-    color: var(--black-chocolate);
     border-radius: 10%;
-    // TODO GL3A22107-104
-    background-color: rgb(240, 231, 216);
+    color: var(--black);
+    background-color: var(--LightTileBackgroundColor);
     box-shadow: 2px 2px 2px 0.2;
-    background-image: url('^assets/img/tuile.png');
     background-size: contain;
 
     span {
@@ -75,7 +74,7 @@ mat-card {
         mat-icon {
             font-size: x-large;
         }
-        box-shadow: 1px 1px 1px 1px var(--bg)
+        box-shadow: 1px 1px 1px 1px var(--bg);
     }
 }
 

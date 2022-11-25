@@ -50,6 +50,11 @@ mat-sidenav-content {
     flex-direction: column;
     justify-content: space-between;
 }
+
+mat-icon {
+    color: var(--fg);
+}
+
 .button-open {
     position: absolute;
     padding: 0%;

@@ -36,9 +36,8 @@
     justify-content: center;
 }
 
-// TODO add primary color in theming
 .login-link {
-    color: cyan;
+    color: var(--link);
 }
 
 .mat-card-footer {
@@ -50,11 +49,11 @@
 }
 
 .error {
-    color : red;
+    color: var(--warn);
     font-size: 10px;
 }
 
 app-avatar-list {
-   margin-top: 1%;
-   width: 10%;
+    margin-top: 1%;
+    width: 10%;
 }
