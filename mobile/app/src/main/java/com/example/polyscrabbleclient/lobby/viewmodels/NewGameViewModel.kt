@@ -57,6 +57,7 @@ class NewGameViewModel : ViewModel() {
         createGameDialogOpened.value = false
         joinGameDialogOpened.value = false
         watchGameDialogOpened.value = false
+        enterGamePasswordDialogOpened.value = false
         waitingForOtherPlayersDialogOpened.value = true
         isInvitation = true
     }
@@ -72,10 +73,4 @@ class NewGameViewModel : ViewModel() {
         GameInviteBroker.getCurrentInvitation() ?: return
         onInvitation()
     }
-
-    fun isGameProtected(): Boolean {
-        return LobbyRepository.model.isGameProtected.value
-    }
-
-    val password = mutableStateOf("")
 }

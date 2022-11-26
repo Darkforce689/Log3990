@@ -3,23 +3,24 @@ package com.example.polyscrabbleclient.lobby.view
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.sources.*
-import com.example.polyscrabbleclient.ui.theme.ObservableGameSubTitle
-import com.example.polyscrabbleclient.ui.theme.PendingGameSubTitle
-import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
-import com.example.polyscrabbleclient.utils.SubTitleView
+import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 
 val ColumnsWeights = listOf(
@@ -44,32 +45,18 @@ val ColumnsHeaders = listOf(
 @Composable
 fun LobbyGamesView(
     lobbyGames: MutableState<LobbyGamesList?>,
-    selectedGameIndex: MutableState<Int?>,
-    gameMode: GameMode,
-    joinGame: (LobbyGamesList?) -> Unit,
+    viewModel: JoinGameViewModel = viewModel(),
+    navController: NavController,
     modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
-    fun isGameSelected(lobbyGameIndex: Int): Boolean {
-        return selectedGameIndex.value == lobbyGameIndex
-    }
-
-    fun toggleSelectedGame(lobbyGameIndex: Int) {
-        selectedGameIndex.value =
-            if (isGameSelected(lobbyGameIndex)) {
-                null
-            } else {
-                lobbyGameIndex
-            }
-    }
-
     Column {
         lobbyGames.value?.filter { onlineGameSettings ->
-            onlineGameSettings.gameMode == gameMode
+            onlineGameSettings.gameMode == viewModel.getSelectedGameMode()
         }.let { lobbyGames ->
             LobbyGamesTableView(
                 lobbyGames,
-                { toggleSelectedGame(it) },
-                { isGameSelected(it) },
+                { viewModel.toggleSelectedGame(it) },
+                { viewModel.isGameSelected(it) },
             )
         }
 
@@ -77,8 +64,8 @@ fun LobbyGamesView(
             ModalActions(
                 primary = ActionButton(
                     label = { joinGameButtonFR },
-                    canAction = { selectedGameIndex.value !== null },
-                    action = { joinGame(lobbyGames.value) }
+                    canAction = { viewModel.selectedGameId.value !== null },
+                    action = { viewModel.joinGame(navController) }
                 )
             )
         )
@@ -88,8 +75,8 @@ fun LobbyGamesView(
 @Composable
 private fun LobbyGamesTableView(
     games: List<OnlineGameSettings>?,
-    toggleSelected: (lobbyGameIndex: Int) -> Unit,
-    isGameSelected: (lobbyGameIndex: Int) -> Boolean,
+    toggleSelected: (lobbyGameId: LobbyGameId) -> Unit,
+    isGameSelected: (lobbyGameId: LobbyGameId) -> Boolean,
 ) {
     Card(
         modifier = Modifier
@@ -109,8 +96,8 @@ private fun LobbyGamesTableView(
 @Composable
 private fun LobbyGamesListView(
     lobbyGamesList: List<OnlineGameSettings>?,
-    toggleSelected: (lobbyGameIndex: Int) -> Unit,
-    isGameSelected: (lobbyGameIndex: Int) -> Boolean,
+    toggleSelected: (lobbyGameId: LobbyGameId) -> Unit,
+    isGameSelected: (lobbyGameId: LobbyGameId) -> Boolean,
 ) {
     val primary = MaterialTheme.colors.primary
     Column {
@@ -133,12 +120,13 @@ private fun LobbyGamesListView(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            lobbyGamesList?.let {
-                itemsIndexed(it) { index, lobbyGameModel ->
+            lobbyGamesList?.let { lobbyGames ->
+                items(lobbyGames.size) { index ->
+                    val lobbyGameModel = lobbyGames[index]
                     LobbyGameView(
-                        lobbyGameSettings = lobbyGamesList[index],
-                        click = { toggleSelected(index) }
-                    ) { isGameSelected(index) }
+                        lobbyGameModel,
+                        click = { toggleSelected(lobbyGameModel.id) }
+                    ) { isGameSelected(lobbyGameModel.id) }
                 }
             }
         }
@@ -169,9 +157,8 @@ fun LobbyPendingGamesPreview() {
         mutableStateOf(
             ArrayList(listOf(a)),
         ),
-        mutableStateOf(0),
-        GameMode.Classic,
-        {}
+        JoinGameViewModel(),
+        rememberNavController()
     ) {}
 }
 
@@ -197,8 +184,7 @@ fun LobbyObservableGamesPreview() {
         mutableStateOf(
             ArrayList(listOf(b)),
         ),
-        mutableStateOf(0),
-        GameMode.Classic,
-        {}
+        JoinGameViewModel(),
+        rememberNavController()
     ) {}
 }

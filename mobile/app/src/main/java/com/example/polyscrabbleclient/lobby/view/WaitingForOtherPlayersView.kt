@@ -25,11 +25,9 @@ import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.invitations.components.InviteUserToGameModal
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.viewmodels.WaitingForOtherPlayersViewModel
+import com.example.polyscrabbleclient.navigateTo
 import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.utils.SubTitleView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun WaitingForOtherPlayersView(
@@ -294,16 +292,6 @@ fun CandidatePlayerView(
     PlayerView(playerName) {
         AcceptPlayerView { accept() }
         RefusePlayerView { refuse() }
-    }
-}
-
-private fun navigateTo(page: NavPage, navController: NavController) {
-    CoroutineScope(Dispatchers.IO).launch {
-        launch(Dispatchers.Main) {
-            navController.navigate(page.label) {
-                launchSingleTop = true
-            }
-        }
     }
 }
 

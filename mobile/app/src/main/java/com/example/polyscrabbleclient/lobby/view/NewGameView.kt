@@ -21,11 +21,10 @@ import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.view.createGame.CreateGameModalContent
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
+import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
 import com.example.polyscrabbleclient.lobby.viewmodels.NewGameViewModel
+import com.example.polyscrabbleclient.navigateTo
 import com.example.polyscrabbleclient.ui.theme.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun NewGameScreen(
@@ -43,7 +42,7 @@ fun NewGameScreen(
         viewModel.watchGameDialogOpened
     }
     val enterGamePasswordDialogOpened = remember {
-        viewModel.watchGameDialogOpened
+        viewModel.enterGamePasswordDialogOpened
     }
 
     val isToggled = remember { mutableStateOf(false) }
@@ -77,11 +76,6 @@ fun NewGameScreen(
                 Button(
                     modifier = Modifier.padding(10.dp),
                     onClick = {
-//                        if (viewModel.isGameProtected()) {
-//                            enterGamePasswordDialogOpened.value = true
-//                        } else {
-//                            joinGameDialogOpened.value = true
-//                        }
                         joinGameDialogOpened.value = true
                     }
                 ) {
@@ -101,22 +95,25 @@ fun NewGameScreen(
                     createGameViewModel
                 )
 
+                val joinGameViewModel = JoinGameViewModel()
+
                 JoinAGameModal(
                     joinGameDialogOpened,
                     enterGamePasswordDialogOpened,
-                    viewModel,
+                    joinGameViewModel,
                     navController,
-                    createGameViewModel.pendingGames
+                    createGameViewModel.pendingGames,
                 )
 
                 EnterPasswordModal(
                     enterGamePasswordDialogOpened,
-                    viewModel,
+                    joinGameViewModel,
                     navController,
                 )
 
                 WatchAGameModal(
                     watchGameDialogOpened,
+                    joinGameViewModel,
                     navController,
                     createGameViewModel.observableGames
                 )
@@ -132,7 +129,7 @@ fun NewGameScreen(
 @Composable
 fun EnterPasswordModal(
     enterGamePasswordDialogOpened: MutableState<Boolean>,
-    viewModel: NewGameViewModel,
+    viewModel: JoinGameViewModel,
     navController: NavController
 ) {
     if (enterGamePasswordDialogOpened.value) {
@@ -140,12 +137,13 @@ fun EnterPasswordModal(
             closeModal = { result ->
                 enterGamePasswordDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateToWaitingScreen(navController)
+                    viewModel.joinGame(navController)
+                    navigateTo(NavPage.WaitingRoom, navController)
                 }
             },
             title = EnterPasswordFR
         ) { modalButtons ->
-            EnterPasswordView(viewModel) { modalActions ->
+            EnterPasswordView(viewModel, navController) { modalActions ->
                 modalButtons(modalActions)
             }
         }
@@ -164,7 +162,7 @@ private fun CreateGameModal(
             closeModal = { result ->
                 createGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateToWaitingScreen(navController)
+                    navigateTo(NavPage.WaitingRoom, navController)
                 }
             },
             title = new_game_creation
@@ -180,7 +178,7 @@ private fun CreateGameModal(
 private fun JoinAGameModal(
     joinGameDialogOpened: MutableState<Boolean>,
     enterGamePasswordDialogOpened: MutableState<Boolean>,
-    viewModel: NewGameViewModel,
+    viewModel: JoinGameViewModel,
     navController: NavController,
     pendingGames: MutableState<LobbyGamesList?>
 ) {
@@ -192,7 +190,8 @@ private fun JoinAGameModal(
                     if (viewModel.isGameProtected()) {
                         enterGamePasswordDialogOpened.value = true
                     } else {
-                        navigateToWaitingScreen(navController)
+                        viewModel.joinGame(navController)
+                        navigateTo(NavPage.WaitingRoom, navController)
                     }
                 }
             },
@@ -200,8 +199,9 @@ private fun JoinAGameModal(
             maxWidth = 950.dp
         ) { modalButtons ->
             JoinGameView(
-                navController,
                 pendingGames,
+                navController,
+                viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)
             }
@@ -212,6 +212,7 @@ private fun JoinAGameModal(
 @Composable
 private fun WatchAGameModal(
     watchGameDialogOpened: MutableState<Boolean>,
+    viewModel: JoinGameViewModel,
     navController: NavController,
     observableGames: MutableState<LobbyGamesList?>
 ) {
@@ -220,15 +221,16 @@ private fun WatchAGameModal(
             closeModal = { result ->
                 watchGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateToWaitingScreen(navController)
+                    navigateTo(NavPage.WaitingRoom, navController)
                 }
             },
             title = watchAGameFR,
             maxWidth = 950.dp
         ) { modalButtons ->
             JoinGameView(
-                navController,
                 observableGames,
+                navController,
+                viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)
             }
@@ -263,15 +265,5 @@ fun CenteredContainer(content: @Composable () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         content()
-    }
-}
-
-private fun navigateToWaitingScreen(navController: NavController) {
-    CoroutineScope(Dispatchers.IO).launch {
-        launch(Dispatchers.Main) {
-            navController.navigate(NavPage.WaitingRoom.label) {
-                launchSingleTop = true
-            }
-        }
     }
 }

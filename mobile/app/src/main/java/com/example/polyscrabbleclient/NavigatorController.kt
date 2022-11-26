@@ -48,6 +48,7 @@ import com.example.polyscrabbleclient.utils.PageSurface
 import com.example.polyscrabbleclient.utils.PhysicalButtons
 import com.example.polyscrabbleclient.utils.viewmodels.SnackBarViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 enum class NavPage(val label: String) {
@@ -95,6 +96,16 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
             PageWithChat {
                 AccountView(AccountViewmodel(), navController)
                 NewInvitationView(navController)
+            }
+        }
+    }
+}
+
+fun navigateTo(page: NavPage, navController: NavController) {
+    CoroutineScope(Dispatchers.IO).launch {
+        launch(Dispatchers.Main) {
+            navController.navigate(page.label) {
+                launchSingleTop = true
             }
         }
     }
