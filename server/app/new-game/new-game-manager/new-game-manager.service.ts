@@ -1,4 +1,6 @@
 import { GAME_TOKEN_PREFIX, NOT_FOUND } from '@app/constants';
+import { WAIT_STATUS } from '@app/game/game-logic/constants';
+import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { GameManagerService, PlayersAndToken } from '@app/game/game-manager/game-manager.services';
 import { NameAndToken } from '@app/game/game-socket-handler/game-socket-handler.service';
 import { ConversationService } from '@app/messages-service/services/conversation.service';
@@ -13,7 +15,7 @@ export class NewGameManagerService {
     activeGameSettingMap = new Map<string, OnlineGameSettings>();
     refreshPendingGame$ = new Subject<void>();
 
-    constructor(private gameMaster: GameManagerService, private conversationService: ConversationService) {
+    constructor(private gameMaster: GameManagerService, private conversationService: ConversationService, private botManager: BotManager) {
         this.gameMaster.gameDeleted$.subscribe((gameToken) => {
             if (gameToken) {
                 this.activeGameSettingMap.delete(gameToken);
@@ -67,12 +69,14 @@ export class NewGameManagerService {
         return games;
     }
 
-    async createPendingGame(gameSettings: OnlineGameSettingsUI): Promise<string> {
+    async createPendingGame(gameSettingsUI: OnlineGameSettingsUI): Promise<string> {
         const gameToken = this.generateGameToken();
-        const gameId = gameToken;
-        this.pendingGames.set(gameId, gameSettings);
+        const { playerNames, botDifficulty, numberOfPlayers } = gameSettingsUI;
+        const botNames = this.botManager.getBotNames(playerNames, botDifficulty, numberOfPlayers - 1);
+        const gameSettings = { ...gameSettingsUI, id: gameToken, botNames, tmpPlayerNames: [], gameStatus: WAIT_STATUS };
+        this.pendingGames.set(gameToken, gameSettings);
         await this.conversationService.createGameConversation(gameToken);
-        return gameId;
+        return gameToken;
     }
 
     launchPendingGame(id: string, gameSettings?: OnlineGameSettingsUI): string {

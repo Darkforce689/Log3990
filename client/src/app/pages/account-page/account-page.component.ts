@@ -40,6 +40,7 @@ export class AccountPageComponent implements OnInit {
                 this.user = user;
             }
         });
+        this.popOutService.isOpen = false;
     }
 
     updatePage(src: MatSelectionListChange) {

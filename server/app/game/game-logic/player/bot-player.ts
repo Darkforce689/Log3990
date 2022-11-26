@@ -1,16 +1,14 @@
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
-import { DEFAULT_BOT } from '@app/database/bot-info/default-bot-names';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { TIME_BEFORE_PASS, TIME_BEFORE_PICKING_ACTION, TIME_BUFFER_BEFORE_ACTION } from '@app/game/game-logic/constants';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { ValidWord } from '@app/game/game-logic/interface/valid-word';
-import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
-import { getRandomInt } from '@app/game/game-logic/utils';
 import { ServerLogger } from '@app/logger/logger';
 import { BehaviorSubject, takeUntil, timer } from 'rxjs';
+import { BotLogic } from './bot/bot-logic/bot-logic';
 
 export class BotPlayer extends Player {
     timesUp: boolean;
@@ -18,16 +16,17 @@ export class BotPlayer extends Player {
     private chosenAction$ = new BehaviorSubject<Action | undefined>(undefined);
 
     constructor(
-        protected botManager: BotManager,
+        public name: string,
+        protected botLogic: BotLogic,
         protected botDifficulty: BotDifficulty,
         protected gameActionNotifier: GameActionNotifierService,
         protected actionCreator: ActionCreatorService,
     ) {
-        super('BotPlaceholderName');
+        super(name);
     }
 
     generateAction(game: ServerGame): void {
-        const bot = this.botDifficulty === BotDifficulty.Easy ? this.botManager.easyBot : this.botManager.hardBot;
+        const bot = this.botLogic;
         this.startTimerAction(game);
         this.timesUp = false;
         timer(TIME_BUFFER_BEFORE_ACTION).subscribe(() => {
@@ -64,22 +63,6 @@ export class BotPlayer extends Player {
                 }
             });
         });
-    }
-
-    updateBotName(playerNames: string[]) {
-        const botNames: string[] = this.getBotNames();
-        let generatedName: string;
-        do {
-            generatedName = botNames[getRandomInt(botNames.length)];
-        } while (playerNames.find((opponentName) => opponentName === generatedName));
-        this.name = generatedName;
-    }
-
-    private getBotNames(): string[] {
-        const botInfos = DEFAULT_BOT;
-        const filteredBotInfos = botInfos.filter((bot) => bot.type === this.botDifficulty);
-        const filteredBotInfosNames = filteredBotInfos.map((bot) => bot.name);
-        return filteredBotInfosNames;
     }
 
     private playAction(action: Action, game: ServerGame) {

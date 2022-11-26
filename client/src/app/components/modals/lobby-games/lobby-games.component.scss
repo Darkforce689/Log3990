@@ -17,12 +17,16 @@ h5 {
     font-weight: 500;
 }
 
+.table-container {
+    min-width: 60vw;
+}
+
 table {
     width: 100%;
 }
 
 .mat-column-playerNames {
-    width: 25%;
+    width: 35%;
 }
 
 .mat-row .mat-cell {
@@ -35,6 +39,10 @@ table {
     border-color: currentColor;
     background-color: var(--accent);
     color: var(--bg);
+    .host {
+        font-weight: 500;
+        color: var(--fg);
+    }
 }
 
 .row-is-clicked {
@@ -42,6 +50,10 @@ table {
     animation-fill-mode: forwards;
     .mat-cell {
         background-color: var(--primary);
+        .host {
+            font-weight: 500;
+            color: var(--bg);
+        }
     }
 }
 
@@ -64,11 +76,23 @@ table {
     }
 }
 
-.player {
+.mat-grid-tile-content {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.player,
+.host {
+    flex-grow: 1;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     padding-top: 5%;
+}
+
+.host {
+    font-weight: 500;
+    color: var(--accent);
 }
 
 app-avatar {

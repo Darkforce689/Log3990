@@ -5,7 +5,7 @@
 import { AuthService } from '@app/auth/services/auth.service';
 import { SessionMiddlewareService } from '@app/auth/services/session-middleware.service';
 import { Session } from '@app/auth/services/session.interface';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { WAIT_STATUS } from '@app/game/game-logic/constants';
 import { GameMode } from '@app/game/game-mode.enum';
 import { NewGameManagerService } from '@app/new-game/new-game-manager/new-game-manager.service';
@@ -104,6 +104,7 @@ describe('New Online Game Service', () => {
             magicCardIds: [],
             tmpPlayerNames: [],
             password: '',
+            botNames: [],
         };
         serverSocket.on('createGame', (gameSettings) => {
             setTimeout(() => {
@@ -208,6 +209,7 @@ describe('New Online Game Service', () => {
             numberOfPlayers: 2,
             magicCardIds: [],
             tmpPlayerNames,
+            botNames: [],
         } as OnlineGameSettingsUI;
 
         const gameSettings = {
@@ -222,6 +224,7 @@ describe('New Online Game Service', () => {
             magicCardIds: [],
             tmpPlayerNames,
             gameStatus: WAIT_STATUS,
+            botNames: [],
         } as OnlineGameSettings;
 
         newGameManagerService.createPendingGame.returns(Promise.resolve('a'));
@@ -268,6 +271,7 @@ describe('New Online Game Service', () => {
             tmpPlayerNames: [],
             password: undefined,
             gameStatus: WAIT_STATUS,
+            botNames: [],
         };
         newGameManagerService.activeGameSettingMap = new Map<string, OnlineGameSettings>();
         newGameManagerService.launchPendingGame.returns('a');

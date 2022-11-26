@@ -51,6 +51,7 @@ describe('GameManagerService Online Edition', () => {
         magicCardIds: [],
         tmpPlayerNames: [],
         password: undefined,
+        botNames: [],
     };
 
     const accountService = { account: { name: 'Tim' } };

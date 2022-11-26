@@ -1,4 +1,4 @@
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { GameMode } from '@app/game/game-mode.enum';
 
 export interface OnlineGameSettingsUI {
@@ -15,6 +15,7 @@ export interface OnlineGameSettingsUI {
     password?: string;
     numberOfBots?: number;
     observerNames?: string[];
+    botNames: string[];
 }
 
 export interface OnlineGameSettings extends OnlineGameSettingsUI {

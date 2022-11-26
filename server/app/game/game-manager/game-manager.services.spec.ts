@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { NEW_GAME_TIMEOUT } from '@app/constants';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -14,8 +14,6 @@ import { ActionCompilerService } from '@app/game/game-logic/actions/action-compi
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { PassTurn } from '@app/game/game-logic/actions/pass-turn';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
-import { EndOfGameReason } from '@app/game/game-logic/interface/end-of-game.interface';
-import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -30,7 +28,6 @@ import { ConversationService } from '@app/messages-service/services/conversation
 import { SystemMessagesService } from '@app/messages-service/system-messages-service/system-messages.service';
 import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
-import { GameStats } from '@app/user/interfaces/game-stats.interface';
 import { UserService } from '@app/user/services/user.service';
 import { expect } from 'chai';
 import { before } from 'mocha';
@@ -122,6 +119,7 @@ describe('GameManagerService', () => {
             magicCardIds,
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -150,6 +148,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -190,6 +189,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -219,6 +219,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -250,6 +251,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -280,6 +282,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -314,6 +317,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -343,6 +347,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -378,6 +383,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -407,6 +413,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -432,6 +439,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
 
         await service.createGame(gameToken, gameSettings);
@@ -461,6 +469,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
         await service.createGame('1', gameSettings);
         service.linkedClients.clear();
@@ -484,6 +493,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
         await service.createGame(gameToken, gameSettings);
 
@@ -532,6 +542,7 @@ describe('GameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
         await service.createGame('1', gameSettings);
 
@@ -553,71 +564,5 @@ describe('GameManagerService', () => {
             service.linkedClients.clear();
             service.receivePlayerAction(userId, onlineAction);
         }).to.not.throw(Error);
-    });
-
-    it('should remove game when it finishes and update leaderboard', async () => {
-        const playerNames = ['test1', 'test2'];
-        const gameToken = '1';
-        const gameSettings: OnlineGameSettings = {
-            id: gameToken,
-            timePerTurn: 60000,
-            privateGame: false,
-            randomBonus: false,
-            playerNames,
-            gameMode: GameMode.Classic,
-            botDifficulty,
-            numberOfPlayers,
-            magicCardIds: [],
-            tmpPlayerNames,
-            password,
-        };
-        await service.createGame(gameToken, gameSettings);
-        service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [], stats: new Map<string, GameStats>() });
-        expect(service.activeGames.size).to.be.equal(0);
-    });
-
-    it('should update leaderboard with only real players scores', (done) => {
-        const player = new Player('realPlayer');
-        const bot1 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
-        const bot2 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
-        const bot3 = new BotPlayer(stubBotManager, BotDifficulty.Easy, stubActionNotifier, stubActionCreatorService);
-        const gameToken = 'gameToken';
-
-        const game = { players: [player, bot1, bot2, bot3] } as ServerGame;
-        service.activeGames.set(gameToken, game);
-
-        service['endGame$'].subscribe(() => {
-            expect(stubLeaderboardService.updateLeaderboard.callCount).to.be.equal(1);
-            done();
-        });
-
-        service['endGame$'].next({
-            gameToken: 'gameToken',
-            reason: EndOfGameReason.GameEnded,
-            players: game.players,
-            stats: new Map<string, GameStats>(),
-        });
-    });
-
-    it('should not update leaderboard when it finishes on forfeit', async () => {
-        const player = new Player('test01');
-        const playerNames = [player.name, 'test3'];
-        const gameToken = '1';
-        const gameSettings: OnlineGameSettings = {
-            gameMode: GameMode.Magic,
-            id: gameToken,
-            timePerTurn: 60000,
-            privateGame: false,
-            randomBonus: false,
-            playerNames,
-            botDifficulty,
-            numberOfPlayers,
-            magicCardIds: [],
-            tmpPlayerNames,
-            password,
-        };
-        await service.createGame(gameToken, gameSettings);
-        service['endGame$'].next({ gameToken, reason: EndOfGameReason.GameEnded, players: [player], stats: new Map<string, GameStats>() });
-        expect(service.activeGames.size).to.be.equal(0);
     });
 });

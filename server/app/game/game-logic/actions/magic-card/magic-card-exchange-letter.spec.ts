@@ -1,5 +1,5 @@
 import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ExchangeALetter } from '@app/game/game-logic/actions/magic-card/magic-card-exchange-letter';
 import { Letter } from '@app/game/game-logic/board/letter.interface';
