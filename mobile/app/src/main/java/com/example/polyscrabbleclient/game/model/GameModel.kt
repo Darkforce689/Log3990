@@ -4,10 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
-import com.example.polyscrabbleclient.game.sources.GameState
-import com.example.polyscrabbleclient.game.sources.IMagicCard
-import com.example.polyscrabbleclient.game.sources.LightPlayer
-import com.example.polyscrabbleclient.game.sources.Player
+import com.example.polyscrabbleclient.game.sources.*
+import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.user.User
 
@@ -17,6 +15,8 @@ const val DefaultWatchedPlayerIndex = 0
 class GameModel {
 
     val board: BoardModel = BoardModel()
+
+    var activeTiles: MutableState<List<Position>> = mutableStateOf(listOf())
 
     var remainingLettersCount = mutableStateOf(0)
     var turnRemainingTime = mutableStateOf(defaultTurnTime)
@@ -34,6 +34,8 @@ class GameModel {
     val watchedPlayerIndex = mutableStateOf<Int?>(null)
 
     fun update(gameState: GameState) {
+        activeTiles.value = listOf()
+        GameRepository.lastPosition = arrayListOf()
         board.updateGrid(gameState.grid)
         updatePlayers(gameState.players)
         updateActivePlayerIndex(gameState.activePlayerIndex)
@@ -42,6 +44,12 @@ class GameModel {
         updateDrawnMagicCards(gameState.drawnMagicCards)
         updateBoardCrawler()
         updateUserLetters()
+    }
+
+    fun updateSync(syncState: SyncState) {
+        if (isActivePlayer()) return
+        GameRepository.lastPosition = arrayListOf()
+        activeTiles.value = syncState.positions
     }
 
     private fun updateEndOfGame(winnerIndex: ArrayList<Int>) {

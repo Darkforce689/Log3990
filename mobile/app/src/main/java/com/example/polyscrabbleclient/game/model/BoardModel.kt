@@ -3,7 +3,10 @@ package com.example.polyscrabbleclient.game.model
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.TileCreator
+import com.example.polyscrabbleclient.game.sources.GameRepository
+import com.example.polyscrabbleclient.game.sources.Position
 import com.example.polyscrabbleclient.game.sources.Tile
+import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 
@@ -78,6 +81,21 @@ class BoardModel {
     fun setTileHover(column: Int, row: Int, isHighlighted: Boolean) {
         requireBoardIndexes(column, row)
         tileGrid[row - 1][column - 1].isHighlighted.value = isHighlighted
+        if (isHighlighted) {
+            GameRepository.sendContinuousSync(
+                arrayListOf(
+                    Position(
+                        column - 1,
+                        row - 1
+                    )
+
+                )
+            )
+        } else {
+            GameRepository.sendContinuousSync(
+                arrayListOf()
+            )
+        }
     }
 
     fun setTileHover(coordinates: TileCoordinates, isHighlighted: Boolean) {
@@ -145,6 +163,7 @@ class BoardModel {
             transientTilesCoordinates.add(tileCoordinates)
             jokerModel.checkOpenForJokerSelection(tile, tileCoordinates)
         }
+        GameRepository.sendSync(transientTilesCoordinates)
     }
 
     private fun markPreviousTileAsUnused(tileCoordinates: TileCoordinates) {

@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.game.sources
 
 import com.example.polyscrabbleclient.game.model.GameModel
+import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.utils.Repository
 
@@ -43,6 +44,12 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
         }
     }
 
+    private val onSyncState: (syncState: SyncState?) -> Unit = { syncState ->
+        syncState?.let {
+            model.updateSync(it)
+        }
+    }
+
     private val onTransitionGameState: (transitionGameState: TransitionGameState?) -> Unit =
         { transitionGameState ->
             transitionGameState?.let {
@@ -57,6 +64,10 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
 
     fun emitNextAction(onlineAction: OnlineAction) {
         socket.emit(EmitGameEvent.NextAction, onlineAction)
+    }
+
+    fun emitNextSync(sync: SyncState) {
+        socket.emit(EmitGameEvent.NextSync, sync)
     }
 
     fun quitGame() {
@@ -81,6 +92,28 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
         socket.on(OnGameEvent.StartTime, onStartTime)
         socket.on(OnGameEvent.RemainingTime, onRemainingTime)
         socket.on(OnGameEvent.GameState, onGameState)
+        socket.on(OnGameEvent.SyncState, onSyncState)
         socket.on(OnGameEvent.TransitionGameState, onTransitionGameState)
     }
+
+    var lastPosition: ArrayList<Position> = arrayListOf()
+    fun sendSync(coordinatesSet: MutableSet<TileCoordinates>) {
+        lastPosition = ArrayList(coordinatesSet.map { coordinate ->
+            Position(
+                coordinate.column - 1,
+                coordinate.row - 1
+            )
+        })
+
+        val sync = SyncState(
+            positions = lastPosition,
+        )
+        emitNextSync(sync)
+    }
+
+    fun sendContinuousSync(positions: ArrayList<Position>) {
+        positions.addAll(lastPosition)
+        emitNextSync(SyncState(positions = positions));
+    }
+
 }
