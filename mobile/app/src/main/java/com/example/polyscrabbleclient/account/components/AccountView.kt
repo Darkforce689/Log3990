@@ -199,7 +199,7 @@ fun AccountContent(title: String, content: @Composable () -> Unit) {
             color = MaterialTheme.colors.primary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .fillMaxHeight(0.2f)
+                .fillMaxHeight(0.22f)
                 .padding(vertical = 50.dp, horizontal = 20.dp)
         )
         content()

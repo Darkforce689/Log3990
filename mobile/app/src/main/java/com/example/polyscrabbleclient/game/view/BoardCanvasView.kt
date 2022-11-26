@@ -261,6 +261,9 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
                 drawTileHighlight(tile, columnIndex, rowIndex)
             }
         }
+        viewModel.getActiveTiles().forEach { tile ->
+            drawTileBackground(tileBackground, tile.x + 1, tile.y + 1)
+        }
     }
 
     fun DrawScope.drawTileMultiplierIndicator(

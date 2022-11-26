@@ -55,7 +55,8 @@ data class OnlineAction(
     val placementSettings: PlacementSetting? = null,
     val letters: String? = null,
     val letterRack: ArrayList<Letter>? = null,
-    val position: Position? = null
+    val position: Position? = null,
+    val positions: ArrayList<Position>? = null,
 )
 
 // No Union types in Kotlin
@@ -110,8 +111,11 @@ data class GameState(
     val lettersRemaining: Int,
     val isEndOfGame: Boolean,
     val winnerIndex: ArrayList<Int>,
-    val drawableMagicCards: ArrayList<IMagicCard>,
     val drawnMagicCards: ArrayList<ArrayList<IMagicCard>>,
+)
+
+data class SyncState(
+    val positions: ArrayList<Position>,
 )
 
 data class IMagicCard(
@@ -123,6 +127,8 @@ typealias TransitionGameState = PlayerInfoForfeit
 typealias JoinGame = LobbyGameId
 
 typealias NextAction = OnlineAction
+
+typealias NextSync = SyncState
 
 // TODO
 typealias Disconnect = Nullable

@@ -7,6 +7,9 @@ val GameEventTypes = mapOf(
     Pair(
         OnGameEvent.GameState,
         GameState::class.java
+    ),Pair(
+        OnGameEvent.SyncState,
+        SyncState::class.java
     ),
     Pair(
         OnGameEvent.StartTime,
@@ -29,6 +32,10 @@ val GameEventTypes = mapOf(
         NextAction::class.java
     ),
     Pair(
+        EmitGameEvent.NextSync,
+        NextSync::class.java
+    ),
+    Pair(
         EmitGameEvent.Disconnect,
         Disconnect::class.java
     ),
@@ -37,6 +44,7 @@ val GameEventTypes = mapOf(
 class OnGameEvent(override val eventName: String) : OnEvent(eventName) {
     companion object {
         val GameState = OnGameEvent("gameState")
+        val SyncState = OnGameEvent("syncState")
         val StartTime = OnGameEvent("timerStartingTime")
         val RemainingTime = OnGameEvent("timeUpdate")
         val TransitionGameState = OnGameEvent("transitionGameState")
@@ -47,6 +55,7 @@ class EmitGameEvent(override val eventName: String) : EmitEvent(eventName) {
     companion object {
         val JoinGame = EmitGameEvent("joinGame")
         val NextAction = EmitGameEvent("nextAction")
+        val NextSync = EmitGameEvent("nextSync")
         val Disconnect = EmitGameEvent("disconnect")
     }
 }

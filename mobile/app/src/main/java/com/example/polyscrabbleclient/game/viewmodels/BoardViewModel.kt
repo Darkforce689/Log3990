@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.game.model.BoardModel
 import com.example.polyscrabbleclient.game.model.BoardRange
 import com.example.polyscrabbleclient.game.model.TileModel
+import com.example.polyscrabbleclient.game.sources.GameRepository
+import com.example.polyscrabbleclient.game.sources.Position
 import com.example.polyscrabbleclient.game.view.ThickDividerWidth
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.view.draganddrop.DraggableContent
@@ -18,6 +20,10 @@ data class TileCoordinates(
 class BoardViewModel(val board: BoardModel) : ViewModel() {
 
     var hoveredTileCoordinates: TileCoordinates? = null
+
+    fun getActiveTiles():  List<Position>{
+        return GameRepository.model.activeTiles.value
+    }
 
     fun hoverBoard(gridDivisionSize: Float, hoverOffset: Offset) {
         val newCoordinates = getTileFromLocalPosition(gridDivisionSize, hoverOffset)
