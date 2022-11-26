@@ -1,16 +1,14 @@
 package com.example.polyscrabbleclient.lobby.view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,6 +56,9 @@ fun NewGameScreen(
                 Text(text = new_game, fontSize = 25.sp)
                 Text(text = "$game_mode : $gameText")
                 Switch(
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colors.error.copy(0.8f),
+                    ),
                     checked = isToggled.value,
                     onCheckedChange = { value ->
                         isToggled.value = value
@@ -66,29 +67,7 @@ fun NewGameScreen(
                     },
                 )
 
-                Button(
-                    modifier = Modifier.padding(10.dp),
-                    onClick = { createGameDialogOpened.value = true }
-                ) {
-                    Text(text = create_game_multiplayers)
-                }
-
-                Button(
-                    modifier = Modifier.padding(10.dp),
-                    onClick = {
-                        joinGameDialogOpened.value = true
-                    }
-                ) {
-                    Text(text = join_game_multiplayers)
-                }
-
-                Button(
-                    modifier = Modifier.padding(10.dp),
-                    onClick = { watchGameDialogOpened.value = true }
-                ) {
-                    Text(text = watch_game_multiplayers)
-                }
-
+                LobbyButton(createGameDialogOpened, create_game_multiplayers)
                 CreateGameModal(
                     navController,
                     createGameDialogOpened,
@@ -97,6 +76,11 @@ fun NewGameScreen(
 
                 val joinGameViewModel = JoinGameViewModel()
 
+                LobbyButton(
+                    joinGameDialogOpened,
+                    join_game_multiplayers,
+                    MaterialTheme.colors.secondary
+                )
                 JoinAGameModal(
                     joinGameDialogOpened,
                     enterGamePasswordDialogOpened,
@@ -111,6 +95,11 @@ fun NewGameScreen(
                     navController,
                 )
 
+                LobbyButton(
+                    watchGameDialogOpened,
+                    watch_game_multiplayers,
+                    MaterialTheme.colors.secondary
+                )
                 WatchAGameModal(
                     watchGameDialogOpened,
                     joinGameViewModel,
@@ -150,6 +139,23 @@ fun EnterPasswordModal(
     }
 }
 
+
+@Composable
+private fun LobbyButton(
+    actionEffect: MutableState<Boolean>,
+    label: String,
+    backgroundColor: Color = MaterialTheme.colors.primary
+) {
+    Button(
+        modifier = Modifier.padding(10.dp),
+        onClick = { actionEffect.value = true },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor
+        ),
+    ) {
+        Text(text = label)
+    }
+}
 
 @Composable
 private fun CreateGameModal(

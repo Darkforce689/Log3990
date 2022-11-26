@@ -24,26 +24,38 @@
                 <mat-selection-list #pages [multiple]="false" (selectionChange)="updatePage($event)">
                     <mat-list-option class="parent" [value]="'profil'">
                         <span class="full-width">Mon profil</span>
-                        <mat-icon mat-list-icon>person</mat-icon>
+                        <mat-icon mat-list-icon>
+                            <span class="material-symbols-filled">account_circle</span>
+                        </mat-icon>
                     </mat-list-option>
                     <mat-list-option class="parent" [value]="'stats'">
                         <span class="full-width">Mes statistiques</span>
-                        <mat-icon mat-list-icon>analytics</mat-icon>
+                        <mat-icon mat-list-icon>
+                            <span class="material-symbols-filled">numbers</span>
+                        </mat-icon>
                     </mat-list-option>
                     <mat-list-option class="parent" [value]="'games'">
                         <span class="full-width">Mon historique de jeux</span>
-                        <mat-icon mat-list-icon>history</mat-icon>
+                        <mat-icon mat-list-icon>
+                            <span class="material-symbols-filled">analytics</span>
+                        </mat-icon>
                     </mat-list-option>
                 </mat-selection-list>
             </mat-drawer>
             <mat-drawer-content>
-                    <app-profil *ngIf="showProfil"></app-profil>
-                    <app-game-stats-page *ngIf="showStats"></app-game-stats-page>
-                    <app-game-history *ngIf="showGames"></app-game-history>
-                    
-                    <button mat-fab color="primary" *ngIf="!popOutService.isPopOut" (click)="sidenav.toggle()" [ngClass]="sidenav.opened ? 'button-open' : 'button-close'">
-                        <mat-icon>chat</mat-icon>
-                    </button>
+                <app-profil *ngIf="showProfil"></app-profil>
+                <app-game-stats-page *ngIf="showStats"></app-game-stats-page>
+                <app-game-history *ngIf="showGames"></app-game-history>
+
+                <button
+                    mat-fab
+                    color="primary"
+                    *ngIf="!popOutService.isPopOut"
+                    (click)="sidenav.toggle()"
+                    [ngClass]="sidenav.opened ? 'button-open' : 'button-close'"
+                >
+                    <mat-icon>chat</mat-icon>
+                </button>
             </mat-drawer-content>
         </mat-drawer-container>
     </mat-sidenav-content>

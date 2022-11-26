@@ -4,6 +4,11 @@ button {
     white-space: normal;
 }
 
+.disabled {
+    background-color: var(--bg) !important;
+    opacity: 0.55;
+}
+
 .icon {
     padding-left: 10%;
 }

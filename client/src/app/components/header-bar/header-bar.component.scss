@@ -3,6 +3,8 @@ mat-toolbar {
     align-items: center;
     justify-content: space-between;
     height: 15vh !important;
+    background-color: var(--primary) !important;
+    color: var(--bg) !important;
 }
 
 .inverted {

@@ -17,21 +17,20 @@
 
 .system {
     .message-content {
-        // TODO GL3A22107-104
-        background-color: grey;
+        background-color: var(--MessageHeader);
     }
 
     align-self: flex-start;
 }
 
-.player1 {
+.fromMe {
     .message-content {
         background-color: var(--primary);
     }
     align-self: flex-end;
 }
 
-.player2 {
+.fromOther {
     .message-content {
         background-color: var(--accent);
     }
@@ -51,6 +50,5 @@
 }
 
 .message-header {
-    // TODO GL3A22107-104
-    color: grey;
+    color: var(--MessageHeader);
 }

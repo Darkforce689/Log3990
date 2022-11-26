@@ -195,6 +195,7 @@ fun PageWithChat(
                     scaffoldState = scaffoldState,
                     floatingActionButton = {
                         FloatingActionButton(
+                            backgroundColor = MaterialTheme.colors.primary,
                             onClick = {
                                 scope.launch {
                                     drawerState.open()
