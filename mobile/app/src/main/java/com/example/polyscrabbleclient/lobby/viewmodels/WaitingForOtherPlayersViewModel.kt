@@ -36,7 +36,7 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
     }
 
     fun leavePendingGame() {
-        lobby.quitPendingGame()
+        lobby.leaveLobbyGame()
         GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
     }
 

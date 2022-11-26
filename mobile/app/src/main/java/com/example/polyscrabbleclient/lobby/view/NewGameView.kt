@@ -127,7 +127,6 @@ fun EnterPasswordModal(
                 enterGamePasswordDialogOpened.value = false
                 if (result == ModalResult.Primary) {
                     viewModel.joinGame(navController)
-                    navigateTo(NavPage.WaitingRoom, navController)
                 }
             },
             title = EnterPasswordFR
@@ -197,7 +196,6 @@ private fun JoinAGameModal(
                         enterGamePasswordDialogOpened.value = true
                     } else {
                         viewModel.joinGame(navController)
-                        navigateTo(NavPage.WaitingRoom, navController)
                     }
                 }
             },
@@ -206,7 +204,6 @@ private fun JoinAGameModal(
         ) { modalButtons ->
             JoinGameView(
                 pendingGames,
-                navController,
                 viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)
@@ -235,7 +232,6 @@ private fun WatchAGameModal(
         ) { modalButtons ->
             JoinGameView(
                 observableGames,
-                navController,
                 viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)

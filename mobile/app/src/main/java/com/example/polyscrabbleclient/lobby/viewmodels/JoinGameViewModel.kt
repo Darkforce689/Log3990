@@ -6,46 +6,45 @@ import androidx.navigation.NavController
 import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.JoinGame
-import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
+import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.navigateTo
 
 class JoinGameViewModel : ViewModel() {
     val password = mutableStateOf("")
 
-    val selectedGameMode = LobbyRepository.model.selectedGameMode
-
-    val selectedGameId = mutableStateOf<LobbyGameId?>(null)
+    val selectedLobbyGame = mutableStateOf<OnlineGameSettings?>(null)
 
     fun isGameProtected(): Boolean {
-        return LobbyRepository.model.isGameProtected.value
+        return selectedLobbyGame.value?.isProtected() ?: false
     }
 
-    fun isGameSelected(lobbyGameId: LobbyGameId): Boolean {
-        return selectedGameId.value == lobbyGameId
+    fun isGameSelected(lobbyGame: OnlineGameSettings): Boolean {
+        return selectedLobbyGame.value == lobbyGame
     }
 
     fun getSelectedGameMode(): GameMode {
         return LobbyRepository.model.selectedGameMode.value
     }
 
-    fun toggleSelectedGame(lobbyGameId: LobbyGameId) {
-        selectedGameId.value =
-            if (isGameSelected(lobbyGameId)) {
+    fun toggleSelectedGame(lobbyGame: OnlineGameSettings) {
+        selectedLobbyGame.value =
+            if (isGameSelected(lobbyGame)) {
                 null
             } else {
-                lobbyGameId
+                lobbyGame
             }
     }
 
     fun joinGame(
         navController: NavController
     ) {
-        if (selectedGameId.value === null) {
+        if (selectedLobbyGame.value === null) {
             return
         }
         LobbyRepository.emitJoinGame(
-            JoinGame(selectedGameId.value!!)
-        ) { navigateTo(NavPage.GamePage, navController) }
+            JoinGame(selectedLobbyGame.value!!.id, password.value),
+            navController
+        )
     }
 }

@@ -19,7 +19,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
-import com.example.polyscrabbleclient.lobby.sources.*
+import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
+import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
+import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 
@@ -46,7 +49,6 @@ val ColumnsHeaders = listOf(
 fun LobbyGamesView(
     lobbyGames: MutableState<LobbyGamesList?>,
     viewModel: JoinGameViewModel = viewModel(),
-    navController: NavController,
     modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
     Column {
@@ -64,8 +66,7 @@ fun LobbyGamesView(
             ModalActions(
                 primary = ActionButton(
                     label = { joinGameButtonFR },
-                    canAction = { viewModel.selectedGameId.value !== null },
-                    action = { viewModel.joinGame(navController) }
+                    canAction = { viewModel.selectedLobbyGame.value !== null },
                 )
             )
         )
@@ -75,8 +76,8 @@ fun LobbyGamesView(
 @Composable
 private fun LobbyGamesTableView(
     games: List<OnlineGameSettings>?,
-    toggleSelected: (lobbyGameId: LobbyGameId) -> Unit,
-    isGameSelected: (lobbyGameId: LobbyGameId) -> Boolean,
+    toggleSelected: (lobbyGame: OnlineGameSettings) -> Unit,
+    isGameSelected: (lobbyGame: OnlineGameSettings) -> Boolean,
 ) {
     Card(
         modifier = Modifier
@@ -96,8 +97,8 @@ private fun LobbyGamesTableView(
 @Composable
 private fun LobbyGamesListView(
     lobbyGamesList: List<OnlineGameSettings>?,
-    toggleSelected: (lobbyGameId: LobbyGameId) -> Unit,
-    isGameSelected: (lobbyGameId: LobbyGameId) -> Boolean,
+    toggleSelected: (lobbyGame: OnlineGameSettings) -> Unit,
+    isGameSelected: (lobbyGame: OnlineGameSettings) -> Boolean,
 ) {
     val primary = MaterialTheme.colors.primary
     Column {
@@ -125,8 +126,8 @@ private fun LobbyGamesListView(
                     val lobbyGameModel = lobbyGames[index]
                     LobbyGameView(
                         lobbyGameModel,
-                        click = { toggleSelected(lobbyGameModel.id) }
-                    ) { isGameSelected(lobbyGameModel.id) }
+                        click = { toggleSelected(lobbyGameModel) }
+                    ) { isGameSelected(lobbyGameModel) }
                 }
             }
         }
@@ -158,7 +159,6 @@ fun LobbyPendingGamesPreview() {
             ArrayList(listOf(a)),
         ),
         JoinGameViewModel(),
-        rememberNavController()
     ) {}
 }
 
@@ -185,6 +185,5 @@ fun LobbyObservableGamesPreview() {
             ArrayList(listOf(b)),
         ),
         JoinGameViewModel(),
-        rememberNavController()
     ) {}
 }

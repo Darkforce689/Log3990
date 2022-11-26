@@ -1,9 +1,13 @@
 package com.example.polyscrabbleclient.lobby.sources
 
+import androidx.navigation.NavController
+import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
+import com.example.polyscrabbleclient.navigateTo
+import com.example.polyscrabbleclient.user.User
 import com.example.polyscrabbleclient.utils.Repository
 
 object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
@@ -18,6 +22,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
             model.isGamePrivate.value = it.privateGame
             model.isGameProtected.value = it.password?.isNotEmpty() ?: false
             model.candidatePlayerNames.value = it.tmpPlayerNames
+            model.isAcceptedPlayer.value = it.playerNames.contains(User.name)
             model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
             val gameToken = it.id
@@ -67,9 +72,19 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         println("LobbyRepository -> Error : $error")
     }
 
-    fun emitJoinGame(joinGame: JoinGame, navigateToGameScreen: () -> Unit) {
+    fun emitJoinGame(
+        joinGame: JoinGame,
+        navController: NavController
+    ) {
         socket.on(OnLobbyEvent.GameStarted) { _: GameStarted? ->
-            navigateToGameScreen()
+            navigateTo(NavPage.GamePage, navController)
+        }
+        socket.on(OnLobbyEvent.ConfirmJoin) { confirmJoin: ConfirmJoin? ->
+            confirmJoin?.let {
+                if (it) {
+                    navigateTo(NavPage.WaitingRoom, navController)
+                }
+            }
         }
         socket.emit(EmitLobbyEvent.JoinGame, joinGame)
     }
@@ -110,7 +125,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         }
     }
 
-    fun quitPendingGame() {
+    fun leaveLobbyGame() {
         reset()
     }
 

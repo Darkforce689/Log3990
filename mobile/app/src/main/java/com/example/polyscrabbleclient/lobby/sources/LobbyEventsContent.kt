@@ -34,7 +34,11 @@ data class OnlineGameSettings(
     val drawableMagicCards: ArrayList<IMagicCard>,
     val numberOfBots: Int? = null,
     val observerNames: ArrayList<String>? = null,
-)
+) {
+    fun isProtected(): Boolean {
+        return password?.isNotEmpty() ?: false
+    }
+}
 
 typealias LobbyGamesList = ArrayList<OnlineGameSettings>
 

@@ -101,8 +101,7 @@ export class NewGameSocketHandler {
 
             socket.on(joinGame, async (joinGameParams) => {
                 try {
-                    const id = joinGameParams.id;
-                    const password = joinGameParams.password;
+                    const { id, password } = joinGameParams;
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {

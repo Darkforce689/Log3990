@@ -35,7 +35,7 @@ class NewGameViewModel : ViewModel() {
                 }
                 onErrorCallBack(it)
                 waitingForOtherPlayersDialogOpened.value = false
-                LobbyRepository.quitPendingGame()
+                LobbyRepository.leaveLobbyGame()
                 isInvitation = false
             }.start()
         }

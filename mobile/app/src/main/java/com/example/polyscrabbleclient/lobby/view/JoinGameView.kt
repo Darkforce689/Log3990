@@ -21,7 +21,6 @@ import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
 @Composable
 fun JoinGameView(
     lobbyGames: MutableState<LobbyGamesList?>,
-    navController: NavController,
     viewModel: JoinGameViewModel = viewModel(),
     modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
@@ -30,7 +29,6 @@ fun JoinGameView(
             LobbyGamesView(
                 lobbyGames,
                 viewModel,
-                navController
             ) { modalActions ->
                 modalButtons(modalActions)
             }
@@ -55,6 +53,5 @@ fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
 fun JoinGamePreview() {
     JoinGameView(
         mutableStateOf(arrayListOf()),
-        rememberNavController(),
     ) {}
 }

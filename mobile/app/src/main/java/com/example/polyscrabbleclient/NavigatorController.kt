@@ -38,6 +38,7 @@ import com.example.polyscrabbleclient.game.view.GameScreen
 import com.example.polyscrabbleclient.invitations.components.NewInvitationView
 import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.view.WaitingForOtherPlayersView
+import com.example.polyscrabbleclient.lobby.view.WaitingRoomView
 import com.example.polyscrabbleclient.message.components.ChatBox
 import com.example.polyscrabbleclient.message.viewModel.ChatBoxViewModel
 import com.example.polyscrabbleclient.page.headerbar.view.HeaderBar
@@ -91,7 +92,7 @@ fun NavGraph(startPage: NavPage, themeSelectorViewModel: ThemeSelectorViewModel)
             }
         }
 
-        waitingRoom(navController, themeSelectorViewModel)
+        waitingRoom(navController)
         composable(NavPage.Account.label) {
             PageWithChat {
                 AccountView(AccountViewmodel(), navController)
@@ -260,14 +261,13 @@ fun CustomSnackBarHost(
 
 fun NavGraphBuilder.waitingRoom(
     navController: NavController,
-    themeSelectorViewModel: ThemeSelectorViewModel
 ) {
     navigation(startDestination = NavPage.WaitingRoom.label, route = NavPage.WaitingRoute.label) {
         composable(NavPage.WaitingRoom.label) {
             PageWithChat(
                 Background.Page
             ) {
-                WaitingForOtherPlayersView(navController = navController)
+                WaitingRoomView(navController = navController)
                 NewInvitationView(navController = navController)
             }
         }
