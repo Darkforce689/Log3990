@@ -75,4 +75,8 @@ export class WinnerDialogComponent {
     close() {
         this.dialogRef.close();
     }
+
+    get isObserver(): boolean {
+        return this.winnerData.isObserver;
+    }
 }
