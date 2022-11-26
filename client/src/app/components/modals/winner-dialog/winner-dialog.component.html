@@ -3,7 +3,7 @@
     <h2>{{ getWinnerMessage() }}</h2>
     <h2>{{ getExpBreakdown() }}</h2>
     <br />
-    <div class="progressBar">
+    <div class="progressBar" *ngIf="!isObserver">
         <h2>{{ getCurrentLevel() }}</h2>
         <mat-progress-bar mode="determinate" value="{{ getProgressValue() }}"></mat-progress-bar>
         <h2>{{ getNextLevel() }}</h2>
