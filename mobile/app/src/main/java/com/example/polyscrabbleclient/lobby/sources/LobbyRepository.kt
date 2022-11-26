@@ -89,9 +89,9 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         socket.emit(EmitLobbyEvent.JoinGame, joinGame)
     }
 
-    fun emitCreateGame(newGameParam: CreateGame) {
+    fun emitCreateGame(createGame: CreateGame) {
         model.isPendingGameHost.value = true
-        socket.emit(EmitLobbyEvent.CreateGame, newGameParam)
+        socket.emit(EmitLobbyEvent.CreateGame, createGame)
     }
 
     fun emitLaunchGame(navigateToGameScreen: () -> Unit) {

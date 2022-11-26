@@ -9,9 +9,13 @@ import com.example.polyscrabbleclient.navigateTo
 class WaitingRoomViewModel : ViewModel() {
     private val lobby = LobbyRepository
 
-    fun isAcceptedPlayer(): Boolean {
+    private fun isAcceptedPlayer(): Boolean {
         return lobby.model.isAcceptedPlayer.value
-            || lobby.model.hasJustConfirmedJoin.value == true
+            && lobby.model.hasJustConfirmedJoin.value == true
+    }
+
+    fun isPlayerInLobby(): Boolean {
+        return lobby.model.isPendingGameHost.value || isAcceptedPlayer()
     }
 
     fun leaveLobbyGame(navController: NavController) {

@@ -10,7 +10,7 @@ fun WaitingRoomView(
     navController: NavController,
     viewModel: WaitingRoomViewModel = viewModel()
 ) {
-    if (viewModel.isAcceptedPlayer()) {
+    if (viewModel.isPlayerInLobby()) {
         WaitingForOtherPlayersView(navController)
     } else {
         WaitingForHostView(navController, viewModel)
