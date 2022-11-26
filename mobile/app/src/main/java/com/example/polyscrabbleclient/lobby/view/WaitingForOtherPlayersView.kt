@@ -236,12 +236,9 @@ private fun PlayerSideElementView(
     color: Color = MaterialTheme.colors.primary,
     action: (() -> Unit)?,
 ) {
-    Button(
+    IconButton(
         onClick = { action?.invoke() },
         enabled = action !== null,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.Transparent
-        )
     ) {
         Icon(
             modifier = Modifier.size(30.dp),
