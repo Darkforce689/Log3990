@@ -152,7 +152,7 @@ export class NewGameSocketHandler {
                         return;
                     }
                     if (this.socketMap.get(gameId)?.get(user.name)?.isHost) {
-                        this.kickPlayer(gameId, playerName, socket);
+                        this.kickPlayer(gameId, playerName);
                         this.emitPendingGamesToAll();
                     }
                 } catch (error) {
@@ -186,7 +186,7 @@ export class NewGameSocketHandler {
                         return;
                     }
                     if (this.socketMap.get(gameId)?.get(user.name)?.isHost) {
-                        this.refusePlayer(gameId, playerName, socket);
+                        this.refusePlayer(gameId, playerName);
                         this.emitPendingGamesToAll();
                     }
                 } catch (error) {
@@ -317,13 +317,13 @@ export class NewGameSocketHandler {
         this.newGameManagerService.deletePendingGame(id);
     }
 
-    private kickPlayer(id: string, playerName: string, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
+    private kickPlayer(id: string, playerName: string) {
         const client = this.socketMap.get(id)?.get(playerName)?.socketId;
         if (!client) {
             return;
         }
         this.removePlayerFromGame(playerName);
-        socket.emit(playerKicked);
+        this.ioServer.to(client).emit(playerKicked);
         this.ioServer.to(client).disconnectSockets();
     }
 
@@ -335,7 +335,7 @@ export class NewGameSocketHandler {
         this.sendGameSettingsToPlayers(id, gameSettings);
     }
 
-    private async refusePlayer(id: string, name: string, socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) {
+    private async refusePlayer(id: string, name: string) {
         const client = this.socketMap.get(id)?.get(name)?.socketId;
         if (!client) {
             return;
@@ -345,7 +345,7 @@ export class NewGameSocketHandler {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
         }
         this.sendGameSettingsToPlayers(id, gameSettings);
-        socket.emit(playerRefused);
+        this.ioServer.to(client).emit(playerRefused);
         this.ioServer.to(client).disconnectSockets();
     }
 
