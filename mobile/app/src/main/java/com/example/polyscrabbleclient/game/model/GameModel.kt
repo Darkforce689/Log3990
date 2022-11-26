@@ -8,6 +8,7 @@ import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.utils.audio.AudioPlayer
 
 const val defaultTurnTime = 60
 const val DefaultWatchedPlayerIndex = 0
@@ -97,6 +98,23 @@ class GameModel {
             } else {
                 players.find { player -> player.name == User.name }?.letters ?: return
             }
+        if (AudioPlayer.lastActionWasAPlace) {
+            AudioPlayer.lastActionWasAPlace = false
+            if (AudioPlayer.lastNumberOfLetterRemaining == 0) {
+                if (userLetters.size == newLetters.size) {
+                    AudioPlayer.playSong(AudioPlayer.INCORRECT_SONG)
+                } else {
+                    AudioPlayer.playSong(AudioPlayer.CORRECT_SONG)
+                }
+            } else {
+                if (AudioPlayer.lastNumberOfLetterRemaining == remainingLettersCount.value) {
+                    AudioPlayer.playSong(AudioPlayer.INCORRECT_SONG)
+                } else {
+                    AudioPlayer.playSong(AudioPlayer.CORRECT_SONG)
+                }
+            }
+            AudioPlayer.lastNumberOfLetterRemaining = -1
+        }
         userLetters.clear()
         userLetters.addAll(newLetters)
     }
