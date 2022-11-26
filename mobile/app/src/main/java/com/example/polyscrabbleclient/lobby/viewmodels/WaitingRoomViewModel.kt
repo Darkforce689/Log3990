@@ -8,6 +8,7 @@ import com.example.polyscrabbleclient.navigateTo
 
 class WaitingRoomViewModel : ViewModel() {
     private val lobby = LobbyRepository
+    val playerRemovedFromGameDialogOpened = lobby.model.wasRemovedFromGame
 
     private fun isAcceptedPlayer(): Boolean {
         return lobby.model.isAcceptedPlayer.value

@@ -17,6 +17,7 @@ class LobbyModel {
     val isAcceptedPlayer = mutableStateOf(false)
     val isPendingGameHost = mutableStateOf(false)
     val hostHasJustQuitTheGame = mutableStateOf(false)
+    val wasRemovedFromGame = mutableStateOf(false)
     val isGamePrivate = mutableStateOf(false)
     val isGameProtected = mutableStateOf(false)
     val password = mutableStateOf<String?>(null)

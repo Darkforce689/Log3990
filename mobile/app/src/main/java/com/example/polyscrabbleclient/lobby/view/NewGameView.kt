@@ -28,8 +28,8 @@ import com.example.polyscrabbleclient.ui.theme.*
 fun NewGameScreen(
     navController: NavController,
     createGameViewModel: CreateGameViewModel,
+    viewModel: NewGameViewModel = viewModel()
 ) {
-    val viewModel: NewGameViewModel = viewModel()
     val createGameDialogOpened = remember {
         viewModel.createGameDialogOpened
     }

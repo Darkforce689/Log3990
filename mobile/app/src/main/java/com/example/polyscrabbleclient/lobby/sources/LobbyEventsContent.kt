@@ -64,6 +64,10 @@ typealias ConfirmJoin = Boolean
 
 typealias HostQuit = Unit
 
+typealias PlayerRefused = Unit
+
+typealias PlayerKicked = Unit
+
 typealias Error = String
 
 data class CreateGame(

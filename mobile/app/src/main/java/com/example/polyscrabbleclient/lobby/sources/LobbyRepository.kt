@@ -60,6 +60,14 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         model.hostHasJustQuitTheGame.value = true
     }
 
+    private val onPlayerRefused: (PlayerRefused?) -> Unit = {
+        model.wasRemovedFromGame.value = true
+    }
+
+    private val onPlayerKicked: (PlayerKicked?) -> Unit = {
+        model.wasRemovedFromGame.value = true
+    }
+
     private var onErrorCallbacks: MutableMap<String, (Error?) -> Unit> = HashMap()
     fun subscribeOnError(key: String, callback: (Error?) -> Unit) {
         onErrorCallbacks[key] = callback
@@ -150,6 +158,8 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         socket.on(OnLobbyEvent.LobbyGameId, onPendingGameId)
         socket.on(OnLobbyEvent.ConfirmJoin, onConfirmJoin)
         socket.on(OnLobbyEvent.HostQuit, onHostQuit)
+        socket.on(OnLobbyEvent.PlayerRefused, onPlayerRefused)
+        socket.on(OnLobbyEvent.PlayerKicked, onPlayerKicked)
         socket.on(OnLobbyEvent.Error, onError)
     }
 }
