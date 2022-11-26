@@ -51,7 +51,7 @@ fun NewGameVisibilitySettings(createGameViewModel: CreateGameViewModel) {
         Column(
             Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
         ) {
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(checked = createGameViewModel.isGamePrivate.value,
@@ -61,7 +61,7 @@ fun NewGameVisibilitySettings(createGameViewModel: CreateGameViewModel) {
                 )
                 Text(text = private_game)
             }
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(checked = createGameViewModel.isGameProtected.value,
@@ -248,7 +248,6 @@ fun PlayerSlider(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GamePasswordInput(
-    modifier: Modifier = Modifier.fillMaxWidth(),
     password: String,
     onPasswordChanged: (password: String) -> Unit,
     enabled: Boolean,
@@ -256,12 +255,12 @@ fun GamePasswordInput(
     val focusRequester = FocusRequester()
     val keyboardController = LocalSoftwareKeyboardController.current
 
+
     TextField(
         value = password,
         onValueChange = { onPasswordChanged(it) },
-        modifier = Modifier,
         keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.None
+            imeAction = ImeAction.Done,
         ),
         keyboardActions = KeyboardActions(
             onDone = { keyboardController?.hide() }
