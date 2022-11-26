@@ -1,5 +1,5 @@
 import { Vec2 } from '@app/classes/vec2';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { Action } from '@app/game/game-logic/actions/action';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
 import { Tile } from '@app/game/game-logic/board/tile';

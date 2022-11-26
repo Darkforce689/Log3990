@@ -1,5 +1,5 @@
 import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { GameCreator } from '@app/game/game-creator/game-creator';
@@ -72,6 +72,7 @@ describe('GameCreator', () => {
             magicCardIds,
             tmpPlayerNames,
             password,
+            botNames: [],
         };
         gameCreator = new GameCreator(
             pointCalculatorStub,

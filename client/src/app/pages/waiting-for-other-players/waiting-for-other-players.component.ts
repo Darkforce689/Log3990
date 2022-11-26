@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
+import { getBotAvatar } from '@app/game-logic/utils';
 import { PopChatService } from '@app/services/pop-chat.service';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
@@ -24,6 +25,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
     gameSettings: OnlineGameSettings;
     avatars = new Map<string, string>();
     isGameOwner: boolean = false;
+    currentPlayers: string[] = [];
 
     private forbidenUserInvite$$: Subscription | undefined;
     private gameDeleted$$: Subscription;
@@ -42,13 +44,16 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
 
     ngOnInit(): void {
         this.isGameOwner = this.socketHandler.isGameOwner;
-        this.gameSettings$$ = this.gameSettings$.subscribe((gameSettings) => {
+        this.gameSettings$$ = this.socketHandler.gameSettings$.subscribe((gameSettings) => {
             if (!gameSettings) {
                 return;
             }
             this.gameSettings = gameSettings;
-            this.addPlayerIcons(gameSettings.playerNames);
-            this.addPlayerIcons(gameSettings.tmpPlayerNames);
+            const { playerNames, tmpPlayerNames, botNames } = gameSettings;
+            this.addPlayerIcons(playerNames);
+            this.addPlayerIcons(tmpPlayerNames);
+            this.addBotIcons(botNames);
+            this.currentPlayers = this.getPlayers(gameSettings);
             this.cdref.detectChanges();
         });
         this.gameDeleted$$ = this.socketHandler.deletedGame$.subscribe((isDeleted) => {
@@ -102,6 +107,13 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
         );
     }
 
+    addBotIcons(botNames: string[]) {
+        botNames.forEach((name) => {
+            const avatar = getBotAvatar(name);
+            this.avatars.set(name, avatar);
+        });
+    }
+
     invitePlayers() {
         this.forbidenUserInvite$$?.unsubscribe();
         if (!this.gameSettings) {
@@ -116,7 +128,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
             },
             forbidenUsers$,
         };
-        this.forbidenUserInvite$$ = this.gameSettings$.subscribe((gameSettings) => {
+        this.forbidenUserInvite$$ = this.socketHandler.gameSettings$.subscribe((gameSettings) => {
             if (!gameSettings) {
                 return;
             }
@@ -162,23 +174,34 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
     //     return loadingGameDialog;
     // }
 
-    isHost(playerId: string) {
-        return this.isThatPlayerHost(playerId) ? false : this.isGameOwner;
+    isHost() {
+        return this.isGameOwner;
     }
 
-    isThatPlayerHost(playerId: string) {
+    isThatPlayerHost(playerName: string) {
         if (!this.players) {
             return false;
         }
-        return playerId === this.players[0];
+        return playerName === this.players[0];
     }
 
     getAvatarIcon(playerName: string): string {
         return this.avatars.get(playerName) ?? 'default';
     }
 
-    get gameSettings$() {
-        return this.socketHandler.gameSettings$;
+    getPlayers(gameSettings: OnlineGameSettings): string[] {
+        if (!gameSettings) {
+            return [];
+        }
+        const playerNames = gameSettings.playerNames;
+        const nPlayers = playerNames.length;
+        const totalPlayers = gameSettings.numberOfPlayers;
+        const botNames = gameSettings.botNames.slice(nPlayers - 1, totalPlayers);
+        return playerNames.concat(botNames);
+    }
+
+    isKickable(name: string) {
+        return this.gameSettings.playerNames.includes(name) && !this.isThatPlayerHost(name);
     }
 
     get pendingGameId(): string {
@@ -194,6 +217,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
         }
         return this.gameSettings.playerNames;
     }
+
     get numberOfPlayers() {
         if (!this.gameSettings) {
             return 0;
@@ -218,7 +242,7 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
 
     get isPrivateGame(): Observable<boolean> {
         const subject = new BehaviorSubject<boolean>(false);
-        this.gameSettings$.subscribe((gameSettings) => {
+        this.socketHandler.gameSettings$.subscribe((gameSettings) => {
             if (!gameSettings) {
                 return;
             }

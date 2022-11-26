@@ -2,40 +2,51 @@
     <div class="header">
         <h5>{{ lobbyGameTitle }}</h5>
     </div>
-    <table
-        mat-table
-        [dataSource]="lobbyGamesDataSource"
-        class="mat-elevation-z8"
-        matSort
-        (matSortChange)="announceSortChange($event)"
-        matSortDisableClear
-    >
-        <ng-container matColumnDef="playerNames">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Joueurs</th>
-            <td mat-cell *matCellDef="let element">
-                <div *ngFor="let player of element.playerNames" class="player">
-                    <app-avatar [src]="getAvatar(player)" [size]="25"></app-avatar>
-                    <p>{{ player }}</p>
-                </div>
-            </td>
-        </ng-container>
+    <div class="table-container">
+        <table
+            mat-table
+            [dataSource]="lobbyGamesDataSource"
+            class="mat-elevation-z8"
+            matSort
+            (matSortChange)="announceSortChange($event)"
+            matSortDisableClear
+        >
+            <ng-container matColumnDef="playerNames">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Joueurs</th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-grid-list cols="2" rowHeight="40px">
+                        <mat-grid-tile *ngFor="let player of getPlayers(element)">
+                            <div [ngClass]="isHost(player, element) ? 'host' : 'player'">
+                                <app-avatar [src]="getAvatar(player)" [size]="35"></app-avatar>
+                                <p>{{ player }}</p>
+                            </div>
+                        </mat-grid-tile>
+                    </mat-grid-list>
+                </td>
+            </ng-container>
 
-        <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{ column.header }}
-            </th>
-            <td mat-cell *matCellDef="let row">
-                {{ column.cell(row) }}
-            </td>
-        </ng-container>
+            <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ column.header }}
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    {{ column.cell(row) }}
+                </td>
+            </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-        <tr mat-row (click)="setSelectedRow(row)" [class.row-is-clicked]="isSelectedRow(row)" *matRowDef="let row; columns: columnsToDisplay"></tr>
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+            <tr
+                mat-row
+                (click)="setSelectedRow(row)"
+                [class.row-is-clicked]="isSelectedRow(row)"
+                *matRowDef="let row; columns: columnsToDisplay"
+            ></tr>
 
-        <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" colspan="6">{{ noLobbyGameLabel }}</td>
-        </tr>
-    </table>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="6">{{ noLobbyGameLabel }}</td>
+            </tr>
+        </table>
+    </div>
 </mat-dialog-content>
 <mat-dialog-actions>
     <div>

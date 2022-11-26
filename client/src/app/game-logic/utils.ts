@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable no-bitwise*/
 import { MatDialog } from '@angular/material/dialog';
 import { EXP_PER_LEVEL, MAX_LEVEL } from '@app/account/constants';
 import { AlertDialogComponent } from '@app/components/modals/alert-dialog/alert-dialog.component';
-import { BOARD_MAX_POSITION, BOARD_MIN_POSITION } from '@app/game-logic/constants';
+import { BOARD_MAX_POSITION, BOARD_MIN_POSITION, BOT_AVATARS } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
 import { Tile } from '@app/game-logic/game/board/tile';
 import { PlacementSetting } from '@app/game-logic/interfaces/placement-setting.interface';
@@ -149,4 +151,19 @@ export const getProgressValue = (totalExp: number): number => {
 
 export const isInsideOfBoard = (x: number, y: number) => {
     return x >= BOARD_MIN_POSITION && x <= BOARD_MAX_POSITION && y >= BOARD_MIN_POSITION && y <= BOARD_MAX_POSITION;
+};
+
+export const getBotAvatar = (name: string) => {
+    return BOT_AVATARS[hashCode(name) % BOT_AVATARS.length];
+};
+
+const hashCode = (s: string) => {
+    let hash = 0;
+    if (s.length === 0) return hash;
+    for (let i = 0; i < s.length; i++) {
+        const char = s.charCodeAt(i);
+        hash = hash * 32 - hash + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
 };

@@ -15,6 +15,7 @@ import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.utils.audio.AudioPlayer
 import com.example.polyscrabbleclient.utils.constants.LOSS_EXP_BONUS
 import com.example.polyscrabbleclient.utils.constants.WIN_EXP_BONUS
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
@@ -36,12 +37,20 @@ fun EndOfGameView (
         if (!GameRepository.model.isUserAnObserver()) {
             var expEarned = GameRepository.model.players[0].points
             expEarned = if (expEarned > 0) expEarned else 0
-            expEarned = if (GameRepository.model.isUserWinner()) expEarned + WIN_EXP_BONUS else expEarned + LOSS_EXP_BONUS
+            expEarned = if (GameRepository.model.isUserWinner()) {
+                AudioPlayer.playSong(AudioPlayer.WIN_SONG)
+                expEarned + WIN_EXP_BONUS
+            }else {
+                AudioPlayer.playSong(AudioPlayer.LOSE_SONG)
+                expEarned + LOSS_EXP_BONUS
+            }
             User.totalExp = User.totalExp + expEarned
             Text("Vous avez gagné $expEarned points d'expérience.")
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp, 0.dp, 0.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 10.dp, 0.dp, 0.dp)) {
             Text(User.currentLevel().toString(), modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
             LinearProgressIndicator(progress = User.getProgressValue(), modifier = Modifier
                 .width(300.dp)

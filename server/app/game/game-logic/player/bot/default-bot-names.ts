@@ -1,4 +1,4 @@
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 interface BotInfo {
     name: string;
     type: BotDifficulty;

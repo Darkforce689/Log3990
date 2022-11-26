@@ -31,13 +31,15 @@ h1 {
 }
 
 table {
-    width: 500px;
+    width: 100%;
 }
 
 .table-container {
-    margin-top: 10px;
-    min-width: 500px;
-    max-height: 325px;
+    display: flex;
+    justify-content: center;
+    height: 325px;
+    width: 510px;
+    overflow-y: auto;
 }
 
 .mat-header-cell {

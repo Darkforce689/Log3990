@@ -50,6 +50,7 @@ describe('LobbyGamesComponent', () => {
             magicCardIds: [],
             tmpPlayerNames: [],
             password: undefined,
+            botNames: [],
         },
         {
             id: '1',
@@ -64,6 +65,7 @@ describe('LobbyGamesComponent', () => {
             magicCardIds: [],
             tmpPlayerNames: [],
             password: undefined,
+            botNames: [],
         },
     ];
 

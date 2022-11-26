@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import {
     MAX_NUMBER_OF_MAGIC_CARD,

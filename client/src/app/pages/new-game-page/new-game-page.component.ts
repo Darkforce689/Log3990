@@ -65,6 +65,7 @@ export class NewGamePageComponent implements AfterViewInit {
                 botDifficulty: gameSettings.botDifficulty,
                 playerNames: [],
                 tmpPlayerNames: [],
+                botNames: [],
             };
             this.socketHandler.createGame(onlineGameSettings);
             this.gameLauncher.waitForOnlineGameStart();

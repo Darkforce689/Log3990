@@ -65,3 +65,53 @@ export const WAIT_STATUS = 'En attente';
 export const ACTIVE_STATUS = 'En cours';
 export const PREVIOUS_INDEX = -1;
 export const NEXT_INDEX = 1;
+
+export const BOT_AVATARS = [
+    'easyBotAvatar1',
+    'easyBotAvatar2',
+    'easyBotAvatar3',
+    'easyBotAvatar4',
+    'easyBotAvatar5',
+    'hardBotAvatar1',
+    'hardBotAvatar2',
+    'hardBotAvatar3',
+    'hardBotAvatar4',
+    'hardBotAvatar5',
+];
+
+export const BOT_NAMES = new Set([
+    'Jimmy',
+    'Sasha',
+    'BeepBoop',
+    'Martin',
+    'Wayne',
+    'Fabian',
+    'Juan',
+    'Oliver',
+    'Maria',
+    'Wilson',
+    'Laura',
+    'Noah',
+    'James',
+    'Benjamin',
+    'Lucas',
+    'Henry',
+    'Alexander',
+    'Mason',
+    'Michael',
+    'Ethan',
+    'Daniel',
+    'Jacob',
+
+    'Terminator',
+    'Skynet',
+    'Stockfish',
+    'AlphaZero',
+    'DeepBlue',
+    'Mario',
+    'Spooky',
+    'Sonic',
+    'Lynne',
+    'Optix',
+    'Machina',
+]);

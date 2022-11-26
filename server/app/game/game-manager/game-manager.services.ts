@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
 import { NEW_GAME_TIMEOUT } from '@app/constants';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { LeaderboardService } from '@app/database/leaderboard-service/leaderboard.service';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
@@ -222,7 +222,7 @@ export class GameManagerService {
             this.deleteGame(gameToken);
             return;
         }
-        const newPlayer = await this.createNewBotPlayer(playerRef, playerNames, game.botDifficulty);
+        const newPlayer = this.createNewBotPlayer(playerRef, playerNames, game.botDifficulty);
         const index = game.players.findIndex((player) => player.name === playerRef.player.name);
         game.players[index] = newPlayer;
         this.playerLeft$.next({ gameToken, players: game.players });
@@ -233,8 +233,9 @@ export class GameManagerService {
         }
     }
 
-    private async createNewBotPlayer(playerRef: PlayerRef, playerNames: string[], botDifficulty: BotDifficulty) {
-        const newPlayer = await this.gameCreator.createBotPlayer(botDifficulty, playerNames);
+    private createNewBotPlayer(playerRef: PlayerRef, playerNames: string[], botDifficulty: BotDifficulty) {
+        const botName = this.botManager.getBotName(playerNames, [], botDifficulty);
+        const newPlayer = this.botManager.createBotPlayer(botName, botDifficulty);
         newPlayer.letterRack = playerRef.player.letterRack;
         newPlayer.points = playerRef.player.points;
         return newPlayer;

@@ -14,6 +14,7 @@ import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.utils.audio.AudioPlayer
 import com.example.polyscrabbleclient.utils.constants.*
 
 val MagicCardWidth = 240.dp
@@ -61,7 +62,10 @@ fun MagicCardsView(viewModel: GameViewModel = GameViewModel()) {
                 ActionButton(
                     { getName(magicCards[i].id) },
                     getEnabled(magicCards[i].id),
-                    { getFun(magicCards[i].id) },
+                    {
+                        AudioPlayer.playSong(AudioPlayer.MAGIC_SONG)
+                        getFun(magicCards[i].id)
+                    },
                     getIcon(magicCards[i].id),
                 )
             )

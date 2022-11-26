@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { BOT_NAMES } from '@app/game-logic/constants';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { Player } from '@app/game-logic/player/player';
+import { getBotAvatar } from '@app/game-logic/utils';
 import { AccountService } from '@app/services/account.service';
 import { UserCacheService } from '@app/users/services/user-cache.service';
 
@@ -19,7 +21,12 @@ export class PlayerInfoComponent implements OnInit {
     }
 
     addPlayerIcons(playerNames: string[]) {
-        playerNames.forEach((name) =>
+        playerNames.forEach((name) => {
+            if (BOT_NAMES.has(name)) {
+                const avatar = getBotAvatar(name);
+                this.avatars.set(name, avatar);
+                return;
+            }
             this.userCacheService.getUserByName(name).subscribe((user) => {
                 if (!user) {
                     return;
@@ -29,11 +36,18 @@ export class PlayerInfoComponent implements OnInit {
                     return;
                 }
                 this.avatars.set(name, user.avatar);
-            }),
-        );
+            });
+        });
     }
 
     getAvatarIcon(name: string): string {
+        if (!name) {
+            return 'default';
+        }
+        if (!this.avatars.has(name)) {
+            const avatar = getBotAvatar(name);
+            this.avatars.set(name, avatar);
+        }
         return this.avatars.get(name) ?? 'default';
     }
 

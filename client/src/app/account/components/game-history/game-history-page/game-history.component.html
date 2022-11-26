@@ -1,5 +1,5 @@
 <div class="container">
-    <h1 class="primary-color">Historique de jeux</h1>
+    <h1>Historique de jeux</h1>
     <mat-card>
         <mat-card-content>
             <h2>Parties jouées</h2>
@@ -23,7 +23,7 @@
                             </button>
                         </td>
                     </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
                     <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
                     <tr class="mat-row" *matNoDataRow>
                         <td class="mat-cell" [attr.colspan]="columnsToDisplay.length">

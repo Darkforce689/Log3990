@@ -11,6 +11,7 @@ import com.example.polyscrabbleclient.game.sources.*
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.utils.audio.AudioPlayer
 
 class GameViewModel : ViewModel() {
     val game = GameRepository.model
@@ -187,6 +188,8 @@ class GameViewModel : ViewModel() {
             return
         }
         val (placementSetting, word) = placement
+        AudioPlayer.lastActionWasAPlace = true;
+        AudioPlayer.lastNumberOfLetterRemaining = remainingLettersCount.value
         GameRepository.emitNextAction(
             OnlineAction(
                 OnlineActionType.Place,
@@ -198,6 +201,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun exchangeLetter() {
+        AudioPlayer.playSong(AudioPlayer.EXCHANGE_SONG)
         val letters = getSelectedTiles()
             .map { tileModel -> tileModel.letter.toString() }
             .reduce { lettersString, letter -> lettersString + letter }

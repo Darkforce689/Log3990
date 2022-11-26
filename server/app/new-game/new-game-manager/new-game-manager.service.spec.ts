@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { DEFAULT_DICTIONARY_TITLE } from '@app/game/game-logic/constants';
 import { GameManagerService, PlayersAndToken } from '@app/game/game-manager/game-manager.services';
 import { GameMode } from '@app/game/game-mode.enum';
@@ -11,10 +11,12 @@ import { OnlineGameSettings } from '@app/new-game/online-game.interface';
 import { createSinonStubInstance, StubbedClass } from '@app/test.util';
 import { expect } from 'chai';
 import { Subject } from 'rxjs';
+import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 
 describe('NewGameManagerService', () => {
     let gameManagerStub: StubbedClass<GameManagerService>;
     let conversationStub: StubbedClass<ConversationService>;
+    let botManagerStub: StubbedClass<BotManager>;
     let service: NewGameManagerService;
     const tmpPlayerNames: string[] = [];
     const password = undefined;
@@ -22,10 +24,11 @@ describe('NewGameManagerService', () => {
     before(() => {
         gameManagerStub = createSinonStubInstance<GameManagerService>(GameManagerService);
         conversationStub = createSinonStubInstance<ConversationService>(ConversationService);
+        botManagerStub = createSinonStubInstance<BotManager>(BotManager);
         gameManagerStub.gameDeleted$ = new Subject<string>();
         gameManagerStub.playerLeft$ = new Subject<PlayersAndToken>();
         gameManagerStub.observerLeft$ = new Subject<NameAndToken>();
-        service = new NewGameManagerService(gameManagerStub, conversationStub);
+        service = new NewGameManagerService(gameManagerStub, conversationStub, botManagerStub);
     });
 
     it('should createGame', () => {
@@ -41,6 +44,7 @@ describe('NewGameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
         service.createPendingGame(gameSettings);
         expect(service.pendingGames.size).to.equal(1);
@@ -73,25 +77,6 @@ describe('NewGameManagerService', () => {
         expect(confirmedId).to.be.undefined;
     });
 
-    // TODO GL3A22107-35 : Remove or Adapt server-side tests
-    // it('on JoinGame should not delete pending game if two players are already in gameSetting', () => {
-    //     service.pendingGames.clear();
-    //     const gameSettings = {
-    //         playerNames: ['Max', 'Allo'],
-    //         randomBonus: true,
-    //         timePerTurn: 60000,
-    //         gameMode: GameMode.Classic,
-    //         dictTitle: DEFAULT_DICTIONARY_TITLE,
-    //         botDifficulty: BotDifficulty.Easy,
-    //         numberOfPlayers: 2,
-    //     } as OnlineGameSettingsUI;
-    //     service.pendingGames.set('abc', gameSettings);
-    //     const id = 'abc';
-    //     const playerName = 'Sim';
-    //     const confirmedId = service.joinPendingGame(id, playerName);
-    //     expect(confirmedId).to.be.undefined;
-    // });
-
     it('getPendingGame should return correct pending game', () => {
         service.pendingGames.clear();
         const gameSettings = {
@@ -106,6 +91,7 @@ describe('NewGameManagerService', () => {
             magicCardIds: [],
             tmpPlayerNames,
             password,
+            botNames: [],
         };
         service.pendingGames.set('abc', gameSettings);
         const id = 'abc';
