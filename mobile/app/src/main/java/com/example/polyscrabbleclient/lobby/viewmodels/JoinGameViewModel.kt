@@ -36,6 +36,11 @@ class JoinGameViewModel : ViewModel() {
             }
     }
 
+    fun leaveLobbyGame(navController: NavController) {
+        LobbyRepository.leaveLobbyGame()
+        navigateTo(NavPage.MainPage, navController)
+    }
+
     fun joinGame(
         navController: NavController
     ) {

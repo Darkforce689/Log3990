@@ -151,6 +151,7 @@ const val NextPlayer = "Joueur suivant"
 const val PreviousPlayer = "Joueur précédent"
 const val CandidatePlayers = "Joueurs en attente d'approbation:"
 const val EnterPasswordFR = "Veuillez entre le mot de passe"
+const val BadPasswordFR = "Mauvais mot de passe"
 const val WaitingForHostResponse = "En attente de la réponse de l'hôte"
 const val HostRemovedPlayer = "L'hôte vous a retiré de la partie"
 
