@@ -7,7 +7,7 @@
                     <ng-template #stepperIcon>
                         <mat-icon> admin_panel_settings_rounded </mat-icon>
                     </ng-template>
-                    <mat-step label="Visibilité de la partie"></mat-step>
+                    <mat-step label="Configuration de la partie"></mat-step>
                     <ng-template #stepperIcon>
                         <mat-icon> tune_rounded </mat-icon>
                     </ng-template>
@@ -46,9 +46,8 @@
                     <h3>Choisir les paramètres de la partie:</h3>
                     <div class="content">
                         <mat-checkbox color="accent" formControlName="privateGame">Partie privée</mat-checkbox>
-                        <!-- <mat-label>Acceptation des joueurs par l'hôte</mat-label> -->
                         <mat-checkbox color="accent" formControlName="hasPassword" (change)="onPasswordChange($event)">
-                            Partie Protégée
+                            Partie protégée
                         </mat-checkbox>
                         <mat-form-field>
                             <input matInput #password autocomplete="off" placeholder="Mot de passe" formControlName="password" />

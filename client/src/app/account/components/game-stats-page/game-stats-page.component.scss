@@ -17,6 +17,14 @@ mat-card {
     }
 }
 
+.table-container {
+    display: flex;
+    justify-content: center;
+    height: 285px;
+    width: 440px;
+    overflow-y: auto;
+}
+
 .container {
     width : 80vw;
     padding-left: 5%;
@@ -31,8 +39,7 @@ h1 {
 }
 
 table {
-    width: 500px;
-    height: 325px;
+    width: 100%;
 }
 
 .mat-header-cell {

@@ -1,7 +1,7 @@
-<div *ngFor="let player of players">
+<div *ngFor="let player of players; trackBy: trackBy">
     <mat-card [ngClass]="{ active: isActivePlayer(player) }">
         <div class="title">
-            <app-avatar [src]="getAvatarIcon(player.name)" [size]="35"></app-avatar>
+            <app-avatar [src]="getAvatarIcon(player.name)" [size]="45"></app-avatar>
             <p class="name">{{ player.name }}</p>
             <p class="score">{{ player.points }} points</p>
         </div>

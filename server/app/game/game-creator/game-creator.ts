@@ -1,5 +1,5 @@
 import { GameHistoryService } from '@app/account/user-game-history/game-history.service';
-import { BotDifficulty } from '@app/database/bot-info/bot-difficulty';
+import { BotDifficulty } from '@app/game/game-logic/player/bot/bot-difficulty';
 import { GameActionNotifierService } from '@app/game/game-action-notifier/game-action-notifier.service';
 import { GameCompiler } from '@app/game/game-compiler/game-compiler.service';
 import { ActionCreatorService } from '@app/game/game-logic/actions/action-creator/action-creator.service';
@@ -7,7 +7,6 @@ import { MagicServerGame } from '@app/game/game-logic/game/magic-server-game';
 import { ServerGame } from '@app/game/game-logic/game/server-game';
 import { EndOfGame } from '@app/game/game-logic/interface/end-of-game.interface';
 import { GameStateToken, SyncStateToken } from '@app/game/game-logic/interface/game-state.interface';
-import { BotPlayer } from '@app/game/game-logic/player/bot-player';
 import { BotManager } from '@app/game/game-logic/player/bot/bot-manager/bot-manager.service';
 import { Player } from '@app/game/game-logic/player/player';
 import { PointCalculatorService } from '@app/game/game-logic/point-calculator/point-calculator.service';
@@ -36,15 +35,14 @@ export class GameCreator {
 
     createGame(onlineGameSettings: OnlineGameSettings, gameToken: string): ServerGame {
         const newServerGame = this.createNewGame(onlineGameSettings, gameToken);
-        const players = this.createPlayers(onlineGameSettings.numberOfPlayers, onlineGameSettings.playerNames, onlineGameSettings.botDifficulty);
+        const players = this.createPlayers(
+            onlineGameSettings.playerNames,
+            onlineGameSettings.botNames,
+            onlineGameSettings.botDifficulty,
+            onlineGameSettings.numberOfPlayers,
+        );
         newServerGame.players = players;
         return newServerGame;
-    }
-
-    createBotPlayer(botDifficulty: BotDifficulty, playerNames: string[]) {
-        const botPlayer = new BotPlayer(this.botManager, botDifficulty, this.gameActionNotifier, this.actionCreator);
-        botPlayer.updateBotName(playerNames);
-        return botPlayer;
     }
 
     private createNewGame(gameSettings: OnlineGameSettings, gameToken: string) {
@@ -90,14 +88,11 @@ export class GameCreator {
         );
     }
 
-    private createPlayers(numberOfPlayers: number, playerNames: string[], botDifficulty: BotDifficulty): Player[] {
+    private createPlayers(playerNames: string[], availableBotNames: string[], botDifficulty: BotDifficulty, numberOfPlayers: number): Player[] {
         const players = playerNames.map((name) => new Player(name));
-        const numberOfBots = numberOfPlayers - players.length;
-        for (let i = 0; i < numberOfBots; i++) {
-            const newBot = this.createBotPlayer(botDifficulty, playerNames);
-            players.push(newBot);
-            playerNames.push(newBot.name);
-        }
-        return players;
+        const nUser = playerNames.length;
+        const botNames = availableBotNames.slice(nUser - 1, numberOfPlayers);
+        const botPlayers = botNames.map((name) => this.botManager.createBotPlayer(name, botDifficulty));
+        return players.concat(botPlayers);
     }
 }

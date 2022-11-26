@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UI_MAGIC_CARD_MAP } from '@app/game-logic/actions/magic-card/magic-card-constants';
+import { BOT_NAMES } from '@app/game-logic/constants';
 import { IMagicCard, LightPlayer } from '@app/game-logic/game/games/online-game/game-state';
+import { getBotAvatar } from '@app/game-logic/utils';
 import { UserCacheService } from '@app/users/services/user-cache.service';
 
 @Component({
@@ -21,12 +23,22 @@ export class ReplayPlayersComponent implements OnInit {
         this.addPlayerIcons(names);
     }
 
+    // To prevent reloading avatar
+    trackBy(index: number, player: LightPlayer) {
+        return player.name;
+    }
+
     isActivePlayer(player: LightPlayer) {
         return player === this.activePlayer;
     }
 
     addPlayerIcons(playerNames: string[]) {
-        playerNames.forEach((name) =>
+        playerNames.forEach((name) => {
+            if (BOT_NAMES.has(name)) {
+                const avatar = getBotAvatar(name);
+                this.avatars.set(name, avatar);
+                return;
+            }
             this.userCacheService.getUserByName(name).subscribe((user) => {
                 if (!user) {
                     return;
@@ -36,8 +48,8 @@ export class ReplayPlayersComponent implements OnInit {
                     return;
                 }
                 this.avatars.set(name, user.avatar);
-            }),
-        );
+            });
+        });
     }
 
     getAvatarIcon(name: string): string {

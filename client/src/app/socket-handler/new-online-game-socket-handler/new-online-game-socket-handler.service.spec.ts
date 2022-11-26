@@ -28,6 +28,7 @@ describe('NewOnlineGameSocketHandler', () => {
         magicCardIds: [],
         tmpPlayerNames: [],
         password: undefined,
+        botNames: [],
     } as OnlineGameSettingsUI;
     const accountService = { account: { name: 'Tim' } };
 

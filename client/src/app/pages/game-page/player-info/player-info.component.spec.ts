@@ -29,6 +29,7 @@ describe('PlayerInfoComponent', () => {
         } as unknown as Player;
         (Object.getOwnPropertyDescriptor(info, 'numberOfLettersRemaining')?.get as jasmine.Spy<() => number>).and.returnValue(2);
         (Object.getOwnPropertyDescriptor(info, 'activePlayer')?.get as jasmine.Spy<() => Player>).and.returnValue(activePlayer);
+
         await TestBed.configureTestingModule({
             imports: [AppMaterialModule, CommonModule, HttpClientTestingModule],
             declarations: [PlayerInfoComponent],

@@ -15,6 +15,7 @@ export interface OnlineGameSettingsUI {
     password?: string;
     numberOfBots?: number;
     observerNames?: string[];
+    botNames: string[];
 }
 
 export interface OnlineGameSettings extends OnlineGameSettingsUI {

@@ -36,8 +36,8 @@ export class GameLauncherService {
             }
             if (!gameSettingsReceived) {
                 gameSettingsReceived = true;
-                this.messageService.joinGameConversation(gameSettings.id);
                 this.router.navigate(['/waiting-room']);
+                this.messageService.joinGameConversation(gameSettings.id);
             }
         });
         this.socketHandler.isDisconnected$.subscribe(() => {

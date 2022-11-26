@@ -63,17 +63,17 @@ export class NewGameSocketHandler {
                 observableGamesSettings: this.newGameManagerService.getObservableGames(),
             });
 
-            socket.on(createGame, async (gameSettings: OnlineGameSettingsUI) => {
+            socket.on(createGame, async (gameSettingsUI: OnlineGameSettingsUI) => {
                 try {
                     const { userId: _id } = (socket.request as unknown as { session: Session }).session;
                     const user = await this.userService.getUser({ _id });
                     if (user === undefined) {
                         return;
                     }
-                    gameSettings.gameStatus = WAIT_STATUS;
-                    gameId = await this.createGame((gameSettings = { ...gameSettings, playerNames: [user.name], tmpPlayerNames: [] }), socket);
+                    gameId = await this.createGame({ ...gameSettingsUI, playerNames: [user.name] }, socket);
                     this.addToSocketMap(gameId, user.name, socket, true);
                     this.emitPendingGamesToAll();
+                    const gameSettings = this.newGameManagerService.getPendingGame(gameId);
                     this.sendGameSettingsToPlayers(gameId, gameSettings as OnlineGameSettings);
                 } catch (error) {
                     ServerLogger.logError(error);
