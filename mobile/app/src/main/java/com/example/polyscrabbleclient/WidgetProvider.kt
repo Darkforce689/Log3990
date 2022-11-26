@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
 import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.user.User.currentLevel
 
 
 class WidgetProvider : AppWidgetProvider() {
@@ -27,7 +28,7 @@ class WidgetProvider : AppWidgetProvider() {
     ) {
         val views = RemoteViews(context.packageName, R.layout.example_loading_appwidget)
         views.setTextViewText(R.id.name, User.name)
-        views.setTextViewText(R.id.level, "0") // TODO: change when we implement XPlevel
+        views.setTextViewText(R.id.level, currentLevel().toString())
         views.setTextViewText(R.id.game_played_value, User.nGamePlayed.toInt().toString())
         views.setTextViewText(R.id.game_winned_value, User.nGameWon.toInt().toString())
         appWidgetManager.updateAppWidget(appWidgetId, views)

@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.polyscrabbleclient.getAssetsId
 import com.example.polyscrabbleclient.ui.theme.avatars
 import com.example.polyscrabbleclient.user.User
@@ -46,7 +47,8 @@ fun AvatarList(
     val selectedIndex = remember { mutableStateOf(-1) }
     Card(
         Modifier
-            .padding(horizontal = 50.dp)
+            .fillMaxHeight(0.51f)
+            .fillMaxWidth(1f)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -56,14 +58,14 @@ fun AvatarList(
                 fontWeight = FontWeight.Bold
             )
             LazyVerticalGrid(
-                cells = GridCells.Fixed(5),
+                cells = GridCells.Fixed(6),
                 contentPadding = PaddingValues(10.dp)
             ) {
                 itemsIndexed(defaultAvatarList) { index, item ->
                     Column {
                         Avatar(
                             modifier = Modifier
-                                .height(80.dp)
+                                .height(60.dp)
                                 .padding(10.dp)
                                 .border(
                                     BorderStroke(
@@ -92,7 +94,7 @@ fun AvatarList(
                                 .alpha(if (User.currentLevel() >= unlockLevel[defaultAvatarList.size + index]) 1f else 0.2f)
 
                                 .background(color = if (User.currentLevel() >= unlockLevel[defaultAvatarList.size + index]) Color.Transparent else Color.Gray, shape = CircleShape)
-                                .height(80.dp)
+                                .height(60.dp)
                                 .padding(10.dp)
                                 .border(
                                     BorderStroke(
@@ -115,8 +117,10 @@ fun AvatarList(
                             avatarId = getAssetsId(name = item)
                         )
                         if (User.currentLevel() < unlockLevel[defaultAvatarList.size + index]) {
-                            Icon(imageVector = Icons.Rounded.Lock, contentDescription = null, modifier = Modifier.offset((26).dp,(-67).dp))
-                            Text("Niveau: " + unlockLevel[defaultAvatarList.size + index], modifier = Modifier.offset(8.dp, (-65).dp), fontSize = 14.sp)
+                            Row() {
+                                Icon(imageVector = Icons.Rounded.Lock, contentDescription = null, modifier = Modifier.offset((20).dp,(-43).dp).height(15.dp))
+                                Text("Niveau: " + unlockLevel[defaultAvatarList.size + index], modifier = Modifier.offset((-9).dp, (-28).dp).height(15.dp), fontSize = 11.sp)
+                            }
                         }
                     }
                 }
