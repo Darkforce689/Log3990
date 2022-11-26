@@ -13,9 +13,11 @@
         <div class="container">
             <!-- Waiting for Approval  -->
             <div class="messages" *ngIf="isWaiting | async">
-                <h4>En attente de la réponse de l'hôte</h4>
-                <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
-                <button mat-raised-button color="primary" (click)="cancel()">Annuler</button>
+                <mat-card class="waiting-for-host">
+                    <h2>En attente de la réponse de l'hôte</h2>
+                    <mat-spinner color="accent" [diameter]="spinnerDiameter" [strokeWidth]="spinnerStrokeWidth"></mat-spinner>
+                    <button mat-raised-button color="primary" (click)="cancel()">Annuler</button>
+                </mat-card>
             </div>
             <!-- main content -->
             <mat-card *ngIf="(isWaiting | async) === false">

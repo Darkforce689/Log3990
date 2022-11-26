@@ -105,3 +105,9 @@ mat-sidenav {
     width: 30vw;
     height: 100%;
 }
+
+.waiting-for-host {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
