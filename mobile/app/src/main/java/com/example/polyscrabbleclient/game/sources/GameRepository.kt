@@ -3,6 +3,7 @@ package com.example.polyscrabbleclient.game.sources
 import com.example.polyscrabbleclient.game.model.GameModel
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.utils.Repository
+import com.example.polyscrabbleclient.utils.audio.AudioPlayer
 
 
 object GameRepository : Repository<GameModel, GameSocketHandler>() {
@@ -26,14 +27,24 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
     }
 
     private val onStartTime: (startTime: StartTime?) -> Unit = { startTime ->
-        startTime?.let {
-            model.turnTotalTime.value = it
+        run {
+            if (model.isActivePlayer()) {
+                AudioPlayer.playSong(AudioPlayer.START_TURN_SONG)
+            }
+            startTime?.let {
+                model.turnTotalTime.value = it
+            }
         }
     }
 
     private val onRemainingTime: (remainingTime: RemainingTime?) -> Unit = { remainingTime ->
-        remainingTime?.let {
-            model.turnRemainingTime.value = it
+        run {
+            if (model.isActivePlayer() && remainingTime !== null && remainingTime == 5000) {
+                AudioPlayer.playSong(AudioPlayer.ALARM_CLOCK_CONG)
+            }
+            remainingTime?.let {
+                model.turnRemainingTime.value = it
+            }
         }
     }
 

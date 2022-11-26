@@ -19,6 +19,7 @@ import com.example.polyscrabbleclient.ui.theme.NoRippleTheme
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
 import com.example.polyscrabbleclient.user.User
 import com.example.polyscrabbleclient.utils.PhysicalButtons
+import com.example.polyscrabbleclient.utils.audio.AudioPlayer
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 import kotlin.math.floor
@@ -111,6 +112,7 @@ fun connectAppSocket() {
 @Composable
 fun getAssetsId(name: String): Int {
     val context = LocalContext.current
+    AudioPlayer.CreateSongs(context)
     return context.resources.getIdentifier(
         name, "drawable", context.packageName
     )
