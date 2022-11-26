@@ -29,7 +29,7 @@ class GameViewModel : ViewModel() {
 
     fun getOrderedPlayers(): List<Player> {
         val userIndex = game.getUserIndex()
-        if (userIndex == -1) {
+        if (userIndex < 0) {
             return game.players
         }
         val before = game.players.subList(0, userIndex)
