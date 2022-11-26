@@ -29,6 +29,9 @@ class GameViewModel : ViewModel() {
 
     fun getOrderedPlayers(): List<Player> {
         val userIndex = game.getUserIndex()
+        if (userIndex == -1) {
+            return game.players
+        }
         val before = game.players.subList(0, userIndex)
         val after = game.players.subList(userIndex, game.players.size)
         return after + before

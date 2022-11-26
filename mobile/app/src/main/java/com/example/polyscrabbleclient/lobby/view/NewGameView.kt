@@ -224,7 +224,7 @@ private fun WatchAGameModal(
             closeModal = { result ->
                 watchGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateTo(NavPage.WaitingRoom, navController)
+                    viewModel.joinGame(navController)
                 }
             },
             title = watchAGameFR,
