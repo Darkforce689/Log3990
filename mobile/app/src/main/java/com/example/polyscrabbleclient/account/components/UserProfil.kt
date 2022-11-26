@@ -34,7 +34,7 @@ fun ProfilContent(
 ) {
 
     Row(
-        Modifier.fillMaxHeight(0.8f),
+        Modifier.fillMaxHeight(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         UserInfo(
@@ -47,19 +47,20 @@ fun ProfilContent(
         Box(
             Modifier
                 .fillMaxHeight()
-                .padding(horizontal = 50.dp)
+                .padding(horizontal = 20.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(horizontalAlignment = Alignment.Start) {
                 AvatarList { updateAvatar(it) }
                 Spacer(modifier = Modifier.height(15.dp))
                 Card(
                     Modifier
                         .height(100.dp)
-                        .padding(horizontal = 50.dp)
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Progression")
+                            Text("Progression",
+                                style = MaterialTheme.typography.subtitle1,
+                                fontWeight = FontWeight.Bold)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Niveau : " + currentLevel())
