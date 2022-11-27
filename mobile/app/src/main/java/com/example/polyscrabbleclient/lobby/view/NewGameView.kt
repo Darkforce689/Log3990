@@ -42,9 +42,6 @@ fun NewGameScreen(
     val enterGamePasswordDialogOpened = remember {
         viewModel.enterGamePasswordDialogOpened
     }
-    val hasJustConfirmedJoin = remember {
-        viewModel.hasJustConfirmedJoin
-    }
 
     val isToggled = remember { mutableStateOf(false) }
     val gameText = if (isToggled.value) magic_cards else classic
@@ -99,7 +96,6 @@ fun NewGameScreen(
                 )
 
                 BadPasswordModal(
-                    hasJustConfirmedJoin,
                     joinGameViewModel,
                     navController,
                 )
@@ -132,11 +128,8 @@ fun EnterPasswordModal(
 ) {
     if (enterGamePasswordDialogOpened.value) {
         ModalView(
-            closeModal = { result ->
+            closeModal = {
                 enterGamePasswordDialogOpened.value = false
-                if (result == ModalResult.Primary) {
-                    viewModel.joinGame(navController)
-                }
             },
             title = EnterPasswordFR
         ) { modalButtons ->
@@ -149,14 +142,13 @@ fun EnterPasswordModal(
 
 @Composable
 fun BadPasswordModal(
-    hasJustConfirmedJoin: MutableState<Boolean?>,
     viewModel: JoinGameViewModel,
     navController: NavController
 ) {
-    if (hasJustConfirmedJoin.value == false) {
+    if (viewModel.hasJustConfirmedJoin.value == false) {
         ModalView(
             closeModal = {
-                hasJustConfirmedJoin.value = null
+                viewModel.hasJustConfirmedJoin.value = null
             },
             title = BadPasswordFR
         ) { modalButtons ->

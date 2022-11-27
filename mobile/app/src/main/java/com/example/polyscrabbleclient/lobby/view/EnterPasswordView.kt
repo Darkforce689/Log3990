@@ -17,9 +17,9 @@ fun EnterPasswordView(
 ) {
     Column {
         GamePasswordInput(
-            password = viewModel.password.value,
+            password = viewModel.enteredPassword.value,
             onPasswordChanged = { password ->
-                viewModel.password.value = password
+                viewModel.enteredPassword.value = password
             },
             enabled = true
         )
@@ -28,7 +28,7 @@ fun EnterPasswordView(
             ModalActions(
                 primary = ActionButton(
                     label = { joinGameButtonFR },
-                    canAction = { viewModel.password.value.isNotEmpty() },
+                    canAction = { viewModel.enteredPassword.value.isNotEmpty() },
                     action = { viewModel.joinGame(navController) }
                 )
             )

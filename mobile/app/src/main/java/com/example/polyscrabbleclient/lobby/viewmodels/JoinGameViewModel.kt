@@ -11,9 +11,11 @@ import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.navigateTo
 
 class JoinGameViewModel : ViewModel() {
-    val password = mutableStateOf("")
+    val enteredPassword = mutableStateOf("")
 
-    val selectedLobbyGame = mutableStateOf<OnlineGameSettings?>(null)
+    val selectedLobbyGame = LobbyRepository.model.selectedLobbyGame
+
+    val hasJustConfirmedJoin = LobbyRepository.model.hasJustConfirmedJoin
 
     fun isGameProtected(): Boolean {
         return selectedLobbyGame.value?.isProtected() ?: false
@@ -48,7 +50,7 @@ class JoinGameViewModel : ViewModel() {
             return
         }
         LobbyRepository.emitJoinGame(
-            JoinGame(selectedLobbyGame.value!!.id, password.value),
+            JoinGame(selectedLobbyGame.value!!.id, enteredPassword.value),
             navController
         )
     }

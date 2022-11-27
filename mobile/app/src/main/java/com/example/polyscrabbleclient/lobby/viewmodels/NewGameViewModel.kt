@@ -8,12 +8,12 @@ import com.example.polyscrabbleclient.lobby.sources.Error
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
 class NewGameViewModel : ViewModel() {
+    // TODO : REMOVE NEXT LINE ?
     val waitingForOtherPlayersDialogOpened = mutableStateOf(false)
     val createGameDialogOpened = mutableStateOf(false)
     val joinGameDialogOpened = mutableStateOf(false)
     val watchGameDialogOpened = mutableStateOf(false)
     val enterGamePasswordDialogOpened = mutableStateOf(false)
-    val hasJustConfirmedJoin = LobbyRepository.model.hasJustConfirmedJoin
 
     private var isInvitation = false
 
@@ -59,7 +59,6 @@ class NewGameViewModel : ViewModel() {
         joinGameDialogOpened.value = false
         watchGameDialogOpened.value = false
         enterGamePasswordDialogOpened.value = false
-        hasJustConfirmedJoin.value = null
         waitingForOtherPlayersDialogOpened.value = true
         isInvitation = true
     }
