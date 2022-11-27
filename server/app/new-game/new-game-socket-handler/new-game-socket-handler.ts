@@ -42,9 +42,12 @@ const playerRefused = 'playerRefused';
 const playerKicked = 'playerKicked';
 const confirmPassword = 'confirmPassword';
 
+type GameId = string;
+type Username = string;
+
 export class NewGameSocketHandler {
     readonly ioServer: Server;
-    socketMap: Map<string, Map<string, { socketId: string; isHost: boolean }>> = new Map();
+    private socketMap: Map<GameId, Map<Username, { socketId: string; isHost: boolean }>> = new Map();
 
     constructor(
         server: http.Server,
@@ -318,12 +321,14 @@ export class NewGameSocketHandler {
     }
 
     private kickPlayer(id: string, playerName: string) {
-        const client = this.socketMap.get(id)?.get(playerName)?.socketId;
-        if (!client) {
+        const gameMap = this.socketMap.get(id);
+        const client = gameMap?.get(playerName)?.socketId;
+        if (!client || !gameMap) {
             return;
         }
-        this.removePlayerFromGame(playerName);
+        gameMap.delete(playerName);
         this.ioServer.to(client).emit(playerKicked);
+        this.removePlayerFromGame(playerName);
         this.ioServer.to(client).disconnectSockets();
     }
 
@@ -335,17 +340,19 @@ export class NewGameSocketHandler {
         this.sendGameSettingsToPlayers(id, gameSettings);
     }
 
-    private async refusePlayer(id: string, name: string) {
-        const client = this.socketMap.get(id)?.get(name)?.socketId;
-        if (!client) {
+    private async refusePlayer(id: string, playerName: string) {
+        const gameMap = this.socketMap.get(id);
+        const client = gameMap?.get(playerName)?.socketId;
+        if (!client || !gameMap) {
             return;
         }
-        const gameSettings = this.newGameManagerService.removeTmpPlayer(id, name);
+        const gameSettings = this.newGameManagerService.removeTmpPlayer(id, playerName);
         if (!gameSettings) {
             throw Error("Impossible de rejoindre la partie, elle n'existe pas.");
         }
-        this.sendGameSettingsToPlayers(id, gameSettings);
+        gameMap.delete(playerName);
         this.ioServer.to(client).emit(playerRefused);
+        this.sendGameSettingsToPlayers(id, gameSettings);
         this.ioServer.to(client).disconnectSockets();
     }
 
