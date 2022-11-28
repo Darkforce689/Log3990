@@ -34,11 +34,18 @@ data class OnlineGameSettings(
     val drawableMagicCards: ArrayList<IMagicCard>,
     val numberOfBots: Int? = null,
     val observerNames: ArrayList<String>? = null,
-)
+) {
+    fun isProtected(): Boolean {
+        return password?.isNotEmpty() ?: false
+    }
+}
 
 typealias LobbyGamesList = ArrayList<OnlineGameSettings>
 
-typealias LobbyGameId = String
+data class PrivateGameEvent(
+    val gameId: String,
+    val playerName: String
+)
 
 // Warning : Events Data Classes have to match the backend corresponding interfaces
 
@@ -51,12 +58,25 @@ data class LobbyGames(
     val observableGamesSettings: LobbyGamesList
 )
 
+typealias LobbyGameId = String
+
+typealias ConfirmJoin = Boolean
+
+typealias HostQuit = Unit
+
+typealias PlayerRefused = Unit
+
+typealias PlayerKicked = Unit
+
 typealias Error = String
 
 data class CreateGame(
     val gameMode: GameMode,
     val timePerTurn: Int,
     val playerNames: ArrayList<String>,
+    val tmpPlayerNames: ArrayList<String>,
+    val privateGame: Boolean,
+    val password: String? = null,
     val randomBonus: Boolean,
     val botDifficulty: BotDifficulty,
     val numberOfPlayers: Int,
@@ -70,4 +90,10 @@ data class JoinGame(
     val password: String? = null,
 )
 
-typealias HostQuit = Unit
+typealias KickPlayer = PrivateGameEvent
+
+typealias AcceptPlayer = PrivateGameEvent
+
+typealias RefusePlayer = PrivateGameEvent
+
+

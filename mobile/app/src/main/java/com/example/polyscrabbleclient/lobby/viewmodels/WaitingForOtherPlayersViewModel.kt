@@ -27,13 +27,16 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
         return canLaunchGame()
     }
 
-    fun canLaunchGame(): Boolean {
+    fun isHost(): Boolean {
         return lobby.model.isPendingGameHost.value
-            && lobby.model.currentPendingGameId.value !== null
+    }
+
+    fun canLaunchGame(): Boolean {
+        return isHost() && lobby.model.currentPendingGameId.value !== null
     }
 
     fun leavePendingGame() {
-        lobby.quitPendingGame()
+        lobby.leaveLobbyGame()
         GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
     }
 
@@ -43,5 +46,29 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
 
     fun isHost(playerName: String): Boolean {
         return playerName === getPendingGamePlayerNames()[0]
+    }
+
+    fun isGamePrivate(): Boolean {
+        return lobby.model.isGamePrivate.value
+    }
+
+    fun canAcceptRefusePlayers(): Boolean {
+        return isGamePrivate() && isHost()
+    }
+
+    fun getCandidatePlayerNames(): List<String> {
+        return lobby.model.candidatePlayerNames.value
+    }
+
+    fun kick(playerName: String) {
+        LobbyRepository.kickPlayer(playerName)
+    }
+
+    fun accept(playerName: String) {
+        LobbyRepository.acceptPlayer(playerName)
+    }
+
+    fun refuse(playerName: String) {
+        LobbyRepository.refusePlayer(playerName)
     }
 }

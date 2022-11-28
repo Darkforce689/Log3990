@@ -1,20 +1,57 @@
 package com.example.polyscrabbleclient.lobby.viewmodels
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import com.example.polyscrabbleclient.NavPage
+import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.JoinGame
-import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
+import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
+import com.example.polyscrabbleclient.navigateTo
 
 class JoinGameViewModel : ViewModel() {
-    val selectedGameMode = LobbyRepository.model.selectedGameMode
+    val enteredPassword = mutableStateOf("")
+
+    val selectedLobbyGame = LobbyRepository.model.selectedLobbyGame
+
+    val hasJustConfirmedJoin = LobbyRepository.model.hasJustConfirmedJoin
+
+    fun isGameProtected(): Boolean {
+        return selectedLobbyGame.value?.isProtected() ?: false
+    }
+
+    fun isGameSelected(lobbyGame: OnlineGameSettings): Boolean {
+        return selectedLobbyGame.value == lobbyGame
+    }
+
+    fun getSelectedGameMode(): GameMode {
+        return LobbyRepository.model.selectedGameMode.value
+    }
+
+    fun toggleSelectedGame(lobbyGame: OnlineGameSettings) {
+        selectedLobbyGame.value =
+            if (isGameSelected(lobbyGame)) {
+                null
+            } else {
+                lobbyGame
+            }
+    }
+
+    fun leaveLobbyGame(navController: NavController) {
+        LobbyRepository.leaveLobbyGame()
+        navigateTo(NavPage.MainPage, navController)
+    }
 
     fun joinGame(
-        lobbyGameId: LobbyGameId,
-        navigateToGameScreen: () -> Unit
+        navController: NavController
     ) {
+        if (selectedLobbyGame.value === null) {
+            return
+        }
         LobbyRepository.emitJoinGame(
-            JoinGame(lobbyGameId),
-            navigateToGameScreen
+            JoinGame(selectedLobbyGame.value!!.id, enteredPassword.value),
+            navController
         )
     }
 }

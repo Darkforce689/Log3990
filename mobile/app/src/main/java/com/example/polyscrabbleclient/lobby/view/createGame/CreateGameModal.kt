@@ -29,7 +29,8 @@ fun CreateGameModalContent(
         modalActions: ModalActions
     ) -> Unit
 ) {
-    val contentHeight = if (createGameViewModel.gameMode.value == GameMode.Magic) 300.dp else 275.dp
+    val contentHeight =
+        if (createGameViewModel.model.gameMode.value == GameMode.Magic) 300.dp else 275.dp
     Row(
         Modifier
             .height(contentHeight)
@@ -41,7 +42,7 @@ fun CreateGameModalContent(
             Triple(game_settings, Icons.Rounded.AdminPanelSettings, CreateGameMenu.Settings.name),
             Triple(game_parameters, Icons.Rounded.Tune, CreateGameMenu.Parameters.name),
         )
-        if (createGameViewModel.gameMode.value == GameMode.Magic) {
+        if (createGameViewModel.model.gameMode.value == GameMode.Magic) {
             createGameMenuList = createGameMenuList.plus(
                 Triple(magic_cards, Icons.Rounded.StarRate, CreateGameMenu.MagicCards.name)
             )
@@ -68,7 +69,7 @@ fun CreateGameModalContent(
         }
         when (selectedPage.value) {
             CreateGameMenu.Settings.name -> {
-                Settings() // TODO
+                NewGameVisibilitySettings(createGameViewModel)
             }
             CreateGameMenu.Parameters.name -> {
                 NewGameForm(createGameViewModel)

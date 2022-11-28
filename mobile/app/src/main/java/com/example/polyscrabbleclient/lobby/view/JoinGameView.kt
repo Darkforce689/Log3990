@@ -14,53 +14,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
-import com.example.polyscrabbleclient.lobby.sources.LobbyGameId
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-
-enum class LobbyGameType {
-    PendingGame,
-    ObservableGame
-}
 
 @Composable
 fun JoinGameView(
-    navController: NavController,
     lobbyGames: MutableState<LobbyGamesList?>,
+    viewModel: JoinGameViewModel = viewModel(),
     modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
-    val viewModel: JoinGameViewModel = viewModel()
-
     EvenlySpacedRowContainer {
         Box {
             LobbyGamesView(
                 lobbyGames,
-                viewModel.selectedGameMode.value,
-                navigateToGameScreen(viewModel, navController)
+                viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)
-            }
-        }
-    }
-}
-
-@Composable
-private fun navigateToGameScreen(
-    viewModel: JoinGameViewModel,
-    navController: NavController
-) = { lobbyGameIndex: LobbyGameId ->
-    viewModel.joinGame(lobbyGameIndex) {
-        CoroutineScope(IO).launch {
-            launch(Dispatchers.Main) {
-                navController.navigate(NavPage.GamePage.label) {
-                    launchSingleTop = true
-                }
             }
         }
     }
@@ -82,7 +52,6 @@ fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
 @Composable
 fun JoinGamePreview() {
     JoinGameView(
-        rememberNavController(),
         mutableStateOf(arrayListOf()),
     ) {}
 }

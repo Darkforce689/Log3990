@@ -10,7 +10,7 @@ import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.sources.JoinGame
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
-class NewInvitationViewModel(private val navController: NavController): ViewModel() {
+class NewInvitationViewModel(private val navController: NavController) : ViewModel() {
     var invitation = ReceivedInvitationRepository.invitation
 
     fun sendInviteAnswer(answer: InvitationAnswer) {
@@ -32,12 +32,8 @@ class NewInvitationViewModel(private val navController: NavController): ViewMode
 
         val (id, password) = invitation.args
         val joinGame = JoinGame(id, password)
-        LobbyRepository.quitPendingGame() // TO PREVENT RECEIVING HOST QUITED & KICK FROM HOST
-        LobbyRepository.emitJoinGame(joinGame) {
-            navController.navigate(NavPage.GamePage.label) {
-                launchSingleTop = true
-            }
-        }
+        LobbyRepository.leaveLobbyGame() // TO PREVENT RECEIVING HOST QUITED & KICK FROM HOST
+        LobbyRepository.emitJoinGame(joinGame, navController)
     }
 
     private fun displayNextPendingInvite() {
