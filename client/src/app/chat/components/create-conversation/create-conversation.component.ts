@@ -43,6 +43,10 @@ export class CreateConversationComponent {
                     if (error === ConversationCrudError.ConversationAlreadyExist) {
                         this.conversationNameForm.setErrors({ alreadyExists: true });
                     }
+
+                    if (error === ConversationCrudError.ConversationCreationForbiden) {
+                        this.conversationNameForm.setErrors({ forbidenName: true });
+                    }
                 });
             },
         );
