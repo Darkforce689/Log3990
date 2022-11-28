@@ -134,6 +134,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
     }
 
     fun leaveLobbyGame() {
+        ConversationsManager.leaveGameConversation()
         reset()
     }
 
