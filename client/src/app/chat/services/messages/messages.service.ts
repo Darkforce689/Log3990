@@ -11,6 +11,7 @@ import { ElectronIpcService } from '@app/services/electron-ipc.service';
 import { BehaviorSubject, Subscription, zip } from 'rxjs';
 import { first, takeWhile } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { v4 as uuid } from 'uuid';
 
 export interface MessagesUpdate {
     messages: Message[];
@@ -38,6 +39,7 @@ export class MessagesService {
 
     private joinedConversation$$: Subscription | undefined;
     private currentConversation$$: Subscription | undefined;
+    private fetchingConvos = new Map<string, string>(); // convoId => requestId
 
     constructor(
         private onlineChat: OnlineChatHandlerService,
@@ -147,8 +149,20 @@ export class MessagesService {
             page: 0,
             offset: this.messages.length,
         };
+
+        const fetchingId = uuid();
+        this.fetchingConvos.set(conversationId, fetchingId);
+
         this.http.get(`${environment.serverUrl}/conversations/${conversationId}/messages`, { params }).subscribe(
             (body) => {
+                const currentFetchingId = this.fetchingConvos.get(conversationId);
+
+                // IF NOT LAST FETCHING DISCARD
+                if (currentFetchingId !== fetchingId) {
+                    return;
+                }
+                this.fetchingConvos.delete(conversationId);
+
                 const { messages: chatMessages } = body as { messages: ChatMessage[] };
                 if (this.currentConversation && this.currentConversation._id !== conversationId) {
                     return;
@@ -163,6 +177,12 @@ export class MessagesService {
                 });
             },
             () => {
+                const currentFetchingId = this.fetchingConvos.get(conversationId);
+                // IF NOT LAST FETCHING DISCARD
+                if (currentFetchingId !== fetchingId) {
+                    return;
+                }
+                this.fetchingConvos.delete(conversationId);
                 return;
             },
         );

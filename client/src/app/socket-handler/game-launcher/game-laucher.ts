@@ -57,6 +57,10 @@ export class GameLauncherService {
         this.socketHandler.disconnectSocket();
     }
 
+    closeModals() {
+        this.dialog.closeAll();
+    }
+
     joinGame(id: string, hasPassword: boolean) {
         if (!hasPassword) {
             this.socketHandler.joinPendingGame(id);
@@ -110,6 +114,7 @@ export class GameLauncherService {
         const gameToken = onlineGameSettings.id;
         this.socketHandler.resetGameToken();
         this.gameManager.joinOnlineGame(gameToken, onlineGameSettings);
+        this.messageService.joinGameConversation(gameToken);
         this.router.navigate(['/game']);
     }
 }
