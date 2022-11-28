@@ -9,6 +9,7 @@ import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 import { NOT_FOUND } from '@app/game-logic/constants';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
+import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { InputComponent, InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
 import { Subscription } from 'rxjs';
 
@@ -41,7 +42,7 @@ export class HorseComponent implements AfterContentChecked, OnInit, OnDestroy {
     private dropFeedback$$: Subscription;
     private resetIndex$$: Subscription;
 
-    constructor(private info: GameInfoService, private inputController: UIInputControllerService) {
+    constructor(private info: GameInfoService, private inputController: UIInputControllerService, private gameManager: GameManagerService) {
         this.moveFeedback$$ = this.inputController.moveFeedback$.subscribe((canPlace: boolean) => {
             this.receiveMoveFeedback(canPlace);
         });
@@ -209,7 +210,11 @@ export class HorseComponent implements AfterContentChecked, OnInit, OnDestroy {
         );
     }
 
+    get isObserver() {
+        return !this.info.players.find(({ name }) => name === this.gameManager.userName);
+    }
+
     get cantDragAndDrop(): boolean {
-        return !this.info.isActivePlayer || this.inputController.activeAction instanceof UIPlace;
+        return this.isObserver || !this.info.isActivePlayer || this.inputController.activeAction instanceof UIPlace;
     }
 }
