@@ -107,6 +107,7 @@ fun NewGameScreen(
                 )
                 WatchAGameModal(
                     watchGameDialogOpened,
+                    enterGamePasswordDialogOpened,
                     joinGameViewModel,
                     navController,
                     createGameViewModel.observableGames
@@ -236,6 +237,7 @@ private fun JoinAGameModal(
 @Composable
 private fun WatchAGameModal(
     watchGameDialogOpened: MutableState<Boolean>,
+    enterGamePasswordDialogOpened: MutableState<Boolean>,
     viewModel: JoinGameViewModel,
     navController: NavController,
     observableGames: MutableState<LobbyGamesList?>
@@ -245,7 +247,11 @@ private fun WatchAGameModal(
             closeModal = { result ->
                 watchGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    viewModel.joinGame(navController)
+                    if (viewModel.isGameProtected()) {
+                        enterGamePasswordDialogOpened.value = true
+                    } else {
+                        viewModel.joinGame(navController)
+                    }
                 }
             },
             title = watchAGameFR,
