@@ -22,4 +22,5 @@ export interface UIInput {
     from?: InputComponent;
     args?: string | number | { x: number; y: number };
     dropPoint?: { x: number; y: number };
+    selectedChar?: string;
 }

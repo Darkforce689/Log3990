@@ -65,6 +65,7 @@ export const WAIT_STATUS = 'En attente';
 export const ACTIVE_STATUS = 'En cours';
 export const PREVIOUS_INDEX = -1;
 export const NEXT_INDEX = 1;
+export const ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
 
 export const BOT_AVATARS = [
     'easyBotAvatar1',

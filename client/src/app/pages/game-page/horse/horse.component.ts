@@ -1,12 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 import { CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
 import { AfterContentChecked, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { JokerDialogComponent } from '@app/components/modals/joker-dialog/joker-dialog.component';
 import { UIDragAndDrop } from '@app/game-logic/actions/ui-actions/ui-drag-and-drop';
 import { UIExchange } from '@app/game-logic/actions/ui-actions/ui-exchange';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
 import { UIMove } from '@app/game-logic/actions/ui-actions/ui-move';
 import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
-import { NOT_FOUND } from '@app/game-logic/constants';
+import { JOKER_CHAR, NOT_FOUND } from '@app/game-logic/constants';
 import { Letter } from '@app/game-logic/game/board/letter.interface';
 import { GameInfoService } from '@app/game-logic/game/game-info/game-info.service';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
@@ -37,12 +39,18 @@ export class HorseComponent implements AfterContentChecked, OnInit, OnDestroy {
         number,
         { left: number; top: number; x: number; y: number }
     >();
+    lastSelectedChar: string | undefined = undefined;
 
     private moveFeedback$$: Subscription;
     private dropFeedback$$: Subscription;
     private resetIndex$$: Subscription;
 
-    constructor(private info: GameInfoService, private inputController: UIInputControllerService, private gameManager: GameManagerService) {
+    constructor(
+        private info: GameInfoService,
+        private inputController: UIInputControllerService,
+        private dialog: MatDialog,
+        private gameManager: GameManagerService,
+    ) {
         this.moveFeedback$$ = this.inputController.moveFeedback$.subscribe((canPlace: boolean) => {
             this.receiveMoveFeedback(canPlace);
         });
@@ -109,11 +117,52 @@ export class HorseComponent implements AfterContentChecked, OnInit, OnDestroy {
         if (this.timeoutHandler) {
             event.source._dragRef.reset();
         } else {
-            this.mapIndexToEvent.set(index, event);
-            const input: UIInput = { from: InputComponent.Horse, type: InputType.HoldReleased, args: index, dropPoint: event.dropPoint };
-            this.dropEvent.emit(input);
-            if (!this.canPlace) {
-                event.source._dragRef.reset();
+            if (this.info.activePlayer.letterRack[index].char === JOKER_CHAR) {
+                if (!this.canPlace) {
+                    const input: UIInput = { from: InputComponent.Horse, type: InputType.HoldReleased, args: index, dropPoint: { x: -1, y: -1 } };
+                    this.dropEvent.emit(input);
+                    event.source._dragRef.reset();
+                    return;
+                }
+                const dialogRef = this.dialog.open(JokerDialogComponent);
+                this.info.endTurn$.subscribe(() => {
+                    dialogRef.close();
+                });
+                dialogRef.afterClosed().subscribe((char: string) => {
+                    if (char && char.length === 1) {
+                        this.mapIndexToEvent.set(index, event);
+                        this.lastSelectedChar = char;
+                        const input: UIInput = {
+                            from: InputComponent.Horse,
+                            type: InputType.HoldReleased,
+                            args: index,
+                            dropPoint: event.dropPoint,
+                            selectedChar: this.lastSelectedChar,
+                        };
+                        this.dropEvent.emit(input);
+                    } else {
+                        this.canPlace = false;
+                        const input: UIInput = { from: InputComponent.Horse, type: InputType.HoldReleased, args: index, dropPoint: { x: -1, y: -1 } };
+                        this.dropEvent.emit(input);
+                        event.source._dragRef.reset();
+                    }
+                });
+            } else {
+                if (!this.canPlace) {
+                    // eslint-disable-next-line @typescript-eslint/no-shadow
+                    const input: UIInput = { from: InputComponent.Horse, type: InputType.HoldReleased, args: index, dropPoint: { x: -1, y: -1 } };
+                    this.dropEvent.emit(input);
+                    event.source._dragRef.reset();
+                    return;
+                }
+                this.mapIndexToEvent.set(index, event);
+                const input: UIInput = {
+                    from: InputComponent.Horse,
+                    type: InputType.HoldReleased,
+                    args: index,
+                    dropPoint: event.dropPoint,
+                };
+                this.dropEvent.emit(input);
             }
         }
     }
@@ -149,7 +198,8 @@ export class HorseComponent implements AfterContentChecked, OnInit, OnDestroy {
             if (foundIndex !== NOT_FOUND) return;
             if (value.x === event.x && value.y === event.y && key !== event.index) {
                 foundIndex = key;
-                this.inputController.replaceOldTempPos({ x: value.x, y: value.y, rackIndex: event.index });
+                const char = this.playerRack[event.index].char !== JOKER_CHAR ? this.playerRack[event.index].char : this.lastSelectedChar;
+                this.inputController.replaceOldTempPos({ x: value.x, y: value.y, rackIndex: event.index }, char);
             }
         });
         if (foundIndex !== NOT_FOUND) this.resetAnIndex(foundIndex);

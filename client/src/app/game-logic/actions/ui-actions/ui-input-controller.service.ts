@@ -168,9 +168,9 @@ export class UIInputControllerService {
         this.sendAction(new PlaceBonus(player, pointerPosition));
     }
 
-    replaceOldTempPos(letterPlacement: LetterPlacement) {
+    replaceOldTempPos(letterPlacement: LetterPlacement, char: string | undefined = undefined) {
         if (!(this.activeAction instanceof UIDragAndDrop)) return;
-        this.activeAction.receiveHoldReleased(letterPlacement.rackIndex, { x: letterPlacement.x, y: letterPlacement.y });
+        this.activeAction.receiveHoldReleased(letterPlacement.rackIndex, { x: letterPlacement.x, y: letterPlacement.y }, char);
     }
 
     sendSyncState(positions: { x: number; y: number }[]) {
@@ -185,7 +185,6 @@ export class UIInputControllerService {
     private processInput(input: UIInput) {
         if (
             input.from !== InputComponent.Chatbox &&
-            !!this.activeAction &&
             this.activeAction instanceof UIDragAndDrop &&
             this.activeAction.concernedIndexes.size !== 0 &&
             !(input.type === InputType.HoldReleased || input.type === InputType.KeyPress)
@@ -267,7 +266,7 @@ export class UIInputControllerService {
                 this.processMouseRoll(input.args as WheelRoll);
                 break;
             case InputType.HoldReleased:
-                this.processHoldReleased(input.args as number, input.dropPoint as { x: number; y: number });
+                this.processHoldReleased(input.args as number, input.dropPoint as { x: number; y: number }, input.selectedChar);
                 break;
             default:
                 throw Error('Unresolved input of type ' + input.type);
@@ -323,9 +322,9 @@ export class UIInputControllerService {
         }
     }
 
-    private processHoldReleased(args: number, dropPoint: { x: number; y: number }) {
+    private processHoldReleased(args: number, dropPoint: { x: number; y: number }, selectedChar: string | undefined) {
         if (this.activeAction !== null) {
-            this.activeAction.receiveHoldReleased(args, dropPoint);
+            this.activeAction.receiveHoldReleased(args, dropPoint, selectedChar);
             return;
         }
     }

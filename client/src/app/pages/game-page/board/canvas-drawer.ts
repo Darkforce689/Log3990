@@ -8,6 +8,7 @@ import {
     BONUS_TEXT_COLOR,
     BORDER_COLOR,
     BORDER_TEMP_TILE,
+    CORRECT_TEMP_TILE_COLOR,
     DOUBLE_BONUS_LETTER,
     DOUBLE_BONUS_WORD,
     IDENTIFIER_COLOR,
@@ -15,6 +16,7 @@ import {
     TILE_COLOR,
     TRIPLE_BONUS_LETTER,
     TRIPLE_BONUS_WORD,
+    WRONG_TEMP_TILE_COLOR,
 } from '@app/pages/game-page/board/canvas-colors';
 
 enum BonusType {
@@ -283,8 +285,7 @@ export class CanvasDrawer {
 
     private drawTemp() {
         const pos = this.tilePositionToCoord(this.tempPos.x, this.tempPos.y);
-        // TODO GL3A22107-104
-        this.canvas.fillStyle = this.tempPosValid ? 'rgba(0, 200, 20, 0.7)' : 'rgba(200, 20, 20, 0.7)';
+        this.canvas.fillStyle = this.tempPosValid ? CORRECT_TEMP_TILE_COLOR : WRONG_TEMP_TILE_COLOR;
         this.canvas.fillRect(
             pos.x + 2 * this.canvas.lineWidth,
             pos.y + 2 * this.canvas.lineWidth,

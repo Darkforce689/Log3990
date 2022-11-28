@@ -8,7 +8,7 @@ export abstract class UIAction {
     abstract receiveLeftClick(args: unknown): void;
     abstract receiveKey(key: string): void;
     abstract receiveRoll(args?: WheelRoll): void;
-    abstract receiveHoldReleased(args: number, dropPoint: { x: number; y: number }): void;
+    abstract receiveHoldReleased(args: number, dropPoint: { x: number; y: number }, selectedChar: string | undefined): void;
     abstract create(): Action | null;
     abstract destroy(): void;
 }
