@@ -26,6 +26,7 @@ export const CONVERSATION_PAGINATION_DEFAULT_PAGE = 0;
 export const CONVERSATION_PAGINATION_DEFAULT_PERPAGE = 5;
 export const GENERAL_CHANNEL = 'general';
 export const GAME_TOKEN_PREFIX = 'game-';
+export const GAME_CONVO_NAME = 'game';
 export const SYSTEM_USER_NAME = 'System';
 export const LOGS_PAGINATION_DEFAULT_PAGE = 0;
 export const LOGS_PAGINATION_DEFAULT_PERPAGE = 10;
