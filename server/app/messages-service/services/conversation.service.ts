@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { Pagination } from '@app/common/interfaces/pagination.interface';
-import { CONVERSATION_COLLECTION, GENERAL_CHANNEL } from '@app/constants';
+import { CONVERSATION_COLLECTION, GAME_CONVO_NAME, GENERAL_CHANNEL } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
 import { ServerLogger } from '@app/logger/logger';
@@ -77,7 +77,7 @@ export class ConversationService {
     async createConversation(conversationCreation: ConversationCreation): Promise<ObjectCrudResult<Conversation>> {
         const { name, creator } = conversationCreation;
 
-        if (isGameToken(name)) {
+        if (this.isForbidenName(name)) {
             return {
                 object: undefined,
                 errors: [ConversationCrudError.ConversationCreationForbiden],
@@ -259,5 +259,9 @@ export class ConversationService {
     async isConversationExistingById(id: string) {
         const result = await this.collection.findOne({ _id: new ObjectId(id) }, { projection: { participants: 0 } });
         return result !== null;
+    }
+
+    private isForbidenName(name: string) {
+        return GENERAL_CHANNEL === name || GAME_CONVO_NAME === name || isGameToken(name);
     }
 }
