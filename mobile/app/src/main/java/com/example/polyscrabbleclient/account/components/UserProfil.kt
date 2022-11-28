@@ -63,7 +63,7 @@ fun ProfilContent(
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("$Level : ${currentLevel()}")
-                            Text("$TotalExperience : " + User.totalExp)
+                            Text("$TotalExperience : " + User.totalExp.toInt())
                         }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
