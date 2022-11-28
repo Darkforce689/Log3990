@@ -19,18 +19,17 @@ import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.view.createGame.CreateGameModalContent
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
+import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
 import com.example.polyscrabbleclient.lobby.viewmodels.NewGameViewModel
+import com.example.polyscrabbleclient.navigateTo
 import com.example.polyscrabbleclient.ui.theme.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun NewGameScreen(
     navController: NavController,
     createGameViewModel: CreateGameViewModel,
+    viewModel: NewGameViewModel = viewModel()
 ) {
-    val viewModel: NewGameViewModel = viewModel()
     val createGameDialogOpened = remember {
         viewModel.createGameDialogOpened
     }
@@ -39,6 +38,9 @@ fun NewGameScreen(
     }
     val watchGameDialogOpened = remember {
         viewModel.watchGameDialogOpened
+    }
+    val enterGamePasswordDialogOpened = remember {
+        viewModel.enterGamePasswordDialogOpened
     }
 
     val isToggled = remember { mutableStateOf(false) }
@@ -60,7 +62,7 @@ fun NewGameScreen(
                     checked = isToggled.value,
                     onCheckedChange = { value ->
                         isToggled.value = value
-                        createGameViewModel.gameMode.value =
+                        createGameViewModel.model.gameMode.value =
                             if (isToggled.value) GameMode.Magic else GameMode.Classic
                     },
                 )
@@ -72,6 +74,8 @@ fun NewGameScreen(
                     createGameViewModel
                 )
 
+                val joinGameViewModel = JoinGameViewModel()
+
                 LobbyButton(
                     joinGameDialogOpened,
                     join_game_multiplayers,
@@ -79,8 +83,21 @@ fun NewGameScreen(
                 )
                 JoinAGameModal(
                     joinGameDialogOpened,
+                    enterGamePasswordDialogOpened,
+                    joinGameViewModel,
                     navController,
-                    createGameViewModel.pendingGames
+                    createGameViewModel.pendingGames,
+                )
+
+                EnterPasswordModal(
+                    enterGamePasswordDialogOpened,
+                    joinGameViewModel,
+                    navController,
+                )
+
+                BadPasswordModal(
+                    joinGameViewModel,
+                    navController,
                 )
 
                 LobbyButton(
@@ -90,12 +107,53 @@ fun NewGameScreen(
                 )
                 WatchAGameModal(
                     watchGameDialogOpened,
+                    joinGameViewModel,
                     navController,
                     createGameViewModel.observableGames
                 )
+
                 HostHasJustQuitModal(createGameViewModel.hostHasJustQuitTheGame) {
                     createGameViewModel.hostHasJustQuitTheGame.value = false
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun EnterPasswordModal(
+    enterGamePasswordDialogOpened: MutableState<Boolean>,
+    viewModel: JoinGameViewModel,
+    navController: NavController
+) {
+    if (enterGamePasswordDialogOpened.value) {
+        ModalView(
+            closeModal = {
+                enterGamePasswordDialogOpened.value = false
+            },
+            title = EnterPasswordFR
+        ) { modalButtons ->
+            EnterPasswordView(viewModel, navController) { modalActions ->
+                modalButtons(modalActions)
+            }
+        }
+    }
+}
+
+@Composable
+fun BadPasswordModal(
+    viewModel: JoinGameViewModel,
+    navController: NavController
+) {
+    if (viewModel.hasJustConfirmedJoin.value == false) {
+        ModalView(
+            closeModal = {
+                viewModel.hasJustConfirmedJoin.value = null
+            },
+            title = BadPasswordFR
+        ) { modalButtons ->
+            BadPasswordView(navController, viewModel) { modalActions ->
+                modalButtons(modalActions)
             }
         }
     }
@@ -130,8 +188,7 @@ private fun CreateGameModal(
             closeModal = { result ->
                 createGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateToWaitingScreen(navController)
-
+                    navigateTo(NavPage.WaitingRoom, navController)
                 }
             },
             title = new_game_creation
@@ -146,6 +203,8 @@ private fun CreateGameModal(
 @Composable
 private fun JoinAGameModal(
     joinGameDialogOpened: MutableState<Boolean>,
+    enterGamePasswordDialogOpened: MutableState<Boolean>,
+    viewModel: JoinGameViewModel,
     navController: NavController,
     pendingGames: MutableState<LobbyGamesList?>
 ) {
@@ -154,15 +213,19 @@ private fun JoinAGameModal(
             closeModal = { result ->
                 joinGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateToWaitingScreen(navController)
+                    if (viewModel.isGameProtected()) {
+                        enterGamePasswordDialogOpened.value = true
+                    } else {
+                        viewModel.joinGame(navController)
+                    }
                 }
             },
             title = joinAGameFR,
             maxWidth = 950.dp
         ) { modalButtons ->
             JoinGameView(
-                navController,
                 pendingGames,
+                viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)
             }
@@ -173,6 +236,7 @@ private fun JoinAGameModal(
 @Composable
 private fun WatchAGameModal(
     watchGameDialogOpened: MutableState<Boolean>,
+    viewModel: JoinGameViewModel,
     navController: NavController,
     observableGames: MutableState<LobbyGamesList?>
 ) {
@@ -181,15 +245,15 @@ private fun WatchAGameModal(
             closeModal = { result ->
                 watchGameDialogOpened.value = false
                 if (result == ModalResult.Primary) {
-                    navigateToWaitingScreen(navController)
+                    viewModel.joinGame(navController)
                 }
             },
             title = watchAGameFR,
             maxWidth = 950.dp
         ) { modalButtons ->
             JoinGameView(
-                navController,
                 observableGames,
+                viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)
             }
@@ -224,15 +288,5 @@ fun CenteredContainer(content: @Composable () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         content()
-    }
-}
-
-private fun navigateToWaitingScreen(navController: NavController) {
-    CoroutineScope(Dispatchers.IO).launch {
-        launch(Dispatchers.Main) {
-            navController.navigate(NavPage.WaitingRoom.label) {
-                launchSingleTop = true
-            }
-        }
     }
 }

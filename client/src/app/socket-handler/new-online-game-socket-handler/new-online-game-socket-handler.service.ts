@@ -14,6 +14,15 @@ export enum JoinGameError {
 
 export const KICKED_ERROR_MESSAGE = "L'hôte vous a retiré de la partie";
 
+export interface PrivateGameEvent {
+    gameId: string;
+    playerName: string;
+}
+
+type KickPlayer = PrivateGameEvent;
+type AcceptPlayer = PrivateGameEvent;
+type RefusePlayer = PrivateGameEvent;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -99,34 +108,34 @@ export class NewOnlineGameSocketHandler {
         this.listenForGameStart();
     }
 
-    kickPlayer(playerId: string) {
+    kickPlayer(playerName: string) {
         if (!this.socket.connected) {
             throw Error("Can't kick player, not connected to server");
         }
         if (this.pendingGameId$.value === undefined) {
             throw Error("Can't kick player, no pending game id");
         }
-        this.socket.emit('kickPlayer', this.pendingGameId$.value, playerId);
+        this.socket.emit('kickPlayer', { gameId: this.pendingGameId$.value, playerName } as KickPlayer);
     }
 
-    acceptPlayer(playerId: string) {
+    acceptPlayer(playerName: string) {
         if (!this.socket.connected) {
             throw Error("Can't accept player, not connected to server");
         }
         if (this.pendingGameId$.value === undefined) {
             throw Error("Can't accept player, no pending game id");
         }
-        this.socket.emit('acceptPlayer', this.pendingGameId$.value, playerId);
+        this.socket.emit('acceptPlayer', { gameId: this.pendingGameId$.value, playerName } as AcceptPlayer);
     }
 
-    refusePlayer(playerId: string) {
+    refusePlayer(playerName: string) {
         if (!this.socket.connected) {
             throw Error("Can't refuse player, not connected to server");
         }
         if (this.pendingGameId$.value === undefined) {
             throw Error("Can't refuse player, no pending game id");
         }
-        this.socket.emit('refusePlayer', this.pendingGameId$.value, playerId);
+        this.socket.emit('refusePlayer', { gameId: this.pendingGameId$.value, playerName } as RefusePlayer);
     }
 
     disconnectSocket() {

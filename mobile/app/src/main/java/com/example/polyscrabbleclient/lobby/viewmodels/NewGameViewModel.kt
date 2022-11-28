@@ -7,11 +7,11 @@ import com.example.polyscrabbleclient.lobby.model.LobbyError
 import com.example.polyscrabbleclient.lobby.sources.Error
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 
-class NewGameViewModel: ViewModel() {
-    val waitingForOtherPlayersDialogOpened = mutableStateOf(false)
+class NewGameViewModel : ViewModel() {
     val createGameDialogOpened = mutableStateOf(false)
     val joinGameDialogOpened = mutableStateOf(false)
     val watchGameDialogOpened = mutableStateOf(false)
+    val enterGamePasswordDialogOpened = mutableStateOf(false)
 
     private var isInvitation = false
 
@@ -32,9 +32,7 @@ class NewGameViewModel: ViewModel() {
                 if (isInvitation) {
                     onInvitationError(it)
                 }
-                onErrorCallBack(it)
-                waitingForOtherPlayersDialogOpened.value = false
-                LobbyRepository.quitPendingGame()
+                LobbyRepository.leaveLobbyGame()
                 isInvitation = false
             }.start()
         }
@@ -56,14 +54,8 @@ class NewGameViewModel: ViewModel() {
         createGameDialogOpened.value = false
         joinGameDialogOpened.value = false
         watchGameDialogOpened.value = false
-        waitingForOtherPlayersDialogOpened.value = true
+        enterGamePasswordDialogOpened.value = false
         isInvitation = true
-    }
-
-    private var onErrorCallBack: (Error?) -> Unit = {}
-
-    fun onError(onError: (Error?) -> Unit) {
-        onErrorCallBack = onError
     }
 
     private fun refreshState() {

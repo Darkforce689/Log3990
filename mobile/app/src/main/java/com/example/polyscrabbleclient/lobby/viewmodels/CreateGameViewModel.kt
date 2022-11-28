@@ -1,9 +1,7 @@
 package com.example.polyscrabbleclient.lobby.viewmodels
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
+import com.example.polyscrabbleclient.lobby.model.CreateGameModel
 import com.example.polyscrabbleclient.lobby.sources.CreateGame
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
@@ -23,56 +21,47 @@ enum class CreateGameMenu {
 }
 
 class CreateGameViewModel : ViewModel() {
+    var model = CreateGameModel()
+
     val pendingGames = LobbyRepository.model.pendingGames
     val observableGames = LobbyRepository.model.observableGames
 
     val hostHasJustQuitTheGame = LobbyRepository.model.hostHasJustQuitTheGame
 
-    var gameMode = LobbyRepository.model.selectedGameMode
-    val timePerTurn = mutableStateOf(DEFAULT_TIMER)
-    val numberOfPlayer = mutableStateOf(DEFAULT_PLAYER_NUMBER)
-    val randomBonus = mutableStateOf(false)
-    val botDifficulty = mutableStateOf(BotDifficulty.Easy)
-    var magicCardIds = mutableStateListOf<String>()
-    val allMagicCardsSelected = mutableStateOf(false)
-
     fun containsMagicCard(magicCardId: String): Boolean {
-        return magicCardIds.contains(magicCardId)
+        return model.magicCardIds.contains(magicCardId)
     }
 
     fun removeAllSelected() {
-        magicCardIds.clear()
+        model.magicCardIds.clear()
     }
 
     fun addAllSelected() {
-        magicCardIds.addAll(magic_card_map.keys)
+        model.magicCardIds.addAll(magic_card_map.keys)
     }
 
     fun canCreateGame(): Boolean {
-        return (gameMode.value != GameMode.Magic || magicCardIds.isNotEmpty())
+        return (model.gameMode.value != GameMode.Magic || model.magicCardIds.isNotEmpty())
     }
 
     fun sendCreateGameRequest() {
         val newGameParam = CreateGame(
-            gameMode = gameMode.value,
-            timePerTurn = timePerTurn.value,
+            gameMode = model.gameMode.value,
+            timePerTurn = model.timePerTurn.value,
             playerNames = ArrayList(),
-            randomBonus = randomBonus.value,
-            botDifficulty = botDifficulty.value,
-            numberOfPlayers = numberOfPlayer.value,
-            magicCardIds = ArrayList(magicCardIds),
+            tmpPlayerNames = ArrayList(),
+            privateGame = model.isGamePrivate.value,
+            password = if (model.isGameProtected.value) model.password.value else null,
+            randomBonus = model.randomBonus.value,
+            botDifficulty = model.botDifficulty.value,
+            numberOfPlayers = model.numberOfPlayer.value,
+            magicCardIds = ArrayList(model.magicCardIds),
         )
         LobbyRepository.emitCreateGame(newGameParam)
     }
 
     fun resetForm() {
-        gameMode = LobbyRepository.model.selectedGameMode
-        timePerTurn.value = DEFAULT_TIMER
-        numberOfPlayer.value = DEFAULT_PLAYER_NUMBER
-        randomBonus.value = false
-        botDifficulty.value = BotDifficulty.Easy
-        magicCardIds = mutableStateListOf()
-        allMagicCardsSelected.value = false
+        model = CreateGameModel()
     }
 }
 

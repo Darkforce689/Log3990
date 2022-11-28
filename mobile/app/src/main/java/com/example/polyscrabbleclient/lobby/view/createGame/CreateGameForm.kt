@@ -1,11 +1,19 @@
 package com.example.polyscrabbleclient.lobby.view.createGame
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +39,7 @@ fun PreviewMagicCards() {
 }
 
 @Composable
-fun Settings() {
+fun NewGameVisibilitySettings(createGameViewModel: CreateGameViewModel) {
     Column(Modifier.fillMaxSize()) {
         TextView(
             "$choose_game_settings:",
@@ -39,13 +47,37 @@ fun Settings() {
             fontSize = 18.sp,
             modifier = Modifier.padding(bottom = 10.dp)
         )
+
         Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.Start,
+            Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
         ) {
-            Text("TODO: ")
-            Text("Private GAME")
-            Text("MOT DE PASSE")
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(checked = createGameViewModel.model.isGamePrivate.value,
+                    onCheckedChange = { value ->
+                        createGameViewModel.model.isGamePrivate.value = value
+                    }
+                )
+                Text(text = private_game)
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(checked = createGameViewModel.model.isGameProtected.value,
+                    onCheckedChange = { value ->
+                        createGameViewModel.model.isGameProtected.value = value
+                    }
+                )
+                Text(text = protected_game)
+            }
+            GamePasswordInput(
+                password = createGameViewModel.model.password.value,
+                onPasswordChanged = { password ->
+                    createGameViewModel.model.password.value = password
+                },
+                enabled = createGameViewModel.model.isGameProtected.value
+            )
         }
     }
 }
@@ -67,38 +99,43 @@ fun NewGameForm(createGameViewModel: CreateGameViewModel) {
             horizontalAlignment = Alignment.Start
         ) {
             PlayerSlider(
-                progress = createGameViewModel.numberOfPlayer.value.toFloat(),
-                onSeek = { value -> createGameViewModel.numberOfPlayer.value = value.toInt() }
+                progress = createGameViewModel.model.numberOfPlayer.value.toFloat(),
+                onSeek = { value -> createGameViewModel.model.numberOfPlayer.value = value.toInt() }
             )
             TimeSlider(
-                progress = createGameViewModel.timePerTurn.value.toFloat(),
-                onSeek = { value -> createGameViewModel.timePerTurn.value = value.toInt() }
+                progress = createGameViewModel.model.timePerTurn.value.toFloat(),
+                onSeek = { value -> createGameViewModel.model.timePerTurn.value = value.toInt() }
             )
             Row(
                 Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Checkbox(checked = createGameViewModel.randomBonus.value,
+                Checkbox(checked = createGameViewModel.model.randomBonus.value,
                     onCheckedChange = { value ->
-                        createGameViewModel.randomBonus.value = value
+                        createGameViewModel.model.randomBonus.value = value
                     }
                 )
                 Text(text = random_bonus)
             }
-            BotDifficultyMenu(
-                updateBotDifficulty = { newValue ->
-                    createGameViewModel.botDifficulty.value = newValue
-                },
-            )
+            Row(
+                Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BotDifficultyMenu(
+                    updateBotDifficulty = { newValue ->
+                        createGameViewModel.model.botDifficulty.value = newValue
+                    },
+                )
+            }
         }
     }
 }
 
 @Composable
 fun MagicCards(createGameViewModel: CreateGameViewModel) {
-    val isAllSelected = createGameViewModel.allMagicCardsSelected
-    val noCardSelected = createGameViewModel.magicCardIds.size <= 0
-    val allCardSelected = createGameViewModel.magicCardIds.size >= magic_card_map.size
+    val isAllSelected = createGameViewModel.model.allMagicCardsSelected
+    val noCardSelected = createGameViewModel.model.magicCardIds.size <= 0
+    val allCardSelected = createGameViewModel.model.magicCardIds.size >= magic_card_map.size
     var selectState by remember { mutableStateOf(ToggleableState.Off) }
     Column {
         TextView(
@@ -123,7 +160,10 @@ fun MagicCards(createGameViewModel: CreateGameViewModel) {
             TriStateCheckbox(
                 modifier = Modifier.height(30.dp),
                 state = selectState,
-                onClick = { isAllSelected.value = !isAllSelected.value;onParentClick() },
+                onClick = {
+                    isAllSelected.value = !isAllSelected.value
+                    onParentClick()
+                },
                 enabled = true
             )
             Text(text = select_all)
@@ -140,11 +180,11 @@ fun MagicCards(createGameViewModel: CreateGameViewModel) {
                 ) {
                     Checkbox(
                         checked = createGameViewModel.containsMagicCard(entry.key),
-                        onCheckedChange = { _ ->
+                        onCheckedChange = {
                             if (createGameViewModel.containsMagicCard(entry.key))
-                                createGameViewModel.magicCardIds.remove(entry.key)
+                                createGameViewModel.model.magicCardIds.remove(entry.key)
                             else
-                                createGameViewModel.magicCardIds.add(entry.key)
+                                createGameViewModel.model.magicCardIds.add(entry.key)
                         }
                     )
                     Text(text = entry.value)
@@ -208,6 +248,32 @@ fun PlayerSlider(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun GamePasswordInput(
+    password: String,
+    onPasswordChanged: (password: String) -> Unit,
+    enabled: Boolean,
+) {
+    val focusRequester = FocusRequester()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    TextField(
+        value = password,
+        onValueChange = { onPasswordChanged(it) },
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { keyboardController?.hide() }
+        ),
+        label = { Text(password_text) },
+        singleLine = true,
+        leadingIcon = { Icon(imageVector = Icons.Default.Password, contentDescription = null) },
+        enabled = enabled
+    )
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BotDifficultyMenu(
@@ -228,7 +294,7 @@ fun BotDifficultyMenu(
             value = selectedOption.value.value,
             onValueChange = {},
             label = { Text(choose_bot_difficulty) },
-            trailingIcon = { icon(expanded.value) },
+            trailingIcon = { Icon(expanded.value) },
             colors = ExposedDropdownMenuDefaults.textFieldColors()
         )
         ExposedDropdownMenu(
@@ -254,7 +320,7 @@ fun BotDifficultyMenu(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun icon(
+fun Icon(
     expanded: Boolean
 ) {
     ExposedDropdownMenuDefaults.TrailingIcon(

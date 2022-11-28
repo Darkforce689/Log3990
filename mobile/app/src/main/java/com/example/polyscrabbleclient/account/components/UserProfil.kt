@@ -153,7 +153,7 @@ fun InfoCard(
 }
 
 @Composable
-private fun DisabledInput(value: String) {
+fun DisabledInput(value: String) {
     TextField(
         value = value,
         onValueChange = {},

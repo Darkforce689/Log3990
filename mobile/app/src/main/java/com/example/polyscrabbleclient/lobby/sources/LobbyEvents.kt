@@ -13,16 +13,28 @@ val LobbyEventTypes = mapOf(
         GameStarted::class.java
     ),
     Pair(
-        OnLobbyEvent.PendingGames,
+        OnLobbyEvent.LobbyGames,
         LobbyGames::class.java
     ),
     Pair(
-        OnLobbyEvent.PendingGameId,
+        OnLobbyEvent.LobbyGameId,
         LobbyGameId::class.java
+    ),
+    Pair(
+        OnLobbyEvent.ConfirmJoin,
+        ConfirmJoin::class.java
     ),
     Pair(
         OnLobbyEvent.HostQuit,
         HostQuit::class.java
+    ),
+    Pair(
+        OnLobbyEvent.PlayerRefused,
+        PlayerRefused::class.java
+    ),
+    Pair(
+        OnLobbyEvent.PlayerKicked,
+        PlayerKicked::class.java
     ),
     Pair(
         OnLobbyEvent.Error,
@@ -40,14 +52,29 @@ val LobbyEventTypes = mapOf(
         EmitLobbyEvent.JoinGame,
         JoinGame::class.java
     ),
+    Pair(
+        EmitLobbyEvent.KickPlayer,
+        KickPlayer::class.java
+    ),
+    Pair(
+        EmitLobbyEvent.AcceptPlayer,
+        AcceptPlayer::class.java
+    ),
+    Pair(
+        EmitLobbyEvent.RefusePlayer,
+        RefusePlayer::class.java
+    ),
 )
 
 class OnLobbyEvent(override val eventName: String) : OnEvent(eventName) {
     companion object {
         val GameJoined = OnLobbyEvent("gameJoined")
         val GameStarted = OnLobbyEvent("gameStarted")
-        val PendingGames = OnLobbyEvent("pendingGames")
-        val PendingGameId = OnLobbyEvent("pendingGameId")
+        val LobbyGames = OnLobbyEvent("pendingGames")
+        val LobbyGameId = OnLobbyEvent("pendingGameId")
+        val ConfirmJoin = OnLobbyEvent("confirmPassword")
+        val PlayerRefused = OnLobbyEvent("playerRefused")
+        val PlayerKicked = OnLobbyEvent("playerKicked")
         val HostQuit = OnLobbyEvent("hostQuit")
         val Error = OnLobbyEvent("error")
     }
@@ -58,5 +85,8 @@ class EmitLobbyEvent(override val eventName: String) : EmitEvent(eventName) {
         val CreateGame = EmitLobbyEvent("createGame")
         val LaunchGame = EmitLobbyEvent("launchGame")
         val JoinGame = EmitLobbyEvent("joinGame")
+        val KickPlayer = EmitLobbyEvent("kickPlayer")
+        val AcceptPlayer = EmitLobbyEvent("acceptPlayer")
+        val RefusePlayer = EmitLobbyEvent("refusePlayer")
     }
 }

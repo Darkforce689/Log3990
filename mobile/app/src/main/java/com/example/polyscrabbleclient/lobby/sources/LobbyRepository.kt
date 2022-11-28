@@ -1,11 +1,14 @@
 package com.example.polyscrabbleclient.lobby.sources
 
+import androidx.navigation.NavController
+import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.model.LobbyModel
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
+import com.example.polyscrabbleclient.navigateTo
+import com.example.polyscrabbleclient.user.User
 import com.example.polyscrabbleclient.utils.Repository
-import kotlinx.coroutines.flow.MutableStateFlow
 
 object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
 
@@ -16,6 +19,10 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         gameJoined?.let {
             model.currentPendingGameId.value = it.id
             model.pendingGamePlayerNames.value = it.playerNames
+            model.isGamePrivate.value = it.privateGame
+            model.isGameProtected.value = it.password?.isNotEmpty() ?: false
+            model.candidatePlayerNames.value = it.tmpPlayerNames
+            model.isAcceptedPlayer.value = it.playerNames.contains(User.name)
             model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
             val gameToken = it.id
@@ -23,28 +30,42 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         }
     }
 
-    private val onGameStarted: (gameStarted: GameStarted?) -> Unit = { gameStarted ->
+    private val onGameStarted: (GameStarted?) -> Unit = { gameStarted ->
         gameStarted?.let {
             GameRepository.receiveInitialGameSettings(it)
             GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
         }
     }
 
-    private val onPendingGames: (lobbyGames: LobbyGames?) -> Unit = { newLobbyGames ->
+    private val onPendingGames: (LobbyGames?) -> Unit = { newLobbyGames ->
         newLobbyGames?.let {
             model.pendingGames.value = it.pendingGamesSettings
             model.observableGames.value = it.observableGamesSettings
         }
     }
 
-    private val onPendingGameId: (lobbyGameId: LobbyGameId?) -> Unit = { newLobbyGameId ->
+    private val onPendingGameId: (LobbyGameId?) -> Unit = { newLobbyGameId ->
         newLobbyGameId?.let {
             model.currentPendingGameId.value = it
         }
     }
 
-    private val onHostQuit: (hostQuit: HostQuit?) -> Unit = {
+    private val onConfirmJoin: (ConfirmJoin?) -> Unit = { newConfirmJoin ->
+        newConfirmJoin?.let {
+            model.hasJustConfirmedJoin.value = it
+        }
+    }
+
+    private val onHostQuit: (HostQuit?) -> Unit = {
         model.hostHasJustQuitTheGame.value = true
+    }
+
+    private val onPlayerRefused: (PlayerRefused?) -> Unit = {
+        model.wasRemovedFromGame.value = true
+    }
+
+    private val onPlayerKicked: (PlayerKicked?) -> Unit = {
+        model.wasRemovedFromGame.value = true
     }
 
     private var onErrorCallbacks: MutableMap<String, (Error?) -> Unit> = HashMap()
@@ -52,23 +73,33 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         onErrorCallbacks[key] = callback
     }
 
-    val onError: (error: Error?) -> Unit = { error ->
-        onErrorCallbacks.forEach { _, callback ->
+    private val onError: (error: Error?) -> Unit = { error ->
+        onErrorCallbacks.forEach { (_, callback) ->
             callback(error)
         }
         println("LobbyRepository -> Error : $error")
     }
 
-    fun emitJoinGame(joinGame: JoinGame, navigateToGameScreen: () -> Unit) {
+    fun emitJoinGame(
+        joinGame: JoinGame,
+        navController: NavController
+    ) {
         socket.on(OnLobbyEvent.GameStarted) { _: GameStarted? ->
-            navigateToGameScreen()
+            navigateTo(NavPage.GamePage, navController)
+        }
+        socket.on(OnLobbyEvent.ConfirmJoin) { confirmJoin: ConfirmJoin? ->
+            confirmJoin?.let {
+                if (it) {
+                    navigateTo(NavPage.WaitingRoom, navController)
+                }
+            }
         }
         socket.emit(EmitLobbyEvent.JoinGame, joinGame)
     }
 
-    fun emitCreateGame(newGameParam: CreateGame) {
+    fun emitCreateGame(createGame: CreateGame) {
         model.isPendingGameHost.value = true
-        socket.emit(EmitLobbyEvent.CreateGame, newGameParam)
+        socket.emit(EmitLobbyEvent.CreateGame, createGame)
     }
 
     fun emitLaunchGame(navigateToGameScreen: () -> Unit) {
@@ -81,12 +112,29 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         }
     }
 
-    fun quitPendingGame() {
-        reset()
+    fun acceptPlayer(playerName: String) {
+        model.currentPendingGameId.value?.let {
+            val acceptPlayerEvent = AcceptPlayer(it, playerName)
+            socket.emit(EmitLobbyEvent.AcceptPlayer, acceptPlayerEvent)
+        }
     }
 
-    private fun clearCallBacks() {
-        onErrorCallbacks.clear()
+    fun refusePlayer(playerName: String) {
+        model.currentPendingGameId.value?.let {
+            val refusePlayerEvent = RefusePlayer(it, playerName)
+            socket.emit(EmitLobbyEvent.RefusePlayer, refusePlayerEvent)
+        }
+    }
+
+    fun kickPlayer(playerName: String) {
+        model.currentPendingGameId.value?.let {
+            val kickPlayerEvent = KickPlayer(it, playerName)
+            socket.emit(EmitLobbyEvent.KickPlayer, kickPlayerEvent)
+        }
+    }
+
+    fun leaveLobbyGame() {
+        reset()
     }
 
     init {
@@ -101,9 +149,12 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
     override fun setupEvents() {
         socket.on(OnLobbyEvent.GameJoined, onGameJoined)
         socket.on(OnLobbyEvent.GameStarted, onGameStarted)
-        socket.on(OnLobbyEvent.PendingGames, onPendingGames)
-        socket.on(OnLobbyEvent.PendingGameId, onPendingGameId)
+        socket.on(OnLobbyEvent.LobbyGames, onPendingGames)
+        socket.on(OnLobbyEvent.LobbyGameId, onPendingGameId)
+        socket.on(OnLobbyEvent.ConfirmJoin, onConfirmJoin)
         socket.on(OnLobbyEvent.HostQuit, onHostQuit)
+        socket.on(OnLobbyEvent.PlayerRefused, onPlayerRefused)
+        socket.on(OnLobbyEvent.PlayerKicked, onPlayerKicked)
         socket.on(OnLobbyEvent.Error, onError)
     }
 }
