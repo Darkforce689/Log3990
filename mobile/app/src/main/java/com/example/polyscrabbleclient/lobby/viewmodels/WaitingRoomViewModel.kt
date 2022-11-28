@@ -21,8 +21,6 @@ class WaitingRoomViewModel : ViewModel() {
 
     fun leaveLobbyGame(navController: NavController) {
         LobbyRepository.leaveLobbyGame()
-        // TODO
-        // this.messageService.leaveGameConversation();
         navigateTo(NavPage.MainPage, navController)
     }
 }
