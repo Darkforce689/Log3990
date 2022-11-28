@@ -128,12 +128,17 @@ export class ConversationService {
     }
 
     joinGameConversation(gameToken: string) {
+        const currentJoinedConvos = this.joinedConversations$.value;
+        const hasGame = currentJoinedConvos.find(({ _id: convoId }) => convoId === gameToken);
+        if (hasGame) {
+            return;
+        }
+
         const gameConvo: Conversation = {
             _id: gameToken,
             name: GAME_CONVO_NAME,
         };
         this.gameConversation = gameConvo;
-        const currentJoinedConvos = this.joinedConversations$.value;
         currentJoinedConvos.push(gameConvo);
         this.setJoinedConversations(currentJoinedConvos);
         this.currentConversationSubject.next(gameConvo);

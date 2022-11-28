@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MessagesService } from '@app/chat/services/messages/messages.service';
 import { GameManagerService } from '@app/game-logic/game/games/game-manager/game-manager.service';
 import { InvitationModalComponent } from '@app/invitations/components/invitation-modal/invitation-modal.component';
 import { Invitation, InvitationDTO } from '@app/invitations/interfaces/invitation.interface';
@@ -31,6 +32,7 @@ export class InvitationService {
         private gameLaucherService: GameLauncherService,
         private snackBar: MatSnackBar,
         private gameManager: GameManagerService,
+        private messageService: MessagesService,
     ) {
         this.invitations$.subscribe((invitationDTO) => {
             // Discard invite if in game
@@ -78,6 +80,7 @@ export class InvitationService {
         const {
             args: { id, password },
         } = invitation;
+
         this.newGameSocketHandler.error$.pipe(first()).subscribe((errorContent) => {
             this.gameLaucherService.cancelWait();
 
@@ -87,6 +90,9 @@ export class InvitationService {
             }
             this.snackBar.open(errorMessage, 'OK', { duration: 3000 });
         });
+
+        this.messageService.leaveGameConversation();
+        this.gameLaucherService.closeModals();
         this.newGameSocketHandler.quitJoinedPendingGame();
         this.newGameSocketHandler.joinPendingGame(id, password);
         this.gameLaucherService.waitForOnlineGameStart();

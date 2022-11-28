@@ -133,7 +133,8 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
                 return;
             }
             const playerNames = gameSettings.playerNames;
-            forbidenUsers$.next(playerNames);
+            const tmpPlayers = gameSettings.tmpPlayerNames;
+            forbidenUsers$.next(playerNames.concat(tmpPlayers));
         });
         this.dialog.open(UserSearchComponent, { data });
     }
