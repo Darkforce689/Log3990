@@ -1,19 +1,16 @@
 package com.example.polyscrabbleclient.account.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.polyscrabbleclient.account.viewmodel.UserUpdate
 import com.example.polyscrabbleclient.auth.components.Requirement
 import com.example.polyscrabbleclient.auth.components.UserNameInput
@@ -58,20 +55,35 @@ fun ProfilContent(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Progression",
+                            Text(
+                                text = Progress,
                                 style = MaterialTheme.typography.subtitle1,
-                                fontWeight = FontWeight.Bold)
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Niveau : " + currentLevel())
-                            Text("Expérience totale : " + User.totalExp)
+                            Text("$Level : ${currentLevel()}")
+//                            Text("$TotalExperience : ${User.totalExp}")
+                            Text("$TotalExperience : " + User.totalExp)
                         }
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                            Text(currentLevel().toString(), modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp))
-                            LinearProgressIndicator(progress = getProgressValue(), modifier = Modifier
-                                .fillMaxWidth(0.9f)
-                                .padding(horizontal = 5.dp))
-                            Text(getNextLevel().toString(), modifier = Modifier.padding(5.dp, 0.dp, 0.dp, 0.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                currentLevel().toString(),
+                                modifier = Modifier.padding(0.dp, 0.dp, 5.dp, 0.dp)
+                            )
+                            LinearProgressIndicator(
+                                progress = getProgressValue(), modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                                    .padding(horizontal = 5.dp)
+                            )
+                            Text(
+                                getNextLevel().toString(),
+                                modifier = Modifier.padding(5.dp, 0.dp, 0.dp, 0.dp)
+                            )
                         }
                     }
                 }

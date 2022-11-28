@@ -39,6 +39,9 @@ const val my_games = "Mon historique de jeux"
 const val game_history = "Historique des parties"
 const val game_played = "Parties jouées"
 const val game_result = "Status"
+const val Progress = "Progression"
+const val Level = "Niveau"
+const val TotalExperience = "Expérience totale"
 
 // Notifications
 const val RemainderTitleNotificationFR = "Reviens jouer à PolyScrabble!"
