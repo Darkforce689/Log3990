@@ -118,7 +118,7 @@ export class HorseComponent implements AfterContentChecked, OnInit, OnDestroy {
     }
 
     onMouseDown(event: MouseEvent, index: number) {
-        if (event.button !== 0) return;
+        if (event.button !== 0 || this.cantDragAndDrop) return;
         // left click only
         this.timeoutHandler = setTimeout(() => {
             // start holding, no longer a click
@@ -207,5 +207,9 @@ export class HorseComponent implements AfterContentChecked, OnInit, OnDestroy {
             this.inputController.activeAction instanceof UIDragAndDrop &&
             this.inputController.activeAction.concernedIndexes.has(index)
         );
+    }
+
+    get cantDragAndDrop(): boolean {
+        return !this.info.isActivePlayer || this.inputController.activeAction instanceof UIPlace;
     }
 }
