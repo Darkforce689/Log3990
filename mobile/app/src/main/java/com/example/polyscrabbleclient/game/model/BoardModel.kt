@@ -4,11 +4,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.TileCreator
 import com.example.polyscrabbleclient.game.sources.GameRepository
+import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.example.polyscrabbleclient.game.sources.Position
 import com.example.polyscrabbleclient.game.sources.Tile
-import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
 import com.example.polyscrabbleclient.lobby.sources.GameMode
+import com.example.polyscrabbleclient.utils.constants.place_random_bonus_id
 
 typealias TileContent = TileModel?
 typealias TileContainerRow = Array<GridTileModel>
@@ -23,13 +24,13 @@ enum class RowChar { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }
 class BoardModel {
     var tileGrid: TileGrid = Array(BoardDimension) { Array(BoardDimension) { GridTileModel() } }
         private set
-    var gameMode: GameMode? = null
     var transientTilesCoordinates = mutableSetOf<TileCoordinates>()
     var selectedCoordinates: MutableState<TileCoordinates?> = mutableStateOf(null)
 
     val jokerModel: JokerModel = JokerModel(this)
 
     fun updateGrid(grid: ArrayList<ArrayList<Tile>>) {
+        unselect()
         requireBoardDimensions(grid)
         for (row in BoardRange) {
             for (column in BoardRange) {
@@ -62,8 +63,13 @@ class BoardModel {
     }
 
     fun setSelected(column: Int, row: Int) {
+        val model = GameRepository.model
         val cantSelectTile =
-            gameMode != GameMode.Magic || (selectedCoordinates.value?.row == row && selectedCoordinates.value?.column == column)
+            model.gameMode.value != GameMode.Magic || !model.isActivePlayer() || !model.drawnMagicCards.value[model.getUserIndex()].contains(
+                IMagicCard(
+                    place_random_bonus_id
+                )
+            ) || (selectedCoordinates.value?.row == row && selectedCoordinates.value?.column == column)
         unselect()
         if (cantSelectTile) return
         tileGrid[row - 1][column - 1].isHighlighted.value = true
