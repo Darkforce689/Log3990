@@ -21,7 +21,6 @@ object GameRepository : Repository<GameModel, GameSocketHandler>() {
         model.turnRemainingTime.value = gameSettings.timePerTurn
         model.players.addAll(createPlayers(gameSettings.playerNames))
         model.gameMode.value = gameSettings.gameMode
-        model.board.gameMode = model.gameMode.value
         model.setupObserver(gameSettings.observerNames)
         socket.emit(EmitGameEvent.JoinGame, gameSettings.id)
         socket.onGameDisconnected(onGameDisconnected)
