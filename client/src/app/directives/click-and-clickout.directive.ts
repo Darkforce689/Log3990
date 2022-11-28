@@ -1,5 +1,6 @@
 import { Directive, HostListener, Input } from '@angular/core';
 import { UIInputControllerService } from '@app/game-logic/actions/ui-actions/ui-input-controller.service';
+import { UIPlace } from '@app/game-logic/actions/ui-actions/ui-place';
 import { InputComponent, InputType } from '@app/game-logic/interfaces/ui-input';
 
 @Directive({
@@ -19,6 +20,7 @@ export class ClickAndClickoutDirective {
 
     @HostListener('document:click')
     clickOutside() {
+        if (this.inputController.activeAction instanceof UIPlace) return;
         if (this.wasInside) {
             this.wasInside = false;
             return;

@@ -95,6 +95,10 @@ export class GameInfoService {
         return this.players[this.game.activePlayerIndex];
     }
 
+    get isActivePlayer(): boolean {
+        return this.player === this.activePlayer;
+    }
+
     get timeLeftForTurn(): Observable<number | undefined> {
         return this.timer.timeLeft$;
     }

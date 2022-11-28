@@ -2,6 +2,7 @@
     <mat-grid-list cols="7" rowHeight="1:1" gutterSize="8px">
         <mat-grid-tile
             cdkDrag
+            [cdkDragDisabled]="cantDragAndDrop"
             *ngFor="let letter of playerRack; let index = index"
             (mouseup)="click($event, index)"
             (mousedown)="onMouseDown($event, index)"
