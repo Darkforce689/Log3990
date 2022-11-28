@@ -42,18 +42,18 @@
                 <div>
                     <app-game-action-button [isDisabled]="!canPass" (clickButton)="pass()" icon="skip_next" label="Passer"></app-game-action-button>
                     <app-game-action-button
-                        [isDisabled]="!canExchange"
-                        (clickButton)="confirm()"
-                        icon="swap_vert"
-                        label="Échanger"
-                    ></app-game-action-button>
-                </div>
-                <div>
-                    <app-game-action-button
                         [isDisabled]="!canPlace"
                         (clickButton)="confirm()"
                         icon="download"
                         label="Placer"
+                    ></app-game-action-button>
+                </div>
+                <div>
+                    <app-game-action-button
+                        [isDisabled]="!canExchange"
+                        (clickButton)="confirm()"
+                        icon="swap_vert"
+                        label="Échanger"
                     ></app-game-action-button>
                     <app-game-action-button [isDisabled]="!canCancel" (clickButton)="cancel()" icon="block" label="Annuler"></app-game-action-button>
                 </div>
