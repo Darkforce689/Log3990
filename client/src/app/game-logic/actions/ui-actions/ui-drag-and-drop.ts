@@ -36,9 +36,8 @@ export class UIDragAndDrop implements UIAction {
         return;
     }
 
-    receiveHoldReleased(args: number, dropPoint: { x: number; y: number }): void {
-        this.addTempLetter({ x: dropPoint.x, y: dropPoint.y, rackIndex: args }, this.info.activePlayer.letterRack[args].char);
-        return;
+    receiveHoldReleased(args: number, dropPoint: { x: number; y: number }, selectedChar: string | undefined): void {
+        this.addTempLetter({ x: dropPoint.x, y: dropPoint.y, rackIndex: args }, selectedChar ?? this.info.activePlayer.letterRack[args].char);
     }
 
     receiveRoll(): void {
@@ -128,12 +127,8 @@ export class UIDragAndDrop implements UIAction {
     private placeTempLetter(letterPlacement: LetterPlacement, key: string) {
         const concernedTile = this.boardService.board.grid[letterPlacement.y][letterPlacement.x];
         const usedChar = this.info.player.letterRack[letterPlacement.rackIndex].char;
-        if (usedChar === JOKER_CHAR) {
-            concernedTile.letterObject = this.letterCreator.createBlankLetter(key);
-            concernedTile.letterObject.isTemp = true;
-            return;
-        }
-        concernedTile.letterObject = this.letterCreator.createLetter(usedChar);
+        if (usedChar === JOKER_CHAR) concernedTile.letterObject = this.letterCreator.createBlankLetter(key);
+        else concernedTile.letterObject = this.letterCreator.createLetter(usedChar);
         concernedTile.letterObject.isTemp = true;
         if (this.tempLettersPosition.length >= 1) {
             this.inputController.sendSyncState(this.tempLettersPosition);

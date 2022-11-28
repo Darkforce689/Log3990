@@ -17,6 +17,7 @@ import { AbandonDialogComponent } from '@app/components/modals/abandon-dialog/ab
 import { DisconnectedFromServerComponent } from '@app/components/modals/disconnected-from-server/disconnected-from-server.component';
 import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-dialog.component';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
+import { JokerDialogComponent } from '@app/components/modals/joker-dialog/joker-dialog.component';
 import { LeaderboardComponent } from '@app/components/modals/leaderboard/leaderboard.component';
 import { LobbyGamesComponent } from '@app/components/modals/lobby-games/lobby-games.component';
 import { NewOnlineGameFormComponent } from '@app/components/modals/new-online-game-form/new-online-game-form.component';
@@ -75,6 +76,7 @@ import { UserSearchComponent } from './users/components/user-search/user-search.
         BoardComponent,
         HorseComponent,
         NewOnlineGameFormComponent,
+        JokerDialogComponent,
         HomepageComponent,
         NewGamePageComponent,
         HeaderBarComponent,

@@ -92,11 +92,13 @@ export class BoardComponent implements AfterViewInit, DoCheck, OnDestroy {
 
     receiveDrop(input: UIInput) {
         if (!input.dropPoint) return;
+        if (input.dropPoint.x === NOT_FOUND && input.dropPoint.y === NOT_FOUND) this.canDropHere = false;
         const newInput: UIInput = {
             from: this.self,
             type: InputType.HoldReleased,
             args: input.args,
             dropPoint: this.canDropHere ? this.getTilePosFromDropPoint(input.dropPoint) : { x: NOT_FOUND, y: NOT_FOUND },
+            selectedChar: input.selectedChar,
         };
         this.clickTile.emit(newInput);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

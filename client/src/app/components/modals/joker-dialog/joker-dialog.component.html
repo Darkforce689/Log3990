@@ -1,0 +1,19 @@
+<h2>Quel sera de cette lettre?</h2>
+<mat-grid-list class="firstList" cols="3" rowHeight="1:1" gutterSize="8px">
+    <mat-grid-tile class="firstTile"> * </mat-grid-tile>
+    <mat-grid-tile> → </mat-grid-tile>
+    <mat-grid-tile class="firstTile">
+        {{ value ?? '?' }}
+    </mat-grid-tile>
+</mat-grid-list>
+<mat-grid-list class="secondList" cols="7" rowHeight="1:1" gutterSize="8px">
+    <br />
+    <br />
+    <mat-grid-tile class="secondTile" *ngFor="let letter of alphabet" (click)="onClick(letter)">
+        {{ letter }}
+    </mat-grid-tile>
+</mat-grid-list>
+<mat-dialog-actions>
+    <button mat-button color="accent" (click)="cancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="confirm()" [disabled]="!formValid">Confirmer</button>
+</mat-dialog-actions>

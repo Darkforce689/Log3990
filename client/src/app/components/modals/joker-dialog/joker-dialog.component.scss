@@ -1,0 +1,42 @@
+h2 {
+    width: 300px;
+}
+
+mat-grid-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 1%;
+}
+
+.firstList {
+    height: 20%;
+}
+
+.secondList {
+    height: 100%;
+}
+
+.firstTile {
+    font-weight: 700;
+    font-size: xx-large;
+    border-radius: 10%;
+    box-shadow: 2px 2px 2px 0.2;
+    color: var(--Black) !important;
+    background-color: var(--LightTileBackgroundColor);
+    background-size: contain;
+}
+
+.secondTile {
+    font-weight: 700;
+    border-radius: 10%;
+    box-shadow: 2px 2px 2px 0.2;
+    color: var(--Black) !important;
+    background-color: var(--LightTileBackgroundColor);
+    background-size: contain;
+
+    &:hover {
+        cursor: pointer;
+        box-shadow: 0 0 5px white, 0 0 25px white, 0 0 50px white, 0 0 200px white;
+    }
+}

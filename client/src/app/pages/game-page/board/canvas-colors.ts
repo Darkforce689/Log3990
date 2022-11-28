@@ -14,3 +14,6 @@ export const TRIPLE_BONUS_WORD = '#7c2599';
 
 export const BONUS_TEXT_COLOR = '#ffffff';
 export const BLACK_LINE = '#000000';
+
+export const WRONG_TEMP_TILE_COLOR = 'rgba(200, 20, 20, 0.7)';
+export const CORRECT_TEMP_TILE_COLOR = '#00c814';
