@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabGroup } from '@angular/material/tabs';
 import { CreateConversationComponent } from '@app/chat/components/create-conversation/create-conversation.component';
 import { DeleteConversationComponent } from '@app/chat/components/delete-conversation/delete-conversation.component';
 import { JoinConversationComponent } from '@app/chat/components/join-conversation/join-conversation.component';
@@ -18,10 +19,10 @@ import { map, takeUntil } from 'rxjs/operators';
 })
 export class ConversationPickerComponent implements OnInit, OnDestroy {
     @Input() isPoped = false;
+    @ViewChild(MatTabGroup) matGroup: MatTabGroup | undefined;
     selectedConversationIndex = 0;
     readonly conversations$ = new BehaviorSubject<Conversation[]>([]);
     options = ['Rejoindre', 'Créer', 'Supprimer'];
-
     private destroy$ = new Subject<void>();
 
     get conversations() {
@@ -76,7 +77,15 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
 
     focusOnConversation(conversation: Conversation) {
         const conversationIndex = this.conversations.findIndex(({ name }) => name === conversation.name);
-        this.selectedConversationIndex = conversationIndex;
+        if (!this.matGroup) {
+            return;
+        }
+        this.matGroup.selectedIndex = conversationIndex;
+    }
+
+    onSelectedTab(tabIndex: number) {
+        const currentConversation = this.conversations[tabIndex];
+        this.setSelectedConversation(currentConversation);
     }
 
     changeSelectedConversation() {
