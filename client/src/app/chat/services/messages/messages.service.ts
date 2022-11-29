@@ -78,6 +78,14 @@ export class MessagesService {
             }
             this.receiveSystemMessage(message);
         });
+
+        this.electron.leaveGameConvo$.subscribe(() => {
+            this.conversationService.leaveGameConversation();
+        });
+
+        this.electron.joinGameConvo$.subscribe((gameToken) => {
+            this.conversationService.joinGameConversation(gameToken);
+        });
     }
 
     get currentConversation() {
@@ -134,6 +142,7 @@ export class MessagesService {
         }
         const { _id: roomId } = conversation;
         this.onlineChat.leaveChatRoom(roomId);
+        this.electron.leaveGameConvo();
     }
 
     fetchNextMessagesFromCurrentConvo() {

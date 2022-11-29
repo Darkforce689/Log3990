@@ -40,11 +40,11 @@ function openChatWindow(route, eventSender) {
     // Electron Build Path
     const path = `file://${__dirname}/dist/client/index.html#/${route}?gameToken=${gameToken}`;
     externalWindow.loadURL(path);
-
     if (gameToken !== undefined) {
         externalWindow.webContents.send('game-token', gameToken);
     }
     externalWindow.setMenuBarVisibility(false);
+
     eventSender.send(`open-${route}`, true);
 
     externalWindow.on('close', (event, arg) => {
@@ -56,9 +56,28 @@ function openChatWindow(route, eventSender) {
     });
 }
 
+function dispatchLeaveGame() {
+    gameToken = undefined;
+    if (!externalWindow) {
+        return;
+    }
+    externalWindow.webContents.send('leave-game-convo');
+}
+
+function dispatchGameToken(gameToken) {
+    if (!externalWindow) {
+        return;
+    }
+    externalWindow.webContents.send('game-token', gameToken);
+}
+
 app.on('ready', () => {
     ipcMain.on('open-external-window', (event, args) => {
         openChatWindow(args, event.sender);
+    });
+
+    ipcMain.on('leave-game-convo', () => {
+        dispatchLeaveGame();
     });
 
     ipcMain.on('close-external-window', (event, args) => {
@@ -67,6 +86,7 @@ app.on('ready', () => {
 
     ipcMain.on('game-token', (event, args) => {
         gameToken = args;
+        dispatchGameToken(args);
     });
 
     session.defaultSession.webRequest.onHeadersReceived(

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GAME_CONVO_NAME } from '@app/chat/constants';
+import { GAME_CONVO_NAME, GENERAL_CHANNEL } from '@app/chat/constants';
 import { ConversationGetQuery } from '@app/chat/interfaces/conversation-get-query';
 import { Conversation, ConversationCreation } from '@app/chat/interfaces/conversation.interface';
 import { Pagination } from '@app/chat/interfaces/pagination.interface';
@@ -154,6 +154,9 @@ export class ConversationService {
         currentJoinedConvos.splice(gameConvoIndex, 1);
         this.setJoinedConversations(currentJoinedConvos);
         this.gameConversation = undefined;
+
+        const general = currentJoinedConvos.find(({ name }) => name === GENERAL_CHANNEL);
+        this.currentConversationSubject.next(general);
         return gameConvo;
     }
 
