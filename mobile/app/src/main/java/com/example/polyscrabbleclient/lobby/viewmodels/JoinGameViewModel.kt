@@ -10,6 +10,11 @@ import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.navigateTo
 
+enum class LobbyGameType {
+    Observable,
+    Pending
+}
+
 class JoinGameViewModel : ViewModel() {
     val enteredPassword = mutableStateOf("")
 

@@ -196,7 +196,7 @@ fun AccountContent(title: String, content: @Composable () -> Unit) {
         Text(
             title,
             style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.primary,
+            color = Color.White,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .fillMaxHeight(0.22f)

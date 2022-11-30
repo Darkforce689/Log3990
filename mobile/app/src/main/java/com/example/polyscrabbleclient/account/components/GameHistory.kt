@@ -111,7 +111,7 @@ private fun GamesListView(
     isGameSelected: (game: GameHistoryInfo) -> Boolean,
 ) {
     val weights = listOf(0.5f, 0.3f, 0.2f)
-    val headers = listOf(date, game_result, "")
+    val headers = listOf(date, game_result, replay)
     Column(Modifier.padding(25.dp, 0.dp)) {
         Row {
             headers.forEachIndexed { index, text ->

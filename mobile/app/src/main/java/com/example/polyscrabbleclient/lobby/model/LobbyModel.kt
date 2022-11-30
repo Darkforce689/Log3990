@@ -24,6 +24,8 @@ class LobbyModel {
     val password = mutableStateOf<String?>(null)
     val playerNamesInLobby = MutableStateFlow<List<String>>(listOf())
     val selectedLobbyGame = mutableStateOf<OnlineGameSettings?>(null)
+    val botNames = mutableStateOf<List<String>?>(null)
+    val maxPlayerInWaitingGame = mutableStateOf<Int?>(null)
 }
 
 enum class LobbyError(val value: String) {

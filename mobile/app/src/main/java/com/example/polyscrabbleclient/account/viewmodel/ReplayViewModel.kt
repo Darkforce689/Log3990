@@ -8,6 +8,8 @@ import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.user.User
+import com.example.polyscrabbleclient.user.UserRepository
+import com.example.polyscrabbleclient.utils.constants.NoAvatar
 import kotlin.math.ceil
 
 class ReplayViewModel(private val gameStates: List<GameStateHistory>, gameMode: GameMode) :
@@ -85,6 +87,18 @@ class ReplayViewModel(private val gameStates: List<GameStateHistory>, gameMode: 
 
     fun isCardActive(cardId: String): Boolean {
         return cardId !== ""
+    }
+
+    fun getAvatar(name: String): String {
+        var avatar: String = NoAvatar
+        val thread = Thread {
+            UserRepository.getUserByName(name) {
+                avatar = it.avatar
+            }
+        }
+        thread.start()
+        thread.join()
+        return avatar
     }
 
     private fun getPlayerIndex(player: Player): Int {

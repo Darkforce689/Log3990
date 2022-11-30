@@ -6,15 +6,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.polyscrabbleclient.account.components.Avatar
 import com.example.polyscrabbleclient.getAssetsId
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.user.UserRepository
 import com.example.polyscrabbleclient.utils.TextView
+import kotlin.math.floor
 
 @Composable
 fun LobbyGameView(
@@ -22,6 +24,9 @@ fun LobbyGameView(
     click: () -> Unit,
     isSelected: () -> Boolean
 ) {
+    val players: MutableState<List<Pair<String, String>>> = remember { mutableStateOf(listOf()) }
+    GetAvatars(lobbyGameSettings = lobbyGameSettings, players)
+
     val targetColor by animateColorAsState(
         targetValue =
         if (isSelected())
@@ -38,7 +43,6 @@ fun LobbyGameView(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val fields = listOf(
-            formatPlayerNames(lobbyGameSettings.playerNames),
             formatRandomBonus(lobbyGameSettings.randomBonus),
             formatTurnTime(lobbyGameSettings.timePerTurn.toLong()),
             formatHasPassword(lobbyGameSettings.password),
@@ -46,8 +50,9 @@ fun LobbyGameView(
             formatPlayersCounts(lobbyGameSettings),
             lobbyGameSettings.botDifficulty.value
         )
+        PlayerCell(players = players.value, weight = ColumnsWeights[0])
         fields.forEachIndexed { index, field ->
-            TableCell(text = field, weight = ColumnsWeights[index])
+            TableCell(text = field, weight = ColumnsWeights[index + 1])
         }
     }
 }
@@ -62,7 +67,7 @@ fun formatPlayersCounts(lobbyGameSettings: OnlineGameSettings): String {
             0
     if (lobbyGameSettings.gameStatus == WAIT_STATUS) {
         val estimatedBots = lobbyGameSettings.numberOfPlayers - lobbyGameSettings.playerNames.size
-        return "$realPlayers : $estimatedBots / $max | 0"
+        return "$realPlayers : $estimatedBots / $max"
     }
     if (lobbyGameSettings.gameStatus == ACTIVE_STATUS) {
         val bots = lobbyGameSettings.numberOfBots
@@ -84,8 +89,26 @@ fun formatRandomBonus(randomBonus: Boolean): String {
     return if (randomBonus) Activated else Deactivated
 }
 
-fun formatPlayerNames(playerNames: ArrayList<String>): String {
-    return playerNames.reduce { acc, current -> "$acc, $current" }
+@Composable
+fun GetAvatars(
+    lobbyGameSettings: OnlineGameSettings,
+    players: MutableState<List<Pair<String, String>>>
+) {
+    LaunchedEffect(key1 = lobbyGameSettings) {
+        players.value = listOf()
+        var playerNames = lobbyGameSettings.playerNames
+        val nPlayers = lobbyGameSettings.playerNames.size
+        val totalPlayers = lobbyGameSettings.numberOfPlayers
+        val botNames = lobbyGameSettings.botNames?.slice(nPlayers - 1 until totalPlayers - 1)
+        if (!botNames.isNullOrEmpty()) {
+            playerNames = (lobbyGameSettings.playerNames + botNames) as ArrayList<String>
+        }
+        for (playerName in playerNames) {
+            UserRepository.getUserByName(playerName) {
+                players.value = players.value.plus(Pair(it.name, it.avatar))
+            }
+        }
+    }
 }
 
 @Composable
@@ -102,6 +125,43 @@ fun RowScope.TableCell(
 }
 
 @Composable
+fun RowScope.PlayerCell(
+    players: List<Pair<String, String>>,
+    weight: Float
+) {
+    val first = players.slice(0 until floor((players.size / 2).toDouble()).toInt())
+    val last = players.slice(floor((players.size / 2).toDouble()).toInt() until players.size)
+    val listPlayers = listOf(first, last)
+    Row(
+        modifier = Modifier
+            .weight(weight),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        listPlayers.forEach { players ->
+            Column(Modifier.wrapContentWidth()) {
+                players.forEach {
+                    PlayerAndAvatar(playerInfo = it)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PlayerAndAvatar(playerInfo: Pair<String, String>) {
+    Row {
+        Avatar(
+            modifier = Modifier
+                .size(30.dp)
+                .padding(2.dp),
+            avatarId = getAssetsId(playerInfo.second)
+        )
+        // TODO JU: if is host change color
+        TextView(text = playerInfo.first)
+    }
+}
+
+@Composable
 fun RowScope.HeaderTableCell(
     text: String,
     weight: Float
@@ -113,4 +173,18 @@ fun RowScope.HeaderTableCell(
             .weight(weight)
             .padding(4.dp)
     )
+}
+
+@Preview
+@Composable
+fun preview() {
+    val list = listOf(
+        Pair("juju9", "stag"),
+        Pair("juju8", "polarbear"),
+        Pair("Juan", "hardBotAvatar1"),
+        Pair("Noah", "hardBotAvatar2")
+    )
+    Row {
+        PlayerCell(list, 0.5f)
+    }
 }

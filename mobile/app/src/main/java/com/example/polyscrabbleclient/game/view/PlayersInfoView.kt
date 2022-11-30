@@ -9,7 +9,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,19 +27,20 @@ import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.game.viewmodels.PlayerInfoViewModel
 import com.example.polyscrabbleclient.getAssetsId
 import com.example.polyscrabbleclient.ui.theme.PolyScrabbleClientTheme
-import com.example.polyscrabbleclient.user.UserRepository
 import com.example.polyscrabbleclient.utils.constants.NoAvatar
 
 @Composable
 fun PlayersInfoView(viewModel: GameViewModel, size: Dp = 200.dp) {
+    val playerViewModel = PlayerInfoViewModel()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         viewModel.getOrderedPlayers().forEach { player ->
+            val avatar = playerViewModel.getAvatar(player.name)
             PlayerInfoView(
                 player,
+                avatar,
                 size,
-                PlayerInfoViewModel(),
                 { player === viewModel.game.getWatchedPlayer() },
                 { player === viewModel.game.getActivePlayer() }
             )
@@ -47,8 +51,8 @@ fun PlayersInfoView(viewModel: GameViewModel, size: Dp = 200.dp) {
 @Composable
 fun PlayerInfoView(
     player: Player,
+    avatar: String,
     size: Dp,
-    viewModel: PlayerInfoViewModel,
     isWatchedPlayer: () -> Boolean,
     isActivePlayer: () -> Boolean,
 ) {
@@ -85,54 +89,50 @@ fun PlayerInfoView(
             color = backgroundColor
         ) {
             Row(
-                modifier = Modifier.width(200.dp),
+                modifier = Modifier.width(size),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxWidth(0.8f)
+                        .padding(15.dp)
+                        .fillMaxWidth()
                 ) {
-                    LaunchedEffect(viewModel.avatar.value) {
-                        UserRepository.getUserByName(player.name) {
-                            if (viewModel.avatar.value != it.avatar) {
-                                viewModel.avatar.value = it.avatar
-                            }
-                        }
-                    }
 
-                    UserInfoView(player, viewModel.avatar.value)
+                    UserInfoView(player, avatar, isWatchedPlayer)
                     Divider()
                     Text(
                         text = "${player.points} points",
                         style = MaterialTheme.typography.caption
                     )
                 }
-                Icon(
-                    imageVector = Icons.Filled.Visibility,
-                    contentDescription = null,
-                    modifier = Modifier.alpha(if (isWatchedPlayer()) 1.0f else 0.0f)
-                )
+
             }
         }
     }
 }
 
 @Composable
-fun UserInfoView(player: Player, avatar: String = NoAvatar) {
+fun UserInfoView(player: Player, avatar: String = NoAvatar, isWatchedPlayer: () -> Boolean) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Avatar(
-            modifier = Modifier.size(18.dp),
+            modifier = Modifier.size(40.dp),
             avatarId = getAssetsId(avatar)
         )
         Spacer(modifier = Modifier.size(5.dp))
         Text(
             text = player.name,
             style = MaterialTheme.typography.h6
+        )
+        Icon(
+            imageVector = Icons.Filled.Visibility,
+            contentDescription = null,
+            modifier = Modifier.alpha(if (isWatchedPlayer()) 1.0f else 0.0f)
         )
     }
 }

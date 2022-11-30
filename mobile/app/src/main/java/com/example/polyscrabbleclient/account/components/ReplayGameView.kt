@@ -24,7 +24,6 @@ import com.example.polyscrabbleclient.game.sources.IMagicCard
 import com.example.polyscrabbleclient.game.sources.Player
 import com.example.polyscrabbleclient.game.view.*
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
-import com.example.polyscrabbleclient.game.viewmodels.PlayerInfoViewModel
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.ui.theme.cardHolder
@@ -77,7 +76,8 @@ fun ReplayGame(
                             index += 1
                             viewModel.setPage(index)
                         }
-                    }, imageVector = Icons.Filled.ArrowForwardIos, contentDescription = null
+                    },
+                imageVector = Icons.Filled.ArrowForwardIos, contentDescription = null
             )
         }
     }
@@ -114,6 +114,7 @@ fun ReplayPlayers(
     val weight = if (viewModel.isMagicGame()) 0.3f else 0.5f
     EvenlySpacedSubColumn(modifier = Modifier.fillMaxHeight()) {
         players.forEach {
+            val avatar = viewModel.getAvatar(it.name)
             Card(
                 Modifier
                     .width(275.dp)
@@ -124,7 +125,7 @@ fun ReplayPlayers(
                         .fillMaxHeight()
                         .padding(5.dp)
                 ) {
-                    PlayerInfoView(player = it, 200.dp, PlayerInfoViewModel(), { false }) {
+                    PlayerInfoView(player = it, avatar, 200.dp, { false }) {
                         viewModel.isActivePlayer(it)
                     }
                     ReplayLetterRack(weight = weight, letters = it.letters)

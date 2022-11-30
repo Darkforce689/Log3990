@@ -34,6 +34,7 @@ data class OnlineGameSettings(
     val drawableMagicCards: ArrayList<IMagicCard>,
     val numberOfBots: Int? = null,
     val observerNames: ArrayList<String>? = null,
+    val botNames: ArrayList<String>? = null,
 ) {
     fun isProtected(): Boolean {
         return password?.isNotEmpty() ?: false

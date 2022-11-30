@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.polyscrabbleclient.invitations.models.GameInviteArgs
 import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
+import com.example.polyscrabbleclient.user.UserRepository
 
 class WaitingForOtherPlayersViewModel : ViewModel() {
     private val lobby = LobbyRepository
@@ -12,6 +13,27 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
     fun launchGame(navigateToGameScreen: () -> Unit) {
         lobby.emitLaunchGame(navigateToGameScreen)
         GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
+    }
+
+    fun getPlayersProfil(): List<Pair<String, String>> {
+        var playersProfil: List<Pair<String, String>> = listOf()
+        var playerNames = lobby.model.pendingGamePlayerNames.value
+        val nPlayers = playerNames.size
+        val totalPlayers = lobby.model.maxPlayerInWaitingGame.value ?: 4
+        val botNames = lobby.model.botNames.value
+        if (!botNames.isNullOrEmpty()) {
+            playerNames = playerNames + botNames.slice(nPlayers - 1 until totalPlayers - 1)
+        }
+        val thread = Thread {
+            for (playerName in playerNames) {
+                UserRepository.getUserByName(playerName) {
+                    playersProfil = playersProfil.plus(Pair(it.name, it.avatar))
+                }
+            }
+        }
+        thread.start()
+        thread.join()
+        return playersProfil
     }
 
     fun getGameInviteArgs(): GameInviteArgs {
@@ -45,7 +67,7 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
     }
 
     fun isHost(playerName: String): Boolean {
-        return playerName === getPendingGamePlayerNames()[0]
+        return playerName == getPendingGamePlayerNames()[0]
     }
 
     fun isGamePrivate(): Boolean {
