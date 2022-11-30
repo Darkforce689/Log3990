@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { CONVO_NAME_MAX_SIZE } from '@app/chat/constants';
 import { ConversationCrudError } from '@app/chat/interfaces/conversation-creation-errors.enum';
 import { ConversationService } from '@app/chat/services/conversation/conversation.service';
 import { NOT_ONLY_SPACE_RGX } from '@app/game-logic/constants';
@@ -13,7 +14,11 @@ import { first } from 'rxjs/operators';
     styleUrls: ['./create-conversation.component.scss'],
 })
 export class CreateConversationComponent {
-    conversationNameForm = new FormControl('', [Validators.required, Validators.pattern(NOT_ONLY_SPACE_RGX)]);
+    conversationNameForm = new FormControl('', [
+        Validators.required,
+        Validators.pattern(NOT_ONLY_SPACE_RGX),
+        Validators.maxLength(CONVO_NAME_MAX_SIZE),
+    ]);
 
     constructor(private dialogRef: MatDialogRef<CreateConversationComponent>, private conversationService: ConversationService) {}
 
@@ -53,7 +58,10 @@ export class CreateConversationComponent {
     }
 
     get conversationValid() {
-        return !this.conversationNameForm.hasError('pattern') || this.conversationNameForm.hasError('required');
+        return (
+            (!this.conversationNameForm.hasError('pattern') && !this.conversationNameForm.hasError('maxlength')) ||
+            this.conversationNameForm.hasError('required')
+        );
     }
 
     get conversationEmpty() {

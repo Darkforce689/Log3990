@@ -5,6 +5,7 @@
         <input matInput autocomplete="false" placeholder="Nom de la conversation" [formControl]="conversationNameForm" />
         <mat-error *ngIf="conversationNameForm.hasError('alreadyExists')">Cette conversation existe déjà</mat-error>
         <mat-error *ngIf="conversationNameForm.hasError('forbidenName')">Ce nom est interdit</mat-error>
+        <mat-error *ngIf="conversationNameForm.hasError('maxlength')">Le nom est trop long</mat-error>
         <mat-error *ngIf="!conversationValid">Nom de conversation invalide</mat-error>
         <mat-error *ngIf="conversationEmpty">Vous devez remplir ce champ</mat-error>
     </mat-form-field>

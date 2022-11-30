@@ -6,3 +6,4 @@ export const GAME_CONVO_NAME = 'game';
 export const GAME_TOKEN_PREFIX = 'game-';
 export const SYSTEM_USER_NAME = 'System';
 export const SYSTEM_ERROR_NAME = 'SystemError'; // this is not a user
+export const CONVO_NAME_MAX_SIZE = 10;
