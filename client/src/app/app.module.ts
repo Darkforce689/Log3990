@@ -58,6 +58,7 @@ import { MagicCardComponent } from './pages/game-page/magic-cards/magic-card/mag
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { PrototypePageComponent } from './pages/prototype-page/prototype-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { WordOfTheDayComponent } from './components/word-of-the-day/word-of-the-day.component';
 import { UserSearchComponent } from './users/components/user-search/user-search.component';
 
 /**
@@ -115,6 +116,7 @@ import { UserSearchComponent } from './users/components/user-search/user-search.
         ProfilComponent,
         DeleteConversationComponent,
         GameHistoryComponent,
+        WordOfTheDayComponent,
         ReplayComponent,
         ReplayPlayersComponent,
         InvitationModalComponent,

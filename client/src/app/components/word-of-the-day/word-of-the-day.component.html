@@ -1,0 +1,12 @@
+<mat-card color="accent" class="wrapper">
+    <p>{{ title }}</p>
+    <div class="wordContainer">
+        <div class="rack">
+            <div class="tile" *ngFor="let letter of tiles">
+                <span>{{ letter }}</span>
+            </div>
+        </div>
+    </div>
+    <p>Points: {{ wordOfTheDay.points }}</p>
+    <p class="definition">Définition: {{ wordOfTheDay.definition }}</p>
+</mat-card>

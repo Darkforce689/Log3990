@@ -8,6 +8,7 @@ import { DebugController } from '@app/controllers/debug.controller';
 import { LeaderboardController } from '@app/controllers/leaderboard-controller/leaderboard.controller';
 import { ConversationController } from '@app/messages-service/controllers/conversation.controller';
 import { UserController } from '@app/user/controllers/user.controller';
+import { WordOfTheDayController } from '@app/word-of-the-day/word-of-the-day-controller.service';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -35,6 +36,7 @@ export class Application {
     constructor(
         private readonly debugController: DebugController,
         private readonly leaderboardController: LeaderboardController,
+        private readonly wordOfTheDayController: WordOfTheDayController,
         private readonly authController: AuthController,
         private readonly authService: AuthService,
         private readonly sessionMiddlewareService: SessionMiddlewareService,
@@ -59,6 +61,7 @@ export class Application {
 
         // All users need to be logged in to access routes bellow if ENABLE_API_LOGIN feature flag is enabled
         this.app.use('/api/servergame', this.debugController.router);
+        this.app.use('/api/home', this.wordOfTheDayController.router);
         this.app.use('/api/scores', this.leaderboardController.router);
         this.app.use('/api/account', this.accountController.router);
         this.app.use('/api/conversations', this.conversationController.router);

@@ -13,5 +13,5 @@
     "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"],
     "[typescript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
-    }
+    },
 }
