@@ -113,10 +113,6 @@ fun NewGameScreen(
                     navController,
                     createGameViewModel.observableGames
                 )
-
-                HostHasJustQuitModal(createGameViewModel.hostHasJustQuitTheGame) {
-                    createGameViewModel.hostHasJustQuitTheGame.value = false
-                }
             }
         }
     }
@@ -264,25 +260,6 @@ private fun WatchAGameModal(
                 viewModel,
                 LobbyGameType.Observable
             ) { modalActions ->
-                modalButtons(modalActions)
-            }
-        }
-    }
-}
-
-@Composable
-fun HostHasJustQuitModal(
-    hostHasJustQuitTheGame: MutableState<Boolean>,
-    onCancel: () -> Unit,
-) {
-    if (hostHasJustQuitTheGame.value) {
-        ModalView(
-            closeModal = {
-                onCancel()
-            },
-            title = hostQuitGameFR
-        ) { modalButtons ->
-            HostQuitGameView { modalActions ->
                 modalButtons(modalActions)
             }
         }
