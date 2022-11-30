@@ -47,6 +47,20 @@ val botNames = listOf(
     "Optix",
     "Machina",
 )
+
+val BOT_AVATARS = listOf(
+    "easybotavatar1",
+    "easybotavatar2",
+    "easybotavatar3",
+    "easybotavatar4",
+    "easybotavatar5",
+    "hardbotavatar1",
+    "hardbotavatar2",
+    "hardbotavatar3",
+    "hardbotavatar4",
+    "hardbotavatar5",
+)
+
 const val WIN_EXP_BONUS = 100;
 const val LOSS_EXP_BONUS = 50;
 const val EXP_PER_LEVEL = 10;

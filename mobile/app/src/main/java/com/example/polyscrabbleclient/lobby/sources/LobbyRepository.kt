@@ -25,6 +25,8 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
             model.isAcceptedPlayer.value = it.playerNames.contains(User.name)
             model.playerNamesInLobby.tryEmit(it.playerNames)
             model.password.value = it.password
+            model.botNames.value = it.botNames
+            model.maxPlayerInWaitingGame.value = it.numberOfPlayers
             val gameToken = it.id
             ConversationsManager.joinGameConversation(gameToken)
         }

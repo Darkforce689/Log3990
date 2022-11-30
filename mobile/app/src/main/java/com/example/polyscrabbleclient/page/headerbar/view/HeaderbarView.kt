@@ -49,7 +49,7 @@ fun HeaderBar(
                     ThemeSelectorView(themeSelectorViewModel)
                     Account(navController = navController, avatar = User.avatar)
 
-                    Button(onClick = { disconnectViewModel.disconnect(navController) }) {
+                    IconButton(onClick = { disconnectViewModel.disconnect(navController) }) {
                         Icon(imageVector = Icons.Default.Logout, contentDescription = null)
                     }
                 }

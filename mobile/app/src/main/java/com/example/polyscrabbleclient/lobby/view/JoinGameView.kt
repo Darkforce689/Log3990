@@ -12,22 +12,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
+import com.example.polyscrabbleclient.lobby.viewmodels.LobbyGameType
 
 @Composable
 fun JoinGameView(
     lobbyGames: MutableState<LobbyGamesList?>,
     viewModel: JoinGameViewModel = viewModel(),
+    lobbyGameType: LobbyGameType,
     modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
     EvenlySpacedRowContainer {
         Box {
             LobbyGamesView(
                 lobbyGames,
+                lobbyGameType,
                 viewModel,
             ) { modalActions ->
                 modalButtons(modalActions)
@@ -53,5 +54,6 @@ fun EvenlySpacedRowContainer(content: @Composable RowScope.() -> Unit) {
 fun JoinGamePreview() {
     JoinGameView(
         mutableStateOf(arrayListOf()),
+        lobbyGameType = LobbyGameType.Pending,
     ) {}
 }

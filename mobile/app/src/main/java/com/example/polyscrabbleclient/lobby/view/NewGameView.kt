@@ -20,6 +20,7 @@ import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.view.createGame.CreateGameModalContent
 import com.example.polyscrabbleclient.lobby.viewmodels.CreateGameViewModel
 import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
+import com.example.polyscrabbleclient.lobby.viewmodels.LobbyGameType
 import com.example.polyscrabbleclient.lobby.viewmodels.NewGameViewModel
 import com.example.polyscrabbleclient.navigateTo
 import com.example.polyscrabbleclient.ui.theme.*
@@ -227,6 +228,7 @@ private fun JoinAGameModal(
             JoinGameView(
                 pendingGames,
                 viewModel,
+                LobbyGameType.Pending,
             ) { modalActions ->
                 modalButtons(modalActions)
             }
@@ -260,6 +262,7 @@ private fun WatchAGameModal(
             JoinGameView(
                 observableGames,
                 viewModel,
+                LobbyGameType.Observable
             ) { modalActions ->
                 modalButtons(modalActions)
             }

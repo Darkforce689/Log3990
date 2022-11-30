@@ -257,7 +257,6 @@ fun GamePasswordInput(
 ) {
     val focusRequester = FocusRequester()
     val keyboardController = LocalSoftwareKeyboardController.current
-
     TextField(
         value = password,
         onValueChange = { onPasswordChanged(it) },

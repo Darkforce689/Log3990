@@ -1,6 +1,7 @@
 package com.example.polyscrabbleclient.lobby.view
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -22,12 +23,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.NavPage
+import com.example.polyscrabbleclient.account.components.Avatar
+import com.example.polyscrabbleclient.getAssetsId
 import com.example.polyscrabbleclient.invitations.components.InviteUserToGameModal
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.viewmodels.WaitingForOtherPlayersViewModel
 import com.example.polyscrabbleclient.navigateTo
 import com.example.polyscrabbleclient.ui.theme.*
+import com.example.polyscrabbleclient.user.UserRepository
+import com.example.polyscrabbleclient.user.UserRepository.isBotName
 import com.example.polyscrabbleclient.utils.SubTitleView
+import com.example.polyscrabbleclient.utils.constants.NoAvatar
 
 @Composable
 fun WaitingForOtherPlayersView(
@@ -37,10 +43,11 @@ fun WaitingForOtherPlayersView(
     var isInviteModalOpened by remember {
         mutableStateOf(false)
     }
+    val playersProfiles: List<Pair<String, String>> = viewModel.getPlayersProfil()
     CenteredContainer {
         Card(
             modifier = Modifier
-                .width(400.dp)
+                .width(420.dp)
                 .height(375.dp),
         ) {
             Column(
@@ -65,10 +72,9 @@ fun WaitingForOtherPlayersView(
                             )
                         }
                         if (viewModel.canInvite()) {
-                            Button(
+                            IconButton(
                                 onClick = { isInviteModalOpened = true },
-                                shape = CircleShape,
-                                modifier = Modifier.padding(2.dp)
+                                Modifier.background(Color.LightGray, CircleShape)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.PersonAdd,
@@ -79,7 +85,7 @@ fun WaitingForOtherPlayersView(
                     }
                     SubTitleView(players_in_game)
                     Column(Modifier.padding(5.dp)) {
-                        viewModel.getPendingGamePlayerNames().forEach {
+                        playersProfiles.forEach {
                             ConfirmedPlayerView(it, viewModel)
                         }
                     }
@@ -132,29 +138,33 @@ private fun WaitingForOtherPlayersButtons(
     }
 }
 
+
 @Composable
 private fun PlayerView(
-    playerName: String,
+    playersProfil: Pair<String, String>,
     playerSideElements: @Composable () -> Unit
 ) {
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 2.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PlayerAndAvatar(playerName)
+        val (name, avatar) = playersProfil
+        PlayerAndAvatar(name, avatar)
         playerSideElements()
     }
 }
 
 @Composable
-private fun PlayerAndAvatar(playerName: String) {
+private fun PlayerAndAvatar(playerName: String, avatar: String) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(0.6f)
     ) {
-        // Todo add ICON -> in other PR (JU)
+        Avatar(modifier = Modifier.size(40.dp), avatarId = getAssetsId(name = avatar))
         Text(
             text = playerName,
             modifier = Modifier.padding(5.dp),
@@ -166,20 +176,21 @@ private fun PlayerAndAvatar(playerName: String) {
 
 @Composable
 private fun ConfirmedPlayerView(
-    playerName: String,
+    playersProfil: Pair<String, String>,
     viewModel: WaitingForOtherPlayersViewModel
 ) {
+    val (name) = playersProfil
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PlayerView(playerName) {
-            if (viewModel.isHost(playerName)) {
+        PlayerView(playersProfil) {
+            if (viewModel.isHost(name)) {
                 HostPlayerView()
             } else {
-                if (viewModel.isHost()) {
-                    KickPlayerView { viewModel.kick(playerName) }
+                if (viewModel.isHost() && !isBotName(name)) {
+                    KickPlayerView { viewModel.kick(name) }
                 }
             }
         }
@@ -266,8 +277,14 @@ private fun CandidatePlayersView(
                     val playerNames = viewModel.getCandidatePlayerNames()
                     items(playerNames.size) {
                         val playerName = playerNames[it]
+                        var avatar = NoAvatar
+                        LaunchedEffect(key1 = playerName) {
+                            UserRepository.getUserByName(playerName) { user ->
+                                avatar = user.avatar
+                            }
+                        }
                         CandidatePlayerView(
-                            playerName,
+                            Pair(playerName, avatar),
                             { viewModel.accept(playerName) },
                             { viewModel.refuse(playerName) }
                         )
@@ -280,11 +297,11 @@ private fun CandidatePlayersView(
 
 @Composable
 fun CandidatePlayerView(
-    playerName: String,
+    playerProfil: Pair<String, String>,
     accept: () -> Unit,
     refuse: () -> Unit,
 ) {
-    PlayerView(playerName) {
+    PlayerView(playerProfil) {
         AcceptPlayerView { accept() }
         RefusePlayerView { refuse() }
     }

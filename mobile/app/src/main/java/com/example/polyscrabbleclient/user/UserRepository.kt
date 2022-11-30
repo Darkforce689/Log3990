@@ -3,10 +3,10 @@ package com.example.polyscrabbleclient.user
 import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.user.model.UserDTO
 import com.example.polyscrabbleclient.user.model.UserGetRes
-import com.example.polyscrabbleclient.utils.constants.BotAvatar
+import com.example.polyscrabbleclient.user.model.UserStatus
 import com.example.polyscrabbleclient.utils.constants.NoAvatar
 import com.example.polyscrabbleclient.utils.constants.botNames
-import com.example.polyscrabbleclient.user.model.UserStatus
+import com.example.polyscrabbleclient.utils.getBotAvatar
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 import java.util.concurrent.locks.ReentrantLock
@@ -25,7 +25,7 @@ object UserRepository {
 
     fun getUserByName(name: String, callback: (UserDTO) -> Unit) {
         if (isBotName(name)) {
-            return callback(createBotUser())
+            return callback(createBotUser(name))
         }
         val url = createGetUserWithNameUrl(name)
         val thread = getUserByNameThread(name, url, callback)
@@ -33,7 +33,7 @@ object UserRepository {
         thread.join()
     }
 
-    private fun isBotName(name: String): Boolean {
+    fun isBotName(name: String): Boolean {
         return botNames.contains(name)
     }
 
@@ -92,7 +92,6 @@ object UserRepository {
                 }
             }
         }
-
         return getUserInternal(url, callback)
     }
 
@@ -139,7 +138,7 @@ object UserRepository {
         return UserDTO(userId, "empty", "InexistantUser", NoAvatar, UserStatus.Online)
     }
 
-    private fun createBotUser(userId: String = ""): UserDTO {
-        return UserDTO(userId, "empty", "InexistantUser", BotAvatar, UserStatus.Online)
+    private fun createBotUser(name: String = ""): UserDTO {
+        return UserDTO("", "empty", name, getBotAvatar(name), UserStatus.Online)
     }
 }

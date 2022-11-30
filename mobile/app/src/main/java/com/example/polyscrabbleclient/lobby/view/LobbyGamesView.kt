@@ -15,8 +15,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.polyscrabbleclient.lobby.domain.ActionButton
 import com.example.polyscrabbleclient.lobby.domain.ModalActions
 import com.example.polyscrabbleclient.lobby.sources.BotDifficulty
@@ -24,6 +22,7 @@ import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.lobby.sources.LobbyGamesList
 import com.example.polyscrabbleclient.lobby.sources.OnlineGameSettings
 import com.example.polyscrabbleclient.lobby.viewmodels.JoinGameViewModel
+import com.example.polyscrabbleclient.lobby.viewmodels.LobbyGameType
 import com.example.polyscrabbleclient.ui.theme.joinGameButtonFR
 
 val ColumnsWeights = listOf(
@@ -35,19 +34,12 @@ val ColumnsWeights = listOf(
     0.2f,
     0.1f
 )
-val ColumnsHeaders = listOf(
-    "Joueurs",
-    "Bonus aléatoire",
-    "Temps par tour",
-    "Mot de passe ?",
-    "Type de partie ",
-    "Joueur:IA/Max|Obsrv",
-    "Difficulté IA"
-)
+
 
 @Composable
 fun LobbyGamesView(
     lobbyGames: MutableState<LobbyGamesList?>,
+    lobbyGameType: LobbyGameType,
     viewModel: JoinGameViewModel = viewModel(),
     modalButtons: @Composable (modalActions: ModalActions) -> Unit
 ) {
@@ -57,6 +49,7 @@ fun LobbyGamesView(
         }.let { lobbyGames ->
             LobbyGamesTableView(
                 lobbyGames,
+                lobbyGameType,
                 { viewModel.toggleSelectedGame(it) },
                 { viewModel.isGameSelected(it) },
             )
@@ -76,6 +69,7 @@ fun LobbyGamesView(
 @Composable
 private fun LobbyGamesTableView(
     games: List<OnlineGameSettings>?,
+    lobbyGameType: LobbyGameType,
     toggleSelected: (lobbyGame: OnlineGameSettings) -> Unit,
     isGameSelected: (lobbyGame: OnlineGameSettings) -> Boolean,
 ) {
@@ -87,6 +81,7 @@ private fun LobbyGamesTableView(
         Column {
             LobbyGamesListView(
                 games,
+                lobbyGameType,
                 { toggleSelected(it) },
                 { isGameSelected(it) },
             )
@@ -97,10 +92,12 @@ private fun LobbyGamesTableView(
 @Composable
 private fun LobbyGamesListView(
     lobbyGamesList: List<OnlineGameSettings>?,
+    lobbyGameType: LobbyGameType,
     toggleSelected: (lobbyGame: OnlineGameSettings) -> Unit,
     isGameSelected: (lobbyGame: OnlineGameSettings) -> Boolean,
 ) {
     val primary = MaterialTheme.colors.primary
+    val columnsHeader = formatHeaderPlayerCounts(lobbyGameType)
     Column {
         Row(
             modifier = Modifier.drawBehind {
@@ -113,7 +110,7 @@ private fun LobbyGamesListView(
                 )
             }
         ) {
-            ColumnsHeaders.forEachIndexed { index, header ->
+            columnsHeader.forEachIndexed { index, header ->
                 HeaderTableCell(text = header, weight = ColumnsWeights[index])
             }
         }
@@ -132,9 +129,20 @@ private fun LobbyGamesListView(
             }
         }
     }
-
-
 }
+
+fun formatHeaderPlayerCounts(gameStatus: LobbyGameType): List<String> {
+    return listOf(
+        "Joueurs",
+        "Bonus aléatoire",
+        "Temps par tour",
+        "Type de partie ",
+        "Visibilité",
+        if (gameStatus === LobbyGameType.Pending) "Joueur:IA/Max" else "Joueur:IA/Max|Obsrv",
+        "Difficulté IA"
+    )
+}
+
 
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState")
 @Preview(showBackground = true, device = Devices.AUTOMOTIVE_1024p)
@@ -158,6 +166,7 @@ fun LobbyPendingGamesPreview() {
         mutableStateOf(
             ArrayList(listOf(a)),
         ),
+        LobbyGameType.Pending,
         JoinGameViewModel(),
     ) {}
 }
@@ -184,6 +193,7 @@ fun LobbyObservableGamesPreview() {
         mutableStateOf(
             ArrayList(listOf(b)),
         ),
+        LobbyGameType.Pending,
         JoinGameViewModel(),
     ) {}
 }
