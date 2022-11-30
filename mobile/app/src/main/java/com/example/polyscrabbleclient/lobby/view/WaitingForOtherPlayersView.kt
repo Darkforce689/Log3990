@@ -95,10 +95,8 @@ fun WaitingForOtherPlayersView(
         }
         CandidatePlayersView(viewModel)
         HostHasJustQuitModal(viewModel.hostHasJustQuitTheGame) {
-            navigateTo(
-                NavPage.MainPage,
-                navController
-            )
+            viewModel.hostHasJustQuitTheGame.value = false
+            viewModel.leaveLobbyGame(navController)
         }
 
         // TODO if waiting modal stop recomposing notify oli
@@ -107,6 +105,26 @@ fun WaitingForOtherPlayersView(
             isOpened = isInviteModalOpened,
             onClose = { isInviteModalOpened = false }
         )
+    }
+}
+
+
+@Composable
+private fun HostHasJustQuitModal(
+    hostHasJustQuitTheGame: MutableState<Boolean>,
+    onCancel: () -> Unit,
+) {
+    if (hostHasJustQuitTheGame.value) {
+        ModalView(
+            closeModal = {
+                onCancel()
+            },
+            title = hostQuitGameFR
+        ) { modalButtons ->
+            HostQuitGameView { modalActions ->
+                modalButtons(modalActions)
+            }
+        }
     }
 }
 
@@ -123,8 +141,7 @@ private fun WaitingForOtherPlayersButtons(
     ) {
         Button(
             onClick = {
-                viewModel.leavePendingGame();
-                navigateTo(NavPage.MainPage, navController)
+                viewModel.leaveLobbyGame(navController)
             }
         ) { Text(text = cancelButtonFR) }
         Button(

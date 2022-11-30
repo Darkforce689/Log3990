@@ -1,9 +1,12 @@
 package com.example.polyscrabbleclient.lobby.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import com.example.polyscrabbleclient.NavPage
 import com.example.polyscrabbleclient.invitations.models.GameInviteArgs
 import com.example.polyscrabbleclient.invitations.utils.GameInviteBroker
 import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
+import com.example.polyscrabbleclient.navigateTo
 import com.example.polyscrabbleclient.user.UserRepository
 
 class WaitingForOtherPlayersViewModel : ViewModel() {
@@ -57,8 +60,9 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
         return isHost() && lobby.model.currentPendingGameId.value !== null
     }
 
-    fun leavePendingGame() {
+    fun leaveLobbyGame(navController: NavController) {
         lobby.leaveLobbyGame()
+        navigateTo(NavPage.MainPage, navController)
         GameInviteBroker.destroyInvite() // TODO Change if join server sends join confirmation
     }
 
