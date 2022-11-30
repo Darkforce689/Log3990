@@ -172,6 +172,12 @@ const val join_menu_option = "Rejoindre"
 const val delete_convo_title = "Supprimer des conversations"
 const val no_conversation_to_delete = "Vous n'avez pas créé de conversations"
 
+//Word of the day
+const val word_of_the_day_title = "Le mot du jour est: "
+const val points = "Points: "
+const val definition = "Définition: "
+const val no_definition = "Pas de définition disponible"
+
 // Invitations
 const val new_invite_title = "Nouvelle invitation"
 const val accept_invite_button = "Accepter"
