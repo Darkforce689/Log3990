@@ -10,6 +10,10 @@ mat-card {
     }
 }
 
+.timerlow {
+    color: var(--warn);
+}
+
 ::ng-deep .mat-progress-spinner circle,
 .mat-spinner circle {
     stroke: var(--black-chocolate);
