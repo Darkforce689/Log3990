@@ -139,6 +139,10 @@ object ConversationsManager {
     }
 
     fun joinGameConversation(gameToken: String) {
+        val currentGameConvo = gameConversation
+        if (currentGameConvo != null && currentGameConvo._id == gameToken) {
+            return
+        }
         gameConversation = Conversation(_id = gameToken, name = GAME_CONVERSATION_NAME)
         actualizeConversations() {
             // GAME CONVO ALWAYS FIRST IN arrangeConversations
