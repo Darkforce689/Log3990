@@ -58,7 +58,7 @@
                     <div class="player" *ngFor="let name of tmpPlayers">
                         <app-avatar [src]="getAvatarIcon(name)" [size]="45"></app-avatar>
                         <p>{{ name }}</p>
-                        <button mat-icon-button (click)="acceptPlayer(name)" *ngIf="isHost()">
+                        <button mat-icon-button (click)="acceptPlayer(name)" *ngIf="isHost() && !isGameFull">
                             <mat-icon color="primary">check</mat-icon>
                         </button>
                         <button mat-icon-button (click)="refusePlayer(name)" *ngIf="isHost()">

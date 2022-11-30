@@ -205,6 +205,10 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
         return this.gameSettings.playerNames.includes(name) && !this.isThatPlayerHost(name);
     }
 
+    get isGameFull(): boolean {
+        return this.players.length >= this.numberOfPlayers;
+    }
+
     get pendingGameId(): string {
         if (!this.gameSettings) {
             return '';
