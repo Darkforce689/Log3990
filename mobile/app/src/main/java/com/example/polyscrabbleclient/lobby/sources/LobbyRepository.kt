@@ -87,6 +87,7 @@ object LobbyRepository : Repository<LobbyModel, LobbySocketHandler>() {
         navController: NavController
     ) {
         socket.on(OnLobbyEvent.GameStarted) { _: GameStarted? ->
+            ConversationsManager.joinGameConversation(joinGame.id)
             navigateTo(NavPage.GamePage, navController)
         }
         socket.on(OnLobbyEvent.ConfirmJoin) { confirmJoin: ConfirmJoin? ->
