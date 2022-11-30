@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 
 export const MILISECONDS_IN_MINUTE = 60000;
 export const FLOAT_TO_PERCENT = 100;
+export const LOW_TIMER_BOUND = 5000;
 @Component({
     selector: 'app-info-box',
     templateUrl: './info-box.component.html',
@@ -33,6 +34,10 @@ export class InfoBoxComponent implements OnInit {
                 return value * FLOAT_TO_PERCENT;
             }),
         );
+    }
+
+    get isTimerLow(): Observable<boolean> {
+        return this.timeLeft$.pipe(map((time) => (time ? time <= LOW_TIMER_BOUND : false)));
     }
 
     get numberOfLettersRemaining(): number {
