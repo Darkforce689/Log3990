@@ -48,9 +48,12 @@ fun LobbyGameView(
             formatHasPassword(lobbyGameSettings.password),
             formatIsPrivate(lobbyGameSettings.privateGame),
             formatPlayersCounts(lobbyGameSettings),
-            lobbyGameSettings.botDifficulty.value
         )
-        PlayerCell(players = players.value, weight = ColumnsWeights[0])
+        PlayersCell(
+            players = players.value,
+            hostName = if (lobbyGameSettings.playerNames.isNotEmpty()) lobbyGameSettings.playerNames[0] else "",
+            weight = ColumnsWeights[0]
+        )
         fields.forEachIndexed { index, field ->
             TableCell(text = field, weight = ColumnsWeights[index + 1])
         }
@@ -82,7 +85,7 @@ fun formatIsPrivate(privateGame: Boolean): String {
 }
 
 fun formatHasPassword(password: String?): String {
-    return if (password === null || password.isEmpty()) No else Yes
+    return if (password === null || password.isEmpty()) NotProtected else Protected
 }
 
 fun formatRandomBonus(randomBonus: Boolean): String {
@@ -125,9 +128,10 @@ fun RowScope.TableCell(
 }
 
 @Composable
-fun RowScope.PlayerCell(
+fun RowScope.PlayersCell(
     players: List<Pair<String, String>>,
-    weight: Float
+    hostName: String,
+    weight: Float,
 ) {
     val first = players.slice(0 until floor((players.size / 2).toDouble()).toInt())
     val last = players.slice(floor((players.size / 2).toDouble()).toInt() until players.size)
@@ -140,7 +144,8 @@ fun RowScope.PlayerCell(
         listPlayers.forEach { players ->
             Column(Modifier.wrapContentWidth()) {
                 players.forEach {
-                    PlayerAndAvatar(playerInfo = it)
+                    val isHost = it.first == hostName
+                    PlayerAndAvatar(isHost, it)
                 }
             }
         }
@@ -148,7 +153,10 @@ fun RowScope.PlayerCell(
 }
 
 @Composable
-fun PlayerAndAvatar(playerInfo: Pair<String, String>) {
+fun PlayerAndAvatar(
+    isHost: Boolean = false,
+    playerInfo: Pair<String, String>,
+) {
     Row {
         Avatar(
             modifier = Modifier
@@ -156,8 +164,10 @@ fun PlayerAndAvatar(playerInfo: Pair<String, String>) {
                 .padding(2.dp),
             avatarId = getAssetsId(playerInfo.second)
         )
-        // TODO JU: if is host change color
-        TextView(text = playerInfo.first)
+        TextView(
+            text = playerInfo.first,
+            isBold = isHost
+        )
     }
 }
 
@@ -177,7 +187,7 @@ fun RowScope.HeaderTableCell(
 
 @Preview
 @Composable
-fun preview() {
+fun PlayersCellPreview() {
     val list = listOf(
         Pair("juju9", "stag"),
         Pair("juju8", "polarbear"),
@@ -185,6 +195,6 @@ fun preview() {
         Pair("Noah", "hardBotAvatar2")
     )
     Row {
-        PlayerCell(list, 0.5f)
+        PlayersCell(list, list[0].first, 0.5f)
     }
 }
