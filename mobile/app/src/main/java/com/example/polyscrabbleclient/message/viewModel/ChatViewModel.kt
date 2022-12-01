@@ -171,6 +171,11 @@ class ChatBoxViewModel : ViewModel() {
         fun findMessageInsertionIndex(): Int {
             var insertIndex = messages.size
             var skips = 1
+            
+            if (newMessage.date == null) {
+                return insertIndex
+            }
+
             for (message in messages.reversed()) {
                 if (message.date === null) {
                     skips++
