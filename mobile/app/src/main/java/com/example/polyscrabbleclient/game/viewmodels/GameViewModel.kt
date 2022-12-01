@@ -173,6 +173,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun passTurn() {
+        AudioPlayer.playSong(AudioPlayer.SKIP_TURN_SONG)
         GameRepository.emitNextAction(OnlineAction(OnlineActionType.Pass))
     }
 
