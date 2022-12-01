@@ -33,18 +33,16 @@
                 </div>
                 <div class="players">
                     <h4>Joueurs dans la partie:</h4>
-                    <mat-grid-list cols="2" rowHeight="50px">
-                        <mat-grid-tile *ngFor="let name of currentPlayers">
-                            <div [ngClass]="isThatPlayerHost(name) ? 'host' : 'player'">
-                                <app-avatar [src]="getAvatarIcon(name)" [size]="45"></app-avatar>
-                                <p>{{ name }}</p>
-                                <mat-icon color="accent" *ngIf="isThatPlayerHost(name)">star</mat-icon>
-                                <button mat-icon-button (click)="kickPlayer(name)" *ngIf="isHost() && isKickable(name)">
-                                    <mat-icon color="primary">close</mat-icon>
-                                </button>
-                            </div>
-                        </mat-grid-tile>
-                    </mat-grid-list>
+                    <div *ngFor="let name of currentPlayers">
+                        <div [ngClass]="isThatPlayerHost(name) ? 'host' : 'player'">
+                            <app-avatar [src]="getAvatarIcon(name)" [size]="35"></app-avatar>
+                            <p>{{ name }}</p>
+                            <mat-icon color="accent" *ngIf="isThatPlayerHost(name)">star</mat-icon>
+                            <button mat-icon-button (click)="kickPlayer(name)" *ngIf="isHost() && isKickable(name)">
+                                <mat-icon color="primary">close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <mat-card-actions>
                     <button mat-button color="accent" (click)="cancel()">Annuler</button>
@@ -56,9 +54,9 @@
                 <h4>Joueurs en attente d'approbation:</h4>
                 <div class="player-container">
                     <div class="player" *ngFor="let name of tmpPlayers">
-                        <app-avatar [src]="getAvatarIcon(name)" [size]="45"></app-avatar>
+                        <app-avatar [src]="getAvatarIcon(name)" [size]="35"></app-avatar>
                         <p>{{ name }}</p>
-                        <button mat-icon-button (click)="acceptPlayer(name)" *ngIf="isHost()">
+                        <button mat-icon-button (click)="acceptPlayer(name)" *ngIf="isHost() && canAcceptPlayers">
                             <mat-icon color="primary">check</mat-icon>
                         </button>
                         <button mat-icon-button (click)="refusePlayer(name)" *ngIf="isHost()">

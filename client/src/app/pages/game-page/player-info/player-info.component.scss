@@ -1,14 +1,23 @@
 mat-card {
     margin: 5%;
+    max-width: 20vw;
 }
 
-.playerInfo {
-    justify-self: center;
+.infos {
+    width: 95%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    p {
+        margin: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 .name {
     justify-self: center;
-    font-size: 150%;
+    font-size: 130%;
     font-weight: 900;
     padding-right: 5px;
 }
@@ -28,11 +37,14 @@ mat-card {
     top: -1.5px;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
 .flex-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 100%;
 }
 
 app-avatar {

@@ -39,6 +39,21 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
         return playersProfil
     }
 
+    fun getCandidatesProfiles(): List<Pair<String, String>> {
+        var playersProfil: List<Pair<String, String>> = listOf()
+        val playerNames = lobby.model.candidatePlayerNames.value
+        val thread = Thread {
+            for (playerName in playerNames) {
+                UserRepository.getUserByName(playerName) {
+                    playersProfil = playersProfil.plus(Pair(it.name, it.avatar))
+                }
+            }
+        }
+        thread.start()
+        thread.join()
+        return playersProfil
+    }
+
     fun getGameInviteArgs(): GameInviteArgs {
         val id = LobbyRepository.model.currentPendingGameId.value
         if (id == null) {
@@ -80,6 +95,12 @@ class WaitingForOtherPlayersViewModel : ViewModel() {
 
     fun canAcceptRefusePlayers(): Boolean {
         return isGamePrivate() && isHost()
+    }
+
+    fun canAcceptPlayers(): Boolean {
+        val currentPlayers = lobby.model.pendingGamePlayerNames.value
+        val totalPlayers = lobby.model.maxPlayerInWaitingGame.value
+        return currentPlayers.size < (totalPlayers ?: 0)
     }
 
     fun getCandidatePlayerNames(): List<String> {

@@ -17,6 +17,8 @@ mat-card {
 .name {
     font-size: large;
     font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .score {
@@ -85,4 +87,8 @@ mat-card {
 
 .card-holder {
     background-color: rgba(30, 30, 30, 0.639);
+}
+
+app-avatar {
+    padding-right: 5%;
 }

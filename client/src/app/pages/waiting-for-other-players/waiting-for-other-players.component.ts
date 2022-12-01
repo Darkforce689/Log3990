@@ -149,6 +149,9 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
     }
 
     acceptPlayer(playerId: string) {
+        if (this.gameSettings.playerNames.length >= this.gameSettings.numberOfPlayers) {
+            return;
+        }
         this.socketHandler.acceptPlayer(playerId);
     }
 
@@ -250,5 +253,9 @@ export class WaitingForOtherPlayersComponent implements AfterContentChecked, OnI
             subject.next(gameSettings.privateGame);
         });
         return subject;
+    }
+
+    get canAcceptPlayers() {
+        return this.gameSettings.playerNames.length < this.gameSettings.numberOfPlayers;
     }
 }

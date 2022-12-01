@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,10 +32,9 @@ import com.example.polyscrabbleclient.lobby.sources.LobbyRepository
 import com.example.polyscrabbleclient.lobby.viewmodels.WaitingForOtherPlayersViewModel
 import com.example.polyscrabbleclient.navigateTo
 import com.example.polyscrabbleclient.ui.theme.*
-import com.example.polyscrabbleclient.user.UserRepository
 import com.example.polyscrabbleclient.user.UserRepository.isBotName
 import com.example.polyscrabbleclient.utils.SubTitleView
-import com.example.polyscrabbleclient.utils.constants.NoAvatar
+
 
 @Composable
 fun WaitingForOtherPlayersView(
@@ -185,7 +186,9 @@ private fun PlayerAndAvatar(playerName: String, avatar: String) {
         Text(
             text = playerName,
             modifier = Modifier.padding(5.dp),
-            fontSize = 18.sp
+            fontSize = 18.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -236,8 +239,12 @@ private fun KickPlayerView(
 
 @Composable
 private fun AcceptPlayerView(
+    canAccept: Boolean,
     acceptPlayer: () -> Unit
 ) {
+    if (!canAccept) {
+        return
+    }
     PlayerSideElementView(
         Icons.Rounded.Check,
     ) {
@@ -291,17 +298,12 @@ private fun CandidatePlayersView(
             ) {
                 SubTitleView(CandidatePlayers)
                 LazyColumn {
-                    val playerNames = viewModel.getCandidatePlayerNames()
-                    items(playerNames.size) {
-                        val playerName = playerNames[it]
-                        var avatar = NoAvatar
-                        LaunchedEffect(key1 = playerName) {
-                            UserRepository.getUserByName(playerName) { user ->
-                                avatar = user.avatar
-                            }
-                        }
+                    val playersProfiles = viewModel.getCandidatesProfiles()
+                    items(playersProfiles) { playerProfil ->
+                        val (playerName) = playerProfil
                         CandidatePlayerView(
-                            Pair(playerName, avatar),
+                            playerProfil,
+                            viewModel.canAcceptPlayers(),
                             { viewModel.accept(playerName) },
                             { viewModel.refuse(playerName) }
                         )
@@ -315,11 +317,12 @@ private fun CandidatePlayersView(
 @Composable
 fun CandidatePlayerView(
     playerProfil: Pair<String, String>,
+    canAccept: Boolean,
     accept: () -> Unit,
     refuse: () -> Unit,
 ) {
     PlayerView(playerProfil) {
-        AcceptPlayerView { accept() }
+        AcceptPlayerView(canAccept) { accept() }
         RefusePlayerView { refuse() }
     }
 }

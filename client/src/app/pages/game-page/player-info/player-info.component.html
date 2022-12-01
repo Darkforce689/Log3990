@@ -1,22 +1,17 @@
 <div *ngFor="let player of players; index as i">
-    <mat-card class="playerInfo" id="{{ i }}" [ngClass]="{ active: isActivePlayer(player) }">
-        <mat-card-header>
-            <div class="flex-container">
-                <div>
-                    <app-avatar [src]="getAvatarIcon(player.name)" [size]="40"></app-avatar>
-                    <span class="name">
-                        {{ player.name }}
-                    </span>
-                </div>
-                <mat-icon class="eyeIcon" *ngIf="isObserver && isWatchedPlayer(player.name)">remove_red_eye</mat-icon>
+    <mat-card id="{{ i }}" [ngClass]="{ active: isActivePlayer(player) }">
+        <div class="flex-container">
+            <div class="infos">
+                <app-avatar [src]="getAvatarIcon(player.name)" [size]="40"></app-avatar>
+                <p class="name">
+                    {{ player.name }}
+                </p>
             </div>
-        </mat-card-header>
+            <mat-icon class="eyeIcon" [ngClass]="isObserver && isWatchedPlayer(player.name) ? 'eyeIcon' : 'hidden'">remove_red_eye</mat-icon>
+        </div>
         <mat-divider inset></mat-divider>
         <mat-card-content class="grid-container">
-            <span class="score"> {{ player.points }} points </span><br />
-            <span class="score" *ngIf="!player.isLetterRackFull && lettersRemaining === 0">
-                {{ player.letterRack.length }} lettres restantes dans le chevalet
-            </span>
+            <span class="score"> {{ player.points }} points </span>
         </mat-card-content>
     </mat-card>
 </div>

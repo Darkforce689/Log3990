@@ -1,5 +1,5 @@
 <mat-card>
-    <h2>Avatar</h2>
+    <h2>Avatars</h2>
     <mat-card-content>
         <mat-selection-list #avatar [multiple]="false" (selectionChange)="updateAvatar($event)">
             <mat-list-option *ngFor="let avatar of avatarDefault" [value]="avatar.name" [disabled]="!isUnlocked(avatar.unlockLevel)">

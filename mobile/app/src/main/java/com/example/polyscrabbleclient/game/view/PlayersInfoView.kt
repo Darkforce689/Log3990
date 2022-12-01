@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -88,28 +89,33 @@ fun PlayerInfoView(
         Surface(
             color = backgroundColor
         ) {
-            Row(
-                modifier = Modifier.width(size),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth()
-                ) {
-
-                    UserInfoView(player, avatar, isWatchedPlayer)
-                    Divider()
-                    Text(
-                        text = "${player.points} points",
-                        style = MaterialTheme.typography.caption
-                    )
-                }
-
-            }
+            PlayerInfoContent(size, player, avatar, isWatchedPlayer)
         }
+    }
+}
+
+@Composable
+fun PlayerInfoContent(size: Dp, player: Player, avatar: String, isWatchedPlayer: () -> Boolean) {
+    Row(
+        modifier = Modifier.width(size),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(15.dp)
+                .fillMaxWidth()
+        ) {
+
+            UserInfoView(player, avatar, isWatchedPlayer)
+            Divider()
+            Text(
+                text = "${player.points} points",
+                style = MaterialTheme.typography.caption
+            )
+        }
+
     }
 }
 
@@ -127,7 +133,9 @@ fun UserInfoView(player: Player, avatar: String = NoAvatar, isWatchedPlayer: () 
         Spacer(modifier = Modifier.size(5.dp))
         Text(
             text = player.name,
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h6,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Icon(
             imageVector = Icons.Filled.Visibility,
