@@ -16,6 +16,7 @@ object AudioPlayer {
     const val ALARM_CLOCK_CONG = "alarm_clock"
     const val EXCHANGE_SONG = "exchange"
     const val START_TURN_SONG = "start_turn"
+    const val SKIP_TURN_SONG = "skip_turn"
     const val WIN_SONG = "win"
     const val LOSE_SONG = "lose"
 
@@ -29,6 +30,7 @@ object AudioPlayer {
             ALARM_CLOCK_CONG to MediaPlayer.create(context, R.raw.alarm_clock),
             EXCHANGE_SONG to MediaPlayer.create(context, R.raw.exchange),
             START_TURN_SONG to MediaPlayer.create(context, R.raw.start_turn),
+            SKIP_TURN_SONG to MediaPlayer.create(context, R.raw.skip_turn),
             WIN_SONG to MediaPlayer.create(context, R.raw.win),
             LOSE_SONG to MediaPlayer.create(context, R.raw.lose),
         )
