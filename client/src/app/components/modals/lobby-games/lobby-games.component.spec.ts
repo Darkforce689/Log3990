@@ -9,11 +9,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { JoinOnlineGameComponent } from '@app/components/modals/join-online-game/join-online-game.component';
 import { WAIT_STATUS } from '@app/game-logic/constants';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { User } from '@app/pages/register-page/user.interface';
 import { BotDifficulty } from '@app/services/bot-difficulty';
 import { GameLauncherService } from '@app/socket-handler/game-launcher/game-laucher';
 import { GameMode } from '@app/socket-handler/interfaces/game-mode.interface';
 import { OnlineGameSettings } from '@app/socket-handler/interfaces/game-settings-multi.interface';
 import { NewOnlineGameSocketHandler } from '@app/socket-handler/new-online-game-socket-handler/new-online-game-socket-handler.service';
+import { UserCacheService } from '@app/users/services/user-cache.service';
 import { Observable, of, Subject } from 'rxjs';
 import { LobbyGamesComponent, LobbyGameType } from './lobby-games.component';
 
@@ -35,7 +37,7 @@ describe('LobbyGamesComponent', () => {
     const testObservableGames$ = new Subject<OnlineGameSettings[]>();
     let matDialog: jasmine.SpyObj<MatDialog>;
     const gameLauncherServiceMock = jasmine.createSpyObj('GameLauncherService', ['waitForOnlineGameStart', 'leaveGameConversation', 'joinGame']);
-
+    let userCacheMock: jasmine.SpyObj<UserCacheService>;
     const pendingGames = [
         {
             id: '4',
@@ -71,6 +73,8 @@ describe('LobbyGamesComponent', () => {
 
     beforeEach(
         waitForAsync(() => {
+            userCacheMock = jasmine.createSpyObj('UserCacheService', ['getUserByName']);
+            userCacheMock.getUserByName.and.returnValue(of({ avatar: 'abc' } as unknown as User));
             matDialog = jasmine.createSpyObj('MatDialog', ['open']);
             onlineSocketHandlerSpy = jasmine.createSpyObj(
                 'NewOnlineGameSocketHandler',
@@ -88,6 +92,7 @@ describe('LobbyGamesComponent', () => {
                     { provide: NewOnlineGameSocketHandler, useValue: onlineSocketHandlerSpy },
                     { provide: LiveAnnouncer, useValue: mockLiveAnnouncer },
                     { provide: GameLauncherService, useValue: gameLauncherServiceMock },
+                    { provide: UserCacheService, useValue: userCacheMock },
                 ],
                 declarations: [LobbyGamesComponent],
             }).compileComponents();

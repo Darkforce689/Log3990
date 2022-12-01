@@ -10,11 +10,21 @@ import com.example.polyscrabbleclient.utils.getBotAvatar
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.fixedRateTimer
+
+const val TIME_INVALIDATE_USERNAME_CACHE: Long = 60 * 1000
 
 object UserRepository {
     private val users: MutableMap<String, UserDTO> = HashMap()      // id -> user
-    private val usersByName: MutableMap<String, String> = HashMap() // name -> id
+    private val usersByName: MutableMap<String, UserDTO> = HashMap() // name -> user
     private val usersLock = ReentrantLock()
+    private val usersByNameLock = ReentrantLock()
+
+    init {
+        fixedRateTimer(period = TIME_INVALIDATE_USERNAME_CACHE) {
+            usersByName.clear()
+        }
+    }
 
     fun getUser(userId: String, callback: (UserDTO) -> Unit) {
         val url = createGetUserUrl(userId)
@@ -62,6 +72,15 @@ object UserRepository {
         callback(users as List<UserDTO>)
     }
 
+    fun invalidateCache() {
+        usersLock.lock()
+        usersByNameLock.lock()
+        users.clear()
+        usersByName.clear()
+        usersByNameLock.unlock()
+        usersLock.unlock()
+    }
+
     private fun getUserByIdThread(userId: String, url: URL, callback: (UserDTO) -> Unit): Thread {
         if (User._id == userId) {
             return selfUser(callback)
@@ -74,7 +93,10 @@ object UserRepository {
             }
         }
 
-        return getUserInternal(url, callback)
+        return getUserInternal(url) {
+            addToUserCache(it)
+            callback(it);
+        }
     }
 
     private fun getUserByNameThread(name: String, url: URL, callback: (UserDTO) -> Unit): Thread {
@@ -82,17 +104,17 @@ object UserRepository {
             return selfUser(callback)
         }
 
-        val isUserNameInCache = usersByName.contains(name)
-        if (isUserNameInCache) {
-            val userIdInCache = usersByName[name]
-            val userInCache = users[userIdInCache]
-            if (userInCache != null) {
-                return Thread {
-                    callback(userInCache)
-                }
+        val userInCache = usersByName[name]
+        if (userInCache != null) {
+            return Thread {
+                callback(userInCache)
             }
         }
-        return getUserInternal(url, callback)
+
+        return getUserInternal(url) {
+            addToNameCache(it)
+            callback(it)
+        }
     }
 
     private fun getUserInternal(
@@ -101,7 +123,6 @@ object UserRepository {
     ) = Thread {
         val res = ScrabbleHttpClient.get(url, UserGetRes::class.java)
         val user: UserDTO = res?.user ?: createInexistantUser()
-        addToCache(user)
         callback(user)
     }
 
@@ -127,11 +148,18 @@ object UserRepository {
         return URL("${BuildConfig.API_URL}/users?name=${name}")
     }
 
-    private fun addToCache(user: UserDTO) {
+    private fun addToUserCache(user: UserDTO) {
         usersLock.lock()
         users[user._id] = user
-        usersByName[user.name] = user._id
         usersLock.unlock()
+
+        addToNameCache(user)
+    }
+
+    private fun addToNameCache(user: UserDTO) {
+        usersByNameLock.lock()
+        users[user.name] = user
+        usersByNameLock.unlock()
     }
 
     private fun createInexistantUser(userId: String = ""): UserDTO {
