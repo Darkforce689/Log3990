@@ -1,8 +1,8 @@
 <div class="row">
     <div [ngClass]="isPoped ? 'convo-list-container-open' : 'convo-list-container'">
         <mat-tab-group #matGroup (selectedIndexChange)="onSelectedTab($event)">
-            <mat-tab *ngFor="let conversation of conversations$ | async" class="row-item">
-                <ng-template mat-tab-label class="container">
+            <mat-tab *ngFor="let conversation of conversations$ | async">
+                <ng-template mat-tab-label>
                     <div class="convo-tab-title">{{ conversation.name }}</div>
                     <button *ngIf="isConversationLeavable(conversation)" mat-icon-button (click)="leaveConversation(conversation)">
                         <mat-icon>close</mat-icon>

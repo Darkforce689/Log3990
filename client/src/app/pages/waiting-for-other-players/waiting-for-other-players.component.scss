@@ -39,10 +39,6 @@ mat-sidenav-content {
     }
 }
 
-.players {
-    padding-bottom: 5%;
-}
-
 .probation > .player-container {
     height: 20vh;
     overflow-y: auto;
@@ -59,19 +55,17 @@ h4 {
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 40%;
+    width: 30vw;
     p {
         font-size: large;
-        padding-right: 10%;
+        padding-right: 2%;
         margin-bottom: 0%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     mat-icon {
         font-size: 24px;
     }
-}
-
-.host {
-    width: 30%;
 }
 
 app-avatar {

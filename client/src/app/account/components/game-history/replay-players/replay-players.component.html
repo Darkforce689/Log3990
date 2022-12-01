@@ -3,9 +3,9 @@
         <div class="title">
             <app-avatar [src]="getAvatarIcon(player.name)" [size]="45"></app-avatar>
             <p class="name">{{ player.name }}</p>
-            <p class="score">{{ player.points }} points</p>
         </div>
         <mat-divider inset></mat-divider>
+        <p class="score">{{ player.points }} points</p>
         <div class="rack">
             <div class="tile" *ngFor="let letter of player.letterRack">
                 <span>{{ letter.char }}</span>

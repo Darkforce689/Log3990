@@ -1,13 +1,13 @@
 package com.example.polyscrabbleclient.account.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowForwardIos
@@ -112,29 +112,54 @@ fun ReplayPlayers(
 ) {
     val heightSpan = if (viewModel.isMagicGame()) 230.dp else 175.dp
     val weight = if (viewModel.isMagicGame()) 0.3f else 0.5f
+
     EvenlySpacedSubColumn(modifier = Modifier.fillMaxHeight()) {
         players.forEach {
             val avatar = viewModel.getAvatar(it.name)
+            val backgroundColor by animateColorAsState(
+                targetValue =
+                if (viewModel.isActivePlayer(it))
+                    MaterialTheme.colors.secondary
+                else
+                    Color.Unspecified,
+                animationSpec = tween(durationMillis = 750)
+            )
+
+            val borderColor by animateColorAsState(
+                targetValue =
+                if (viewModel.isActivePlayer(it))
+                    MaterialTheme.colors.onSurface.copy(0.9f)
+                else
+                    Color.Unspecified,
+                animationSpec = tween(durationMillis = 750)
+            )
             Card(
                 Modifier
                     .width(275.dp)
                     .height(heightSpan)
+                    .border(
+                        width = 4.dp,
+                        borderColor,
+                        shape = RoundedCornerShape(4.dp)
+                    )
             ) {
-                EvenlySpacedSubColumn(
-                    Modifier
-                        .fillMaxHeight()
-                        .padding(5.dp)
+                Surface(
+                    color = backgroundColor
                 ) {
-                    PlayerInfoView(player = it, avatar, 200.dp, { false }) {
-                        viewModel.isActivePlayer(it)
-                    }
-                    ReplayLetterRack(weight = weight, letters = it.letters)
-                    if (viewModel.isMagicGame()) {
-                        val magicCards = viewModel.getMagicCards(it)
-                        ReplayMagicCards(
-                            weight = weight,
-                            magicCards
-                        ) { cardId -> viewModel.isCardActive(cardId) }
+                    EvenlySpacedSubColumn(
+                        Modifier
+                            .fillMaxHeight()
+                            .padding(5.dp)
+                    ) {
+                        PlayerInfoContent(275.dp, it, avatar, { false })
+                        ReplayLetterRack(weight = weight, letters = it.letters)
+                        if (viewModel.isMagicGame()) {
+                            val magicCards = viewModel.getMagicCards(it)
+                            ReplayMagicCards(
+                                weight = weight,
+                                magicCards
+                            ) { cardId -> viewModel.isCardActive(cardId) }
+                        }
                     }
                 }
             }

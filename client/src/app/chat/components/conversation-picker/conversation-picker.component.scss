@@ -16,10 +16,16 @@
 }
 
 .convo-tab-title {
-    // TODO
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+}
+
+.mat-icon-button {
+    padding-left: 5%;
 }
 
 .mat-button {
-    min-width : 36px;
+    min-width: 36px;
     padding: 0%;
 }
