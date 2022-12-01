@@ -29,10 +29,9 @@ val ColumnsWeights = listOf(
     0.3f,
     0.1f,
     0.1f,
-    0.1f,
-    0.1f,
+    0.15f,
+    0.15f,
     0.2f,
-    0.1f
 )
 
 
@@ -139,7 +138,6 @@ fun formatHeaderPlayerCounts(gameStatus: LobbyGameType): List<String> {
         "Type de partie ",
         "Visibilité",
         if (gameStatus === LobbyGameType.Pending) "Joueur:IA/Max" else "Joueur:IA/Max|Obsrv",
-        "Difficulté IA"
     )
 }
 
