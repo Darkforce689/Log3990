@@ -7,3 +7,4 @@ export const WIN_EXP_BONUS = 100;
 export const LOSS_EXP_BONUS = 50;
 export const EXP_PER_LEVEL = 10;
 export const MAX_LEVEL = 10;
+export const MAX_LEVEL_EXP = 1000;
