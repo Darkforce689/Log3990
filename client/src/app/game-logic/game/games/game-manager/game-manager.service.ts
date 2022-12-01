@@ -79,6 +79,7 @@ export class GameManagerService {
         this.allocatePlayers(players);
         this.game.handleUserActions();
         this.info.receiveGame(this.game);
+        this.info.receiveTimePerTurn(timePerTurn);
         this.gameSocketHandler.joinGame(gameToken);
     }
 

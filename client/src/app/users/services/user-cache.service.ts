@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BOT_NAMES } from '@app/game-logic/constants';
 import { User } from '@app/pages/register-page/user.interface';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -36,6 +37,9 @@ export class UserCacheService {
         const user = this.usersName.get(name);
         if (user) {
             return of(user);
+        }
+        if (BOT_NAMES.has(name)) {
+            return of(undefined);
         }
         const subject = new BehaviorSubject<User | undefined>(undefined);
         this.http.get(`${environment.serverUrl}/users`, { params: { name } }).subscribe(
