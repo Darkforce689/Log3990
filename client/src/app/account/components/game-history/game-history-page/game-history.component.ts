@@ -77,13 +77,13 @@ export class GameHistoryComponent implements OnInit, AfterViewInit {
     }
 
     isWinner(game: GameHistoryInfo) {
-        if (!game.winnerIds) {
+        if (!game.winnersIds) {
             return false;
         }
         if (!this.user._id) {
             return false;
         }
-        return game.winnerIds.includes(this.user._id);
+        return game.winnersIds.includes(this.user._id);
     }
 
     isForfeitedPlayer(game: GameHistoryInfo) {

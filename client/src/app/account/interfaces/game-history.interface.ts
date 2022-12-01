@@ -5,7 +5,7 @@ export interface GameHistoryInfo {
     gameToken: string;
     gameMode: GameMode;
     userIds: string[];
-    winnerIds: string[];
+    winnersIds: string[];
     date: number;
     forfeitedIds: string[];
 }
