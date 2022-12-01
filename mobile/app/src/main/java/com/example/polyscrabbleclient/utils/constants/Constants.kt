@@ -65,6 +65,7 @@ const val WIN_EXP_BONUS = 100;
 const val LOSS_EXP_BONUS = 50;
 const val EXP_PER_LEVEL = 10;
 const val MAX_LEVEL = 10;
+const val MAX_LEVEL_EXP = 1000;
 
 // Magic Cards Ids
 const val exchange_a_letter_id = "MC_EXCHANGE_LETTER"
