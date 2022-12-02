@@ -14,14 +14,14 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
+    primary = Color(0xFF7329b7),
     primaryVariant = Purple700,
     secondary = Teal200,
     secondaryVariant = Teal200,
     background = Color(0xFF121212),
     surface = Color(0xFF121212),
     error = Color(0xFFCF6679),
-    onPrimary = Black,
+    onPrimary = White,
     onSecondary = Black,
     onBackground = White,
     onSurface = White,
@@ -29,15 +29,15 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = Color(0xFF6200EE),
+    primary = Color(0xFF4169e1),
     primaryVariant = Purple700,
-    secondary = Color(0xFF03DAC6),
+    secondary = Color(0xFF9d00FF),
     secondaryVariant = Color(0xFF018786),
     background = White,
     surface = White,
     error = Color(0xFFB00020),
     onPrimary = White,
-    onSecondary = Black,
+    onSecondary = White,
     onBackground = Black,
     onSurface = Black,
     onError = White

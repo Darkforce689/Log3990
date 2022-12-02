@@ -35,6 +35,16 @@ fun MessageCard(messageInfo: Message) {
         }
     }
 
+    @Composable
+    fun getFontColor(messageType: MessageType): Color {
+        return when (messageType) {
+            MessageType.ME -> MaterialTheme.colors.onPrimary;
+            MessageType.OTHER -> MaterialTheme.colors.onSecondary;
+            MessageType.SYSTEM -> Color.White
+            MessageType.ERROR -> Color.White
+        }
+    }
+
     Column(modifier = Modifier.padding(horizontal = 5.dp, vertical = 4.dp)) {
         Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -62,7 +72,7 @@ fun MessageCard(messageInfo: Message) {
                         style = MaterialTheme.typography.body1.copy(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 20.sp,
-                            color = Color.White
+                            color = getFontColor(messageType = messageInfo.type)
                         )
                     )
                     Text(
@@ -70,7 +80,7 @@ fun MessageCard(messageInfo: Message) {
                         style = MaterialTheme.typography.body1.copy(
                             fontWeight = FontWeight.Normal,
                             fontSize = 20.sp,
-                            color = Color.White
+                            color = getFontColor(messageType = messageInfo.type)
                         )
                     )
                 }

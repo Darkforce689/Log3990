@@ -66,11 +66,20 @@ fun ModalView(
 
                         content { modalActions ->
                             Row(modifier = Modifier.padding(top = 18.dp)) {
-                                ModalButton(
-                                    { closeModal(ModalResult.Cancel) },
-                                    modalActions.cancel,
-                                    MaterialTheme.colors.secondary.copy(0.3f),
-                                )
+                                OutlinedButton(
+                                    modifier = Modifier
+                                        .padding(end = 8.dp),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.secondary),
+                                    onClick = {
+                                        modalActions.cancel.action()
+                                        closeModal(ModalResult.Cancel)
+                                    },
+                                    enabled = modalActions.cancel.canAction()
+                                ) {
+                                    Text(text = modalActions.cancel.label())
+                                }
+
+
                                 modalActions.primary?.let {
                                     ModalButton(
                                         { closeModal(ModalResult.Primary) },
@@ -91,13 +100,12 @@ private fun ModalButton(
     closeModal: () -> Unit,
     actionButton: ActionButton,
     backgroundColor: Color = MaterialTheme.colors.primary,
+    contentColor: Color = MaterialTheme.colors.onPrimary,
 ) {
     Button(
         modifier = Modifier
             .padding(end = 8.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = backgroundColor
-        ),
+        colors = ButtonDefaults.buttonColors(backgroundColor = backgroundColor, contentColor = contentColor),
         onClick = {
             actionButton.action()
             closeModal()
