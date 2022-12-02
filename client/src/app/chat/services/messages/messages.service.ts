@@ -86,6 +86,14 @@ export class MessagesService {
         this.electron.joinGameConvo$.subscribe((gameToken) => {
             this.conversationService.joinGameConversation(gameToken);
         });
+
+        this.electron.externalWindow$.subscribe((isPoped) => {
+            if (isPoped) {
+                this.disconnect();
+                return;
+            }
+            this.connect();
+        });
     }
 
     get currentConversation() {
