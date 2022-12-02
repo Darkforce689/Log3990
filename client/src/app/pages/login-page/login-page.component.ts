@@ -7,13 +7,14 @@ import { AuthErrors } from '@app/pages/login-page/auth-errors';
 import { AuthService } from '@app/services/auth.service';
 import { first } from 'rxjs/operators';
 
+export const EMAIL_REGEX = '[a-zA-Z0-9+._%-+]{1,256}@[a-zA-Z0-9][a-zA-Z0-9-]{0,64}(.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+';
 @Component({
     templateUrl: './login-page.component.html',
     styleUrls: ['./login-page.component.scss'],
 })
 export class LoginPageComponent {
     loginForm = new FormGroup({
-        email: new FormControl('', [Validators.required, Validators.email]),
+        email: new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]),
         password: new FormControl('', [Validators.required]),
     });
 
