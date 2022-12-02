@@ -15,4 +15,21 @@
     margin-top: 10px;
     min-height: 250px;
     overflow: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+mat-dialog-content {
+    width: 350px;
+    height: 100%;
+}
+
+.mat-row .mat-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
