@@ -52,10 +52,10 @@ object DragState {
     }
 
     fun onDragCancel() {
-        if (draggableContent?.canBeDragged?.invoke() == true) {
-            this.offsetFromStartingPosition = Offset.Zero
-            this.isDragging = false
-        }
+        this.offsetFromStartingPosition = Offset.Zero
+        this.isDragging = false
+        this.draggableView = null
+        this.draggableContent = null
     }
 
     fun onDrag(dragAmount: Offset) {
