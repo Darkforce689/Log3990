@@ -8,7 +8,7 @@ export const INDICATOR_COLOR = '#90FF00';
 export const BORDER_TEMP_TILE = '#FF0000';
 
 export const DOUBLE_BONUS_LETTER = '#0d41e1';
-export const DOUBLE_BONUS_WORD = '#f46197';
+export const DOUBLE_BONUS_WORD = '#f08bb3';
 export const TRIPLE_BONUS_LETTER = '#07c8f9';
 export const TRIPLE_BONUS_WORD = '#7c2599';
 

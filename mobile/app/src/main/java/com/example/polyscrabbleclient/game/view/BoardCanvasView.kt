@@ -3,7 +3,6 @@ package com.example.polyscrabbleclient.game.view
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,15 +29,13 @@ import com.example.polyscrabbleclient.game.sources.GameRepository
 import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.BoardViewModel
 import com.example.polyscrabbleclient.game.viewmodels.TileCoordinates
-import com.example.polyscrabbleclient.ui.theme.accepted
-import com.example.polyscrabbleclient.ui.theme.tileBackground
-import com.example.polyscrabbleclient.ui.theme.transientTileBackground
+import com.example.polyscrabbleclient.ui.theme.*
 import kotlin.properties.Delegates
 
 const val ThickDividerWidth = Stroke.DefaultMiter
 const val GridDimension = BoardDimension + 1
-const val SoftBackgroundAlpha = 0.2f
-const val HardBackgroundAlpha = 0.7f
+const val SoftBackgroundAlpha = 0.7f
+const val HardBackgroundAlpha = 1f
 val BoardSize = 550.dp
 val BoardPadding = 10.dp
 val GridSize = BoardSize - BoardPadding.times(2)
@@ -56,10 +53,9 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     val thickDividerIndexes = listOf(0, 1, GridDimension)
     val surfaceColor = MaterialTheme.colors.surface
     val onSurfaceColor = MaterialTheme.colors.onSurface
-    val primaryColor = MaterialTheme.colors.primary
-    val secondaryColor = MaterialTheme.colors.secondary
     val rowChars = RowChar.values()
-    val rowCharsColor = MaterialTheme.colors.primary
+    val rowCharsColor = MaterialTheme.colors.onBackground
+
     val tileTextColor = MaterialTheme.colors.onBackground
     val tileBackground = MaterialTheme.colors.tileBackground
     val errorTileHighlight = MaterialTheme.colors.error
@@ -277,22 +273,21 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
 
         val multiplierPaint = Paint().asFrameworkPaint().apply {
             isAntiAlias = true
-            textSize = HeaderTextSize.toPx() * 0.45f
-            color = tileTextColor.toArgb()
-            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
-            alpha = 150
+            textSize = HeaderTextSize.toPx() * 0.55f
+            color = Color.White.toArgb()
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
 
         val typeLabel =
             if (isLetterMultiplier) LetterMultiplierLabel else WordMultiplierLabel
         val valueLabel =
             if (isDoubleMultiplier) DoubleMultiplierLabel else TripleMultiplierLabel
-
+        val offset = if (isLetterMultiplier) 0.24f else 0.30f
         drawIntoCanvas {
             it.nativeCanvas.drawText(
                 typeLabel,
                 // WARNING -> TWEAK
-                horizontalOffset + (1.75f - 0.27f * typeLabel.length) * DivisionCenterOffset.toPx(),
+                horizontalOffset + (1.75f - offset * typeLabel.length) * DivisionCenterOffset.toPx(),
                 verticalOffset - 1.8f * DivisionCenterOffset.toPx(),
                 multiplierPaint
             )
@@ -312,7 +307,6 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
         viewModel.board.tileGrid.forEachIndexed { rowIndex, row ->
             row.forEachIndexed { columnIndex, tile ->
                 if (tile.letterMultiplier != tile.wordMultiplier) {
-
                     val isLetterMultiplier = tile.letterMultiplier > tile.wordMultiplier
                     val isDoubleMultiplier =
                         if (isLetterMultiplier) {
@@ -321,10 +315,13 @@ fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
                             tile.wordMultiplier == 2
                         }
 
-                    val color = if (isLetterMultiplier) primaryColor else secondaryColor
-                    val alpha = if (isDoubleMultiplier) SoftBackgroundAlpha else HardBackgroundAlpha
+                    val color = if (isLetterMultiplier) {
+                        if (isDoubleMultiplier) DoubleBonusLetter else TripleBonusLetter
+                    } else {
+                        if (isDoubleMultiplier) DoubleBonusWord else TripleBonusWord
+                    }
 
-                    drawTileBackground(color, columnIndex + 1, rowIndex + 1, alpha)
+                    drawTileBackground(color, columnIndex + 1, rowIndex + 1)
                     drawTileMultiplierIndicator(
                         columnIndex + 1,
                         rowIndex + 1,
