@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-bitwise*/
 import { MatDialog } from '@angular/material/dialog';
-import { EXP_PER_LEVEL, MAX_LEVEL } from '@app/account/constants';
+import { EXP_PER_LEVEL, MAX_LEVEL, MAX_LEVEL_EXP } from '@app/account/constants';
 import { AlertDialogComponent } from '@app/components/modals/alert-dialog/alert-dialog.component';
 import { BOARD_MAX_POSITION, BOARD_MIN_POSITION, BOT_AVATARS } from '@app/game-logic/constants';
 import { Direction } from '@app/game-logic/direction.enum';
@@ -146,7 +146,7 @@ export const getProgressValue = (totalExp: number): number => {
     const level = Math.sqrt(totalExp / EXP_PER_LEVEL);
     const decimal = level - Math.floor(level);
     const percent = 100;
-    return decimal * percent;
+    return totalExp < MAX_LEVEL_EXP ? decimal * percent : 100;
 };
 
 export const isInsideOfBoard = (x: number, y: number) => {

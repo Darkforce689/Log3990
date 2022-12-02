@@ -4,6 +4,7 @@ import com.example.polyscrabbleclient.BuildConfig
 import com.example.polyscrabbleclient.utils.constants.NoAvatar
 import com.example.polyscrabbleclient.utils.constants.EXP_PER_LEVEL
 import com.example.polyscrabbleclient.utils.constants.MAX_LEVEL
+import com.example.polyscrabbleclient.utils.constants.MAX_LEVEL_EXP
 import com.example.polyscrabbleclient.utils.httprequests.ScrabbleHttpClient
 import java.net.URL
 
@@ -69,6 +70,6 @@ object User {
     fun getProgressValue(): Float {
         var level = Math.sqrt(totalExp / EXP_PER_LEVEL)
         var decimal = level - Math.floor(level)
-        return decimal.toFloat()
+        return if (totalExp < MAX_LEVEL_EXP) decimal.toFloat() else 1f;
     }
 }

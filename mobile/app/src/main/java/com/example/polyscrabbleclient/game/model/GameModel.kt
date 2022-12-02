@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.example.polyscrabbleclient.game.domain.BoardCrawler
 import com.example.polyscrabbleclient.game.sources.*
+import com.example.polyscrabbleclient.game.view.draganddrop.DragState
 import com.example.polyscrabbleclient.game.viewmodels.GameViewModel
 import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.user.User
@@ -83,6 +84,7 @@ class GameModel {
     }
 
     private fun updateUserLetters() {
+        DragState.onDragCancel()
         if (isUserAnObserver()) {
             val watchedPlayerLetters = getPlayer(watchedPlayerIndex.value!!)
             updateUserLettersInternal(watchedPlayerLetters)

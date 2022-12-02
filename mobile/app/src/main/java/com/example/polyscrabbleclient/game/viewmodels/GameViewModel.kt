@@ -12,6 +12,7 @@ import com.example.polyscrabbleclient.lobby.sources.GameMode
 import com.example.polyscrabbleclient.message.domain.ConversationsManager
 import com.example.polyscrabbleclient.ui.theme.*
 import com.example.polyscrabbleclient.utils.audio.AudioPlayer
+import com.example.polyscrabbleclient.utils.constants.RACK_LETTER_COUNT
 
 class GameViewModel : ViewModel() {
     val game = GameRepository.model
@@ -59,15 +60,15 @@ class GameViewModel : ViewModel() {
     }
 
     private fun hasNoLetterOnSelected(): Boolean {
-        var tileCoordinates = getSelectedCoordinates()
+        val tileCoordinates = getSelectedCoordinates()
         return game.board.tileGrid[tileCoordinates!!.row - 1][tileCoordinates!!.column - 1].content.value == null
     }
 
     private fun hasNoBonusOnSelected(): Boolean {
-        var tileCoordinates = getSelectedCoordinates()
+        val tileCoordinates = getSelectedCoordinates()
         val tileModel =
-            game.board.tileGrid[tileCoordinates!!.row - 1][tileCoordinates!!.column - 1]
-        return tileModel!!.letterMultiplier == 1 && tileModel!!.wordMultiplier == 1
+            game.board.tileGrid[tileCoordinates!!.row - 1][tileCoordinates.column - 1]
+        return tileModel.letterMultiplier == 1 && tileModel.wordMultiplier == 1
     }
 
     private fun restoreBoard() {
@@ -102,7 +103,15 @@ class GameViewModel : ViewModel() {
     }
 
     fun canExchangeLetter(): Boolean {
-        return isActivePlayer() && isAtLeastOneLetterSelected()
+        return isActivePlayer() && isAtLeastOneLetterSelected() && !isLetterBagLow()
+    }
+
+    fun isLetterBagEmpty(): Boolean {
+        return game.remainingLettersCount.value == 0
+    }
+
+    fun isLetterBagLow(): Boolean {
+        return game.remainingLettersCount.value <= RACK_LETTER_COUNT
     }
 
     fun canCancel(): Boolean {
@@ -165,7 +174,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun canExchangeMagicCard(): Boolean {
-        return canUseMagicCards() && isExactlyOneLetterSelected()
+        return canUseMagicCards() && isExactlyOneLetterSelected() && !isLetterBagEmpty()
     }
 
     fun canPlaceRandomBonusMagicCard(): Boolean {
@@ -173,6 +182,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun passTurn() {
+        AudioPlayer.playSong(AudioPlayer.SKIP_TURN_SONG)
         GameRepository.emitNextAction(OnlineAction(OnlineActionType.Pass))
     }
 

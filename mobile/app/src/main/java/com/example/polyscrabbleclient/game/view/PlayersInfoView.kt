@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,7 +71,7 @@ fun PlayerInfoView(
     val borderColor by animateColorAsState(
         targetValue =
         if (isActivePlayer())
-            MaterialTheme.colors.onSurface.copy(0.9f)
+            Color.White.copy(alpha = 0.75f)
         else
             Color.Unspecified,
         animationSpec = tween(durationMillis = 750)

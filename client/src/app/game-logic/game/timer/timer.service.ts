@@ -10,13 +10,16 @@ export class TimerService {
     isStarted = false;
     timeLeftSubject = new BehaviorSubject<number | undefined>(undefined);
     readonly timePerStep: number = TIMER_STEP;
-    private interval: number;
+    private timePerTurn: number;
 
-    start(interval: number) {
+    setInitialTimePerTurn(timePerTurn: number) {
+        this.timePerTurn = timePerTurn;
+        this.timeLeftSubject.next(timePerTurn);
+    }
+
+    start(timePerTurn: number) {
         this.isStarted = true;
-        this.interval = interval;
-
-        return;
+        this.timePerTurn = timePerTurn;
     }
 
     get timeLeft$(): Observable<number | undefined> {
@@ -26,10 +29,10 @@ export class TimerService {
     get timeLeftPercentage$(): Observable<number | undefined> {
         return this.timeLeftSubject.pipe(
             map((timerLeft: number | undefined): number | undefined => {
-                if (timerLeft === undefined || this.interval === undefined) {
+                if (timerLeft === undefined || this.timePerTurn === undefined) {
                     return undefined;
                 }
-                return timerLeft / this.interval;
+                return timerLeft / this.timePerTurn;
             }),
         );
     }

@@ -6,10 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +49,11 @@ fun DeleteConversationModalContent(
 ) {
     val viewModel: DeleteConversationViewModel = viewModel()
     val conversations = viewModel.conversations
+    
+    LaunchedEffect(true) {
+        viewModel.fetchCreatedConversations {}
+    }
+
     Box(
         Modifier
             .width(500.dp)

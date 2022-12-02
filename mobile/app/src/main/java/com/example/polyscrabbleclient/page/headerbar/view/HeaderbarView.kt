@@ -43,7 +43,6 @@ fun HeaderBar(
                     modifier = Modifier.height(100.dp),
                     painter = painterResource(id = getAssetsId("logowhite")),
                     contentDescription = "Image",
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colors.background)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     ThemeSelectorView(themeSelectorViewModel)

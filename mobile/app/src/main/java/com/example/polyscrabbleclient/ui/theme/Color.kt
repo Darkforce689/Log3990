@@ -23,5 +23,10 @@ val Teal200 = Color(0xFF03DAC5)
 val Black = Color.Black
 val White = Color.White
 
-val LightOnlinePlayerStatus = Color(5,107,250)
-val DarkOnlinePlayerStatus = Color(5,250,46)
+val LightOnlinePlayerStatus = Color(5, 107, 250)
+val DarkOnlinePlayerStatus = Color(5, 250, 46)
+
+val DoubleBonusLetter = Color(13, 65, 225)
+val DoubleBonusWord = Color(240, 139, 179)
+val TripleBonusLetter = Color(45, 207, 248, 255)
+val TripleBonusWord = Color(124, 37, 153)

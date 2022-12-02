@@ -22,6 +22,8 @@
     border-bottom: 1px solid transparent;
     border-top: 1px solid transparent;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .mat-row:hover .mat-cell {
@@ -37,7 +39,7 @@
 }
 
 .mat-column-joined {
-    width: 35%;
+    width: 5%;
 }
 
 .mat-column-name {
@@ -52,4 +54,9 @@
     width: 350px;
     height: 100%;
     max-height: 600px;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
 }

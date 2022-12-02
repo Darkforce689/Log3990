@@ -1,6 +1,6 @@
 $light-primary-palette: (
     100: #af99e0,
-    500: #6200ee,
+    500: royalblue,
     900: #3700b3,
     contrast: (
         100: $dark-primary-text,
@@ -11,11 +11,11 @@ $light-primary-palette: (
 
 $light-accent-palette: (
     100: #99cfce,
-    500: #03dac6,
+    500: #9d00ff,
     900: #018786,
     contrast: (
         100: $dark-primary-text,
-        500: $dark-primary-text,
+        500: $light-primary-text,
         900: $light-primary-text,
     ),
 );

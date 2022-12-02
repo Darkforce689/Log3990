@@ -10,6 +10,9 @@ export class PopChatService {
     constructor(private electron: ElectronIpcService) {
         this.windowed$.subscribe((isOpened: boolean) => {
             this.isPopOut = isOpened;
+            if (!isOpened) {
+                this.setOpen();
+            }
         });
     }
 
@@ -21,12 +24,13 @@ export class PopChatService {
         return this.electron.externalWindow$.value;
     }
 
-    toggleExternalWindow() {
+    closeExternalWindow() {
+        this.isPopOut = false;
+        this.electron.closePage();
+    }
+
+    openExternalWindow() {
         this.isPopOut = true;
-        if (this.windowed) {
-            this.electron.closePage();
-            return;
-        }
         this.electron.openPage('chat-box');
     }
 

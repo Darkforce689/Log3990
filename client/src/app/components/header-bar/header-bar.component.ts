@@ -5,6 +5,7 @@ import { ErrorDialogComponent } from '@app/components/modals/error-dialog/error-
 import { User, UserStatus } from '@app/pages/register-page/user.interface';
 import { AccountService } from '@app/services/account.service';
 import { AuthService } from '@app/services/auth.service';
+import { PopChatService } from '@app/services/pop-chat.service';
 import { ThemeService } from '@app/services/theme/theme.service';
 import { first } from 'rxjs/operators';
 
@@ -33,6 +34,7 @@ export class HeaderBarComponent {
         private router: Router,
         private authService: AuthService,
         private matDialog: MatDialog,
+        private popChatService: PopChatService,
     ) {
         this.accountService.account$.subscribe((user: User | undefined) => {
             if (user) {
@@ -61,6 +63,7 @@ export class HeaderBarComponent {
                     .afterClosed()
                     .pipe(first())
                     .subscribe(() => {
+                        this.popChatService.closeExternalWindow();
                         this.router.navigate(['/login']);
                     });
             },
