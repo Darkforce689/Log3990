@@ -1,5 +1,5 @@
 .wrapper {
-    border-radius: 25px;
+    border-radius: 4px;
     padding: 20px;
     max-width: 42vw;
     position: absolute;
@@ -27,12 +27,11 @@ p {
     margin-left: auto;
     margin-right: auto;
     border-radius: 2%;
-   
 }
 
 .rack {
-    display: flex; 
-    flex-direction: row; 
+    display: flex;
+    flex-direction: row;
     justify-content: center;
     column-gap: 2%;
     padding: 2%;
@@ -42,9 +41,6 @@ p {
     align-items: center;
 }
 
-
-
-
 .tile {
     display: flex;
     align-items: center;
@@ -52,19 +48,12 @@ p {
     font-size: small;
     width: 100%;
     border-radius: 10%;
-    color: var(--black);
-    background-color: var(--LightTileBackgroundColor);
+    color: var(--fg) !important;
+    background-color: var(--tileBackground) !important;
     box-shadow: 2px 2px 2px 0.2;
     background-size: contain;
-    margin: 1px; 
+    margin: 1px;
+    justify-content: center;
     width: calc((60vh) / 16) !important;
-    height: calc((60vh ) / 16) !important;
-    span {
-        padding-left: 15%;
-    }
-
-    sub {
-        padding-left: 8%;
-        padding-top: 30%;
-    }
+    height: calc((60vh) / 16) !important;
 }

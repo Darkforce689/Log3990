@@ -1,1 +1,3 @@
 export const USERS_PERPAGE_SEARCH = 10;
+
+export const TIME_INVALIDATE_USER_CACHE = 60000;

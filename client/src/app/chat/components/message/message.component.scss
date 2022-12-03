@@ -26,6 +26,7 @@
 .fromMe {
     .message-content {
         background-color: var(--primary);
+        color: white;
     }
     align-self: flex-end;
 }
@@ -33,6 +34,7 @@
 .fromOther {
     .message-content {
         background-color: var(--accent);
+        color: var(--bg);
     }
 
     align-self: flex-start;

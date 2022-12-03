@@ -140,7 +140,8 @@ private fun WaitingForOtherPlayersButtons(
             .padding(5.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(
+        OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.secondary),
             onClick = {
                 viewModel.leaveLobbyGame(navController)
             }

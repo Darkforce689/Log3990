@@ -28,8 +28,9 @@ mat-card {
 }
 
 .active {
-    box-shadow: 1px 1px 5px 5px var(--fg) !important;
+    box-shadow: 1px 1px 5px 5px white !important;
     background-color: var(--accent);
+    color: white !important;
 }
 
 .eyeIcon {

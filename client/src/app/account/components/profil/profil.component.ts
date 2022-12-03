@@ -91,8 +91,8 @@ export class ProfilComponent implements OnInit {
                 this.messageService.refreshMessages();
             },
             (httpError: HttpErrorResponse) => {
-                const { error: errors } = httpError;
-                errors.forEach((error: string) => {
+                const { error: errorBody } = httpError;
+                errorBody.errors.forEach((error: string) => {
                     if (error === UserCreationError.NameAlreadyTaken) {
                         this.name.setErrors({ notUnique: true });
                     }

@@ -65,8 +65,6 @@ const val already_auth = "Vous êtes déjà connecté sur un autre client"
 // Abstract
 const val Activated = "Activé"
 const val Deactivated = "Désactivé"
-const val Yes = "Oui"
-const val No = "Non"
 val formatTurnTime: (Long) -> String =
     { ms ->
         val absoluteSeconds = ms / MILLI_TO_SECONDS
@@ -147,6 +145,8 @@ const val players_in_game = "Joueurs dans la partie:"
 // Public/Private/Observables
 const val Private = "Privée"
 const val Public = "Publique"
+const val Protected = "Protégée"
+const val NotProtected = "Non-$Protected"
 const val WAIT_STATUS = "En attente"
 const val ACTIVE_STATUS = "En cours"
 const val PendingGameSubTitle = "Partie en attente"

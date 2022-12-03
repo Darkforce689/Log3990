@@ -1,10 +1,10 @@
 $dark-primary-palette: (
     100: #d1c4e9,
-    500: #bb86fc,
+    500: #7329b7,
     900: #3700b3,
     contrast: (
-        100: $dark-primary-text,
-        500: $dark-primary-text,
+        100: $light-primary-text,
+        500: $light-primary-text,
         900: $light-primary-text,
     ),
 );

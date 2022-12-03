@@ -7,6 +7,7 @@ import { NOT_FOUND } from '@app/game-logic/constants';
 import { Board } from '@app/game-logic/game/board/board';
 import { GameState, LightPlayer, MagicGameState } from '@app/game-logic/game/games/online-game/game-state';
 import { CanvasDrawer } from '@app/pages/game-page/board/canvas-drawer';
+import { ThemeService } from '@app/services/theme/theme.service';
 
 @Component({
     selector: 'app-replay',
@@ -22,7 +23,7 @@ export class ReplayComponent implements OnInit, AfterViewInit {
     canvasDrawer: CanvasDrawer;
     canvasContext: CanvasRenderingContext2D;
     canvasElement: HTMLElement | null;
-    constructor(@Inject(MAT_DIALOG_DATA) public data: { gameStates: GameStateHistory[]; userIndex: number }) {}
+    constructor(@Inject(MAT_DIALOG_DATA) public data: { gameStates: GameStateHistory[]; userIndex: number }, private themeService: ThemeService) {}
 
     ngOnInit(): void {
         this.setState(0);
@@ -58,7 +59,7 @@ export class ReplayComponent implements OnInit, AfterViewInit {
 
     updateCanvas() {
         this.board.grid = this.currentState.grid;
-        this.canvasDrawer.drawGrid(this.board);
+        this.canvasDrawer.drawGrid(this.board, this.themeService.colors);
     }
 
     get isEndOfGame() {

@@ -6,7 +6,7 @@ let gameToken;
 function initWindow() {
     appWindow = new BrowserWindow({
         height: 800,
-        width: 1200,
+        width: 1300,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -81,7 +81,9 @@ app.on('ready', () => {
     });
 
     ipcMain.on('close-external-window', (event, args) => {
-        externalWindow.close();
+        if (externalWindow) {
+            externalWindow.close();
+        }
     });
 
     ipcMain.on('game-token', (event, args) => {

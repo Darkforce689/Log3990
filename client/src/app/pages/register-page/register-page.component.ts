@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH, MIN_NAME_LENGTH, MIN_PASSWORD_LENGTH, NO_WHITE_SPACE_RGX } from '@app/game-logic/constants';
+import { EMAIL_REGEX } from '@app/pages/login-page/login-page.component';
 import { UserCreationError } from '@app/services/auth-errors';
 import { AuthService } from '@app/services/auth.service';
 import { first } from 'rxjs/operators';
@@ -12,6 +13,7 @@ import { first } from 'rxjs/operators';
     styleUrls: ['./register-page.component.scss'],
 })
 export class RegisterPageComponent {
+    hidePassword: boolean = true;
     registerForm = new FormGroup({
         name: new FormControl('', [
             Validators.required,
@@ -19,7 +21,7 @@ export class RegisterPageComponent {
             Validators.maxLength(MAX_NAME_LENGTH),
             Validators.pattern(NO_WHITE_SPACE_RGX),
         ]),
-        email: new FormControl('', [Validators.required, Validators.email]),
+        email: new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]),
         password: new FormControl('', [Validators.required, Validators.minLength(MIN_PASSWORD_LENGTH), Validators.maxLength(MAX_PASSWORD_LENGTH)]),
         avatar: new FormControl('', Validators.required),
     });

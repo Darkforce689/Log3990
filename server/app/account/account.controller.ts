@@ -43,7 +43,7 @@ export class AccountController {
             if (req.body.name) {
                 errors.push(...(await this.userService.updateName(req.body, userId)));
                 if (errors.length > 0) {
-                    res.status(StatusCodes.CONFLICT).send(errors);
+                    res.status(StatusCodes.CONFLICT).send({ errors });
                     return;
                 }
             }

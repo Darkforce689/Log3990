@@ -136,7 +136,7 @@ export class ConversationPickerComponent implements OnInit, OnDestroy {
     }
 
     openWindow() {
-        this.popOutService.toggleExternalWindow();
+        this.popOutService.openExternalWindow();
     }
 
     private arrangeConversations(conversations: Conversation[]): Conversation[] {

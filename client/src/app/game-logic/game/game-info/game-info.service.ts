@@ -48,6 +48,10 @@ export class GameInfoService {
         });
     }
 
+    receiveTimePerTurn(timePerTurn: number) {
+        this.timer.setInitialTimePerTurn(timePerTurn);
+    }
+
     receivePlayer(player: Player): void {
         this.player = player;
     }

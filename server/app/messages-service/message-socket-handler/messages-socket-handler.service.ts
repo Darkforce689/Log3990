@@ -187,7 +187,8 @@ export class MessagesSocketHandler {
         }
 
         if (user.rooms.has(roomID)) {
-            throw Error(`Vous êtes déjà dans la salle ${roomID}`);
+            ServerLogger.logError(`Vous êtes déjà dans la salle ${roomID}`);
+            return;
         }
 
         let activeRoom = this.activeRooms.get(roomID);

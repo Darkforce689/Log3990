@@ -15,6 +15,7 @@ import com.example.polyscrabbleclient.message.model.*
 import com.example.polyscrabbleclient.message.sources.MessageSource
 import com.example.polyscrabbleclient.message.utils.MessageFactory
 import com.example.polyscrabbleclient.message.utils.conversationRoomId
+import com.example.polyscrabbleclient.user.UserRepository
 import com.google.gson.Gson
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.Dispatchers
@@ -171,6 +172,11 @@ class ChatBoxViewModel : ViewModel() {
         fun findMessageInsertionIndex(): Int {
             var insertIndex = messages.size
             var skips = 1
+            
+            if (newMessage.date == null) {
+                return insertIndex
+            }
+
             for (message in messages.reversed()) {
                 if (message.date === null) {
                     skips++
@@ -201,6 +207,7 @@ class ChatBoxViewModel : ViewModel() {
 
     private fun changeCurrentConversation(conversation: Conversation) {
         currentConversation = conversation
+        UserRepository.invalidateCache()
         messages.clear()
     }
 
