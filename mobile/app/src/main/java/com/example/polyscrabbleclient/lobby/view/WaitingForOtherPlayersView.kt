@@ -49,7 +49,7 @@ fun WaitingForOtherPlayersView(
         Card(
             modifier = Modifier
                 .width(420.dp)
-                .height(375.dp),
+                .height(400.dp),
         ) {
             Column(
                 Modifier.padding(10.dp),
