@@ -3,36 +3,42 @@
         <mat-card-header class="register-header">Créer un compte</mat-card-header>
         <mat-divider></mat-divider>
 
-        <mat-card-content  [formGroup]="registerForm">
+        <mat-card-content [formGroup]="registerForm">
             <div class="field-container">
                 <mat-form-field>
                     <mat-label>Pseudonyme</mat-label>
                     <input matInput autocomplete="off" [formControlName]="'name'" />
-                    <mat-error *ngIf="registerForm.controls.name.hasError('notUnique')"> Un compte utilise déjà ce pseudonyme </mat-error>
+                    <mat-error *ngIf="registerForm.controls.name.hasError('notUnique')"> Un compte utilise déjà ce
+                        pseudonyme </mat-error>
                     <mat-error *ngIf="!isNameValid"> Veuillez saisir un nom valide </mat-error>
                     <mat-error *ngIf="isNameEmpty"> Veuillez remplir tous les champs </mat-error>
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>Email</mat-label>
                     <input matInput type="email" placeholder="Ex. pat@example.com" [formControlName]="'email'" />
-                    <mat-error *ngIf="registerForm.controls.email.hasError('notUnique')"> Un compte utilise déjà ce e-mail </mat-error>
+                    <mat-error *ngIf="registerForm.controls.email.hasError('notUnique')"> Un compte utilise déjà cet
+                        e-mail </mat-error>
                     <mat-error *ngIf="!isEmailValid"> Veuillez saisir un e-mail valide </mat-error>
                     <mat-error *ngIf="isEmailEmpty"> Veuillez remplir tous les champs </mat-error>
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>Mot de passe</mat-label>
-                    <input matInput autocomplete="off" type="password" [formControlName]="'password'" />
+                    <input matInput autocomplete="off" [type]="hidePassword ? 'password' : 'text'"
+                        [formControlName]="'password'" />
+                    <mat-icon class="visibility" matSuffix (click)="hidePassword = !hidePassword">{{hidePassword ?
+                        'visibility_off' :
+                        'visibility'}}</mat-icon>
                     <mat-error *ngIf="!isPasswordValid">
-                        Veuillez saisir un mot de passe entre {{ minPasswordLength }} et {{ maxPasswordLength }}</mat-error
-                    >
+                        Veuillez saisir un mot de passe entre {{ minPasswordLength }} et {{ maxPasswordLength }}
+                    </mat-error>
                     <mat-error *ngIf="isPasswordEmpty"> Veuillez remplir tous les champs </mat-error>
                 </mat-form-field>
             </div>
             <div>
                 <app-avatar-list (srcChange)="updateAvatar($event)"></app-avatar-list>
-                <span class="error" *ngIf="isAvatarEmpty">Veuillez remplir tous les champs</span>
+                <span class="error" *ngIf="isAvatarEmpty">Veuillez choisir un avatar</span>
             </div>
-        
+
         </mat-card-content>
 
         <mat-divider></mat-divider>

@@ -13,6 +13,7 @@ import { first } from 'rxjs/operators';
     styleUrls: ['./register-page.component.scss'],
 })
 export class RegisterPageComponent {
+    hidePassword: boolean = true;
     registerForm = new FormGroup({
         name: new FormControl('', [
             Validators.required,
