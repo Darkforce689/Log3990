@@ -13,6 +13,7 @@ export const EMAIL_REGEX = '[a-zA-Z0-9+._%-+]{1,256}@[a-zA-Z0-9][a-zA-Z0-9-]{0,6
     styleUrls: ['./login-page.component.scss'],
 })
 export class LoginPageComponent {
+    hidePassword: boolean = true;
     loginForm = new FormGroup({
         email: new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]),
         password: new FormControl('', [Validators.required]),
