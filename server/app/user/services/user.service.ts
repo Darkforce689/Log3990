@@ -3,6 +3,7 @@ import { Pagination } from '@app/common/interfaces/pagination.interface';
 import { LOSS_EXP_BONUS, SYSTEM_USER_NAME, USER_COLLECTION, WIN_EXP_BONUS } from '@app/constants';
 import { MongoDBClientService } from '@app/database/mongodb-client.service';
 import { ObjectCrudResult } from '@app/database/object-crud-result.interface';
+import { DEFAULT_BOT } from '@app/game/game-logic/player/bot/default-bot-names';
 import { ServerLogger } from '@app/logger/logger';
 import { GameStats } from '@app/user/interfaces/game-stats.interface';
 import { UserCreation } from '@app/user/interfaces/user-creation.interface';
@@ -217,6 +218,9 @@ export class UserService {
     }
 
     private async isNameExists(name: string) {
+        if (DEFAULT_BOT.find((bot) => bot.name === name)) {
+            return true;
+        }
         const result = await this.collection.findOne({ name: { $eq: name } });
         return result !== null;
     }

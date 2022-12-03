@@ -5,14 +5,21 @@
         <mat-card-content class="fields-container" [formGroup]="loginForm">
             <mat-form-field>
                 <mat-label>Email</mat-label>
-                <input matInput type="email" placeholder="Ex. ex@example.com" [formControlName]="'email'" />
+                <input matInput type="email" (keyup.enter)="login()" placeholder="Ex. ex@example.com"
+                    [formControlName]="'email'" />
                 <mat-error *ngIf="!isEmailFormValid"> Veuillez saisir un e-mail valide </mat-error>
                 <mat-error *ngIf="!isEmailValid">Aucun utilisateur n'a ce e-mail</mat-error>
                 <mat-error *ngIf="isEmailEmpty">Veuillez remplir tout les champs</mat-error>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Mot de passe</mat-label>
-                <input matInput autocomplete="off" type="password" [formControlName]="'password'" />
+                <input matInput autocomplete="off" (keyup.enter)="login()" [type]="hidePassword ? 'password' : 'text'"
+                    [formControlName]="'password'" />
+                <mat-icon class="visibility" matSuffix (click)="hidePassword = !hidePassword">{{hidePassword ?
+                    'visibility_off' :
+                    'visibility'}}</mat-icon>
+
+
                 <mat-error *ngIf="!isPasswordValid">Mot de passe invalide</mat-error>
                 <mat-error *ngIf="isPasswordEmpty">Veuillez remplir tout les champs</mat-error>
             </mat-form-field>
