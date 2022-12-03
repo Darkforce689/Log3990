@@ -18,6 +18,7 @@ import {
     TRIPLE_BONUS_WORD,
     WRONG_TEMP_TILE_COLOR,
 } from '@app/pages/game-page/board/canvas-colors';
+import { CustomColors, ThemeService } from '@app/services/theme/theme.service';
 
 enum BonusType {
     LetterBonus,
@@ -36,6 +37,7 @@ export class CanvasDrawer {
     private indicatorDir: Direction;
     private tempPos: Vec2 = { x: -1, y: -1 };
     private tempPosValid: boolean = false;
+    private colors: CustomColors = ThemeService.lightThemeColors;
 
     constructor(public canvas: CanvasRenderingContext2D, public width: number, public height: number) {
         this.canvas.lineWidth = 1;
@@ -43,7 +45,8 @@ export class CanvasDrawer {
         this.offset = this.tileSize + this.borderWidth;
     }
 
-    drawGrid(board: Board): void {
+    drawGrid(board: Board, colors: CustomColors): void {
+        this.colors = colors;
         this.canvas.clearRect(0, 0, this.width, this.height);
         this.canvas.globalAlpha = 0.9;
         this.canvas.fillStyle = BACKGROUND_COLOR;
@@ -132,7 +135,7 @@ export class CanvasDrawer {
 
     private drawTile(letter: string, value: number, i: number, j: number) {
         const pos = this.tilePositionToCoord(j, i);
-        this.canvas.fillStyle = TILE_COLOR;
+        this.canvas.fillStyle = this.colors.tileBackgroundColor;
         this.canvas.fillRect(
             pos.x + 2 * this.canvas.lineWidth,
             pos.y + 2 * this.canvas.lineWidth,
@@ -147,7 +150,7 @@ export class CanvasDrawer {
             this.tileSize - this.canvas.lineWidth,
         );
         this.canvas.font = `${FONT_SIZE}px ${this.font}`;
-        this.canvas.fillStyle = BLACK_LINE;
+        this.canvas.fillStyle = this.colors.tileFontColor;
 
         this.canvas.textAlign = 'center';
         this.canvas.textBaseline = 'alphabetic';

@@ -9,6 +9,7 @@ import { GameInfoService } from '@app/game-logic/game/game-info/game-info.servic
 import { InputComponent, InputType, UIInput } from '@app/game-logic/interfaces/ui-input';
 import { isInsideOfBoard } from '@app/game-logic/utils';
 import { CanvasDrawer } from '@app/pages/game-page/board/canvas-drawer';
+import { ThemeService } from '@app/services/theme/theme.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -33,7 +34,12 @@ export class BoardComponent implements AfterViewInit, DoCheck, OnDestroy {
     private dropEvent$$: Subscription;
     private moveEvent$$: Subscription;
 
-    constructor(private boardService: BoardService, private inputController: UIInputControllerService, private info: GameInfoService) {
+    constructor(
+        private boardService: BoardService,
+        private inputController: UIInputControllerService,
+        private info: GameInfoService,
+        private themeService: ThemeService,
+    ) {
         this.board = this.boardService.board;
         this.dropEvent$$ = this.inputController.dropEvent$.subscribe((input: UIInput) => {
             this.receiveDrop(input);
@@ -59,7 +65,7 @@ export class BoardComponent implements AfterViewInit, DoCheck, OnDestroy {
         if (this.canvasElement) {
             this.setupCanvasDrawer();
         }
-        this.canvasDrawer.drawGrid(this.board);
+        this.canvasDrawer.drawGrid(this.board, this.themeService.colors);
     }
 
     ngDoCheck() {
@@ -77,7 +83,7 @@ export class BoardComponent implements AfterViewInit, DoCheck, OnDestroy {
         } else if (!(this.inputController.activeAction instanceof UIDragAndDrop)) {
             this.canvasDrawer.setIndicator(NOT_FOUND, NOT_FOUND);
         }
-        this.canvasDrawer.drawGrid(this.board);
+        this.canvasDrawer.drawGrid(this.board, this.themeService.colors);
     }
 
     convertASCIIToChar(code: number): string {
