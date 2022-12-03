@@ -51,10 +51,10 @@ const val WordMultiplierLabel = "Mot"
 @Composable
 fun BoardCanvasView(dragState: DragState, viewModel: BoardViewModel) {
     val thickDividerIndexes = listOf(0, 1, GridDimension)
-    val surfaceColor = MaterialTheme.colors.surface
-    val onSurfaceColor = MaterialTheme.colors.onSurface
+    val surfaceColor = Color.White
+    val onSurfaceColor = BoardBorderColor
     val rowChars = RowChar.values()
-    val rowCharsColor = MaterialTheme.colors.onBackground
+    val rowCharsColor = BoardBorderColor
 
     val tileTextColor = MaterialTheme.colors.onBackground
     val tileBackground = MaterialTheme.colors.tileBackground

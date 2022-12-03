@@ -1,6 +1,7 @@
 import { Direction } from '@app/game-logic/direction.enum';
 import { Board } from '@app/game-logic/game/board/board';
 import { CanvasDrawer } from '@app/pages/game-page/board/canvas-drawer';
+import { ThemeService } from '@app/services/theme/theme.service';
 describe('Canvas drawer test', () => {
     const CANVAS_WIDTH = 500;
     const CANVAS_HEIGHT = 500;
@@ -23,7 +24,7 @@ describe('Canvas drawer test', () => {
         const fillTextSpy = spyOn(canvasDrawer.canvas, 'fillText');
         const numberCall = 152;
 
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         expect(fillTextSpy).toHaveBeenCalledTimes(numberCall);
     });
 
@@ -31,7 +32,7 @@ describe('Canvas drawer test', () => {
         const fillTextSpy = spyOn(canvasDrawer.canvas, 'fillText');
         const numberCall = 154;
         board.grid[12][13].letterObject = { char: 'A', value: 2 };
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         expect(fillTextSpy).toHaveBeenCalledTimes(numberCall);
     });
 
@@ -40,7 +41,7 @@ describe('Canvas drawer test', () => {
         const fillRectOtherCount = 37;
         const fillRectBonusCount = 61;
         const numberCall = fillRectBonusCount + fillRectOtherCount;
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         expect(fillRectSpy).toHaveBeenCalledTimes(numberCall);
     });
 
@@ -49,10 +50,10 @@ describe('Canvas drawer test', () => {
         expect(canvasDrawer.height).toEqual(CANVAS_WIDTH);
     });
 
-    it('drawGrid should change pixel on screen', () => {
+    it('drawGrid shoul, ThemeService.lightThemeColorsd change pixel on screen', () => {
         let imageData = canvasDrawer.canvas.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data;
         const beforeSize = imageData.filter((x) => x !== 0).length;
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         imageData = canvasDrawer.canvas.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data;
         const afterSize = imageData.filter((x) => x !== 0).length;
         expect(afterSize).toBeGreaterThan(beforeSize);
@@ -63,10 +64,10 @@ describe('Canvas drawer test', () => {
         canvasDrawer.setDirection(Direction.Horizontal);
 
         const drawImageSpy = spyOn(canvasDrawer.canvas, 'fill');
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
 
         canvasDrawer.setDirection(Direction.Vertical);
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         expect(drawImageSpy).toHaveBeenCalled();
         expect(drawImageSpy).toHaveBeenCalledTimes(2);
     });
@@ -77,14 +78,14 @@ describe('Canvas drawer test', () => {
         canvasDrawer.setDirection(Direction.Horizontal);
 
         const drawImageSpy = spyOn(canvasDrawer.canvas, 'fill');
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         expect(drawImageSpy).not.toHaveBeenCalled();
     });
 
     it('if 1 temp letter is placed, should call strokeRect', () => {
         const strokeRectSpy = spyOn(canvasDrawer.canvas, 'strokeRect');
         board.grid[0][0].letterObject = { char: 'A', value: 2, isTemp: true };
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         expect(strokeRectSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -93,7 +94,7 @@ describe('Canvas drawer test', () => {
         const strokeRectCount = 4;
         board.grid[0][0].letterObject = { char: 'A', value: 2, isTemp: true };
         board.grid[0][1].letterObject = { char: 'A', value: 2, isTemp: true };
-        canvasDrawer.drawGrid(board);
+        canvasDrawer.drawGrid(board, ThemeService.lightThemeColors);
         expect(strokeRectSpy).toHaveBeenCalledTimes(strokeRectCount);
     });
 });

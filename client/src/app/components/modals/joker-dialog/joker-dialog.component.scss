@@ -22,8 +22,8 @@ mat-grid-list {
     font-size: xx-large;
     border-radius: 10%;
     box-shadow: 2px 2px 2px 0.2;
-    color: var(--Black) !important;
-    background-color: var(--LightTileBackgroundColor);
+    color: var(--fg) !important;
+    background-color: var(--tileBackground);
     background-size: contain;
 }
 
@@ -31,8 +31,8 @@ mat-grid-list {
     font-weight: 700;
     border-radius: 10%;
     box-shadow: 2px 2px 2px 0.2;
-    color: var(--Black) !important;
-    background-color: var(--LightTileBackgroundColor);
+    color: var(--fg) !important;
+    background-color: var(--tileBackground);
     background-size: contain;
 
     &:hover {
