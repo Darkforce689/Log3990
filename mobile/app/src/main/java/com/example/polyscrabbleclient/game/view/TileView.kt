@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -44,7 +45,7 @@ fun TileView(
         if (tileModel.isSelected.value)
             MaterialTheme.colors.secondary
         else
-            MaterialTheme.colors.primary,
+            Color.Gray,
         animationSpec = tween(durationMillis = 200)
     )
 
@@ -61,7 +62,7 @@ fun TileView(
                 onClick = select
             )
             .size(size)
-            .border(width = 4.dp, targetColor),
+            .border(width = if(tileModel.isSelected.value) 3.dp else 1.dp, targetColor),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
