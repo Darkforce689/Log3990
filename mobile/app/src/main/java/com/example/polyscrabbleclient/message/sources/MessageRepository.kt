@@ -26,7 +26,8 @@ object MessageRepository {
             data class MessagesGetRes(val messages: ArrayList<MessageDTO>?)
             val res = ScrabbleHttpClient.get(url, MessagesGetRes::class.java)
             if (res === null) {
-                throw RuntimeException("Parsing error when fetching message from $conversationId")
+                callback(listOf())
+                return@Thread
             }
 
             if (res.messages == null) {
