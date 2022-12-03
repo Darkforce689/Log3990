@@ -42,6 +42,10 @@ export class AppSocketHandler {
             const { session, sessionID } = socket.request as unknown as { session: Session; sessionID: string };
             const { userId } = session;
 
+            if (this.connectedUsers.has(userId)) {
+                return;
+            }
+
             this.userService.setUserOnline(userId);
             this.userLogService.updateUserLog(Date.now(), LogType.CONNECTION, userId);
             this.authService.assignSessionToUser(userId, sessionID);
